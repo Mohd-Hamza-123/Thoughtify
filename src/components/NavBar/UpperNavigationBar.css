@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
+
+.material-symbols-outlined {
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+}
+
+#nav {
+    background-color: white;
+    color: rgb(0, 0, 0);
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* #nav.active {
+    background-color: rgba(130, 129, 129, 0.266);
+} */
+
+.logo_div {
+    align-items: center;
+}
+
+.logo {
+    width: 32px;
+    /* transform: rotate(10deg); */
+    filter: brightness(200%);
+    /* filter:  brightness(300%) contrast(100%) grayscale(50%) saturate(200%) sepia(50%); */
+    /* border: 2px solid red; */
+}
+
+.logo_Name {
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Gabarito', sans-serif;
+    margin-top: 4px;
+}
+
+
+.lower_Nav {
+    background-color: rgb(19, 19, 21);
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 10px;
+    font-family: 'Gabarito', sans-serif;
+}
+
+.search_div {
+    align-items: center;
+    padding: 0px 8px;
+    border-radius: 10px;
+}
+
+#search_icon_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(0, 0, 0);
+    height: 33px;
+    width: 40px;
+    padding: 3px;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+    border: 2px solid white;
+}
+
+
+#search_icon {
+    fill: white;
+    font-size: 20px;
+}
+
+#search {
+    outline: none;
+    padding: 0px 5px;
+    height: 33px;
+    border: 1px solid rgb(0, 0, 0);
+    border: none;
+}
+
+#upperNavbar_svg_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    border: 4px ridge rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+#upperNavbar_svg_div svg {
+    fill: rgb(1, 1, 1);
+    transition: all 0.3s fade-out 0.1s;
+}
+
+/* #upperNavbar_svg_div svg:hover {
+    transform: scale(1.2);
+} */

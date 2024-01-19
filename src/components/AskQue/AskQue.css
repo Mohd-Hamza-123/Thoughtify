@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
+
+
+#askQue_div {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: -100vh;
+    transition: top 0ms ease-in-out 200ms;
+    z-index: 99;
+}
+
+#askQue_div.active {
+    top: 0;
+}
+
+#askQue_black {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    opacity: 1;
+    transition: all 300ms ease-in-out 0ms;
+    background-color: rgba(0, 0, 0, 0.374);
+}
+
+.ask_Que_Container.active #askQue_black {
+    opacity: 0;
+    transition: all 300ms ease-in-out 0ms;
+
+}
+
+.ask_Que_Container {
+    padding: 14px;
+    position: absolute;
+    width: 67%;
+    height: 85%;
+    color: white;
+    border: 1px solid rgb(193, 193, 193);
+    background: linear-gradient(45deg, hsla(223, 49%, 8%, 1) 0%, hsla(0, 0%, 0%, 1) 0%, hsla(305, 71%, 7%, 1) 34%, hsla(304, 70%, 12%, 1) 53%, hsla(310, 77%, 14%, 1) 62%, hsla(223, 49%, 8%, 1) 100%, hsla(305, 75%, 22%, 1) 100%);
+    top: 50%;
+    left: 50%;
+    font-family: 'Gabarito', sans-serif;
+    border-radius: 7px;
+    transition: transform 300ms ease-in-out 0ms;
+    transform: translate(-50%, -50%) scale(1.10);
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.ask_Que_Container.active {
+    transition: transform 300ms ease-in-out 0ms;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.ask_Que_Container::-webkit-scrollbar {
+    display: none;
+}
+
+#ask_Que_Container_cross_btn {
+    border: 1px solid rgb(161, 161, 161);
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+
+#ask_Que_Container_cross_icon {
+    margin-top: 2px;
+}
+
+.Question_Title {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+#Que_Title {
+    outline: none;
+    background-color: rgb(232, 232, 232);
+    width: 100%;
+    height: 75px;
+    padding: 10px;
+    color: black;
+}
+
+#Description_div_textarea {
+    outline: none;
+    background-color: rgb(232, 232, 232);
+    width: 100%;
+    height: 120px;
+    padding: 10px;
+    color: black;
+}
+
+.askque_btn {
+    border: 1px groove rgb(135, 135, 135);
+    padding: 6px 30px;
+    font-size: 20px;
+    border-radius: 6px;
+}

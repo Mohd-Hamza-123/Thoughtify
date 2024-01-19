@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Rethink+Sans&family=Roboto+Slab&family=Varela+Round&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
+#PostCard {
+    /* width: 250px; */
+    width: 70%;
+    height: 200px;
+    border-radius: 5px;
+    text-align: left;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.842);
+    border: 1px solid rgba(0, 0, 0, 0.415);
+}
+
+
+#PostCard_left {
+    width: 30%;
+    height: 100%;
+}
+
+#PostCard_right {
+    width: 70%;
+    height: 100%;
+}
+
+#PostCard_title {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgb(62, 62, 62);
+    /* font-family: 'Gabarito', sans-serif; */
+    /* font-family: 'Nunito', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto Slab', serif; */
+    font-family: 'Noto Sans', sans-serif;
+    background-color: rgba(128, 128, 128, 0.131);
+    border-radius: 5px;
+    padding: 8px 8px;
+    letter-spacing: 0.4px;
+    line-height: 20px;
+    word-break: break-all;
+    word-wrap: break-word;
+    height: 80px;
+}
+
+#PostCard_title:hover {
+
+    color: #11161a;
+}
+
+
+
+
+#Post-Card-img {
+    width: 100%;
+    height: 100%;
+    border-right: 1px solid rgba(124, 56, 56, 0.415);
+}
+
+#PostCard-profile-pic {
+    height: 30px;
+    width: 30px;
+}
+
+#PostCard-profile-name {
+    font-weight: 800;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* 
+#PostCard_Comments_Icon>span:nth-child(1) {
+    min-height: 31px;
+    min-width: 40px;
+    border: 3px solid darkblue;
+    border-radius: 50%;
+
+} */
+
+
+#PostCard_Comments_Icon i {
+    font-size: 35px;
+    position: relative;
+}
+
+#PostCard_Comments_Icon i:nth-child(1) {
+    color: rgb(3, 3, 160);
+}
+
+#PostCard_Comments_Icon i:nth-child(2) {
+    color: rgb(211, 0, 183);
+}
+
+#PostCard_Comments_Icon i small {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+}
+
+
+#PostCard_Comments_Icon i:nth-child(1) small {
+    color: blue;
+}

@@ -1,0 +1,17 @@
+#Overlay {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    top: -100vh;
+    opacity: 1;
+    background-color: rgb(0, 0, 0);
+    transition: opacity 0.3s ease;
+    transition: top 0ms;
+}
+
+#Overlay.active {
+    top: 0;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+    transition: top 0ms;
+}

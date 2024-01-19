@@ -1,0 +1,128 @@
+#MyProfile_Parent {
+    background-color: rgb(242, 242, 242);
+}
+
+#MyProfile {
+    width: 85%;
+    height: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+
+
+#MyProfile_Header {
+    /* position: absolute; */
+    height: 32vh;
+    /* border: 2px solid red; */
+    background-color: white;
+    border-radius: 3px;
+}
+
+#MyProfile_Img_Div img {
+    width: 75%;
+    border-radius: 50%;
+}
+
+#MyProfile_Img_Div span {
+    position: absolute;
+    top: 5.8%;
+    left: 11.2%;
+    background-color: ghostwhite;
+    border-radius: 50%;
+    padding: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#MyProfile_Img_Div span:hover {
+    background-color: rgb(202, 202, 202);
+}
+
+#MyProfile_Img_Div span i {
+    font-size: 22px;
+    color: rgba(0, 0, 0, 0.771);
+}
+
+#MyProfile_Name_Div section h6 {
+    font-size: 23px;
+    font-weight: 600;
+}
+
+#MyProfile_Name_Div section div span {
+    font-size: 14px;
+    letter-spacing: 0.4px;
+}
+
+#MyProfile_3Buttons Button:nth-child(odd) {
+    background-color: rgb(7, 225, 7);
+    width: 14%;
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    transform: scale(1);
+    transition: transform 0.3s ease 0s;
+}
+
+#MyProfile_3Buttons Button:nth-child(even) {
+    background-color: rgb(22, 190, 246);
+    width: 14%;
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    transform: scale(1);
+    transition: transform 0.3s ease 0s;
+}
+
+#MyProfile_3Buttons Button:hover {
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out 0s;
+}
+
+#MyProfile_VerticalLine p {
+    height: 80%;
+    width: 1px;
+    background-color: rgba(64, 64, 64, 0.145);
+}
+
+#MyProfile_Header_Right p {
+    font-weight: 600;
+}
+
+
+
+
+
+#MyProfile_Data {
+    width: 100%;
+}
+
+#MyProfile_Data_section {
+    width: 100%;
+    border: 2px solid green;
+}
+
+#MyProfile_Data_section ul {
+    background-color: black;
+}
+
+#MyProfile_Data_section ul li {
+    list-style: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 400;
+    border: 1px solid white;
+    padding: 5px 10px;
+    color: white;
+    text-transform: uppercase;
+}
+
+#MyProfile_Data_section ul li:hover {
+    background-color: rgb(175, 1, 206);
+}
+
+#MyProfile_Data_div {
+    width: 75%;
+    border: 2px solid red;
+}

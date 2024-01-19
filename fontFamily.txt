@@ -1,0 +1,8 @@
+font-family: 'Gabarito', sans-serif;
+font-family: 'Noto Serif', serif;
+font-family: 'Nunito', sans-serif;
+font-family: 'Petrona', serif;
+font-family: 'Poppins', sans-serif;
+font-family: 'Rethink Sans', sans-serif;
+font-family: 'Roboto Slab', serif;
+font-family: 'Varela Round', sans-serif;
