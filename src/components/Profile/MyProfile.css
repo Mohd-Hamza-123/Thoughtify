@@ -2,6 +2,15 @@
     background-color: rgb(242, 242, 242);
 }
 
+
+.MyProfile_HorizontalLine {
+    width: 100%;
+    height: 2px;
+    background-color: rgb(188 188 188 / 45%);
+    margin-bottom: 14px;
+    box-shadow: 0px 1px 2px rgb(188 188 188 / 45%);
+}
+
 #MyProfile {
     width: 85%;
     height: 100%;
@@ -67,7 +76,7 @@
 
 #MyProfile_3Buttons Button:nth-child(even) {
     background-color: rgb(22, 190, 246);
-    width: 14%;
+    width: 15%;
     font-size: 13px;
     font-weight: 500;
     color: white;
@@ -90,39 +99,84 @@
     font-weight: 600;
 }
 
-
-
-
-
 #MyProfile_Data {
     width: 100%;
 }
 
 #MyProfile_Data_section {
     width: 100%;
-    border: 2px solid green;
+    /* border: 1px solid rgb(7, 225, 7); */
 }
 
 #MyProfile_Data_section ul {
-    background-color: black;
+    background-color: white;
 }
 
 #MyProfile_Data_section ul li {
     list-style: none;
     cursor: pointer;
-    font-size: 18px;
-    font-weight: 400;
-    border: 1px solid white;
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 3px solid white;
     padding: 5px 10px;
-    color: white;
-    text-transform: uppercase;
+    color: rgb(0, 0, 0);
+    /* text-transform: uppercase; */
 }
 
 #MyProfile_Data_section ul li:hover {
-    background-color: rgb(175, 1, 206);
+    background-color: rgb(237, 237, 237);
+    border-bottom: 3px solid rgb(7, 225, 7);
 }
 
 #MyProfile_Data_div {
     width: 75%;
     border: 2px solid red;
+}
+
+
+/* Popup css  */
+#MyProfile_EditPopup_overlay {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    position: fixed;
+    z-index: 1;
+    top: -100vh;
+    left: 0;
+    opacity: 1;
+    transition: opacity 0.3s ease 0s;
+}
+
+#MyProfile_EditPopup_overlay.active {
+    opacity: 0.4;
+    top: 0;
+    transition: opacity 0.6s ease 0s;
+}
+
+#MyProfile_EditPopup {
+    top: 0;
+    left: 20%;
+    width: 60%;
+    height: 80%;
+    background-color: ghostwhite;
+    position: absolute;
+    border-radius: 5px;
+    transform: scale(0);
+    transition: transform 0.3s ease 0s;
+    z-index: 2;
+}
+
+#MyProfile_EditPopup.active {
+    transform: scale(1);
+    transition: transform 0.6s ease 0s;
+    /* transform: translate(-50%, -50%); */
+}
+
+#MyProfile_EditPopup {
+    /* padding: 10px; */
+}
+
+#MyProfile_EditImage_Div img {
+    width: 80%;
+    border-radius: 50%;
 }

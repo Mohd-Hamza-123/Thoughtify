@@ -1,38 +1,44 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./MyProfile.css";
 import authService from "../../appwrite/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, logout } from "../../store/authSlice";
-import { Favourite, Opinions, Questions, ProfileSummary } from "../index";
+import {
+  Favourite,
+  Opinions,
+  Questions,
+  ProfileSummary,
+  EditProfile,
+  Overlay,
+} from "../index";
 import { Button } from "../index";
+import location from "../../appwrite/location";
+import avatar from "../../appwrite/avatars";
 
 const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userStatus = useSelector((state) => state.auth.status);
-  // useEffect(() => {
-  //   authService
-  //     .getCurrentUser()
-  //     .then((userData) => {
-  //       if (userData) {
-  //         dispatch(login({ userData }));
-  //         navigate("/Myprofile");
-  //       } else {
-  //         dispatch(logout());
-  //         navigate("/signup");
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //     })
-  //     .finally(() => {
-  //       // setLoading(false);
-  //     });
-  // }, []);
+  const userData = useSelector((state) => state.auth.userData);
+  console.log(userData);
+  const [countryName, setcountryName] = useState(null);
+  const [flag, setflag] = useState(null);
+  const [editProfileBoolean, seteditProfileBoolean] = useState(false);
+  const flagFunc = async () => {
+    let locations = await location.GetLocation();
+    setcountryName(locations.country);
+    if (locations) {
+      let flagURL = await avatar.getFlag(locations.countryCode, 20, 20);
+      setflag(flagURL.href);
+    }
+  };
+  useEffect(() => {
+    flagFunc();
+  }, []);
 
   return (
-    <div id="MyProfile_Parent" className="py-4">
+    <div id="MyProfile_Parent" className="">
+      <div className="MyProfile_HorizontalLine"></div>
       <div id="MyProfile" className="">
         <div id="MyProfile_Header" className="w-full flex">
           <div className="w-2/3 flex">
@@ -40,9 +46,6 @@ const MyProfile = () => {
               id="MyProfile_Img_Div"
               className="w-1/4 h-full flex justify-center items-center"
             >
-              <span>
-                <i className="fa-regular fa-pen-to-square"></i>
-              </span>
               <img
                 src="https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg"
                 alt=""
@@ -63,6 +66,15 @@ const MyProfile = () => {
                 <Button className="p-2 rounded-sm">Message</Button>
                 <Button className="p-2 rounded-sm">Follow</Button>
                 <Button className="p-2 rounded-sm">Block</Button>
+
+                <Button
+                  className="p-2 rounded-sm"
+                  onClick={() => {
+                    seteditProfileBoolean((prev) => !prev);
+                  }}
+                >
+                  Edit Profile
+                </Button>
               </div>
             </div>
           </div>
@@ -77,11 +89,13 @@ const MyProfile = () => {
           >
             <div className="flex w-full">
               <p className="w-1/2">Country :</p>
-              <div>
-                <span>India</span>
-                <span>
-                  <img src="#" alt="" />
-                </span>
+              <div className="flex gap-2">
+                {countryName ? (
+                  <span>{countryName}</span>
+                ) : (
+                  <span>Not Available</span>
+                )}
+                <span className="">{flag && <img src={flag} alt="" />}</span>
               </div>
             </div>
 
@@ -99,8 +113,39 @@ const MyProfile = () => {
             </div>
           </div>
         </div>
+        <div className="MyProfile_HorizontalLine"></div>
 
-        <div id="MyProfile_Data" className="flex">
+        <div
+          id="MyProfile_EditPopup_overlay"
+          className={`${editProfileBoolean ? "active" : ""}`}
+          onClick={() => {
+            seteditProfileBoolean(false);
+          }}
+        ></div>
+
+        <div
+          id="MyProfile_EditPopup"
+          className={`flex ${editProfileBoolean ? "active" : ""}`}
+        >
+          <div
+            id="MyProfile_EditImage_Div"
+            className="w-2/6 bg-white h-full flex flex-col justify-start items-center gap-7 overflow-hidden"
+          >
+            <div className="flex justify-center mt-5 h-2/5">
+              <img
+                src="https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg"
+                alt=""
+              />
+            </div>
+            <div className="w-full flex justify-center h-3/5">
+              <label htmlFor="editProfileImg">Change Img</label>
+              <input type="file" name="" id="editProfileImg" className="ml-2 hidden" />
+            </div>
+          </div>
+          <div className="w-4/6 bg-slate-500 h-full"></div>
+        </div>
+
+        <div id="MyProfile_Data" className="flex mt-3">
           <section id="MyProfile_Data_section">
             <ul className="flex justify-between">
               <li onClick={() => {}} className="MyProfile_Data_items">
@@ -124,8 +169,9 @@ const MyProfile = () => {
             </ul>
           </section>
         </div>
+        <div className="MyProfile_HorizontalLine"></div>
 
-        <div>
+        <div className="w-2/3">
           <ProfileSummary />
           {/* <Favourite />
           <Opinions />

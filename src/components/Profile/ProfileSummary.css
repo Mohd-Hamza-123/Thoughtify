@@ -1,4 +1,27 @@
-#ProfileSummary{
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Rethink+Sans&family=Roboto+Slab&family=Varela+Round&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
+
+#ProfileSummary {
     border: 2px solid white;
     padding: 8px 10px;
+    background-color: white;
+    
+}
+
+#ProfileSummary_Bio_Div span,
+#ProfileSummary_HighlvlEduDiv span:nth-child(1),
+#ProfileSummary_OccupationDiv span:nth-child(1),
+#ProfileSummary_InterestedDiv span:nth-child(1) {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+#ProfileSummary_Bio_Div p {
+    /* font-family: 'Gabarito', sans-serif; */
+    /* font-family: 'Nunito', sans-serif; */
+    font-family: 'Varela Round', sans-serif;
+    font-weight: 100;
+    margin-top: 5px;
+    color: rgb(36, 36, 36);
 }

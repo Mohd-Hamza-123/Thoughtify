@@ -9,7 +9,7 @@ const PostCard = ({
   name = "Name",
   userId,
 }) => {
-  console.log(userId);
+  // console.log(userId);
   const [booleanGender, setbooleanGender] = useState(true);
   useEffect(() => {
     setbooleanGender(userId.includes("_-.male"));
