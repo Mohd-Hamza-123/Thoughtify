@@ -23,7 +23,7 @@ const Input = (
         ref={ref}
         id={id}
         placeholder={placeholder}
-        className={`border duration-200 focus:bg-gray-200 outline-none px-1 ${className}`}
+        className={`outline-none ${className}`}
         type={type}
         {...props}
       />

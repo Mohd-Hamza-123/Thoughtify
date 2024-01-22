@@ -1,0 +1,124 @@
+#EditProfile_EditImage_Div {
+    width: 100%;
+    height: 55%;
+}
+
+#EditProfile_Img_Div {
+    height: 70%;
+    /* border: 2px solid green; */
+}
+
+#EditProfile_ChooseImg {
+    background-color: rgb(7, 225, 7);
+    color: white;
+    font-weight: 500;
+    padding: 5px 5px;
+    border-radius: 5px;
+}
+
+
+
+#EditProfile_label_Div {
+    /* height: 20%; */
+    /* border: 2px solid red; */
+}
+
+#EditProfile_EditContent {
+    /* height: 30%; */
+}
+
+#EditProfile_EditBio>label,
+#EditProfile_EditLinks>label,
+.EditProfile_Edu_Lvl_div>p,
+.EditProfile_Occupation_div>p {
+    font-weight: 500;
+}
+
+#EditProfile_EditBio textarea {
+    border: 1px solid rgb(7, 225, 7);
+    padding: 4px;
+    height: 80px;
+    letter-spacing: 0.4px;
+}
+
+#EditProfile_EditLinks_3inputs {
+    /* border: 2px solid red; */
+    /* border-right: 2px solid greenyellow; */
+    width: 40%;
+}
+
+#EditProfile_EditLinks_3inputs Input,
+.EditProfile_Edu_Lvl_div input,
+.EditProfile_Occupation_div input {
+    border: 1px solid rgb(7, 225, 7);
+    border-radius: 2px;
+    font-size: 13px;
+    padding: 3px 4px;
+    font-weight: 500;
+}
+
+#EditProfile_EditLinks_3inputs .Add-Link_btn {
+    background-color: rgb(7, 225, 7);
+    color: white;
+    font-weight: 500;
+    padding: 3px 5px;
+    border-radius: 2px;
+    border: none;
+    font-size: 14px;
+}
+
+#EditProfile_EditLinks_LinksAdded {
+    /* border: 2px solid black; */
+    width: 60%;
+    height: inherit;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    white-space: nowrap;
+}
+
+#EditProfile_EditLinks_LinksAdded section {
+    border-bottom: 1px solid greenyellow;
+}
+
+#EditProfile_EditLinks_title_url_div {
+    /* border: 2px solid black; */
+    overflow-x: scroll;
+    overflow-y: hidden;
+    padding: 3px 5px;
+}
+
+#EditProfile_EditLinks_title_url_div::-webkit-scrollbar {
+    height: 10px;
+    background-color: rgb(7, 225, 7);
+}
+
+#EditProfile_EditLinks_title_url_div::-webkit-scrollbar-thumb {
+    background-color: rgb(185, 185, 185);
+    /* border-radius: 10px; */
+}
+
+#EditProfile_EditLinks_title_url_div p {
+    font-weight: 500;
+}
+
+#EditProfile_EditLinks_title_url_div a {
+    color: gray;
+}
+
+.EditProfile_Edu_Lvl_div label {
+    color: rgb(7, 225, 7);
+}
+
+.EditProfile_Edu_Lvl_div select,
+.EditProfile_Occupation_div select {
+    outline: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgb(105, 105, 105);
+    border: 1px solid rgb(7, 225, 7);
+    padding: 2px 3px;
+    max-height: 30px;
+    overflow-y: auto;
+}

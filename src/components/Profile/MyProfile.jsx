@@ -20,7 +20,7 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
-  console.log(userData);
+  // console.log(userData);
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
   const [editProfileBoolean, seteditProfileBoolean] = useState(false);
@@ -125,24 +125,11 @@ const MyProfile = () => {
 
         <div
           id="MyProfile_EditPopup"
-          className={`flex ${editProfileBoolean ? "active" : ""}`}
+          className={`flex flex-col rounded-sm p-4 ${
+            editProfileBoolean ? "active" : ""
+          }`}
         >
-          <div
-            id="MyProfile_EditImage_Div"
-            className="w-2/6 bg-white h-full flex flex-col justify-start items-center gap-7 overflow-hidden"
-          >
-            <div className="flex justify-center mt-5 h-2/5">
-              <img
-                src="https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg"
-                alt=""
-              />
-            </div>
-            <div className="w-full flex justify-center h-3/5">
-              <label htmlFor="editProfileImg">Change Img</label>
-              <input type="file" name="" id="editProfileImg" className="ml-2 hidden" />
-            </div>
-          </div>
-          <div className="w-4/6 bg-slate-500 h-full"></div>
+          <EditProfile />
         </div>
 
         <div id="MyProfile_Data" className="flex mt-3">

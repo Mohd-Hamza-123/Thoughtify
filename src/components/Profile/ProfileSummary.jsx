@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ProfileSummary.css";
 import { Input } from "../";
-import occupation_Arr from "./Profile_arr";
+import {occupation_Arr} from "./Profile_arr";
 
 const ProfileSummary = () => {
   return (

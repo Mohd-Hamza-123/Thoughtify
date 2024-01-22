@@ -18,12 +18,8 @@
     position: relative;
 }
 
-
-
 #MyProfile_Header {
-    /* position: absolute; */
     height: 32vh;
-    /* border: 2px solid red; */
     background-color: white;
     border-radius: 3px;
 }
@@ -154,16 +150,21 @@
 }
 
 #MyProfile_EditPopup {
-    top: 0;
+    bottom: 12%;
     left: 20%;
     width: 60%;
-    height: 80%;
+    height: 90%;
+    overflow-y: scroll;
     background-color: ghostwhite;
     position: absolute;
     border-radius: 5px;
     transform: scale(0);
     transition: transform 0.3s ease 0s;
     z-index: 2;
+    /* border: 2px solid red; */
+}
+#MyProfile_EditPopup::-webkit-scrollbar{
+    display: none;
 }
 
 #MyProfile_EditPopup.active {
@@ -174,9 +175,4 @@
 
 #MyProfile_EditPopup {
     /* padding: 10px; */
-}
-
-#MyProfile_EditImage_Div img {
-    width: 80%;
-    border-radius: 50%;
 }

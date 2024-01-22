@@ -1,4 +1,7 @@
 const occupation_Arr = [
+    "Student",
+    "Software Developer",
+    "Teacher",
     "Accountant",
     "Actor/Actress",
     "Architect",
@@ -25,13 +28,32 @@ const occupation_Arr = [
     "Photographer",
     "Physical Therapist",
     "Police Officer",
-    "Software Developer",
-    "Teacher",
     "Translator",
     "Travel Agent",
     "Veterinarian",
     "Web Developer",
-    "Writer"
+    "Writer",
+    "Other"
 ]
+const educationLevels = [
+    "Less than High School",
+    "High School Graduate",
+    "Intermediate Graduate",
+    "GED (General Educational Development)",
+    "Vocational/Technical Certificate",
+    "Some College, No Degree",
+    "Associate Degree",
+    "Bachelor's Degree",
+    "Post-Baccalaureate Certificate",
+    "Master's Degree",
+    "Post-Master's Certificate",
+    "Doctorate",
+    "Professional Degree (e.g., MD, JD)",
+    "Postdoctoral Studies",
+    "Specialized Training/Certification",
+    "Non-Degree Seeking",
+    "Other",
+    // Add more options as needed
+];
 
-export default occupation_Arr;
+export { educationLevels, occupation_Arr }
