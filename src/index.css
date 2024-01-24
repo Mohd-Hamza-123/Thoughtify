@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -16,13 +18,19 @@ body {
     overflow-x: hidden;
 }
 
-/* body::-webkit-scrollbar{
-    width: 0px;
-} */
 .block {
-    display: block !important;
+    display: block;
 }
 
 .lightdark {
     top: -80vh;
+}
+
+/* utility Classes  */
+.green {
+    background-color: rgb(7, 225, 7);
+}
+
+.font_bold_500 {
+    font-weight: 500;
 }

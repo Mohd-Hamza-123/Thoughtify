@@ -4,7 +4,7 @@ import { Account, Query, ID, Storage, Client, Databases } from 'appwrite'
 export class Service {
     client = new Client()
     databases;
-    bucket
+    storage
 
     constructor() {
         this.client
@@ -34,7 +34,7 @@ export class Service {
                 title,
                 content,
                 queImage,
-                
+
             })
         } catch (error) {
             console.log("Appwrite serive :: updatePost :: error", error);
@@ -67,6 +67,8 @@ export class Service {
             return false
         }
     }
+
+
 
 }
 

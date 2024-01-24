@@ -70,7 +70,7 @@ const router = createBrowserRouter(
         />
 
         <Route
-          path="/profile"
+          path="/profile/:slug"
           element={
             <>
               <UpperNavigationBar />

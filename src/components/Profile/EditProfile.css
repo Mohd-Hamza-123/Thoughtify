@@ -1,11 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
+
+.EditProfile_form {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.EditProfile_form::-webkit-scrollbar {
+    display: none;
+}
+
+.EditProfile_form::-webkit-scrollbar-thumb {
+    background-color: green;
+}
+
+#EditProfile_cross_Btn {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid green;
+    width: 38px;
+    height: 38px;
+    left: 1%;
+    top: 2%;
+}
+#EditProfile_cross_Btn i{
+    color: green;
+}
 #EditProfile_EditImage_Div {
     width: 100%;
-    height: 55%;
+    height: 65%;
 }
 
 #EditProfile_Img_Div {
     height: 70%;
-    /* border: 2px solid green; */
 }
 
 #EditProfile_ChooseImg {
@@ -30,7 +58,8 @@
 #EditProfile_EditBio>label,
 #EditProfile_EditLinks>label,
 .EditProfile_Edu_Lvl_div>p,
-.EditProfile_Occupation_div>p {
+.EditProfile_Occupation_div>p,
+.EditProfile_Interested_div>p {
     font-weight: 500;
 }
 
@@ -79,31 +108,39 @@
 }
 
 #EditProfile_EditLinks_LinksAdded section {
-    border-bottom: 1px solid greenyellow;
+    /* border-bottom: 1px solid greenyellow; */
 }
 
-#EditProfile_EditLinks_title_url_div {
+#EditProfile_EditLinks_LinksAdded .link-circle {
+    border: 1px solid black;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+
+}
+
+.EditProfile_EditLinks_title_url_div {
     /* border: 2px solid black; */
     overflow-x: scroll;
     overflow-y: hidden;
     padding: 3px 5px;
 }
 
-#EditProfile_EditLinks_title_url_div::-webkit-scrollbar {
-    height: 10px;
+.EditProfile_EditLinks_title_url_div::-webkit-scrollbar {
+    height: 5px;
     background-color: rgb(7, 225, 7);
 }
 
-#EditProfile_EditLinks_title_url_div::-webkit-scrollbar-thumb {
-    background-color: rgb(185, 185, 185);
+.EditProfile_EditLinks_title_url_div::-webkit-scrollbar-thumb {
+    background-color: rgb(0, 0, 0);
     /* border-radius: 10px; */
 }
 
-#EditProfile_EditLinks_title_url_div p {
+.EditProfile_EditLinks_title_url_div p {
     font-weight: 500;
 }
 
-#EditProfile_EditLinks_title_url_div a {
+.EditProfile_EditLinks_title_url_div a {
     color: gray;
 }
 
@@ -121,4 +158,86 @@
     padding: 2px 3px;
     max-height: 30px;
     overflow-y: auto;
+}
+
+.EditProfile_Interested_div {
+    width: 60%;
+}
+
+.EditProfile_Interested_Tag {
+    padding: 0px 10px 0px 0px;
+    border-radius: 5px;
+}
+
+.EditProfile_Interested_Tag>p {
+    font-size: 12px;
+    font-weight: 500;
+    margin: 10px 0px 7px 0px;
+}
+
+.EditProfile_tag_box {
+    border: 1px solid rgb(7, 225, 7);
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.EditProfile_tag_box li {
+    background-color: #d8d4d4c6;
+    color: black;
+    letter-spacing: 0.3px;
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+
+.EditProfile_tag_box li span:nth-child(2) {
+    border-radius: 50%;
+    background-color: rgb(160, 159, 159);
+    width: 15px;
+    height: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
+.EditProfile_tag_box li i {
+    font-weight: bolder;
+    font-size: 7px;
+    color: rgba(0, 0, 0, 0.617);
+    cursor: pointer;
+}
+
+.EditProfile_tag_box input {
+    border: 1px solid grey;
+    border-radius: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 2px 3px;
+}
+
+.EditProfile_Interested_remaining {
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.EditProfile_Interested_Tag Button {
+    border-radius: 2px;
+    padding: 3px 4px;
+}
+
+#EditProfile_submit_btn {
+    position: fixed;
+    border: 1px solid rgb(255, 255, 255);
+    bottom: 6%;
+    right: 6%;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background-color: green;
+    box-shadow: 0 0 20px 10px green;
+}
+
+#EditProfile_submit_btn i {
+    font-size: 22px;
+    color: white;
 }

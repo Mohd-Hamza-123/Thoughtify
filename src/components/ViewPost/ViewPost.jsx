@@ -18,13 +18,12 @@ const ViewPost = () => {
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
   const isAuther = post && userData ? post.userId === userData.$id : false;
-  const [toggle, settoggle] = useState(false);
-
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
 
   useEffect(() => {
     if (slug) {
+      console.log(slug)
       appwriteService
         .getPost(slug)
         .then((post) => {

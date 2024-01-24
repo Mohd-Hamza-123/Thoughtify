@@ -59,7 +59,7 @@ const Chat = ({ post }) => {
   ) => {
     if (index || index === 0) {
       subComment.splice(index, 1);
-      console.log(subComment);
+      // console.log(subComment);
     }
     realTime
       .updateComment(

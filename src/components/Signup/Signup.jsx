@@ -7,6 +7,7 @@ import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import { useSelector } from "react-redux";
+import profile from "../../appwrite/profile";
 
 const Signup = () => {
   const authRateLimit =
@@ -21,10 +22,8 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const create = async (data) => {
+    console.log(data);
     setError(null);
-    // console.log(data);
-    // const listUsers = await authService.listUsers();
-    // console.log(listUsers);
     if (!gender) return;
     try {
       const userData = await authService.createAccount({ ...data, gender });
@@ -44,6 +43,19 @@ const Signup = () => {
         setGender(null);
       } else {
         setError("Please check the credentials");
+      }
+
+      if (userData) {
+        try {
+          let userProfile = await profile.createProfile({
+            gender,
+            name: data.name,
+            userIdAuth: userData.userId,
+          });
+          console.log(userProfile);
+        } catch (error) {
+          console.log(error);
+        }
       }
     } catch (error) {
       setError(error.message);

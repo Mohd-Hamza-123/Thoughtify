@@ -15,15 +15,29 @@ import {
 import { Button } from "../index";
 import location from "../../appwrite/location";
 import avatar from "../../appwrite/avatars";
+import { useParams } from "react-router-dom";
+import profile from "../../appwrite/profile";
 
 const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
-  // console.log(userData);
+  console.log(userData);
+  const [profileData, setProfileData] = useState({});
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
   const [editProfileBoolean, seteditProfileBoolean] = useState(false);
+  const { slug } = useParams();
+
+  const realUser = userData ? slug === userData.$id : false;
+
+  const getUserProfile = async () => {
+    const listprofileData = await profile.listProfile({ slug });
+    if (listprofileData) {
+      setProfileData({ ...listprofileData.documents[0] });
+    }
+  };
+
   const flagFunc = async () => {
     let locations = await location.GetLocation();
     setcountryName(locations.country);
@@ -33,8 +47,12 @@ const MyProfile = () => {
     }
   };
   useEffect(() => {
+    getUserProfile();
+  }, [editProfileBoolean]);
+
+  useEffect(() => {
     flagFunc();
-  }, []);
+  });
 
   return (
     <div id="MyProfile_Parent" className="">
@@ -63,18 +81,23 @@ const MyProfile = () => {
                 </div>
               </section>
               <div id="MyProfile_3Buttons" className="flex gap-3">
-                <Button className="p-2 rounded-sm">Message</Button>
-                <Button className="p-2 rounded-sm">Follow</Button>
-                <Button className="p-2 rounded-sm">Block</Button>
-
-                <Button
-                  className="p-2 rounded-sm"
-                  onClick={() => {
-                    seteditProfileBoolean((prev) => !prev);
-                  }}
-                >
-                  Edit Profile
-                </Button>
+                {!realUser && (
+                  <Button className="p-2 rounded-sm">Message</Button>
+                )}
+                {!realUser && (
+                  <Button className="p-2 rounded-sm">Follow</Button>
+                )}
+                {!realUser && <Button className="p-2 rounded-sm">Block</Button>}
+                {realUser && (
+                  <Button
+                    className="p-2 rounded-sm"
+                    onClick={() => {
+                      seteditProfileBoolean((prev) => !prev);
+                    }}
+                  >
+                    Edit Profile
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -125,11 +148,13 @@ const MyProfile = () => {
 
         <div
           id="MyProfile_EditPopup"
-          className={`flex flex-col rounded-sm p-4 ${
-            editProfileBoolean ? "active" : ""
-          }`}
+          className={`flex flex-col ${editProfileBoolean ? "active" : ""}`}
         >
-          <EditProfile />
+          <EditProfile
+            seteditProfileBoolean={seteditProfileBoolean}
+            profileData={profileData}
+            editProfileBoolean={editProfileBoolean}
+          />
         </div>
 
         <div id="MyProfile_Data" className="flex mt-3">
@@ -159,7 +184,7 @@ const MyProfile = () => {
         <div className="MyProfile_HorizontalLine"></div>
 
         <div className="w-2/3">
-          <ProfileSummary />
+          <ProfileSummary profileData={profileData} />
           {/* <Favourite />
           <Opinions />
           <Questions /> */}

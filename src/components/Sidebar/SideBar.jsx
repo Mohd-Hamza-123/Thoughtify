@@ -16,7 +16,9 @@ const SideBar = () => {
   const SideBar = useRef();
   const [name, setname] = useState("Name");
   const { isOpen, setIsOpen } = useAskContext();
-
+ 
+  const userData = useSelector((state) => state.auth.userData);
+  // console.log(userData);
   useEffect(() => {
     if (status) {
       authService
@@ -46,6 +48,7 @@ const SideBar = () => {
         .logout()
         .then(() => {
           dispatch(logout());
+          setIsOpen(false);
           navigate("/");
         })
         .catch((err) => console.log(err.message));
@@ -104,7 +107,7 @@ const SideBar = () => {
 
         <hr />
 
-        <Link to={"/profile"}>
+        <Link to={`/profile/${userData?.$id}`}>
           <div
             id="Sidebar_Svg"
             className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center"
@@ -124,7 +127,7 @@ const SideBar = () => {
           </div>
         </Link>
 
-        <Link to={"/profile"}>
+        <Link to={`/profile`}>
           <div
             className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center cursor-pointer"
             onClick={() => {
