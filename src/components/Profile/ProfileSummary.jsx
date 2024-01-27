@@ -9,7 +9,6 @@ const ProfileSummary = ({ profileData }) => {
     gender,
     links,
     interestedIn,
-    name,
     featuredImgId,
     occupation,
     educationLvl,
@@ -27,12 +26,12 @@ const ProfileSummary = ({ profileData }) => {
 
       <div id="ProfileSummary_HighlvlEduDiv" className="mt-3">
         <span>Highest Level of Education : </span>
-        <span>Intermediate</span>
+        <span>{educationLvl}</span>
       </div>
 
       <div id="ProfileSummary_OccupationDiv" className="mt-3">
         <span>Occupation : </span>
-        <span> Student</span>
+        <span>{occupation}</span>
       </div>
 
       <div id="ProfileSummary_InterestedDiv" className="mt-3">

@@ -3,7 +3,7 @@ import "./MyProfile.css";
 import authService from "../../appwrite/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login, logout } from "../../store/authSlice";
+import { login, logout, editProfileInVisible } from "../../store/authSlice";
 import {
   Favourite,
   Opinions,
@@ -18,26 +18,39 @@ import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 
+
 const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
-  console.log(userData);
   const [profileData, setProfileData] = useState({});
+
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
   const [editProfileBoolean, seteditProfileBoolean] = useState(false);
   const { slug } = useParams();
-
   const realUser = userData ? slug === userData.$id : false;
+  const [URLimg, setURLimg] = useState('')
+  
+
+
 
   const getUserProfile = async () => {
     const listprofileData = await profile.listProfile({ slug });
+    getUserProfileImg(listprofileData.documents[0].profileImgID)
+
     if (listprofileData) {
       setProfileData({ ...listprofileData.documents[0] });
     }
   };
 
+  const getUserProfileImg = async (imgID) => {
+    if (imgID) {
+      const Preview = await profile.getStoragePreview(imgID)
+      setURLimg(Preview)
+    }
+
+  }
   const flagFunc = async () => {
     let locations = await location.GetLocation();
     setcountryName(locations.country);
@@ -46,13 +59,21 @@ const MyProfile = () => {
       setflag(flagURL.href);
     }
   };
+  const getCroppedImageURL = (URL) => {
+    setURLimg(URL)
+  }
+
   useEffect(() => {
     getUserProfile();
   }, [editProfileBoolean]);
 
   useEffect(() => {
     flagFunc();
+    // return () => getUserProfile().unsubscribe()
   });
+  useEffect(() => {
+    // getUserProfile()
+  })
 
   return (
     <div id="MyProfile_Parent" className="">
@@ -65,7 +86,7 @@ const MyProfile = () => {
               className="w-1/4 h-full flex justify-center items-center"
             >
               <img
-                src="https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg"
+                src={URLimg.href || 'https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg'}
                 alt=""
               />
             </div>
@@ -143,6 +164,7 @@ const MyProfile = () => {
           className={`${editProfileBoolean ? "active" : ""}`}
           onClick={() => {
             seteditProfileBoolean(false);
+            dispatch(editProfileInVisible());
           }}
         ></div>
 
@@ -154,28 +176,29 @@ const MyProfile = () => {
             seteditProfileBoolean={seteditProfileBoolean}
             profileData={profileData}
             editProfileBoolean={editProfileBoolean}
+            getCroppedImageURL={getCroppedImageURL}
           />
         </div>
 
         <div id="MyProfile_Data" className="flex mt-3">
           <section id="MyProfile_Data_section">
             <ul className="flex justify-between">
-              <li onClick={() => {}} className="MyProfile_Data_items">
+              <li onClick={() => { }} className="MyProfile_Data_items">
                 Profile Summary
               </li>
 
-              <li onClick={() => {}} className="MyProfile_Data_items">
+              <li onClick={() => { }} className="MyProfile_Data_items">
                 Questions
               </li>
 
-              <li onClick={() => {}} className="MyProfile_Data_items">
+              <li onClick={() => { }} className="MyProfile_Data_items">
                 Opinions
               </li>
-              <li onClick={() => {}} className="MyProfile_Data_items">
+              <li onClick={() => { }} className="MyProfile_Data_items">
                 Favourites
               </li>
 
-              <li onClick={() => {}} className="MyProfile_Data_items">
+              <li onClick={() => { }} className="MyProfile_Data_items">
                 More
               </li>
             </ul>

@@ -2,105 +2,211 @@ import React, { useEffect, useRef, useState } from "react";
 import "./EditProfile.css";
 import { Button, Input, TextArea } from "../index";
 import { educationLevels, occupation_Arr } from "./Profile_arr";
-import ReactCrop from "react-image-crop";
+import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useForm } from "react-hook-form";
 import profile from "../../appwrite/profile";
+import { useDispatch } from "react-redux";
+import { getCanvasPreview, getCroppedFile } from "./getCanvasPreview";
 
 const EditProfile = ({
   editProfileBoolean,
   seteditProfileBoolean,
   profileData,
+  getCroppedImageURL
 }) => {
   const {
     bio,
-    gender,
     links,
     interestedIn,
-    name,
-    featuredImgId,
+    profileImgID,
     occupation,
     educationLvl,
     $id,
   } = profileData;
-
-  const [crop, setCrop] = useState({});
+  console.log(profileImgID)
+  const dispatch = useDispatch();
+  const imgRef = useRef(null)
+  const canvasRef = useRef(null)
   const url = useRef();
   const title = useRef();
+  const [crop, setCrop] = useState({});
   const [URL, setURL] = useState("");
   const [Title, setTitle] = useState("");
   const [visibleEdulvl, setVisibleEdulvl] = useState(false);
   const [visibleOccupation, setVisibleOccupation] = useState(false);
-  const [URLerror, setURLerror] = useState("");
   const [interestedTagArr, setInterestedTagArr] = useState([]);
+  const [file, setFile] = useState(null);
+  const [fileImgId, setfileImgId] = useState('')
+  const [imageURL, setImageURL] = useState("");
+  const [croppedImageURL, setcroppedImageURL] = useState('')
+  const [URLerror, setURLerror] = useState("");
+  const [MinimumDimension, setMinimumDimension] = useState(80);
+  const [interestedTag, setInterestedTag] = useState("");
   const [linksArr, setLinksArr] = useState([]);
+  const [EducationLevel, setEducationLevel] = useState("");
+  const [OccupationInput, setOccupationInput] = useState("");
+
   const { handleSubmit, register, setValue } = useForm({
     defaultValues: {
       bio: bio,
     },
   });
+
+  const addEdulvl = (e) => {
+    setEducationLevel(e.currentTarget.value);
+    if (e.currentTarget.value === "Other") {
+      setVisibleEdulvl(true);
+      setValue("educationLvl", "", {
+        shouldValidate: true,
+      });
+    } else {
+      setVisibleEdulvl(false);
+      setValue("educationLvl", "", {
+        shouldValidate: true,
+      });
+    }
+  };
+  const addOccupation = (e) => {
+    console.log(e.target.value);
+    setOccupationInput(e.target.value);
+    if (e.currentTarget.value === "Other") {
+      setVisibleOccupation(true);
+      setValue("occupation", "", {
+        shouldValidate: true,
+      });
+    } else {
+      setVisibleOccupation(false);
+      setValue("occupation", "", {
+        shouldValidate: true,
+      });
+    }
+  };
   const submit = async (data) => {
+    console.log(data)
+    console.log(file)
+    if (file) {
+      const uploadedPic = await profile.createBucket({ file })
+      data.profileImgID = uploadedPic.$id
+    }
+
+
     if (data) {
-      let profileData = await profile.updateProfile($id, { ...data });
-      console.log(profileData);
+      console.log(data)
+      console.log(croppedImageURL)
+      if (data.educationLvl) {
+        if (data.occupation) {
+          let profileData = await profile.updateProfile(
+            $id,
+            { ...data },
+            linksArr,
+            interestedTagArr,
+            croppedImageURL
+          );
+        } else {
+          let profileData = await profile.updateProfile(
+            $id,
+            { ...data, occupation: OccupationInput },
+            linksArr,
+            interestedTagArr,
+            croppedImageURL
+          );
+        }
+      } else {
+        if (data.occupation) {
+          let profileData = await profile.updateProfile(
+            $id,
+            { ...data, educationLvl: EducationLevel },
+            linksArr,
+            interestedTagArr,
+            croppedImageURL
+          );
+        } else {
+          let profileData = await profile.updateProfile(
+            $id,
+            {
+              ...data,
+              occupation: OccupationInput,
+              educationLvl: EducationLevel,
+            },
+            linksArr,
+            interestedTagArr,
+            croppedImageURL
+          );
+        }
+      }
+
       seteditProfileBoolean(false);
     }
   };
-
-  useEffect(() => {
-    if (bio) {
-      console.log(bio);
-      setValue("bio", bio, { shouldValidate: true });
-    }
-  }, [editProfileBoolean]);
   const addTag = (e) => {
-    if (e.key === "Enter") {
-      let tag = e.currentTarget.value.replace(/\s+/g, " ").toUpperCase();
-      if (
-        interestedTagArr.includes(tag) ||
-        interestedTagArr.length === 10 ||
-        tag.length > 30
-      ) {
-        e.currentTarget.value = "";
-        return;
-      }
-      if (tag.includes(",")) {
-        console.log(tag);
-        let newArrComma = tag.split(",");
-        for (let i = 0; i < newArrComma.length; i++) {
-          if (interestedTagArr.includes(newArrComma[i])) {
-            e.currentTarget.value = "";
-            return;
-          }
-        }
-        setInterestedTagArr((prev) => {
-          if (prev.length + newArrComma.length > 10) {
-            return prev;
-          }
-          return [...prev, ...newArrComma];
-        });
-        e.currentTarget.value = "";
-        return;
-      }
-
-      setInterestedTagArr((prev) => [...prev, tag]);
-      e.currentTarget.value = "";
-    }
+    let tag = e.currentTarget.value.replace(/\s+/g, " ").toUpperCase();
+    setInterestedTag(tag);
   };
-  const addLinks = async (e) => {
-    if (!URL || !Title) return;
-    try {
-      let res = await fetch(`${URL}`);
-      // console.log(res);
-      setURLerror("");
-    } catch (error) {
-      setURLerror("URL not accessible");
+
+  const addTags = () => {
+    console.log(interestedTag);
+    if (
+      interestedTagArr.includes(interestedTag) ||
+      interestedTagArr.length === 10 ||
+      interestedTag.length > 30 ||
+      interestedTag === "" ||
+      interestedTag === " "
+    ) {
+      setInterestedTag("");
       return;
     }
+    if (interestedTag.includes(",")) {
+      let newArrComma = interestedTag.split(",");
+      for (let i = 0; i < newArrComma.length; i++) {
+        if (interestedTagArr.includes(newArrComma[i])) {
+          setInterestedTag("");
+          return;
+        }
+      }
+      setInterestedTagArr((prev) => {
+        if (prev.length + newArrComma.length > 10) {
+          return prev;
+        }
+        return [...prev, ...newArrComma];
+      });
+      setInterestedTag("");
+      return;
+    }
+    setInterestedTagArr((prev) => [...prev, interestedTag]);
+    setInterestedTag("");
+  };
+
+  const addLinks = async (e) => {
+    if (!URL || !Title) return;
+    // try {
+    //   let res = await fetch(`${URL}`);
+    //   // console.log(res);
+    //   setURLerror("");
+    // } catch (error) {
+    //   setURLerror("Enter Valid URL");
+    //   return;
+    // }
+
+    function isValidURL(URL) {
+      // Regular expression for a valid URL
+      const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+
+      // Test the provided URL against the regular expression
+      return urlRegex.test(URL);
+    }
+    if (isValidURL(URL)) {
+      console.log("Valid URL");
+    } else {
+      setURLerror("Enter Valid URL");
+      return;
+    }
+
     if (linksArr.length >= 15) {
       setURLerror("Maximum 15 Links Allowed");
       return;
     }
+
     for (let i = 0; i < linksArr.length; i++) {
       let obj = linksArr[i];
       let objURL = obj.URL;
@@ -110,12 +216,103 @@ const EditProfile = ({
         return;
       }
     }
-    setLinksArr((prev) => [{ URL, Title }, ...prev]);
+    setLinksArr((prev) => [JSON.stringify({ URL, Title }), ...prev]);
     setTitle("");
     setURL("");
+    setURLerror("");
     url.current.value = "";
     title.current.value = "";
   };
+  const onSelectFile = async (e) => {
+    const file = e.currentTarget?.files[0];
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      // console.log(reader.result);
+      setImageURL(reader.result);
+    });
+    reader.readAsDataURL(file);
+  };
+  const handleCrop = async (e) => {
+    getCanvasPreview(
+      imgRef.current,
+      canvasRef.current,
+      convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height)
+    );
+
+    canvasRef.current.toBlob((blob) => {
+      const croppedFile = new File([blob], 'croppedImage.png', { type: 'image/png' });
+      setFile(croppedFile)
+    }, 'image/png');
+  }
+  function onImageLoad(e) {
+    const { naturalWidth, naturalHeight, width, height } = e.currentTarget;
+
+    const cropPrev = makeAspectCrop(
+      {
+        unit: "%",
+        width: MinimumDimension,
+      },
+      1,
+      width,
+      height
+    );
+    const crop = centerCrop(cropPrev, width, height);
+    setCrop(crop);
+  }
+  useEffect(() => {
+    if (bio) {
+      setValue("bio", bio, { shouldValidate: true });
+    }
+
+    setLinksArr((prev) => {
+      if (links) {
+        return [...links];
+      } else {
+        return [];
+      }
+    });
+
+    if (educationLevels.includes(educationLvl)) {
+      setEducationLevel(educationLvl);
+
+      if (educationLvl === "Other") {
+        setVisibleEdulvl(true);
+      } else {
+        setVisibleEdulvl(false);
+      }
+      setValue("educationLvl", "", {
+        shouldValidate: true,
+      });
+    } else {
+      setValue("educationLvl", educationLvl, { shouldValidate: true });
+      setEducationLevel("Other");
+      setVisibleEdulvl(true);
+    }
+
+    if (occupation_Arr.includes(occupation)) {
+      setOccupationInput(occupation);
+
+      if (occupation === "Other") {
+        setVisibleOccupation(true);
+      } else {
+        setVisibleOccupation(false);
+      }
+      setValue("occupation", "", {
+        shouldValidate: true,
+      });
+    } else {
+      setValue("occupation", occupation, {
+        shouldValidate: true,
+      });
+      setVisibleOccupation(true);
+      setOccupationInput("Other");
+    }
+
+    if (interestedIn) {
+      setInterestedTagArr((prev) => [...interestedIn]);
+    }
+  }, [editProfileBoolean]);
+
   return (
     <form
       className="h-full relative p-4 EditProfile_form"
@@ -130,40 +327,79 @@ const EditProfile = ({
       >
         <i className="fa-solid fa-x"></i>
       </button>
+
       <div
         id="EditProfile_EditImage_Div"
-        className="w-full flex flex-col items-center gap-4 overflow-hidden mt-3"
+        className="w-full flex items-center overflow-hidden mt-3 justify-start gap-5"
       >
-        <div className="flex w-9/12 justify-center" id="EditProfile_Img_Div">
-          {/* <ReactCrop crop={crop}> */}
-          <img
-            src="https://viget.imgix.net/downalod-final.png?auto=format%2Ccompress&crop=focalpoint&fit=crop&fp-x=0.5&fp-y=0.5&ixlib=php-3.3.1&q=90&w=1280&s=6abcc4363b7397bebcad981e8901af25"
-            alt=""
-          />
-          {/* </ReactCrop> */}
-        </div>
-        <div className="w-full flex justify-center" id="EditProfile_label_Div">
-          <label
-            id="EditProfile_ChooseImg"
-            htmlFor="editProfileImg"
-            className="flex gap-2 items-center cursor-pointer"
-          >
-            <span>Update Image </span>
-            <i className="fa-solid fa-upload"></i>
-          </label>
+        <div className="flex flex-col h-full gap-2" >
+          <div className="" id="EditProfile_Img_Div">
+            <ReactCrop
+              circularCrop
+              keepSelection
+              crop={crop}
+              minWidth={MinimumDimension}
+              aspect={1}
+              onChange={(crop, percentCrop) => setCrop(percentCrop)}
+            >
+              <img
+                ref={imgRef}
+                src={
+                  imageURL
+                    ? imageURL
+                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQoYalG0iZwdwwSFMhNL4aDADjcSJFcuo31Y9OY6saF8ZG5dq3lLc8uXw0eJfUwvdwjTw&usqp=CAU"
+                }
+                alt="Profile Image"
+                onLoad={onImageLoad}
+                id="EditProfile-img"
+              />
+            </ReactCrop>
 
-          <input
-            type="file"
-            accept="image/*"
-            name=""
-            id="editProfileImg"
-            className="ml-2 hidden "
-            {...register("featuredImgId", {
-              required: false,
-            })}
-          />
+          </div>
+
+          <div className="w-full flex justify-start" id="EditProfile_label_Div">
+
+            <label
+              id="EditProfile_ChooseImg"
+              htmlFor="editProfileImg"
+              className="flex gap-2 items-center cursor-pointer mr-3"
+            >
+              <span> Choose Image </span>
+              <i className="fa-solid fa-upload"></i>
+            </label>
+
+            {imageURL && (
+              <label
+                id="EditProfile_ChooseImg"
+                htmlFor=""
+                className="flex gap-2 items-center cursor-pointer"
+                onClick={() => {
+                  getCanvasPreview(imgRef.current, canvasRef.current, convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height))
+                }}
+              >
+                <span> See Preview </span>
+                <i className="fa-solid fa-upload"></i>
+              </label>
+            )}
+
+            <input
+              type="file"
+              accept="image/*"
+              name=""
+              id="editProfileImg"
+              className="ml-2 hidden "
+              {...register("profileImgID", {
+                required: false,
+              })}
+              onChange={onSelectFile}
+            />
+          </div>
+        </div>
+        <div className="w-full h-full flex justify-center items-center">
+          <canvas ref={canvasRef} id="myCanvas"></canvas>
         </div>
       </div>
+
 
       <div className="w-full" id="EditProfile_EditContent">
         <div id="EditProfile_EditBio">
@@ -230,7 +466,7 @@ const EditProfile = ({
             <div id="EditProfile_EditLinks_LinksAdded" className="inline-block">
               {linksArr?.map((link, index) => (
                 <section
-                  key={link.URL}
+                  key={JSON.parse(link).URL}
                   className="flex gap-3 p-1 items-center w-full"
                 >
                   <span className="p-1 flex justify-center items-center link-circle">
@@ -238,7 +474,7 @@ const EditProfile = ({
                   </span>
                   <div className="EditProfile_EditLinks_title_url_div w-full">
                     <div className="flex justify-between w-full">
-                      <p>{link.Title}</p>
+                      <p>{JSON.parse(link).Title}</p>
                       <span
                         className="cursor-pointer"
                         onClick={() =>
@@ -252,8 +488,8 @@ const EditProfile = ({
                         <i className="fa-regular fa-trash-can"></i>
                       </span>
                     </div>
-                    <a href={link.URL} target="_blank">
-                      {link.URL}
+                    <a href={JSON.parse(link).URL} target="_blank">
+                      {JSON.parse(link).URL}
                     </a>
                   </div>
                 </section>
@@ -270,14 +506,8 @@ const EditProfile = ({
                 <select
                   name=""
                   className=""
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    if (e.currentTarget.value === "Other") {
-                      setVisibleEdulvl(true);
-                    } else {
-                      setVisibleEdulvl(false);
-                    }
-                  }}
+                  value={EducationLevel}
+                  onChange={addEdulvl}
                 >
                   <option value="" hidden>
                     Your Qualification
@@ -296,9 +526,9 @@ const EditProfile = ({
                     placeholder="Enter Your Qualification"
                     className="outline-none"
                     maxLength={50}
-                    // {...register("educationLvl", {
-                    //   required: false,
-                    // })}
+                    {...register("educationLvl", {
+                      required: false,
+                    })}
                   />
                 </div>
               )}
@@ -310,16 +540,10 @@ const EditProfile = ({
             <div className="flex justify-start gap-3">
               <div className="w-1/2">
                 <select
+                  value={OccupationInput}
                   name=""
                   className=""
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    if (e.currentTarget.value === "Other") {
-                      setVisibleOccupation(true);
-                    } else {
-                      setVisibleOccupation(false);
-                    }
-                  }}
+                  onChange={addOccupation}
                 >
                   <option value="" hidden>
                     Your Occupation
@@ -338,6 +562,9 @@ const EditProfile = ({
                     placeholder="Enter Your Occupation"
                     className="outline-none"
                     maxLength={50}
+                    {...register("occupation", {
+                      required: false,
+                    })}
                   />
                 </div>
               )}
@@ -347,7 +574,9 @@ const EditProfile = ({
           <div className="EditProfile_Interested_div">
             <p className="mb-2 mt-2 block">Interested In </p>
             <div className="EditProfile_Interested_Tag">
-              <p className="">Press Enter or add a comma after every tag</p>
+              <p className="">
+                Enter tag name or you can type like this PYTHON,JAVA,C#
+              </p>
               <div className="EditProfile_tag_box p-2 mb-2">
                 <ul className="flex flex-wrap gap-3">
                   {interestedTagArr?.map((Tag, index) => (
@@ -374,7 +603,8 @@ const EditProfile = ({
                     id=""
                     className="outline-none"
                     placeholder="Coding,Java,Python"
-                    onKeyUp={addTag}
+                    onInput={addTag}
+                    value={interestedTag}
                   />
                 </ul>
               </div>
@@ -383,26 +613,46 @@ const EditProfile = ({
                   <span> {10 - interestedTagArr.length} </span>tags are
                   remaining
                 </p>
-                <Button
-                  className="green font_bold_500 text-white"
-                  onClick={() => {
-                    setInterestedTagArr((prev) => []);
-                  }}
-                >
-                  Remove all
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    className="green font_bold_500 text-white"
+                    onClick={addTags}
+                  >
+                    Add Tag
+                  </Button>
+                  <Button
+                    className="green font_bold_500 text-white"
+                    onClick={() => {
+                      setInterestedTagArr((prev) => []);
+                    }}
+                  >
+                    Remove all
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <Button
-        type="submit"
-        id="EditProfile_submit_btn"
-        className="flex justify-center items-center"
+      <div
+        onClick={() => {
+          handleCrop()
+          // getCanvasPreview(imgRef.current, canvasRef.current, convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height))
+          // const cropImageURL = canvasRef.current.toDataURL();
+          // console.log(cropImageURL)
+          // setcroppedImageURL(cropImageURL)
+          // getCroppedImageURL(cropImageURL)
+        }}
       >
-        <i className="fa-solid fa-file-arrow-up"></i>
-      </Button>
+        <Button
+          type="submit"
+          id="EditProfile_submit_btn"
+          className="flex justify-center items-center"
+
+        >
+          <i className="fa-solid fa-file-arrow-up"></i>
+        </Button>
+      </div>
     </form>
   );
 };

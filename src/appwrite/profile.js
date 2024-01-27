@@ -28,10 +28,18 @@ export class Profile {
         }
     }
 
-    async updateProfile(id, { bio }) {
+    async updateProfile(id, { bio, educationLvl, occupation,
+        profileImgID
+    }, links, interestedIn) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, id, {
-                bio
+                bio,
+                links,
+                educationLvl,
+                occupation,
+                interestedIn,
+                profileImgID
+
             })
         } catch (error) {
             console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);

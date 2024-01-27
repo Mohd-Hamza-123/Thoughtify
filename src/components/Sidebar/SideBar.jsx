@@ -6,7 +6,7 @@ import { UserCircle } from "../";
 import { useAskContext } from "../../context/AskContext";
 import authService from "../../appwrite/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../store/authSlice";
+import { logout, editProfileVisible } from "../../store/authSlice";
 import { useState } from "react";
 
 const SideBar = () => {
@@ -16,9 +16,9 @@ const SideBar = () => {
   const SideBar = useRef();
   const [name, setname] = useState("Name");
   const { isOpen, setIsOpen } = useAskContext();
- 
+
   const userData = useSelector((state) => state.auth.userData);
-  // console.log(userData);
+  // console.log(userData.$id);
   useEffect(() => {
     if (status) {
       authService
@@ -127,11 +127,14 @@ const SideBar = () => {
           </div>
         </Link>
 
-        <Link to={`/profile`}>
+        {/* <Link to={`/profile/${userData.$id}`}>
           <div
             className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center cursor-pointer"
             onClick={() => {
-              console.log("Edit Profile");
+              setIsOpen(false);
+              setTimeout(() => {
+                dispatch(editProfileVisible());
+              }, 500);
             }}
           >
             <div>
@@ -147,7 +150,7 @@ const SideBar = () => {
 
             <p>Edit Profile</p>
           </div>
-        </Link>
+        </Link> */}
 
         <div className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center">
           <div>

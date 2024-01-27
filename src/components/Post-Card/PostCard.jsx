@@ -58,20 +58,26 @@ const PostCard = ({
       >
         <div>
           <div className="flex gap-2">
-            <div className="rounded-full">
-              <img
-                src={`${queImage}`}
-                id="PostCard-profile-pic"
-                className="rounded-full"
-                alt=""
-              />
-            </div>
-            <h4
-              id="PostCard-profile-name"
-              className={`${booleanGender ? "text-blue-900" : "text-pink-600"}`}
-            >
-              {name}
-            </h4>
+            <Link to={`profile/${userId}`}>
+              <div className="rounded-full">
+                <img
+                  src={`${queImage}`}
+                  id="PostCard-profile-pic"
+                  className="rounded-full"
+                  alt=""
+                />
+              </div>
+            </Link>
+            <Link to={`profile/${userId}`}>
+              <h4
+                id="PostCard-profile-name"
+                className={`${
+                  booleanGender ? "text-blue-900" : "text-pink-600"
+                }`}
+              >
+                {name}
+              </h4>
+            </Link>
           </div>
           <Link to={`/post/${$id}`}>
             <h3 id="PostCard_title">{countTitle(title)}</h3>

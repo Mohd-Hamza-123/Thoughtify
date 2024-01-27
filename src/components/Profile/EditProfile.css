@@ -3,7 +3,7 @@
 .EditProfile_form {
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
     overflow-y: scroll;
 }
 
@@ -16,24 +16,53 @@
 }
 
 #EditProfile_cross_Btn {
-    position: absolute;
+    position: fixed;
     border-radius: 50%;
     border: 1px solid green;
     width: 38px;
     height: 38px;
-    left: 1%;
-    top: 2%;
+    right: 1%;
+    top: 1%;
+    z-index: 5;
 }
-#EditProfile_cross_Btn i{
+
+#EditProfile_cross_Btn i {
     color: green;
 }
+
 #EditProfile_EditImage_Div {
     width: 100%;
-    height: 65%;
+    height: 85%;
+    /* border: 2px solid green; */
+}
+
+#EditProfile_EditImage_Div>div:nth-child(1) {
+    width: 60%;
+}
+
+#EditProfile_EditImage_Div>div:nth-child(2) {
+    width: 40%;
 }
 
 #EditProfile_Img_Div {
-    height: 70%;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#EditProfile_label_Div {
+    height: 10%;
+    /* border: 2px solid red; */
+}
+
+#EditProfile-img {
+    /* object-fit: cover; */
+    /* max-width: 100%;
+    max-height: 100%; */
+    /* overflow: hidden; */
 }
 
 #EditProfile_ChooseImg {
@@ -44,11 +73,11 @@
     border-radius: 5px;
 }
 
-
-
-#EditProfile_label_Div {
-    /* height: 20%; */
-    /* border: 2px solid red; */
+#myCanvas {
+    border: 1px solid rgb(7, 225, 7);
+    width: 77%;
+    height: 63%;
+    border-Radius: 50%;
 }
 
 #EditProfile_EditContent {
