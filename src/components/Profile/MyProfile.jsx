@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./MyProfile.css";
-import authService from "../../appwrite/auth";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { login, logout, editProfileInVisible } from "../../store/authSlice";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Favourite,
   Opinions,
   Questions,
   ProfileSummary,
-  EditProfile,
-  Overlay,
 } from "../index";
 import { Button } from "../index";
 import location from "../../appwrite/location";
@@ -20,30 +16,31 @@ import profile from "../../appwrite/profile";
 
 
 const MyProfile = () => {
+  const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [navArr, setNavArr] = useState([
+    { ProfileSummary: true },
+    { Questions: false },
+    { Favourites: false },
+    { Opinions: false },
+    { More: false }
+  ])
+  console.log(navArr)
   const userData = useSelector((state) => state.auth.userData);
+  const realUser = userData ? slug === userData.$id : false;
   const [profileData, setProfileData] = useState({});
-
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
-  const [editProfileBoolean, seteditProfileBoolean] = useState(false);
-  const { slug } = useParams();
-  const realUser = userData ? slug === userData.$id : false;
   const [URLimg, setURLimg] = useState('')
-  
-
-
 
   const getUserProfile = async () => {
     const listprofileData = await profile.listProfile({ slug });
-    getUserProfileImg(listprofileData.documents[0].profileImgID)
-
     if (listprofileData) {
       setProfileData({ ...listprofileData.documents[0] });
     }
+    getUserProfileImg(listprofileData.documents[0].profileImgID)
   };
-
   const getUserProfileImg = async (imgID) => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
@@ -59,21 +56,12 @@ const MyProfile = () => {
       setflag(flagURL.href);
     }
   };
-  const getCroppedImageURL = (URL) => {
-    setURLimg(URL)
-  }
 
   useEffect(() => {
     getUserProfile();
-  }, [editProfileBoolean]);
-
-  useEffect(() => {
     flagFunc();
-    // return () => getUserProfile().unsubscribe()
-  });
-  useEffect(() => {
-    // getUserProfile()
-  })
+  }, []);
+
 
   return (
     <div id="MyProfile_Parent" className="">
@@ -95,10 +83,10 @@ const MyProfile = () => {
               className="w-3/4 h-full flex flex-col justify-center gap-3"
             >
               <section className="flex flex-col items-left">
-                <h6>{`Mohd Hamza`}</h6>
+                <h6>{profileData?.name}</h6>
                 <div>
                   <span>Gender : </span>
-                  <span>{`Male`}</span>
+                  <span>{profileData?.gender}</span>
                 </div>
               </section>
               <div id="MyProfile_3Buttons" className="flex gap-3">
@@ -114,7 +102,9 @@ const MyProfile = () => {
                     className="p-2 rounded-sm"
                     onClick={() => {
                       seteditProfileBoolean((prev) => !prev);
+                      navigate(`/EditProfile/${slug}`)
                     }}
+
                   >
                     Edit Profile
                   </Button>
@@ -159,26 +149,6 @@ const MyProfile = () => {
         </div>
         <div className="MyProfile_HorizontalLine"></div>
 
-        <div
-          id="MyProfile_EditPopup_overlay"
-          className={`${editProfileBoolean ? "active" : ""}`}
-          onClick={() => {
-            seteditProfileBoolean(false);
-            dispatch(editProfileInVisible());
-          }}
-        ></div>
-
-        <div
-          id="MyProfile_EditPopup"
-          className={`flex flex-col ${editProfileBoolean ? "active" : ""}`}
-        >
-          <EditProfile
-            seteditProfileBoolean={seteditProfileBoolean}
-            profileData={profileData}
-            editProfileBoolean={editProfileBoolean}
-            getCroppedImageURL={getCroppedImageURL}
-          />
-        </div>
 
         <div id="MyProfile_Data" className="flex mt-3">
           <section id="MyProfile_Data_section">
@@ -204,13 +174,14 @@ const MyProfile = () => {
             </ul>
           </section>
         </div>
+
         <div className="MyProfile_HorizontalLine"></div>
 
-        <div className="w-2/3">
+        <div className="w-full">
           <ProfileSummary profileData={profileData} />
-          {/* <Favourite />
-          <Opinions />
-          <Questions /> */}
+          {/* <Questions/>
+           <Favourite/>
+           <Opinions/> */}
         </div>
       </div>
     </div>

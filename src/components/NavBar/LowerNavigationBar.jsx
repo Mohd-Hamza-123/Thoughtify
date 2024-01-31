@@ -30,9 +30,9 @@ const LowerNavigationBar = () => {
           <li className="askQue " onClick={askQue}>
             Ask Question
           </li>
-          <li className="item ">Category</li>
           <li className="item ">Browse Question</li>
-          <li className="item ">Popular</li>
+          {/* <li className="item "></li> */}
+          <li className="item ">Get Started</li>
         </ul>
       </nav>
     </>

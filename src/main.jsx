@@ -17,16 +17,10 @@ import {
   AuthLayout,
   NavBar,
   ViewPost,
-  MyProfile,
   UpperNavigationBar,
-  SideBar,
-  ProfileSummary,
-  Opinions,
-  Questions,
-  Favourite,
 } from "./components/index.js";
-import Home from "./pages/Home.jsx";
-import { Profile, AllPost } from "./pages/pages.js";
+import { Profile, Home, EditProfilePage } from "./pages/pages.js";
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -73,8 +67,15 @@ const router = createBrowserRouter(
           path="/profile/:slug"
           element={
             <>
-              <UpperNavigationBar />
               <Profile />
+            </>
+          }
+        />
+        <Route
+          path="/EditProfile/:editProfileSlug"
+          element={
+            <>
+              <EditProfilePage />
             </>
           }
         />

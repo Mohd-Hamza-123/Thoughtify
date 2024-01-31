@@ -29,4 +29,5 @@ import Notification from "./Notification/Notification";
 import Category from './Category/Category'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay }
+import PersonalChat from "./Chat/PersonalChat";
+export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay , PersonalChat }

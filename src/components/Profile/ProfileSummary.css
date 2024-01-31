@@ -6,22 +6,48 @@
     border: 2px solid white;
     padding: 8px 10px;
     background-color: white;
-    
+
 }
 
 #ProfileSummary_Bio_Div span,
 #ProfileSummary_HighlvlEduDiv span:nth-child(1),
 #ProfileSummary_OccupationDiv span:nth-child(1),
-#ProfileSummary_InterestedDiv span:nth-child(1) {
-    font-weight: 500;
-    font-size: 16px;
+#ProfileSummary_InterestedDiv>span:nth-child(1) {
+    font-weight: 700;
+    font-size: 19px;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* font-family: 'Varela Round', sans-serif; */
+#ProfileSummayPre {
+    margin-top: 14px;
+    font-family: 'Varela Round', sans-serif;
 }
 
 #ProfileSummary_Bio_Div p {
-    /* font-family: 'Gabarito', sans-serif; */
-    /* font-family: 'Nunito', sans-serif; */
     font-family: 'Varela Round', sans-serif;
     font-weight: 100;
     margin-top: 5px;
     color: rgb(36, 36, 36);
+}
+
+.ProfileSummary_Links i {
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 3px;
+}
+
+#ProfileSummary_HighlvlEduDiv,
+#ProfileSummary_OccupationDiv,
+#ProfileSummary_InterestedDiv {
+    font-family: 'Nunito', sans-serif;
+}
+
+#ProfileSummarySecondDiv {
+    border: 2px solid red;
+    
+    /* height: 40vh; */
+    /* right: 8.5%; */
+    /* width: 27%; */
+    background-color: rgba(0, 0, 0, 0.251);
 }

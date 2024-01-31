@@ -31,6 +31,7 @@ export class Profile {
     async updateProfile(id, { bio, educationLvl, occupation,
         profileImgID
     }, links, interestedIn) {
+        // console.log(profileImgID)
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, id, {
                 bio,
@@ -39,7 +40,6 @@ export class Profile {
                 occupation,
                 interestedIn,
                 profileImgID
-
             })
         } catch (error) {
             console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
@@ -67,7 +67,16 @@ export class Profile {
         }
     }
 
-    async deleteStorage({ fileid }) {
+    async updateBucket({ fileid, file }) {
+        try {
+            return await this.storage.updateFile(conf.appwriteBucketId, fileid, file)
+        } catch (error) {
+            console.log("Appwrite serive :: updateBucket :: config.js :: error", error);
+            return false
+        }
+    }
+
+    async deleteStorage(fileid) {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketId, fileid)
         } catch (error) {

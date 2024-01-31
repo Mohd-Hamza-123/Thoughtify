@@ -27,8 +27,8 @@ body {
 }
 
 /* utility Classes  */
-.green {
-    background-color: rgb(7, 225, 7);
+.secondaryBlue {
+    background-color: var(--secondryBlue);
 }
 
 .font_bold_500 {

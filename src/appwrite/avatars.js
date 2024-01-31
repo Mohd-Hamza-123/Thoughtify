@@ -16,7 +16,15 @@ export class Avatar {
         try {
             return this.avatars.getFlag(flag, width, height, 100)
         } catch (error) {
-            console.log("getFlag Error in avatars.js")
+            console.log("getFlag Error in avatars.js", error)
+        }
+    }
+
+    async profileAvatar() {
+        try {
+            return this.avatars.getInitials()
+        } catch (error) {
+            console.log("ProfileAvatar Error in avatars.js", error)
         }
     }
 }

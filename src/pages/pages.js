@@ -1,9 +1,9 @@
-import AllPost from './AllPost'
+import EditProfilePage from './EditProfilePage'
 import Home from "./Home"
 import SearchPage from './SearchPage'
 import Profile from './Profile'
 export {
-    AllPost,
+    EditProfilePage,
     Home,
     SearchPage,
     Profile,

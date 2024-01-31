@@ -127,7 +127,7 @@ const SideBar = () => {
           </div>
         </Link>
 
-        {/* <Link to={`/profile/${userData.$id}`}>
+        <Link to={`/EditProfile/${userData?.$id}`}>
           <div
             className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center cursor-pointer"
             onClick={() => {
@@ -150,7 +150,7 @@ const SideBar = () => {
 
             <p>Edit Profile</p>
           </div>
-        </Link> */}
+        </Link>
 
         <div className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center">
           <div>
@@ -205,7 +205,7 @@ const SideBar = () => {
             </svg>
           </div>
 
-          <p>Followers</p>
+          <p>Global Chat</p>
         </div>
 
         <div className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center">

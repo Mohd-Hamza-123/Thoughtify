@@ -5,8 +5,9 @@ const Profile = () => {
   return (
     <div className="">
       <Container>
+        <UpperNavigationBar />
         <MyProfile />
-        <Outlet />
+        {/* <Outlet /> */}
       </Container>
     </div>
   );
