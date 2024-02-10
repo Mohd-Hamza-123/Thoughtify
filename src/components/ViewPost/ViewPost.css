@@ -1,15 +1,11 @@
 #ViewPost-Question-Container {
-    /* display: flex;
-    flex-direction: column; */
-    /* justify-content: center; */
-    /* align-items: center; */
+
     border-radius: 10px;
     border: 1px groove rgba(128, 128, 128, 0.507)
 }
 
 #ViewPost-Category {
     text-align: left !important;
-
     padding: 2px 4px;
     border-radius: 3px;
     font-size: 15px;
@@ -31,7 +27,7 @@
     font-family: 'Poppins', sans-serif;
 }
 
-#ViewPost-ellipsis-Vertical {
+.ViewPost-ellipsis-Vertical {
     display: none;
     position: absolute;
     right: 15px;
@@ -39,18 +35,17 @@
     border-radius: 5px;
 }
 
-#ViewPost-ellipsis-Vertical ul li {
+.ViewPost-ellipsis-Vertical ul li {
     border-bottom: 1px solid white;
     color: white;
     padding: 4px 15px;
 }
 
-#ViewPost-ellipsis-Vertical ul li:hover {
+.ViewPost-ellipsis-Vertical ul li:hover {
     color: black;
     background-color: yellow;
 }
 
-.Chat{
+.Chat {
     /* height: 100px; */
 }
-

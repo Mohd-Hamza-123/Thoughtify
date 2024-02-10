@@ -117,12 +117,16 @@
     border-bottom: 3px solid white;
     padding: 5px 10px;
     color: rgb(0, 0, 0);
-    /* text-transform: uppercase; */
 }
 
 #MyProfile_Data_section ul li:hover {
     background-color: rgb(237, 237, 237);
     border-bottom: 3px solid rgb(7, 225, 7);
+}
+
+#MyProfile_Data_section ul li.active {
+    /* background-color: rgb(237, 237, 237); */
+    border-bottom: 3px solid var(--secondryBlue);
 }
 
 #MyProfile_Data_div {

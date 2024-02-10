@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { Logo, Input, Button } from "../";
+import { Logo, Input, Button, UpperNavigationBar } from "../";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
-import { useSelector } from "react-redux";
+import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
+import avatar from "../../appwrite/avatars";
 
 const Signup = () => {
   const authRateLimit =
@@ -27,7 +28,6 @@ const Signup = () => {
     if (!gender) return;
     try {
       const userData = await authService.createAccount({ ...data, gender });
-      console.log(userData);
       if (typeof userData === "string" && userData === authRateLimit) {
         setError("You Have reached Maximum signup limit. Try later sometime");
         return;
@@ -39,6 +39,8 @@ const Signup = () => {
       if (userData) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(login(userData));
+
+
         navigate("/");
         setGender(null);
       } else {
@@ -46,21 +48,42 @@ const Signup = () => {
       }
 
       if (userData) {
-        try {
-          let userProfile = await profile.createProfile({
-            gender,
-            name: data.name,
-            userIdAuth: userData.userId,
-          });
-          console.log(userProfile);
-        } catch (error) {
-          console.log(error);
-        }
+        let profileAvatar = await avatar.profileAvatar(data.name)
+        fetch(profileAvatar.href)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' });
+            profile.createBucket({ file })
+              .then((res) => {
+                // console.log(res)
+                profile.createProfile({
+                  gender,
+                  name: data.name,
+                  userIdAuth: userData?.userId,
+                  profileImgID: res.$id
+                })
+                  .then((res) => { console.log(res) })
+              })
+
+          }).catch((err) => {
+
+            profile.createProfile({
+              gender,
+              name: data.name,
+              userIdAuth: userData.userId,
+            })
+              .then((res) => console.log(res))
+              .catch((err) => console.log(err))
+
+          })
+
       }
     } catch (error) {
       setError(error.message);
     }
-  };
+  }
+
+
 
   const createID = useCallback((value) => {
     if (value && typeof value === "string") {
@@ -85,105 +108,114 @@ const Signup = () => {
       subscription.unsubscribe();
     };
   }, [watch, setValue, createID]);
-
   return (
-    <div className="flex items-center justify-center w-70">
-      <div
-        id="Signup"
-        className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg rounded-lg p-8 border border-black/10`}
-      >
-        <div className="flex justify-center items-center">
-          <Logo />
-        </div>
-        <div className="flex flex-col w-full">
-          <h1 className="font-bold text-3xl mt-3 text-center text-black">
-            SignIn
-          </h1>
-          <div className="mx-auto mt-2">
-            <p>
-              Already have an Account ?&nbsp;
-              <Link
-                className="font-medium text-primary transition-all duration-200 hover:underline"
-                to={"/login"}
+    <div>
+      <div id="Signup_container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+
+        <div
+          id="Signup"
+          className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg rounded-lg`}
+        >
+          <div>
+            <div className="flex justify-center items-center">
+              {/* <Logo /> */}
+              <img className="Login_signup_Logo" src={QueryFlow} alt="" />
+            </div>
+            <div className="flex flex-col w-full">
+              <h1 className="font-bold text-3xl mt-3 text-center text-black">
+                Sign-In
+              </h1>
+
+
+              {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
+
+              <form
+                className="max-w-full flex flex-col justify-center items-center"
+                onSubmit={handleSubmit(create)}
               >
-                Login
-              </Link>
-            </p>
+                <div className="signup_insideForm_div w-full flex flex-col justify-center items-center mt-7">
+
+                  <div className="flex flex-col gap-8">
+                    <div className='relative inputTransition flex flex-col'>
+                      <input
+                        required
+                        type="text"
+                        placeholder=""
+                        className="w-80"
+                        {...register("name", {
+                          required: true,
+                        })}
+                      />
+                      <span>Name</span>
+                      <i className="w-full"></i>
+                    </div>
+
+
+                    <div className='relative inputTransition flex flex-col'>
+                      <input
+                        required
+                        type="email"
+                        placeholder=''
+                        className="Input w-80"
+                        {...register("email", {
+                          required: true,
+                        })}
+                      />
+                      <span>Email</span>
+                      <i className="w-full"></i>
+                    </div>
+                    <div className='relative inputTransition flex flex-col'>
+                      <input
+                        minLength={8}
+                        type="password"
+                        required
+                        placeholder=''
+                        className="w-80 bg-transparent"
+                        {...register("password", {
+                          required: true,
+                        })}
+                      />
+                      <span>Password</span>
+                      <i className="w-full"></i>
+                    </div>
+
+                  </div>
+                  <div className="mx-auto mt-5">
+                    <p>
+                      Already have an Account ?&nbsp;
+                      <Link
+                        className="text-primary transition-all duration-200 hover:underline font-bold"
+                        to={"/login"}
+                      >
+                        Login
+                      </Link>
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center w-60 gap-5 mt-3 mb-3">
+                    <Button
+                      className="rounded-sm w-40 py-1 px-2 flex justify-evenly items-center bg-gray-200 hover:bg-gray-300"
+                      onClick={() => setGender("male")}
+                    >
+                      <i className="bx bx-male-sign text-xl font-semibold text-blue-900"></i>
+                      <span className="text-blue-900">Male</span>
+                    </Button>
+                    <Button
+                      className="rounded-sm w-40 py-1 px-2 flex justify-evenly items-center bg-gray-200 hover:bg-gray-300"
+                      onClick={() => setGender("female")}
+                    >
+                      <i className="bx bx-female-sign text-xl text-pink-600 font-semibold"></i>
+                      <span className="text-pink-600">Female</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="">
+                  <Button type="submit" className="rounded-sm w-20 block px-2 py-1 bg-slate-800 text-white">
+                    SignIn
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-
-          {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
-
-          <form
-            className="max-w-full flex flex-col justify-center items-center"
-            onSubmit={handleSubmit(create)}
-          >
-            <div className="w-full flex flex-col justify-center items-center">
-              <Input
-                placeholder="Name"
-                className="w-80 rounded px-2 my-3 p-1 text-lg bg-gray-300 border-none"
-                {...register("name", {
-                  required: true,
-                })}
-              />
-              <Input
-                placeholder="ID"
-                className="w-80 rounded px-2 my-3 p-1 text-lg bg-gray-300 border-none"
-                {...register("ID", {
-                  required: true,
-                })}
-                onInput={(e) => {
-                  let x = getValues("name");
-                  setValue("ID", createID(e.currentTarget.value), {
-                    required: true,
-                  });
-                }}
-              />
-
-              <Input
-                placeholder="Email"
-                className="w-80 rounded px-2 my-3 p-1 text-lg bg-gray-300 border-none"
-                {...register("email", {
-                  required: true,
-                })}
-              />
-              <Input
-                className=" border-none px-2 rounded p-1 my-3 bg-gray-300 text-lg w-80"
-                placeholder="Password"
-                {...register("password", {
-                  required: true,
-                })}
-              />
-
-              <div className="flex justify-between items-center w-60 gap-5 mt-3 mb-3">
-                <Button
-                  className="rounded-sm w-40 py-1 px-2 flex justify-evenly items-center bg-gray-200 hover:bg-gray-300"
-                  onClick={() => setGender("male")}
-                >
-                  <i className="bx bx-male-sign text-xl font-bold text-blue-900"></i>
-                  <span className="font-bold text-blue-900">Male</span>
-                </Button>
-                <Button
-                  className="rounded-sm w-40 py-1 px-2 flex justify-evenly items-center bg-gray-200 hover:bg-gray-300"
-                  onClick={() => setGender("female")}
-                >
-                  <i className="bx bx-female-sign text-xl font-bold text-pink-600"></i>
-                  <span className="font-bold text-pink-600">Female</span>
-                </Button>
-              </div>
-            </div>
-            <div>
-              <p>
-                <Link className="hover:underline text-sm">
-                  Forget Your Password ?
-                </Link>
-              </p>
-            </div>
-            <div>
-              <Button type="submit" className="mt-3">
-                SignIn
-              </Button>
-            </div>
-          </form>
         </div>
       </div>
     </div>

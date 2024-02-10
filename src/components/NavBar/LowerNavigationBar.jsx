@@ -26,13 +26,18 @@ const LowerNavigationBar = () => {
           >
             Home
           </li>
-          <li className="item ">Find Friends</li>
-          <li className="askQue " onClick={askQue}>
-            Ask Question
+          <li
+            className="item"
+
+          >Find Friends</li>
+          <li className="askQue " onClick={() => {
+            navigate('/AskQuestion')
+          }}>
+            Got a Question
           </li>
           <li className="item ">Browse Question</li>
           {/* <li className="item "></li> */}
-          <li className="item ">Get Started</li>
+          <li className="item ">Your Chats</li>
         </ul>
       </nav>
     </>

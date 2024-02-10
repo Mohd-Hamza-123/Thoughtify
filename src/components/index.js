@@ -30,4 +30,5 @@ import Category from './Category/Category'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
 import PersonalChat from "./Chat/PersonalChat";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay , PersonalChat }
+import HorizontalLine from './HorizontalLine'
+export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine }

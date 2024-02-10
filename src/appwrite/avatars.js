@@ -20,9 +20,9 @@ export class Avatar {
         }
     }
 
-    async profileAvatar() {
+    async profileAvatar(name) {
         try {
-            return this.avatars.getInitials()
+            return this.avatars.getInitials(name)
         } catch (error) {
             console.log("ProfileAvatar Error in avatars.js", error)
         }

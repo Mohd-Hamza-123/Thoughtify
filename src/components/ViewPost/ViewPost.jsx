@@ -6,30 +6,40 @@ import parse from "html-react-parser";
 import { useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import "./ViewPost.css";
+import '../../index.css'
+import profile from "../../appwrite/profile";
 
 const ViewPost = () => {
-  const { isAskQueVisible, EditAskQueVisible, setEditAskQueVisible } =
+  const { isAskQueVisible } =
     useAskContext();
 
-  // console.log(EditAskQueVisible);
 
   const [post, setPost] = useState(null);
+  const [profileImgURL, setprofileImgURL] = useState('')
   const { slug } = useParams();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
+
   const isAuther = post && userData ? post.userId === userData.$id : false;
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
 
   useEffect(() => {
     if (slug) {
-      console.log(slug)
       appwriteService
         .getPost(slug)
         .then((post) => {
           if (post) setPost((prev) => post);
           else navigate("/");
-          // console.log(post);
+          return post
+        })
+        .then((post) => {
+          // console.log(post.profileImgID)
+          profile.getStoragePreview(post.profileImgID)
+            .then((res) => {
+              // console.log(res.href)
+              setprofileImgURL(res.href)
+            })
         })
         .catch(() => {
           console.log("ViewPost Component Error");
@@ -46,24 +56,21 @@ const ViewPost = () => {
   // console.log(EditAskQueVisible);
   return post ? (
     <>
-      {EditAskQueVisible && <AskQue post={post} />}
-      {isAskQueVisible && <AskQue />}
       <div id="ViewPost" className="p-3">
         <div id="ViewPost-Question-Container" className="w-4/6 p-2 bg-white">
           <div className="mb-3 flex justify-between mx-3 mt-1 relative">
-            <span id="ViewPost-Category">Category</span>
+            <span id="ViewPost-Category">{post.category}</span>
             <div>
               <div
-                id="ViewPost-ellipsis-Vertical"
+                className="ViewPost-ellipsis-Vertical"
                 ref={ViewPost_ellipsis_Vertical}
               >
                 <ul>
                   {isAuther && (
-                    <li>
+                    <li
+                      onClick={() => { navigate(`/EditQuestion/${post?.$id}`) }}
+                    >
                       <Button
-                        onClick={() => {
-                          setEditAskQueVisible((prev) => !prev);
-                        }}
                       >
                         Edit
                       </Button>
@@ -114,7 +121,7 @@ const ViewPost = () => {
             <div className="flex gap-2">
               <div className="rounded-full">
                 <img
-                  src={`${post.queImage}`}
+                  src={`${profileImgURL}`}
                   id="PostCard-profile-pic"
                   className="rounded-full"
                   alt=""

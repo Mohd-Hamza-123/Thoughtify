@@ -1,30 +1,38 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import { Container, PostCard, NavBar, AskQue } from "../components/";
+import { Container, PostCard, NavBar, AskQue, UpperNavigationBar, LowerNavigationBar, HorizontalLine } from "../components/";
 import { useSelector } from "react-redux";
 import "./Home.css";
 import appwriteService from "../appwrite/config";
 import { useAskContext } from "../context/AskContext";
+import profile from "../appwrite/profile";
+
+
 const Home = () => {
   const userData = useSelector((state) => state.auth.userData);
   const [posts, setPosts] = useState([]);
+  const [profileImgID, setprofileImgID] = useState('')
+  // console.log(profileImgID)
   const { isAskQueVisible, setisAskQueVisible } = useAskContext();
-
+  // console.log(userData)
   useEffect(() => {
     appwriteService
       .getPosts()
       .then((post) => {
         setPosts(post.documents);
+        // console.log(post.documents)
       })
       .catch((err) => console.log(err.message));
+
   }, [isAskQueVisible]);
 
   return posts?.length > 0 ? (
     <div className="w-full">
       <Container>
-        <NavBar />
-        <AskQue />
+        <UpperNavigationBar />
+        <HorizontalLine />
+        <LowerNavigationBar />
         <div className="flex flex-col gap-5 px-8 py-5">
           {posts?.map((post) => (
             <div key={post.$id}>
@@ -42,8 +50,9 @@ const Home = () => {
     //   />
     // </div>
     <>
-      <NavBar />
-      <AskQue />
+      <UpperNavigationBar />
+      <HorizontalLine />
+      <LowerNavigationBar />
     </>
   );
 };

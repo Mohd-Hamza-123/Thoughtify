@@ -15,13 +15,14 @@ export class Profile {
         this.storage = new Storage(this.client)
     }
 
-    async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name }) {
+    async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name, profileImgID }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
                 bio,
                 userIdAuth,
                 gender,
-                name
+                name,
+                profileImgID
             })
         } catch (error) {
             console.log("Appwrite serive :: createProfile :: profile.js :: error", error)

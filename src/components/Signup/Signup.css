@@ -1,7 +1,120 @@
-#l {
-    color: aqua;
+#Signup_container {
+    height: 100%;
+    background-color: rgb(246, 248, 250);
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
 }
-#Signup{
-    background-color: white;
-    border: 2px solid rgba(128, 128, 128, 0.469);
+
+#Signup {
+    /* background-color: rgb(246, 248, 250); */
+    /* border: 1px solid rgba(11, 255, 247, 0.469); */
+    padding: 20px;
+    box-shadow: 0 0 -10px rgba(0, 0, 0, 0.14);
+
+}
+
+#Signup>div {
+    padding: 10px;
+    width: 100%;
+    border-radius: 10px;
+    height: 100%;
+    background-color: #ffffff;
+    position: relative;
+    box-shadow: 20px 20px 40px #00000041, inset -20px -20px 40px #ffffffbb;
+    animation: rotate 1s normal;
+}
+
+
+@keyframes rotate {
+    100% {
+        rotate: 360deg;
+    }
+}
+
+.signup_insideForm_div>div:nth-child(1) {
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* border: 2px solid red; */
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.signup_insideForm_div .inputTransition input {
+    padding: 5px 10px;
+    transition: 0.6s;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    height: 35px;
+    font-size: 15px;
+  
+}
+
+.signup_insideForm_div .inputTransition i {
+    height: 1px;
+    background-color: black;
+    transition: 0.6s;
+}
+
+/* Target autofilled input fields */
+.signup_insideForm_div .inputTransition input:-webkit-autofill {
+    background-color: black;
+}
+
+.signup_insideForm_div .inputTransition input:focus,
+.signup_insideForm_div .inputTransition input:valid {
+    background-color: rgb(25, 25, 28);
+    color: white;
+    /* pointer-events: none; */
+}
+
+.signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown) {
+    background-color: black;
+    color: red;
+}
+
+.signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown)~span {
+    font-size: 0.85em;
+    transform: translateY(-30px);
+    transition: 0.6s;
+}
+
+.signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown)~i {
+    border: none;
+    height: 0px;
+    background-color: transparent;
+    transition: 0.6;
+}
+
+
+.signup_insideForm_div .inputTransition input:focus~i,
+.signup_insideForm_div .inputTransition input:valid~i {
+    border: none;
+    height: 0px;
+    background-color: transparent;
+    transition: 0.6;
+}
+
+.signup_insideForm_div .inputTransition input:focus~span,
+.signup_insideForm_div .inputTransition input:valid~span {
+    font-size: 0.85em;
+    transform: translateY(-30px);
+    transition: 0.6s;
+}
+
+.signup_insideForm_div .inputTransition span {
+    position: absolute;
+    top: 3px;
+    left: 0;
+    padding: 5px 5px;
+    font-size: 1em;
+    transition: 0.6s;
+    font-weight: 600;
+    pointer-events: none;
+    transform: translate(0);
+    letter-spacing: 1px;
 }

@@ -1,33 +1,46 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE, Input, Button, TextArea } from "../";
-import { useForm } from "react-hook-form";
+import { RTE, Input, Button, TextArea, HorizontalLine } from "../";
+import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import appwriteService from "../../appwrite/config";
+import { categoriesArr } from "./Category";
+import profile from "../../appwrite/profile";
 
 const AskQue = ({ post }) => {
-  const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData);
-  const ask_Que_Container_cross_icon = useRef();
-  const {
-    setisAskQueVisible,
-    isAskQueVisible,
-    setEditAskQueVisible,
-    EditAskQueVisible,
-  } = useAskContext();
-
-  const [imgArr, setimgArr] = useState([]);
-  const AskQueContainer = useRef();
+  console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
         slug: post?.slug || "slug",
         content: post?.content || "",
+        pollAnswer: post?.pollAnswer || ''
       },
     });
+  const navigate = useNavigate();
+  const userData = useSelector((state) => state.auth.userData);
+
+  // Thumbnail 
+  const [thumbnailFile, setthumbnailFile] = useState(null)
+  // console.log(thumbnailFile)
+  const [thumbailURL, setThumbailURL] = useState('')
+  const [imgArr, setimgArr] = useState([]);
+
+  // Category State
+  const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
+  const [categoryValue, setcategoryValue] = useState('');
+
+  // Poll State
+  const [TotalPollOptions, setTotalPollOptions] = useState([]);
+  const [pollQuestion, setPollQuestion] = useState('')
+  const [options, setoptions] = useState('')
+  const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
+  // const [pollAnswer, setpollAnswer] = useState('')
+  // React Hook form
+
 
   const handleImageUpload = (arr) => {
     if (arr.length !== 0) {
@@ -52,53 +65,90 @@ const AskQue = ({ post }) => {
     }
   };
 
+  const selectThumbnail = async (e) => {
+
+    const file = e.currentTarget.files[0]
+    setthumbnailFile(file)
+    const reader = new FileReader()
+    reader.onload = () => {
+      setThumbailURL(reader.result)
+    }
+    reader.readAsDataURL(file)
+  }
   const submit = async (data) => {
+    if (pollQuestion && TotalPollOptions.length <= 1) {
+      console.log('There must be 2 options')
+      return
+    }
+    if (!categoryValue) {
+      return
+    }
+    if (!data.title && !pollQuestion) {
+      console.log('Title is not there')
+      return
+    }
+
+
     if (post) {
       let imageURLIndex = findingImageIndex(data.content);
       console.log(imgArr);
       if (!post.queImage && imgArr.length === 0) {
-        console.log("Img nhi hai");
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
           queImage: null,
-        });
+        }, categoryValue);
       } else {
         console.log(post.queImage);
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
           queImage: post?.queImage || imgArr[imageURLIndex],
-        });
+        }, categoryValue);
       }
       navigate("/");
-      setEditAskQueVisible(false);
       setimgArr((prev) => []);
+    } else if (!post && thumbnailFile) {
+      const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+
+      const dbPost = await appwriteService.createPost({
+        ...data,
+        userId: userData.$id,
+        queImage: null,
+        queImageID: dbThumbnail.$id,
+        name: userData.name,
+        pollQuestion,
+        pollOptions: TotalPollOptions,
+      }, categoryValue);
+      // console.log(dbPost)
     } else {
-      // console.log("post nhi hai");
+
       let imageURLIndex = findingImageIndex(data.content);
-      // console.log(data.content);
-      // console.log(imageURLIndex);
-      // console.log(imgArr[imageURLIndex]);
-      // console.log(imgArr);
+
       if (!isNaN(imageURLIndex)) {
         const dbPost = await appwriteService.createPost({
           ...data,
           userId: userData.$id,
           queImage: imgArr[imageURLIndex],
           name: userData.name,
-        });
+          queImageID: null,
+          pollQuestion,
+          pollOptions: TotalPollOptions,
+        }, categoryValue);
+
       } else {
         const dbPost = await appwriteService.createPost({
           ...data,
           userId: userData.$id,
           queImage: null,
+          queImageID: null,
           name: userData.name,
-        });
-      }
+          pollQuestion,
+          pollOptions: TotalPollOptions,
+        }, categoryValue);
 
-      navigate("/");
-      setisAskQueVisible(false);
-      setimgArr((prev) => []);
+      }
     }
+    navigate("/");
+    setimgArr((prev) => []);
   };
 
   const slugTransform = useCallback((value) => {
@@ -113,6 +163,16 @@ const AskQue = ({ post }) => {
   }, []);
 
   useEffect(() => {
+    if (post) {
+      setPollQuestion(post.pollQuestion)
+      setTotalPollOptions((prev) => post.pollOptions)
+      appwriteService.getThumbnailPreview(post.queImageID)
+        .then((res) => {
+          setThumbailURL(res.href)
+        })
+    }
+  }, [])
+  useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "title") {
         setValue("slug", slugTransform(value.title), {
@@ -122,73 +182,32 @@ const AskQue = ({ post }) => {
     });
     return () => subscription.unsubscribe();
   }, [slugTransform, setValue, watch]);
-  // console.log(isAskQueVisible);
+
   return (
     <>
+      <HorizontalLine />
       <div
-        id="askQue_div"
-        className={`${isAskQueVisible ? "active" : null} ${
-          EditAskQueVisible ? "active" : null
-        }`}
+        className={`ask_Que_Container`}
       >
-        <div id="askQue_black"></div>
-        <div
-          className={`ask_Que_Container ${isAskQueVisible ? "active" : ""} ${
-            EditAskQueVisible ? "active" : null
-          }`}
-        >
-          <div>
-            <Button
-              className="flex justify-center items-center"
-              id="ask_Que_Container_cross_btn"
-              onClick={() => {
-                if (post) {
-                  if (!isAskQueVisible) {
-                    setEditAskQueVisible((prev) => !prev);
-                  }
-                  if (EditAskQueVisible === false) {
-                    setisAskQueVisible((prev) => !prev);
-                  }
-                } else {
-                  if (!EditAskQueVisible) {
-                    setisAskQueVisible((prev) => !prev);
-                  }
-                }
-              }}
-              onMouseOver={() => {
-                ask_Que_Container_cross_icon.current.classList.add("fa-beat");
-              }}
-              onMouseOut={() => {
-                ask_Que_Container_cross_icon.current.classList.remove(
-                  "fa-beat"
-                );
-              }}
-            >
-              <i
-                id="ask_Que_Container_cross_icon"
-                ref={ask_Que_Container_cross_icon}
-                className="fa-solid fa-x"
-              ></i>
-            </Button>
-          </div>
-          <h3 className="text-center text-4xl">Ask A Question</h3>
+        <h3 className="text-center text-4xl">"Got a Question? Ask Away!"</h3>
 
-          <form onSubmit={handleSubmit(submit)}>
+        <form id="AskQue_Form" onSubmit={handleSubmit(submit)} className="flex">
+          <div id="AskQue_InsideFormLeft">
             <div className="Question_Title flex gap-3">
-              <h4 className="my-4 text-2xl">Question Title</h4>
+              <h4 className="my-4 text-xl">Title</h4>
               <TextArea
                 maxLength="250"
                 id="Que_Title"
                 placeholder="A Catchy ,Title will get more attention. Max 250 Characters are Allowed."
                 {...register("title", {
-                  required: true,
+                  required: false,
                 })}
               />
               <Input
                 className="text-black hidden"
                 placeholder="slug"
                 {...register("slug", {
-                  required: true,
+                  required: false,
                 })}
                 onInput={(e) => {
                   setValue("slug", slugTransform(e.current.target.value), {
@@ -198,7 +217,7 @@ const AskQue = ({ post }) => {
               />
             </div>
             <div className="Descripton flex flex-col gap-3">
-              <h4 className="my-3 text-2xl">Additional Details (Optional)</h4>
+              <h4 className="my-3 text-xl">Additional Details (Optional)</h4>
               <div className="Description_div">
                 <RTE
                   name="content"
@@ -209,7 +228,7 @@ const AskQue = ({ post }) => {
               </div>
             </div>
             <div className="Opinions">
-              <h4 className="my-4 text-2xl">
+              <h4 className="my-4 mb-6 mt-5 text-xl">
                 Whom Opinion are You interested ?
               </h4>
               <div className="flex justify-between items-center ">
@@ -217,79 +236,244 @@ const AskQue = ({ post }) => {
                   <span>Opinions From :</span>
                 </div>
 
-                <div className="flex pl-6 justify-around  w-4/5 text-xl">
-                  <div className="flex-1 flex gap-3 items-center">
-                    <Input defaultChecked type="radio" name="gender" id="Id1" />
-                    <label htmlFor="Id1">Everyone</label>
-                  </div>
+                <Controller
+                  control={control}
+                  name="opinionsFrom"
+                  defaultValue={'Everyone'}
+                  render={({ field }) => (
+                    <div className="flex pl-6 justify-around w-4/5 text-xl">
+                      <div className="flex-1 flex gap-3 items-center">
+                        <Input
+                          {...field}
+                          defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
+                          type="radio"
+                          value="Everyone"
+                          id="Id1"
+                          className='cursor-pointer'
+                        />
+                        <label htmlFor="Id1" className='cursor-pointer'>Everyone</label>
+                      </div>
 
-                  <div className="flex-1 flex gap-3 items-center text-xl">
-                    <Input type="radio" name="gender" id="Id2" />
-                    <label htmlFor="Id2">Boys</label>
-                    <i className="fa-solid fa-mars-stroke-up text-blue-700"></i>
-                  </div>
+                      <div className="flex-1 flex gap-3 items-center text-xl">
+                        <Input
+                          {...field}
+                          defaultChecked={post && post.opinionsFrom === 'Boys' ? true : false}
+                          type="radio"
+                          value="Boys"
+                          id="Id2"
+                          className='cursor-pointer'
+                        />
+                        <label htmlFor="Id2" className='cursor-pointer'>Boys</label>
+                        <i className="fa-solid fa-mars-stroke-up text-blue-700"></i>
+                      </div>
 
-                  <div className="flex-1 flex gap-3 items-center text-xl">
-                    <Input type="radio" name="gender" id="Id3" />
-                    <label htmlFor="Id3">Girls</label>
-                    <i className="fa-solid fa-mars-stroke text-pink-600"></i>
-                  </div>
-                </div>
+                      <div className="flex-1 flex gap-3 items-center text-xl">
+                        <Input
+                          {...field}
+                          type="radio"
+                          value="Girls"
+                          defaultChecked={post && post?.opinionsFrom === 'Girls' ? true : false}
+                          id="Id3"
+                          className='cursor-pointer'
+                        />
+                        <label htmlFor="Id3" className='cursor-pointer'>Girls</label>
+                        <i className="fa-solid fa-mars-stroke text-pink-600"></i>
+                      </div>
+                    </div>
+                  )}
+                />
+
+
               </div>
             </div>
+
+
             <hr className="mt-5" />
-            <div className="Anonymous_opinions my-4">
-              <div className="flex justify-between items-center">
-                <div className="w-1/5 text-center text-xl">
-                  <span>Anonymous :</span>
-                </div>
-                <div className="flex pl-6 justify-around  w-4/5">
-                  <div className="flex flex-1 gap-3 items-center text-xl">
-                    <Input
-                      type="radio"
-                      className=""
-                      name="anonymous"
-                      id="anonymous1"
-                    />
-                    <label htmlFor="anonymous1">Yes</label>
-                  </div>
 
-                  <div className="flex flex-1 gap-3 items-center text-xl">
-                    <Input type="radio" name="anonymous" id="anonymous2" />
-                    <label htmlFor="anonymous2">Random</label>
-                  </div>
 
-                  <div className="flex flex-1 gap-3 items-center text-xl">
-                    <Input
-                      defaultChecked
-                      type="radio"
-                      name="anonymous"
-                      id="anonymous3"
-                    />
-                    <label htmlFor="anonymous3">Never</label>
-                  </div>
-                </div>
+
+          </div>
+
+          <div id="AskQue_insideForm_right">
+
+            <div id="AskQue_Thumbnail_preview">
+              <div id="AskQue_Thumbnail">
+                {!thumbailURL && <p>Add Thumbail for Your Question</p>}
+                {thumbailURL && <div>
+                  <img src={thumbailURL} alt="" />
+                </div>}
+              </div>
+
+              <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
+                <label className="AskQue_BrowseThumbnail" htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
+                <input className="hidden" type="file"
+                  name="thumbnailImage"
+                  accept="image/*"
+                  id="BrowseThumbnail"
+                  onChange={selectThumbnail}
+                />
+                {thumbailURL && <span onClick={() => {
+                  setThumbailURL('')
+                  setthumbnailFile(null)
+                }}>Remove Image</span>}
               </div>
             </div>
 
-            <div className={`buttons flex justify-around items-center`}>
-              <Button
-                className="askque_btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setisAskQueVisible((prev) => !prev);
-                }}
-              >
-                Discard
-              </Button>
-              <Button className="askque_btn">New</Button>
+            <Controller
+              name="status"
+              control={control}
+              defaultValue={'Public'}
+              render={({ field }) => (
+                <div id="AskQue_PostType">
+                  <p>Select Post Type:</p>
+                  <div className="flex justify-start gap-6">
+                    <div>
+                      <label className="cursor-pointer" htmlFor="public">Public</label>
+                      <input
+                        className="cursor-pointer"
+                        {...field}
+                        type="radio"
+                        name="postType"
+                        value={'Public'}
+                        id="public"
+                        defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
+                      />
+                    </div>
+                    <div>
+                      <label className="cursor-pointer" htmlFor="private">Private</label>
+                      <input
+                        className="cursor-pointer"
+                        {...field}
+                        type="radio"
+                        name="postType"
+                        id="private"
+                        value={'Private'}
+                        defaultChecked={post && post?.status === "Private" ? true : false}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            />
+
+            <div id="AskQue_SelectCategory">
+
+              <p className="mb-3">Select Category : </p>
+              <div className="dropdown">
+                <div
+                  className="dropdown-header flex items-center justify-between"
+                  onClick={() => {
+                    setselectCategoryVisible((prev) => !prev)
+                  }}
+                >
+                  {post && <span className="">{categoryValue ? category : post?.category}</span>}
+                  {!post && < span className="">{categoryValue ? categoryValue : `Select Item`}</span>}
+                  <i className="fa-solid fa-caret-down"></i>
+                </div>
+
+                {selectCategoryVisible && <ul className="AskQue-dropdown-list flex flex-col">
+                  {categoriesArr?.map((category, index) => (
+                    <li key={category} className="dropdown-item" onClick={
+                      () => {
+                        setselectCategoryVisible(false)
+                        setcategoryValue(category)
+                      }
+                    }>{category}</li>
+                  ))}
+                </ul>}
+              </div>
+
+            </div>
+
+            <div id="AskQue_Pole" className="mt-6">
+              <p>Add Pole : (Optional) </p>
+
+              <div id="AskQue_Pole_Options">
+                <TextArea
+                  placeholder='Ask Pole' className='AskQue_Pole_TextArea'
+                  maxLength={110}
+                  value={pollQuestion}
+                  onChange={(e) => {
+                    if (e.currentTarget.value !== '') {
+                      setpollTextAreaEmpty(false)
+                      setPollQuestion(e.currentTarget.value)
+                    } else {
+                      setpollTextAreaEmpty(true)
+                      setTotalPollOptions((prev) => [])
+                      setPollQuestion('')
+                    }
+                  }}
+                >
+                </TextArea>
+
+                <div>
+
+                  <div className="w-full flex flex-col gap-1 mt-1">
+
+                    <div className="flex gap-3 h-8">
+                      <input type="text" name="" id="" className="border outline-none px-2 text-sm w-3/5"
+                        value={options}
+                        placeholder="options"
+                        onChange={(e) => {
+                          setoptions((e.currentTarget.value))
+                        }} />
+                      <Button
+                        onClick={() => {
+                          if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
+                            setTotalPollOptions((prev) => [...prev, options])
+                          }
+                          setoptions("")
+                        }}
+                        className="border text-sm p-1">
+                        Add options
+                      </Button>
+                    </div>
+
+                    {TotalPollOptions?.map((options, index) => (
+                      <div className="w-full flex justify-start items-center" key={options}>
+
+                        <span className="w-3/4" >{`${index + 1} ) ${options}`}</span>
+
+                        <i className="fa-regular fa-trash-can cursor-pointer" onClick={
+                          () => {
+                            setTotalPollOptions((prev) => {
+                              let arr = [...prev]
+                              arr.splice(index, 1)
+                              return [...arr]
+                            })
+                          }}></i>
+                      </div>
+                    ))}
+                    <span className={`text-gray-500 ${TotalPollOptions.length >= 2 ? null : 'hidden'}`}>Maximum 4 Options Allowed</span>
+                    {!(TotalPollOptions.length >= 2) && <span className={`text-gray-500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'}`}>Add Minimum 2 Options</span>}
+                  </div>
+
+                  <div className="flex gap-3 h-8 mt-3 items-center">
+                    <label htmlFor="">Opinion : </label>
+                    <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
+                      {...register('pollAnswer', {
+                        required: false
+                      })}
+                    />
+                  </div>
+
+
+                </div>
+
+              </div>
+
+            </div>
+            <div className={`buttons flex justify-end items-center mt-14`}>
+
               <Button type="submit" className="askque_btn">
-                {post ? "Update & Ask " : "Ask"}
+                {post ? "Update Your Question" : "Post Question"}
               </Button>
             </div>
-          </form>
-        </div>
-      </div>
+          </div>
+
+        </form >
+      </div >
     </>
   );
 };

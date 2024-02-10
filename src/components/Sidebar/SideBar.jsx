@@ -18,7 +18,7 @@ const SideBar = () => {
   const { isOpen, setIsOpen } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
-  // console.log(userData.$id);
+  // console.log(userData)
   useEffect(() => {
     if (status) {
       authService

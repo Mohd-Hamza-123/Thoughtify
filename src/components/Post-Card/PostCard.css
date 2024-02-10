@@ -3,7 +3,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
 
 #PostCard {
-    /* width: 250px; */
     width: 70%;
     height: 200px;
     border-radius: 5px;
@@ -29,10 +28,6 @@
     font-size: 18px;
     font-weight: 600;
     color: rgb(62, 62, 62);
-    /* font-family: 'Gabarito', sans-serif; */
-    /* font-family: 'Nunito', sans-serif;
-    font-family: 'Poppins', sans-serif;
-    font-family: 'Roboto Slab', serif; */
     font-family: 'Noto Sans', sans-serif;
     background-color: rgba(128, 128, 128, 0.131);
     border-radius: 5px;
@@ -45,7 +40,6 @@
 }
 
 #PostCard_title:hover {
-
     color: #11161a;
 }
 
@@ -59,23 +53,14 @@
 }
 
 #PostCard-profile-pic {
-    height: 30px;
-    width: 30px;
+    height: 25px;
+    width: 25px;
 }
 
 #PostCard-profile-name {
     font-weight: 800;
     font-family: 'Noto Sans', sans-serif;
 }
-
-/* 
-#PostCard_Comments_Icon>span:nth-child(1) {
-    min-height: 31px;
-    min-width: 40px;
-    border: 3px solid darkblue;
-    border-radius: 50%;
-
-} */
 
 
 #PostCard_Comments_Icon i {

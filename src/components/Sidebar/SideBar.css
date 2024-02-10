@@ -27,6 +27,18 @@
 
 .SideBar.Active {
     transform: translateX(0);
+    overflow: hidden;
+    position: absolute;
+    top: 80vh;
+    right: 0px;
+    width: 22%;
+    height: 100vh;
+    color: rgb(0, 0, 0);
+    background-color: ghostwhite;
+    transition: transform 200ms ease-in-out;
+    z-index: 100;
+    border-bottom-left-radius: 20px;
+    border-top-left-radius: 20px;
 }
 
 .SideBarCross {}

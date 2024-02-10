@@ -11,9 +11,10 @@ export class Service {
             .setEndpoint(conf.appwriteURL)
             .setProject(conf.appwriteProjectId)
         this.databases = new Databases(this.client)
+        this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name }) {
+    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -21,20 +22,27 @@ export class Service {
                 userId,
                 queImage,
                 name,
-                commentBody: ["hello", "how are you"]
+                category,
+                opinionsFrom,
+                status,
+                queImageID,
+                pollOptions,
+                pollQuestion,
+                pollAnswer,
+                profileImgID
+                // commentBody: ["hello", "how are you"]
             })
         } catch (error) {
             console.log("Appwrite serive :: createPost :: error", error)
         }
     }
 
-    async updatePost(slug, { title, content, queImage }) {
+    async updatePost(slug, { title, content, queImage, profileImgID }) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
                 title,
                 content,
                 queImage,
-
             })
         } catch (error) {
             console.log("Appwrite serive :: updatePost :: error", error);
@@ -69,6 +77,19 @@ export class Service {
     }
 
 
+    async createThumbnail({ file }) {
+        try {
+            return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
+        } catch (error) {
+            console.log("Appwrite serive :: createBucket :: config.js :: error", error);
+            return false
+        }
+    }
+
+
+    async getThumbnailPreview(fileid) {
+        return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
+    }
 
 }
 

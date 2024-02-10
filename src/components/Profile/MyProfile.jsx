@@ -19,28 +19,27 @@ const MyProfile = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [navArr, setNavArr] = useState([
-    { ProfileSummary: true },
-    { Questions: false },
-    { Favourites: false },
-    { Opinions: false },
-    { More: false }
-  ])
-  console.log(navArr)
+
+
   const userData = useSelector((state) => state.auth.userData);
   const realUser = userData ? slug === userData.$id : false;
   const [profileData, setProfileData] = useState({});
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
   const [URLimg, setURLimg] = useState('')
+  const [activeNav, setactiveNav] = useState('Profile Summary')
+  const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData} />)
+  // console.log(activeNavRender)
 
   const getUserProfile = async () => {
     const listprofileData = await profile.listProfile({ slug });
+    console.log(listprofileData)
     if (listprofileData) {
       setProfileData({ ...listprofileData.documents[0] });
     }
     getUserProfileImg(listprofileData.documents[0].profileImgID)
   };
+
   const getUserProfileImg = async (imgID) => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
@@ -61,6 +60,19 @@ const MyProfile = () => {
     getUserProfile();
     flagFunc();
   }, []);
+
+  useEffect(() => {
+    // console.log(activeNav)
+    switch (activeNav) {
+      case 'Opinions': setactiveNavRender(<Opinions />)
+        break;
+      case 'Favourites': setactiveNavRender(<Favourite />)
+        break;
+      case 'Questions': setactiveNavRender(<Questions />)
+        break;
+      default: setactiveNavRender(<ProfileSummary profileData={profileData} />)
+    }
+  }, [activeNav, profileData])
 
 
   return (
@@ -101,7 +113,7 @@ const MyProfile = () => {
                   <Button
                     className="p-2 rounded-sm"
                     onClick={() => {
-                      seteditProfileBoolean((prev) => !prev);
+                      // seteditProfileBoolean((prev) => !prev);
                       navigate(`/EditProfile/${slug}`)
                     }}
 
@@ -153,18 +165,31 @@ const MyProfile = () => {
         <div id="MyProfile_Data" className="flex mt-3">
           <section id="MyProfile_Data_section">
             <ul className="flex justify-between">
-              <li onClick={() => { }} className="MyProfile_Data_items">
+              <li
+                onClick={() => {
+                  setactiveNav('Profile Summary')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
                 Profile Summary
               </li>
 
-              <li onClick={() => { }} className="MyProfile_Data_items">
+              <li
+                onClick={() => {
+                  setactiveNav('Questions')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
                 Questions
               </li>
 
-              <li onClick={() => { }} className="MyProfile_Data_items">
+              <li
+                onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
                 Opinions
               </li>
-              <li onClick={() => { }} className="MyProfile_Data_items">
+              <li
+                onClick={() => {
+                  setactiveNav('Favourites')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
                 Favourites
               </li>
 
@@ -178,10 +203,7 @@ const MyProfile = () => {
         <div className="MyProfile_HorizontalLine"></div>
 
         <div className="w-full">
-          <ProfileSummary profileData={profileData} />
-          {/* <Questions/>
-           <Favourite/>
-           <Opinions/> */}
+          {activeNavRender}
         </div>
       </div>
     </div>

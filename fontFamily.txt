@@ -1,5 +1,4 @@
 font-family: 'Gabarito', sans-serif;
-font-family: 'Noto Serif', serif;
 font-family: 'Nunito', sans-serif;
 font-family: 'Poppins', sans-serif;
 font-family: 'Rethink Sans', sans-serif;

@@ -1,0 +1,28 @@
+const categoriesArr = [
+    'General',
+    'Science & Technology',
+    'Programming',
+    'Web Development',
+    'Mobile Development',
+    'Business',
+    'Health',
+    'Travel',
+    'Food',
+    'Education',
+    'Books',
+    'Movies',
+    'Music',
+    'Gaming',
+    'Sports',
+    'Fashion',
+    'Home & Living',
+    'Parenting',
+    'Relationships',
+    'Philosophy',
+    'History',
+    'Politics',
+    'Environment',
+    'Social Issues',
+];
+
+export { categoriesArr }

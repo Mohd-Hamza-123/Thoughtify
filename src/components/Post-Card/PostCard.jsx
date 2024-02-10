@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./PostCard.css";
+import profile from "../../appwrite/profile";
+import appwriteService from "../../appwrite/config";
 
 const PostCard = ({
   $id,
@@ -8,12 +10,33 @@ const PostCard = ({
   queImage,
   name = "Name",
   userId,
+  category,
+  queImageID,
 }) => {
-  // console.log(userId);
+  // console.log(userId)
+  const [profileImgURL, setprofileImgURL] = useState('')
   const [booleanGender, setbooleanGender] = useState(true);
+  const [thumbnailURL, setthumbnailURL] = useState('')
+  const getPostData = async () => {
+    appwriteService.getThumbnailPreview(queImageID)
+      .then((res) => {
+        setthumbnailURL(res.href)
+      })
+
+    profile.listProfile({ slug: userId })
+      .then((res) => res.documents[0].profileImgID)
+      .then((ID) => {
+        profile.getStoragePreview(ID)
+          .then((res) => setprofileImgURL(res.href))
+          .catch((err) => console.log(err))
+      })
+  }
+
+
   useEffect(() => {
     setbooleanGender(userId.includes("_-.male"));
-  }, []);
+    getPostData()
+  }, [queImageID, category]);
 
   function countTitle(title) {
     let str = `${title}`;
@@ -34,10 +57,10 @@ const PostCard = ({
     <div id="PostCard" className="flex w-full">
       <div id="PostCard_left" className="border-2 border-red">
         <Link to={`/post/${$id}`}>
-          {queImage ? (
+          {thumbnailURL ? (
             <img
               id="Post-Card-img"
-              src={`${queImage}`}
+              src={`${thumbnailURL ? thumbnailURL : queImage}`}
               alt="Image"
               className="w-full"
             />
@@ -61,7 +84,7 @@ const PostCard = ({
             <Link to={`profile/${userId}`}>
               <div className="rounded-full">
                 <img
-                  src={`${queImage}`}
+                  src={`${profileImgURL}`}
                   id="PostCard-profile-pic"
                   className="rounded-full"
                   alt=""
@@ -71,9 +94,8 @@ const PostCard = ({
             <Link to={`profile/${userId}`}>
               <h4
                 id="PostCard-profile-name"
-                className={`${
-                  booleanGender ? "text-blue-900" : "text-pink-600"
-                }`}
+                className={`${booleanGender ? "text-blue-900" : "text-pink-600"
+                  }`}
               >
                 {name}
               </h4>
@@ -84,7 +106,7 @@ const PostCard = ({
           </Link>
         </div>
         <span className="my-1">
-          <small>Category</small>
+          <small>{category}</small>
         </span>
         <div id="PostCard_Comments_Icon" className="flex gap-2">
           <i className="bx bx-message-rounded">
