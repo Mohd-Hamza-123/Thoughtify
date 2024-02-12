@@ -19,8 +19,6 @@ const MyProfile = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-
   const userData = useSelector((state) => state.auth.userData);
   const realUser = userData ? slug === userData.$id : false;
   const [profileData, setProfileData] = useState({});
@@ -33,7 +31,7 @@ const MyProfile = () => {
 
   const getUserProfile = async () => {
     const listprofileData = await profile.listProfile({ slug });
-    console.log(listprofileData)
+    // console.log(listprofileData)
     if (listprofileData) {
       setProfileData({ ...listprofileData.documents[0] });
     }
@@ -103,7 +101,9 @@ const MyProfile = () => {
               </section>
               <div id="MyProfile_3Buttons" className="flex gap-3">
                 {!realUser && (
-                  <Button className="p-2 rounded-sm">Message</Button>
+                  <Button onClick={() => {
+                    navigate(`/ChatRoom/${userData?.$id}/${slug}`)
+                  }} className="p-2 rounded-sm">Message</Button>
                 )}
                 {!realUser && (
                   <Button className="p-2 rounded-sm">Follow</Button>

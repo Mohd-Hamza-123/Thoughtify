@@ -18,7 +18,6 @@ export class Profile {
     async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name, profileImgID }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
-                bio,
                 userIdAuth,
                 gender,
                 name,
@@ -51,6 +50,28 @@ export class Profile {
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 [Query.equal("userIdAuth", [`${slug}`])]
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
+        }
+    }
+
+    async listProfiles({ senderSlug, receiverSlug }) {
+        try {
+            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+                [Query.equal("userIdAuth", [senderSlug, receiverSlug])]
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
+        }
+    }
+
+    async listSingleProfile(slug) {
+        try {
+            return await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                slug
             )
         } catch (error) {
             console.log("Appwrite serive :: listProfile :: profile.js :: error", error);

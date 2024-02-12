@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "./PostCard.css";
 import profile from "../../appwrite/profile";
 import appwriteService from "../../appwrite/config";
+import { useSelector } from 'react-redux'
 
 const PostCard = ({
   $id,
@@ -13,18 +14,27 @@ const PostCard = ({
   category,
   queImageID,
 }) => {
-  // console.log(userId)
+  console.log(name)
+  const userProfile = useSelector((state) => state.profileSlice.userProfile)
   const [profileImgURL, setprofileImgURL] = useState('')
   const [booleanGender, setbooleanGender] = useState(true);
   const [thumbnailURL, setthumbnailURL] = useState('')
+
   const getPostData = async () => {
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
         setthumbnailURL(res.href)
       })
+  }
 
+  const profileData = async () => {
     profile.listProfile({ slug: userId })
-      .then((res) => res.documents[0].profileImgID)
+      .then((res) => {
+        console.log(res.documents[0].$id)
+        if (res.documents[0].$id) {
+          return res.documents[0].profileImgID
+        }
+      })
       .then((ID) => {
         profile.getStoragePreview(ID)
           .then((res) => setprofileImgURL(res.href))
@@ -32,10 +42,19 @@ const PostCard = ({
       })
   }
 
+  useEffect(() => {
+    if (userId) {
+      profileData()
+    }
+
+  }, [userProfile])
 
   useEffect(() => {
     setbooleanGender(userId.includes("_-.male"));
-    getPostData()
+    if (queImageID) {
+      getPostData()
+    }
+
   }, [queImageID, category]);
 
   function countTitle(title) {

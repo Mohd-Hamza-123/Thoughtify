@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     status: false,
     userData: null,
-    editProfileStatus: false
 }
 
 
@@ -19,16 +18,9 @@ const authSlice = createSlice({
             state.status = false
             state.userData = null;
         },
-        editProfileVisible: (state, action) => {
-            state.editProfileStatus = true
-        },
-        editProfileInVisible: (state) => {
-            state.editProfileStatus = false
-        }
-
 
     }
 })
 
-export const { logout, login, editProfileInVisible, editProfileVisible } = authSlice.actions;
+export const { logout, login } = authSlice.actions;
 export default authSlice.reducer;

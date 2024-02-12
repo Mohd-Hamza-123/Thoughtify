@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Logo, Input, Button, UpperNavigationBar } from "../";
+import { getUserProfile } from "../../store/profileSlice";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
@@ -23,64 +24,43 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const create = async (data) => {
-    console.log(data);
     setError(null);
     if (!gender) return;
-    try {
-      const userData = await authService.createAccount({ ...data, gender });
-      if (typeof userData === "string" && userData === authRateLimit) {
-        setError("You Have reached Maximum signup limit. Try later sometime");
-        return;
-      }
-      if (typeof userData === "string" && userData === sameId) {
-        setError("A user with the same name, email, or phone already exists");
-        return;
-      }
-      if (userData) {
-        const userData = await authService.getCurrentUser();
-        if (userData) dispatch(login(userData));
-
-
-        navigate("/");
-        setGender(null);
-      } else {
-        setError("Please check the credentials");
-      }
-
-      if (userData) {
-        let profileAvatar = await avatar.profileAvatar(data.name)
-        fetch(profileAvatar.href)
-          .then((res) => res.blob())
-          .then((blob) => {
-            const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' });
-            profile.createBucket({ file })
-              .then((res) => {
-                // console.log(res)
-                profile.createProfile({
-                  gender,
-                  name: data.name,
-                  userIdAuth: userData?.userId,
-                  profileImgID: res.$id
-                })
-                  .then((res) => { console.log(res) })
-              })
-
-          }).catch((err) => {
-
-            profile.createProfile({
-              gender,
-              name: data.name,
-              userIdAuth: userData.userId,
-            })
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err))
-
-          })
-
-      }
-    } catch (error) {
-      setError(error.message);
+    const userDataCreated = await authService.createAccount({ ...data, gender });
+    if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
+      setError("You Have reached Maximum signup limit. Try later sometime");
+      return;
     }
+    if (typeof userDataCreated === "string" && userDataCreated === sameId) {
+      setError("A user with the same name, email, or phone already exists");
+      return;
+    }
+
+    if (userDataCreated) {
+      const userData = await authService.getCurrentUser();
+      dispatch(login({ userData }))
+      let profileAvatar = await avatar.profileAvatar(data.name);
+      let response = await fetch(profileAvatar.href)
+      let blob = await response.blob();
+      const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' })
+      const createProfileBucket = await profile.createBucket({ file })
+      console.log(createProfileBucket)
+      const userProfile = await profile.createProfile({
+        gender,
+        name: data.name,
+        userIdAuth: userData?.$id,
+        profileImgID: createProfileBucket.$id
+      })
+      console.log(userProfile)
+      dispatch(getUserProfile({ userProfile }))
+      if (userProfile) {
+        navigate("/");
+        setGender(null)
+      }
+    } else {
+      setError("Please check the credentials");
+    }
+
   }
 
 
@@ -103,7 +83,6 @@ const Signup = () => {
         });
       }
     });
-
     return () => {
       subscription.unsubscribe();
     };

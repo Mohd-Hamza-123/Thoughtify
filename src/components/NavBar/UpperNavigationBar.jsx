@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./UpperNavigationBar.css";
 import { useNavigate } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
@@ -7,16 +7,12 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import { Input } from "../index";
 import QueryFlow from "../../assets/QueryFlow.png";
 import '../../index.css'
-const NavigationBar = () => {
-  const navigate = useNavigate();
-  const { isOpen, setIsOpen } = useAskContext();
-  const authStatus = useSelector((state) => state.auth.status);
-  const upperNav = useRef();
-  // console.log(upperNav);
-  const toggleSideBar = () => {
-    setIsOpen(true);
-  };
+import profile from "../../appwrite/profile";
 
+
+const NavigationBar = () => {
+  const authStatus = useSelector((state) => state.auth.status);
+  const userProfileData = useSelector((state) => state.profileSlice.userProfile)
   const BarItems = [
     {
       name: "Login",
@@ -29,6 +25,29 @@ const NavigationBar = () => {
       slug: "/signup",
     },
   ];
+  const [profileImgURL, setprofileImgURL] = useState('')
+  const upperNav = useRef();
+  const navigate = useNavigate();
+  const { isOpen, setIsOpen } = useAskContext();
+  const userData = useSelector((state) => state.auth.userData)
+  // console.log(userData)
+  const getProfileData = async () => {
+    const profileData = await profile.listProfile({ slug: userData?.$id })
+    // console.log(profileData)
+    if (profileData.documents.length > 0) {
+      const profileImgID = profileData.documents[0].profileImgID
+      const profileImgURL = await profile.getStoragePreview(profileImgID)
+      setprofileImgURL(profileImgURL.href)
+    }
+  }
+
+  useEffect(() => {
+    getProfileData()
+  }, [userProfileData])
+
+  const toggleSideBar = () => {
+    setIsOpen(true);
+  };
 
   return (
     <>
@@ -45,7 +64,7 @@ const NavigationBar = () => {
                 onClick={() => navigate("/")}
               >
                 <img className={`logo`} src={QueryFlow} alt="Logo" />
-                <h1 className={`logo_Name`}>QueryFlow</h1>
+                <h1 className='logo_Name'>QueryFlow</h1>
               </div>
               {/* <div>
                 <div className="search_div flex">
@@ -88,13 +107,7 @@ const NavigationBar = () => {
 
             {true && (
               <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="1em"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
-                </svg>
+                <img src={profileImgURL} alt="" />
               </div>
             )}
 

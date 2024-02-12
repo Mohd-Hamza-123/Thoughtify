@@ -13,6 +13,7 @@ import SettingPage from './SettingPage'
 import ViewPostPage from './ViewPostPage'
 import ForgetPassword from './ForgetPassword'
 import EditAskQuestion from './EditAskQuestion'
+import AllPersonalChatName from './AllPersonalChatName'
 export {
     EditProfilePage,
     EditAskQuestion,
@@ -28,5 +29,6 @@ export {
     PersonalChatPage,
     SettingPage,
     ViewPostPage,
-    ForgetPassword
+    ForgetPassword,
+    AllPersonalChatName
 }

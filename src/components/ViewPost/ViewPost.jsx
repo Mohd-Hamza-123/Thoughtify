@@ -34,10 +34,9 @@ const ViewPost = () => {
           return post
         })
         .then((post) => {
-          // console.log(post.profileImgID)
+
           profile.getStoragePreview(post.profileImgID)
             .then((res) => {
-              // console.log(res.href)
               setprofileImgURL(res.href)
             })
         })
@@ -53,7 +52,9 @@ const ViewPost = () => {
     });
     navigate("/");
   };
-  // console.log(EditAskQueVisible);
+  const deleteThumbnail = () => {
+
+  }
   return post ? (
     <>
       <div id="ViewPost" className="p-3">
@@ -81,6 +82,7 @@ const ViewPost = () => {
                       <Button
                         onClick={() => {
                           deletePost();
+                          deleteThumbnail();
                         }}
                       >
                         Delete

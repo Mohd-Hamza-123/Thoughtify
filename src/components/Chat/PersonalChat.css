@@ -1,0 +1,244 @@
+:root {
+    --mainBgColor: rgba(20, 20, 31, 11);
+    --secondaryBgColor: rgba(27, 27, 39, 1);
+    --borderColor1: rgba(40, 41, 57, 1);
+    --borderColor2: rgba(79, 86, 105, 1);
+    --textColorMain: #fff;
+    --textColorSecondary: rgb(226, 227, 232);
+    --themeColorMain: rgba(219, 26, 90, 1);
+    --themeColorSecondary: #386fd2;
+}
+
+
+
+.container {
+    width: 60%;
+    height: 100vh;
+}
+
+.room--container {
+    padding: 1em;
+    height: 100%;
+    background-color: var(--secondaryBgColor);
+    border: 1px solid var(--borderColor1);
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    /* gap: 10px; */
+}
+
+/* receiver div */
+#PersonalChat_Receiver_div {
+    height: 12%;
+    border: 2px solid red;
+    overflow: hidden;
+    color: white;
+}
+
+#PersonalChat_Receiver_div>div:nth-child(1) {
+    width: 90%;
+    border: 2px solid greenyellow;
+}
+
+#PersonalChat_Receiver_div>div:nth-child(2) {
+    width: 10%;
+    border: 2px solid yellow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+}
+
+#PersonalChat_Receiver_div img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+}
+
+/* Login & Register Pages */
+
+.auth--container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form--wrapper {
+    width: 600px;
+    width: 600px;
+    padding: 2em;
+}
+
+.field--wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 0.5em 0;
+}
+
+#PersonalChatDeleteBtn {
+    color: white;
+    border: 2px solid white;
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+/* Form Input Styling */
+.PeronalChat_Form>div {
+    height: 50px;
+    overflow: hidden;
+}
+
+#PersonalChatTextArea {
+    background: var(--mainBgColor);
+    border: none;
+    font-weight: 500;
+    border-bottom: 1px solid var(--borderColor1);
+    /* border-radius: 3px; */
+    width: 90%;
+    padding: 4px 5px;
+    color: whitesmoke;
+    outline: none;
+    font-size: 15px;
+    height: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.264);
+    text-shadow: none !important;
+}
+
+#PersonalChatTextArea::-webkit-scrollbar {
+    display: none;
+}
+
+/* Button Styling */
+
+.btn {
+    padding: 0.5em 1em;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn--lg {
+    padding: 1em 2em;
+}
+
+.btn--main {
+    background-color: rgba(219, 26, 90, 1);
+    color: #fff;
+}
+
+#PersonalChatSubmit {
+    background-color: #8db3dd;
+    color: white;
+    height: inherit;
+
+}
+
+.btn:hover {
+    opacity: 0.7;
+}
+
+/* Header Styling */
+
+#header--wrapper {
+    background-color: var(--mainBgColor);
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px 10px 0 0;
+    border: 1px solid var(--borderColor1);
+    border-bottom: none;
+}
+
+.header--link {
+    color: #c7d8eb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.header--link:hover {
+    color: #8db3dd;
+}
+
+/* Room Styling */
+
+
+
+#PersonalChat_Messages {
+    /* overflow-x: hidden;
+    overflow-y: visible; */
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 2px solid yellow;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: flex-end; */
+}
+
+#PersonalChat_Messages> :first-child {
+    margin-top: auto !important;
+    border: 2px solid green;
+}
+
+#message--form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.send-btn--wrapper {
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.message--wrapper {
+    display: flex;
+    border: 2px solid rgb(0, 234, 255);
+    flex-direction: column-reverse;
+    gap: 0.5em;
+    margin: 10px;
+    height: 100px;
+}
+
+.message--header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.message--body {
+    padding: 0.5em 0;
+    color: var(--textColorSecondary);
+    background-color: var(--themeColorMain);
+    padding: 1em;
+    border-radius: 20px;
+    width: fit-content;
+    max-width: 100%;
+    word-wrap: break-word;
+    /* added */
+}
+
+.message--body--owner {
+    border: 1px solid rgba(219, 26, 90, 1);
+    background-color: var(--secondaryBgColor);
+}
+
+.message-timestamp {
+    margin-left: 1em;
+    color: rgb(164, 161, 161);
+}
+
+.delete--btn {
+    color: #8db3dd;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 16px;
+}
+
+.delete--btn:hover {
+    color: red;
+}

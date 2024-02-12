@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
-import { AskQue, NavBar, PostCard, MyProfile } from "./components/";
 import { useDispatch } from "react-redux";
 import { login, logout } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import authService from "./appwrite/auth";
-import avatar from "./appwrite/avatars";
-import location from "./appwrite/location";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
+import profile from "./appwrite/profile";
+import { getUserProfile } from "./store/profileSlice";
 
 function App() {
   const [isAskQueVisible, setisAskQueVisible] = useState(false);
@@ -31,6 +30,12 @@ function App() {
           dispatch(logout());
           navigate("/signup");
         }
+        return userData
+      })
+      .then((userData) => {
+        profile.listProfile({ slug: userData?.$id })
+          .then((res) => res.documents[0])
+          .then((userProfile) => dispatch(getUserProfile({ userProfile })))
       })
       .catch((err) => {
         console.log(err.message);
@@ -38,6 +43,7 @@ function App() {
       .finally(() => {
         setLoading(false);
       });
+
   }, []);
 
   return !loading ? (

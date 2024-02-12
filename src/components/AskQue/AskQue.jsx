@@ -26,20 +26,21 @@ const AskQue = ({ post }) => {
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
   // console.log(thumbnailFile)
+  // console.log(thumbnailFile)
   const [thumbailURL, setThumbailURL] = useState('')
   const [imgArr, setimgArr] = useState([]);
 
   // Category State
   const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
   const [categoryValue, setcategoryValue] = useState('');
-
+  // console.log(categoryValue)
   // Poll State
   const [TotalPollOptions, setTotalPollOptions] = useState([]);
   const [pollQuestion, setPollQuestion] = useState('')
   const [options, setoptions] = useState('')
+  // console.log(options)
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
-  // const [pollAnswer, setpollAnswer] = useState('')
-  // React Hook form
+
 
 
   const handleImageUpload = (arr) => {
@@ -48,22 +49,22 @@ const AskQue = ({ post }) => {
     }
   };
 
-  const findingImageIndex = (content) => {
-    if (imgArr.length !== 0) {
-      // console.log(imgArr)
-      let minIndex = Infinity;
-      let indexResult = null;
-      imgArr.forEach((words, index) => {
-        let wordIndex = content.indexOf(words);
+  // const findingImageIndex = (content) => {
+  //   if (imgArr.length !== 0) {
+  //     // console.log(imgArr)
+  //     let minIndex = Infinity;
+  //     let indexResult = null;
+  //     imgArr.forEach((words, index) => {
+  //       let wordIndex = content.indexOf(words);
 
-        if (wordIndex !== -1 && wordIndex < minIndex && imgArr[index] !== "") {
-          minIndex = wordIndex;
-          indexResult = index;
-        }
-      });
-      return indexResult;
-    }
-  };
+  //       if (wordIndex !== -1 && wordIndex < minIndex && imgArr[index] !== "") {
+  //         minIndex = wordIndex;
+  //         indexResult = index;
+  //       }
+  //     });
+  //     return indexResult;
+  //   }
+  // };
 
   const selectThumbnail = async (e) => {
 
@@ -75,14 +76,20 @@ const AskQue = ({ post }) => {
     }
     reader.readAsDataURL(file)
   }
+
+
   const submit = async (data) => {
+
+    console.log((data))
     if (pollQuestion && TotalPollOptions.length <= 1) {
       console.log('There must be 2 options')
       return
     }
+
     if (!categoryValue) {
       return
     }
+
     if (!data.title && !pollQuestion) {
       console.log('Title is not there')
       return
@@ -90,33 +97,42 @@ const AskQue = ({ post }) => {
 
 
     if (post) {
-      let imageURLIndex = findingImageIndex(data.content);
-      console.log(imgArr);
-      if (!post.queImage && imgArr.length === 0) {
+
+      if (thumbnailFile) {
+        const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
+        const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
-          queImage: null,
+          queImageID: dbThumbnail.$id,
+          pollQuestion,
+          pollOptions: TotalPollOptions,
         }, categoryValue);
+
       } else {
-        console.log(post.queImage);
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
-          queImage: post?.queImage || imgArr[imageURLIndex],
+          queImageID: post.queImageID,
+          pollQuestion,
+          pollOptions: TotalPollOptions,
         }, categoryValue);
       }
+
+
       navigate("/");
       setimgArr((prev) => []);
+
     } else if (!post && thumbnailFile) {
+
       const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
       const dbPost = await appwriteService.createPost({
         ...data,
-        userId: userData.$id,
-        queImage: null,
         queImageID: dbThumbnail.$id,
-        name: userData.name,
+        userId: userData.$id,
         pollQuestion,
         pollOptions: TotalPollOptions,
+        name: userData?.name
       }, categoryValue);
       // console.log(dbPost)
     } else {
@@ -164,7 +180,13 @@ const AskQue = ({ post }) => {
 
   useEffect(() => {
     if (post) {
-      setPollQuestion(post.pollQuestion)
+      setcategoryValue(post.category)
+
+      if (post.pollQuestion) {
+        setPollQuestion(post.pollQuestion)
+        setpollTextAreaEmpty(false)
+      }
+
       setTotalPollOptions((prev) => post.pollOptions)
       appwriteService.getThumbnailPreview(post.queImageID)
         .then((res) => {
@@ -283,14 +305,11 @@ const AskQue = ({ post }) => {
                   )}
                 />
 
-
               </div>
             </div>
 
 
             <hr className="mt-5" />
-
-
 
           </div>
 
@@ -298,7 +317,10 @@ const AskQue = ({ post }) => {
 
             <div id="AskQue_Thumbnail_preview">
               <div id="AskQue_Thumbnail">
-                {!thumbailURL && <p>Add Thumbail for Your Question</p>}
+                {!thumbailURL && <p className="text-center">Add Thumbail for Your Question
+                  <br />
+                  or thumbnail will be set according to category
+                </p>}
                 {thumbailURL && <div>
                   <img src={thumbailURL} alt="" />
                 </div>}
@@ -367,8 +389,7 @@ const AskQue = ({ post }) => {
                     setselectCategoryVisible((prev) => !prev)
                   }}
                 >
-                  {post && <span className="">{categoryValue ? category : post?.category}</span>}
-                  {!post && < span className="">{categoryValue ? categoryValue : `Select Item`}</span>}
+                  < span className="">{categoryValue ? categoryValue : `Select Item`}</span>
                   <i className="fa-solid fa-caret-down"></i>
                 </div>
 
@@ -420,7 +441,9 @@ const AskQue = ({ post }) => {
                         }} />
                       <Button
                         onClick={() => {
+                          console.log(pollTextAreaEmpty)
                           if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
+
                             setTotalPollOptions((prev) => [...prev, options])
                           }
                           setoptions("")

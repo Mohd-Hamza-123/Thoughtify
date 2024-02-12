@@ -86,18 +86,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 35px;
-    width: 35px;
+    height: 40px;
+    width: 40px;
     border-radius: 50%;
-    border: 4px ridge rgb(0, 0, 0);
     cursor: pointer;
 }
 
-#upperNavbar_svg_div svg {
-    fill: rgb(1, 1, 1);
-    transition: all 0.3s fade-out 0.1s;
+#upperNavbar_svg_div img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
 }
-
-/* #upperNavbar_svg_div svg:hover {
-    transform: scale(1.2);
-} */

@@ -37,12 +37,18 @@ export class Service {
         }
     }
 
-    async updatePost(slug, { title, content, queImage, profileImgID }) {
+    async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer }, category) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
                 title,
                 content,
-                queImage,
+                category,
+                queImageID,
+                pollOptions,
+                pollQuestion,
+                opinionsFrom,
+                status,
+                pollAnswer,
             })
         } catch (error) {
             console.log("Appwrite serive :: updatePost :: error", error);
@@ -86,7 +92,24 @@ export class Service {
         }
     }
 
+    async updateThumbnail(fileID, file) {
+        try {
+            return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
+        } catch (error) {
+            console.log("Appwrite serive :: updateBucket :: config.js :: error", error);
+            return false
+        }
+    }
 
+    async deleteThumbnail(fileid) {
+
+        try {
+            return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
+        } catch (error) {
+            console.log("Appwrite serive :: deleteBucket :: config.js :: error", error);
+            return false
+        }
+    }
     async getThumbnailPreview(fileid) {
         return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
     }

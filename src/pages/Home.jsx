@@ -21,7 +21,6 @@ const Home = () => {
       .getPosts()
       .then((post) => {
         setPosts(post.documents);
-        // console.log(post.documents)
       })
       .catch((err) => console.log(err.message));
 

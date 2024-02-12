@@ -1,5 +1,6 @@
 .SideBar {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
     position: absolute;
     top: 0;
     right: 0;
@@ -13,7 +14,9 @@
     border-bottom-left-radius: 20px;
     border-top-left-radius: 20px;
 }
-
+.SideBar::-webkit-scrollbar{
+    display: none;
+}
 .SideBar hr {
     height: 1px;
     background-color: rgb(5, 5, 5);
@@ -27,7 +30,6 @@
 
 .SideBar.Active {
     transform: translateX(0);
-    overflow: hidden;
     position: absolute;
     top: 80vh;
     right: 0px;

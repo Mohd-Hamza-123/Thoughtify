@@ -19,7 +19,7 @@ import {
   ViewPost,
   UpperNavigationBar,
 } from "./components/index.js";
-import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion } from "./pages/pages.js";
+import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage } from "./pages/pages.js";
 
 
 const router = createBrowserRouter(
@@ -38,7 +38,7 @@ const router = createBrowserRouter(
           path="/login"
           element={
             <AuthLayout authentication={false}>
-              <Login />
+              <LoginPage />
             </AuthLayout>
           }
         />
@@ -46,7 +46,7 @@ const router = createBrowserRouter(
           path="/signup"
           element={
             <AuthLayout authentication={false}>
-              <Signup />
+              <SignupPage />
             </AuthLayout>
           }
         />
@@ -90,6 +90,15 @@ const router = createBrowserRouter(
           element={
             <>
               <EditProfilePage />
+            </>
+          }
+        />
+
+        <Route
+          path="/ChatRoom/:senderSlug/:receiverSlug"
+          element={
+            <>
+              <PersonalChatPage />
             </>
           }
         />

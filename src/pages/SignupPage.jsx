@@ -1,8 +1,10 @@
 import React from 'react'
-
+import { Signup, UpperNavigationBar, LowerNavigationBar } from '../components'
 const SignupPage = () => {
   return (
-    <div>SignupPage</div>
+    <>
+      <Signup />
+    </>
   )
 }
 
