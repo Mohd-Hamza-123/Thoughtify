@@ -14,7 +14,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID }, category) {
+    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, gender }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -29,7 +29,8 @@ export class Service {
                 pollOptions,
                 pollQuestion,
                 pollAnswer,
-                profileImgID
+                profileImgID,
+                gender
                 // commentBody: ["hello", "how are you"]
             })
         } catch (error) {

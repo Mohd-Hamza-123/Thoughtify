@@ -1,55 +1,74 @@
 import React, { useEffect, useState } from 'react'
 import { PersonalChat } from '../components/index'
 import { useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import profile from '../appwrite/profile'
+import personalChat from '../appwrite/personalChat'
+import generateChatroomId from '../components/Chat/GenerateChatRoomID'
 
 const PersonalChatPage = () => {
+
   const { senderSlug, receiverSlug } = useParams()
-  const [partipantsDetails, setpartipantsDetails] = useState({})
-  const [senderProfileImgURL, setSenderProfileImgURL] = useState('')
-  const [receiverProfileImgURL, setReceiverProfileImgURL] = useState('')
+  const [receiverDetails, setreceiverDetails] = useState([])
+  const senderDetails = useSelector((state) => state.profileSlice.userProfile)
+  const [ChatRoomID, setchatRoomID] = useState('');
+
   const getParticipantsProfileDetails = async () => {
-    const Profiles = await profile.listProfiles({
-      senderSlug,
-      receiverSlug
+
+    const Profiles = await profile.listProfile({
+      slug: receiverSlug
     });
-    const getImgURL = async () => {
-      profile.getStoragePreview(Profiles.documents[0].profileImgID)
-        .then((res) => {
-          setSenderProfileImgURL(res.href)
-        })
-        .finally(() => {
-          profile.getStoragePreview(Profiles.documents[1].profileImgID)
-            .then((res) => {
-              setReceiverProfileImgURL(res.href)
-              setpartipantsDetails({
-                senderName: Profiles.documents[0].name,
-                senderProfileImgURL: senderProfileImgURL,
-                receiverName: Profiles.documents[1].name,
-                receiverProfileImgURL: receiverProfileImgURL
-              })
-            })
-        })
+
+    const getPreview = await profile.getStoragePreview(Profiles.documents[0].profileImgID)
+
+    setreceiverDetails([
+      Profiles.documents[0],
+      getPreview.href
+    ])
 
 
+    let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID)
 
 
+    if (isChatRoomExists) {
+      // console.log('chat Room exists')
+
+
+    } else {
+      // console.log("chat Room not exists")
+      let participantsDetails = [
+        JSON.stringify({ FirstParticipant: senderDetails.name }),
+        JSON.stringify({ SecondParticpant: Profiles.documents[0].name })
+      ]
+      // console.log(participantsDetails)
+      let createdChatRoom = await personalChat.createPersonalChatRoom({
+        ChatRoomID,
+      }, participantsDetails,)
     }
-    getImgURL()
-    // console.log(Profiles)
 
-
+    // console.log(createdChatRoom)
   }
 
   useEffect(() => {
-    getParticipantsProfileDetails()
+    if (ChatRoomID) {
+      // console.log(ChatRoomID)
+      getParticipantsProfileDetails()
+    }
 
+  }, [ChatRoomID])
+
+  useEffect(() => {
+    generateChatroomId(senderSlug, receiverSlug)
+      .then((res) => {
+        // console.log(res)
+        setchatRoomID(res)
+      })
   }, [])
   return (
     <>
-      <PersonalChat partipantsDetails={partipantsDetails} />
+      {receiverDetails && ChatRoomID ? <PersonalChat receiverDetails={receiverDetails} ChatRoomID={ChatRoomID} /> : 'loading'}
     </>
   )
-}
 
+}
 export default PersonalChatPage

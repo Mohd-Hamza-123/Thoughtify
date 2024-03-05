@@ -12,7 +12,8 @@ const Chat = ({ post }) => {
   const [commentArr, setcommentArr] = useState([]);
   const [replyComment, setreplyComment] = useState("");
   const { $id: authid, name } = useSelector((state) => state.auth.userData);
-
+  const userProfile = useSelector((state) => state.profileSlice.userProfile)
+  // console.log(commentArr)
   const { register, watch, control, handleSubmit, setValue, getValues } =
     useForm();
 
@@ -24,15 +25,18 @@ const Chat = ({ post }) => {
   };
 
   const Submit = async (data) => {
-    // console.log(data);
+    setValue('commentContent', '');
+    if (!data.commentContent) return
     if (post) {
       const dbCommnet = await realTime.createComment({
         ...data,
         postid,
         authid,
         name,
+        gender: userProfile.gender
       });
       setcommentArr((prev) => [dbCommnet, ...prev]);
+
     }
   };
   const AddCommentTextarea = (
@@ -47,7 +51,7 @@ const Chat = ({ post }) => {
         postid,
         commentContent,
       })
-      .then((res) => {});
+      .then((res) => { });
   };
 
   const CommentReply = (
@@ -75,6 +79,9 @@ const Chat = ({ post }) => {
         getComments();
       });
   };
+
+
+
   const deleteComments = async (documentid) => {
     realTime
       .deleteComment(documentid)
@@ -107,7 +114,7 @@ const Chat = ({ post }) => {
       </form>
 
       <div>
-        {commentArr.map((comment) => (
+        {commentArr?.map((comment) => (
           <div key={comment.$id} id="Chat_Comment_Div">
             <div className="flex justify-between mb-5">
               <div className="flex gap-2">
@@ -132,7 +139,7 @@ const Chat = ({ post }) => {
               </div>
             </div>
             <div id="Chat_Comment_Div_1">
-              <div id="Chat_Comment">{parse(comment.commentContent)}</div>
+              <div id="Chat_Comment">{comment.commentContent ? parse(comment.commentContent) : ''}</div>
             </div>
             <div>
               <div id="ReplyDiv" className="flex justify-end mt-3">

@@ -3,19 +3,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
 
 #PostCard {
-    width: 70%;
+    width: 100%;
     height: 200px;
-    border-radius: 5px;
+    padding: 5px 18px 5px 12px;
+    border-radius: 2px;
     text-align: left;
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.842);
-    border: 1px solid rgba(0, 0, 0, 0.415);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.1) inset;
 }
 
 
 #PostCard_left {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 30%;
     height: 100%;
+    /* border: 2px solid black; */
 }
 
 #PostCard_right {
@@ -25,15 +30,13 @@
 
 #PostCard_title {
     margin-top: 2px;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: bolder;
     color: rgb(62, 62, 62);
-    font-family: 'Noto Sans', sans-serif;
-    background-color: rgba(128, 128, 128, 0.131);
     border-radius: 5px;
     padding: 8px 8px;
     letter-spacing: 0.4px;
-    line-height: 20px;
+    font-family: 'Gabarito', sans-serif;
     word-break: break-all;
     word-wrap: break-word;
     height: 80px;
@@ -43,29 +46,51 @@
     color: #11161a;
 }
 
-
-
-
 #Post-Card-img {
     width: 100%;
-    height: 100%;
-    border-right: 1px solid rgba(124, 56, 56, 0.415);
+    height: 150px;
+    border-radius: 5px;
+    /* border: 2px solid rgba(0, 0, 0, 0.273); */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.1) inset;
 }
 
 #PostCard-profile-pic {
-    height: 25px;
-    width: 25px;
+    height: 20px;
+    width: 20px;
 }
 
 #PostCard-profile-name {
-    font-weight: 800;
-    font-family: 'Noto Sans', sans-serif;
+    color: black;
+    font-family: 'Gabarito', sans-serif;
 }
 
+.PostCard_category {
+    background-color: rgb(242, 242, 242);
+    display: inline;
+    padding: 4px 7px;
+    color: rgb(68, 68, 68);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Gabarito', sans-serif;
+}
+
+.PostCard_Date {
+    font-family: 'Gabarito', sans-serif;
+}
+
+.PostCard_Views {
+    font-size: 12px;
+    font-family: 'Gabarito', sans-serif;
+}
+
+.PostCard_Views i {
+    margin-top: 3px;
+}
 
 #PostCard_Comments_Icon i {
-    font-size: 35px;
+    font-size: 30px;
     position: relative;
+    font-weight: lighter;
 }
 
 #PostCard_Comments_Icon i:nth-child(1) {
@@ -76,15 +101,16 @@
     color: rgb(211, 0, 183);
 }
 
-#PostCard_Comments_Icon i small {
+#PostCard_Comments_Icon i p {
     position: absolute;
-    top: 40%;
+    top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
+    font-family: 'Gabarito', sans-serif;
     font-size: 12px;
 }
 
 
-#PostCard_Comments_Icon i:nth-child(1) small {
+/* #PostCard_Comments_Icon i:nth-child(1) small {
     color: blue;
-}
+} */

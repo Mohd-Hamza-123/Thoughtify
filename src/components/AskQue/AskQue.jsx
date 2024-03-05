@@ -10,7 +10,7 @@ import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
 
 const AskQue = ({ post }) => {
-  console.log(post)
+
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -20,13 +20,12 @@ const AskQue = ({ post }) => {
         pollAnswer: post?.pollAnswer || ''
       },
     });
+
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
 
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
-  // console.log(thumbnailFile)
-  // console.log(thumbnailFile)
   const [thumbailURL, setThumbailURL] = useState('')
   const [imgArr, setimgArr] = useState([]);
 
@@ -77,10 +76,9 @@ const AskQue = ({ post }) => {
     reader.readAsDataURL(file)
   }
 
-
   const submit = async (data) => {
 
-    console.log((data))
+
     if (pollQuestion && TotalPollOptions.length <= 1) {
       console.log('There must be 2 options')
       return
@@ -123,6 +121,8 @@ const AskQue = ({ post }) => {
       setimgArr((prev) => []);
 
     } else if (!post && thumbnailFile) {
+      const userProfile = await profile.listProfile({ slug: userData.$id })
+      const gender = userProfile.documents[0].gender;
 
       const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
@@ -132,40 +132,43 @@ const AskQue = ({ post }) => {
         userId: userData.$id,
         pollQuestion,
         pollOptions: TotalPollOptions,
-        name: userData?.name
+        name: userData?.name,
+        gender,
       }, categoryValue);
-      // console.log(dbPost)
+      console.log(dbPost)
     } else {
 
-      let imageURLIndex = findingImageIndex(data.content);
+      // let imageURLIndex = findingImageIndex(data.content);
+      const userProfile = await profile.listProfile({ slug: userData.$id })
+      const gender = userProfile.documents[0].gender;
+      // if (!isNaN(imageURLIndex)) {
+      //   const dbPost = await appwriteService.createPost({
+      //     ...data,
+      //     userId: userData.$id,
+      //     queImage: imgArr[imageURLIndex],
+      //     name: userData.name,
+      //     queImageID: null,
+      //     pollQuestion,
+      //     pollOptions: TotalPollOptions,
+      //   }, categoryValue);
 
-      if (!isNaN(imageURLIndex)) {
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id,
-          queImage: imgArr[imageURLIndex],
-          name: userData.name,
-          queImageID: null,
-          pollQuestion,
-          pollOptions: TotalPollOptions,
-        }, categoryValue);
+      // } 
+      // else {
+      //   const dbPost = await appwriteService.createPost({
+      //     ...data,
+      //     userId: userData.$id,
+      //     queImage: null,
+      //     queImageID: null,
+      //     name: userData.name,
+      //     pollQuestion,
+      //     pollOptions: TotalPollOptions,
+      //   }, categoryValue);
 
-      } else {
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id,
-          queImage: null,
-          queImageID: null,
-          name: userData.name,
-          pollQuestion,
-          pollOptions: TotalPollOptions,
-        }, categoryValue);
-
-      }
+      // }
     }
-    navigate("/");
-    setimgArr((prev) => []);
-  };
+    navigate("/")
+    setimgArr((prev) => [])
+  }
 
   const slugTransform = useCallback((value) => {
     if (value && typeof value === "string") {
@@ -192,6 +195,8 @@ const AskQue = ({ post }) => {
         .then((res) => {
           setThumbailURL(res.href)
         })
+    } else {
+
     }
   }, [])
   useEffect(() => {
@@ -203,7 +208,7 @@ const AskQue = ({ post }) => {
       }
     });
     return () => subscription.unsubscribe();
-  }, [slugTransform, setValue, watch]);
+  }, [slugTransform, setValue, watch])
 
   return (
     <>
@@ -220,7 +225,7 @@ const AskQue = ({ post }) => {
               <TextArea
                 maxLength="250"
                 id="Que_Title"
-                placeholder="A Catchy ,Title will get more attention. Max 250 Characters are Allowed."
+                placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
                 {...register("title", {
                   required: false,
                 })}
@@ -301,13 +306,25 @@ const AskQue = ({ post }) => {
                         <label htmlFor="Id3" className='cursor-pointer'>Girls</label>
                         <i className="fa-solid fa-mars-stroke text-pink-600"></i>
                       </div>
+
+                      <div className="flex-1 flex gap-3 items-center text-xl">
+                        <Input
+                          // {...field}
+                          type="radio"
+                          value="Girls"
+                          defaultChecked={''}
+                          id="Id3"
+                          className='cursor-pointer'
+                        />
+                        <label htmlFor="Id3" className='cursor-pointer'>Responders</label>
+                        <i className="fa-solid fa-mars-stroke text-red-600"></i>
+                      </div>
                     </div>
                   )}
                 />
 
               </div>
             </div>
-
 
             <hr className="mt-5" />
 
@@ -376,7 +393,6 @@ const AskQue = ({ post }) => {
                   </div>
                 </div>
               )}
-
             />
 
             <div id="AskQue_SelectCategory">
@@ -394,13 +410,13 @@ const AskQue = ({ post }) => {
                 </div>
 
                 {selectCategoryVisible && <ul className="AskQue-dropdown-list flex flex-col">
-                  {categoriesArr?.map((category, index) => (
-                    <li key={category} className="dropdown-item" onClick={
+                  {categoriesArr?.map((object, index) => (
+                    <li key={object.category + index} className="dropdown-item" onClick={
                       () => {
                         setselectCategoryVisible(false)
-                        setcategoryValue(category)
+                        setcategoryValue(object.category)
                       }
-                    }>{category}</li>
+                    }>{object.category}</li>
                   ))}
                 </ul>}
               </div>
@@ -480,7 +496,6 @@ const AskQue = ({ post }) => {
                       })}
                     />
                   </div>
-
 
                 </div>
 

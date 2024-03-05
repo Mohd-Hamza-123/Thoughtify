@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login, logout } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
@@ -17,6 +17,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [EditAskQueVisible, setEditAskQueVisible] = useState(false);
   const dispatch = useDispatch();
+  // const data = useSelector((state) => state.auth.status)
+  // console.log(data)
   const navigate = useNavigate();
 
   useEffect(() => {

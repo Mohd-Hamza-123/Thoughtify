@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const initialState = {
     userProfile: {}
 }
@@ -18,3 +17,4 @@ const profileSlice = createSlice({
 
 export const { getUserProfile } = profileSlice.actions;
 export default profileSlice.reducer
+

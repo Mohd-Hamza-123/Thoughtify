@@ -12,7 +12,7 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({ postid, commentContent, authid, name
+    async createComment({ postid, commentContent, authid, name, gender
     }) {
         try {
             return await this.database.createDocument(
@@ -24,7 +24,8 @@ export class RealTime {
                     commentContent,
                     authid,
                     subComment: [],
-                    name
+                    name,
+                    gender
                 }
             )
         } catch (error) {
@@ -103,16 +104,18 @@ export class RealTime {
         }
     }
 
-
-    async subscribeChannel() {
+    async customCommentFilter(queryArr) {
         try {
-            this.client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteCollectionId}.documents`, (res) => {
-                console.log(res)
-            })
+            return await this.database.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteNewCollectionId,
+                queryArr
+            )
         } catch (error) {
-            console.log("RealTime error in realtime.js")
+            console.log("customProfileFilter error in realtime.js")
         }
     }
+
 }
 
 const realTime = new RealTime()

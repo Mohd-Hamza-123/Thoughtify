@@ -19,7 +19,6 @@ const ViewPost = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
-
   const isAuther = post && userData ? post.userId === userData.$id : false;
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
@@ -119,7 +118,7 @@ const ViewPost = () => {
               </Button>
             </div>
           </div>
-          <div id="ViewPost-Question" className="bg-gray-300 mt-3">
+          <div id="ViewPost-Question" className="mt-3">
             <div className="flex gap-2">
               <div className="rounded-full">
                 <img
@@ -129,7 +128,7 @@ const ViewPost = () => {
                   alt=""
                 />
               </div>
-              <div>
+              <div id='ViewPostName'>
                 <h5>{post.name}</h5>
               </div>
             </div>

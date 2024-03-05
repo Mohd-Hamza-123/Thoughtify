@@ -1,5 +1,5 @@
 #ViewPost-Question-Container {
-
+    font-family: 'Poppins', sans-serif;
     border-radius: 10px;
     border: 1px groove rgba(128, 128, 128, 0.507)
 }
@@ -7,31 +7,34 @@
 #ViewPost-Category {
     text-align: left !important;
     padding: 2px 4px;
-    border-radius: 3px;
-    font-size: 15px;
+    border-radius: 5px;
+    font-size: 13px;
     background-color: rgba(88, 88, 88, 0.17);
     color: rgba(32, 32, 32, 0.513);
 }
 
 #ViewPost-Question {
-
     margin: 0 auto;
     width: 96%;
     border-radius: 4px;
     padding: 10px 10px;
 }
 
+#ViewPostName {
+    font-size: 15px;
+}
+
 #ViewPost-Title {
     font-size: 35px;
-    color: rgba(0, 0, 0, 0.671);
-    font-family: 'Poppins', sans-serif;
+    color: rgb(0, 0, 0);
+
 }
 
 .ViewPost-ellipsis-Vertical {
     display: none;
     position: absolute;
     right: 15px;
-    background: #000;
+    /* background: #000; */
     border-radius: 5px;
 }
 

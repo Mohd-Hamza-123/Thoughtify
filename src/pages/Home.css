@@ -1,4 +1,4 @@
-#Mainloader{
+#Mainloader {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,7 +6,23 @@
     width: 100vw;
 }
 
-#Mainloader img{
+#Mainloader img {
     height: 300px;
     width: 300px;
+}
+
+.Home_Left {
+    /* border: 2px solid red; */
+    width: 60%;
+}
+
+.Home_Right {
+    width: 40%;
+    height: fit-content;
+    position: sticky;
+    right: 0;
+    top: 0;
+    /* border: 2px solid red; */
+    padding: 5px;
+
 }

@@ -30,19 +30,19 @@
 /* receiver div */
 #PersonalChat_Receiver_div {
     height: 12%;
-    border: 2px solid red;
+    /* border: 2px solid red; */
     overflow: hidden;
     color: white;
 }
 
 #PersonalChat_Receiver_div>div:nth-child(1) {
     width: 90%;
-    border: 2px solid greenyellow;
+    /* border: 2px solid greenyellow; */
 }
 
 #PersonalChat_Receiver_div>div:nth-child(2) {
     width: 10%;
-    border: 2px solid yellow;
+    /* border: 2px solid yellow; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -171,7 +171,7 @@
     overflow-y: visible; */
     overflow-x: hidden;
     overflow-y: auto;
-    border: 2px solid yellow;
+    /* border: 2px solid yellow; */
     height: 80%;
     display: flex;
     flex-direction: column;
@@ -180,7 +180,7 @@
 
 #PersonalChat_Messages> :first-child {
     margin-top: auto !important;
-    border: 2px solid green;
+    /* border: 2px solid green; */
 }
 
 #message--form {
@@ -197,7 +197,7 @@
 
 .message--wrapper {
     display: flex;
-    border: 2px solid rgb(0, 234, 255);
+    /* border: 2px solid rgb(0, 234, 255); */
     flex-direction: column-reverse;
     gap: 0.5em;
     margin: 10px;
@@ -213,13 +213,11 @@
 .message--body {
     padding: 0.5em 0;
     color: var(--textColorSecondary);
-    background-color: var(--themeColorMain);
     padding: 1em;
     border-radius: 20px;
     width: fit-content;
     max-width: 100%;
     word-wrap: break-word;
-    /* added */
 }
 
 .message--body--owner {
