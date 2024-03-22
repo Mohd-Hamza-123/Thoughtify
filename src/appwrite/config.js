@@ -37,7 +37,6 @@ export class Service {
             console.log("Appwrite serive :: createPost :: error", error)
         }
     }
-
     async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer }, category) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
@@ -55,7 +54,6 @@ export class Service {
             console.log("Appwrite serive :: updatePost :: error", error);
         }
     }
-
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
@@ -64,7 +62,6 @@ export class Service {
             return false
         }
     }
-
     async getPost(slug) {
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
@@ -73,7 +70,6 @@ export class Service {
             return false
         }
     }
-
     async getPosts() {
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId)
@@ -82,8 +78,6 @@ export class Service {
             return false
         }
     }
-
-
     async createThumbnail({ file }) {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
@@ -92,7 +86,6 @@ export class Service {
             return false
         }
     }
-
     async updateThumbnail(fileID, file) {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
@@ -101,7 +94,6 @@ export class Service {
             return false
         }
     }
-
     async deleteThumbnail(fileid) {
 
         try {

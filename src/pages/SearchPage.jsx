@@ -1,7 +1,12 @@
-import React from "react";
+import React from 'react'
+import { BrowseQuestions } from '../components'
 
 const SearchPage = () => {
-  return <div>SearchPage</div>;
-};
+  return (
+    <>
+      <BrowseQuestions />
+    </>
+  )
+}
 
-export default SearchPage;
+export default SearchPage

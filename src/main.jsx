@@ -19,7 +19,7 @@ import {
   ViewPost,
   UpperNavigationBar,
 } from "./components/index.js";
-import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, BrowseQuestions } from "./pages/pages.js";
+import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, SearchPage } from "./pages/pages.js";
 
 
 const router = createBrowserRouter(
@@ -103,10 +103,10 @@ const router = createBrowserRouter(
           }
         />
         <Route
-        path="/BrowseQuestion/:category"
+        path="/BrowseQuestion/:category/:searchInput"
         element = {
           <>
-          <BrowseQuestions/>
+          <SearchPage/>
           </>
         }
         />

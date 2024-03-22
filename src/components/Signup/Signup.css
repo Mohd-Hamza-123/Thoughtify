@@ -6,11 +6,8 @@
 }
 
 #Signup {
-    /* background-color: rgb(246, 248, 250); */
-    /* border: 1px solid rgba(11, 255, 247, 0.469); */
     padding: 20px;
     box-shadow: 0 0 -10px rgba(0, 0, 0, 0.14);
-
 }
 
 #Signup>div {
@@ -24,6 +21,9 @@
     animation: rotate 1s normal;
 }
 
+#Signup img {
+    height: 60px;
+}
 
 @keyframes rotate {
     100% {
@@ -36,11 +36,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: 2px solid red; */
     display: flex;
     justify-content: flex-start;
     align-items: center;
-
 }
 
 .signup_insideForm_div .inputTransition input {
@@ -51,7 +49,6 @@
     color: white;
     height: 35px;
     font-size: 15px;
-  
 }
 
 .signup_insideForm_div .inputTransition i {
@@ -69,7 +66,6 @@
 .signup_insideForm_div .inputTransition input:valid {
     background-color: rgb(25, 25, 28);
     color: white;
-    /* pointer-events: none; */
 }
 
 .signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown) {

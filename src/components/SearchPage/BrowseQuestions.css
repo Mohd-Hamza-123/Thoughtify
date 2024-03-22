@@ -1,0 +1,121 @@
+#BrowseQuestions_Filters {
+    width: 28%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    border: 1px solid #0000001f, 1px solid rgba(0, 0, 0, 0.122) inset;
+    border-radius: 6px;
+    background-color: white;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 80vh;
+}
+
+#BrowseQuestions_Filters>div {
+    /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
+    border-bottom: 2px solid rgba(0, 0, 0, 0.059);
+    
+    padding: 4px 4px 10px 4px;
+}
+
+#BrowseQuestions_SearchQuestion_Heading {
+    font-size: 30px;
+    font-family: 'Gabarito', sans-serif;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    text-decoration:underline;
+}
+
+#BrowseQuestions_Filters label {
+    cursor: pointer;
+}
+
+#BrowseQuestions_Filters p {
+    font-weight: 600;
+    font-size: 17px;
+    margin-bottom: 7px;
+    letter-spacing: 0.5px;
+}
+
+#BrowseQuestions_PostTitle {
+    margin-top: 28px;
+}
+
+#BrowseQuestions_PostTitle input {
+    padding: 2px 4px;
+    font-size: 14px;
+    border: 1px solid var(--secondryBlue);
+}
+
+#BrowseQuestions_FilterByDate Input {
+    outline: none;
+    padding: 0px 4px;
+    border: 1px solid var(--secondryBlue);
+}
+
+#BrowseQuestions_Category select {
+    border: 1px solid var(--secondryBlue);
+}
+
+#BrowseQuestions_FilterByDate label {
+    width: 39%;
+}
+
+#BrowseQuestions_Date_Between div {
+    width: 61%;
+}
+
+
+.BrowseQuestions_ApplyFilter {
+    padding: 5px;
+    font-size: 12px;
+    background-color: var(--secondryBlue);
+    border-radius: 4px;
+    color: white;
+    position: absolute;
+    top: 10px;
+    right: 8px;
+}
+
+#BrowseQuestions_Filtered_Questions {
+    width: 72%;
+    border-radius: 0px;
+    padding: 10px 10px;
+    background-color: transparent;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 80vh;
+}
+
+#BrowseQuestions_Filtered_Questions>div {
+    border-radius: 5px;
+    padding: 7px;
+    margin-top: 12px;
+    margin-bottom: 25px;
+    font-family: 'Varela Round', sans-serif;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+#BrowseQuestions_Filtered_Questions>div>span {
+    font-size: 14px;
+}
+
+#BrowseQuestions_Filtered_Questions>div>a>p {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 11px;
+}
+
+#BrowseQuestions_created_category_views span {
+    font-size: 12px;
+    background-color: rgb(242, 242, 242);
+    padding: 3px 6px;
+    border-radius: 5px;
+}
+
+#BrowseQuestions_created_category_views>div>span {
+    background-color: transparent;
+}
+
+#BrowseQuestions_created_category_views i {
+    font-size: 10px;
+}

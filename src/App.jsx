@@ -21,32 +21,52 @@ function App() {
   // console.log(data)
   const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   authService.getCurrentUser()
+  //     .then((userData) => {
+  //       if (userData) {
+  //         dispatch(login({ userData }));
+  //         navigate("/");
+  //       } else {
+  //         dispatch(logout());
+  //         navigate("/signup");
+  //       }
+  //       return userData
+  //     })
+  //     .then((userData) => {
+  //       profile.listProfile({ slug: userData?.$id })
+  //         .then((res) => res.documents[0])
+  //         .then((userProfile) => dispatch(getUserProfile({ userProfile })))
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+
+  // }, []);
+
+  // Below is Optimized code by chatgpt 
+
   useEffect(() => {
-    authService
-      .getCurrentUser()
+    authService.getCurrentUser()
       .then((userData) => {
         if (userData) {
           dispatch(login({ userData }));
           navigate("/");
+          return profile.listProfile({ slug: userData?.$id });
         } else {
           dispatch(logout());
           navigate("/signup");
         }
-        return userData
       })
-      .then((userData) => {
-        profile.listProfile({ slug: userData?.$id })
-          .then((res) => res.documents[0])
-          .then((userProfile) => dispatch(getUserProfile({ userProfile })))
-      })
-      .catch((err) => {
-        console.log(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-
+      .then((res) => res?.documents[0])
+      .then((userProfile) => dispatch(getUserProfile({ userProfile })))
+      .catch((err) => console.log(err.message))
+      .finally(() => setLoading(false));
   }, []);
+
 
   return !loading ? (
     <>

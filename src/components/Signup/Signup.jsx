@@ -88,7 +88,7 @@ const Signup = () => {
     };
   }, [watch, setValue, createID]);
   return (
-    <div>
+  
       <div id="Signup_container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 
         <div
@@ -197,7 +197,6 @@ const Signup = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

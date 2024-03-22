@@ -5,7 +5,6 @@ import Profile from './Profile'
 import AskQuestion from './AskQuestion'
 import SignupPage from './SignupPage'
 import LoginPage from './LoginPage'
-import BrowseQuestions from './BrowseQuestions'
 import GetStarted from './GetStarted'
 import GlobalChatPage from './GlobalChatPage'
 import PersonalChatPage from './PersonalChatPage'
@@ -14,21 +13,21 @@ import ViewPostPage from './ViewPostPage'
 import ForgetPassword from './ForgetPassword'
 import EditAskQuestion from './EditAskQuestion'
 import AllPersonalChatName from './AllPersonalChatName'
+
 export {
     EditProfilePage,
     EditAskQuestion,
     Home,
-    SearchPage,
     Profile,
     AskQuestion,
     SignupPage,
     LoginPage,
-    BrowseQuestions,
     GetStarted,
     GlobalChatPage,
     PersonalChatPage,
     SettingPage,
     ViewPostPage,
     ForgetPassword,
+    SearchPage,
     AllPersonalChatName
 }

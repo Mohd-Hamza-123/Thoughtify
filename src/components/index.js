@@ -32,4 +32,5 @@ import Overlay from "./Overlay/Overlay";
 import PersonalChat from "./Chat/PersonalChat";
 import HorizontalLine from './HorizontalLine'
 import HomeRight from "./Post-Card/HomeRight";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight }
+import BrowseQuestions from "./SearchPage/BrowseQuestions";
+export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight,BrowseQuestions }

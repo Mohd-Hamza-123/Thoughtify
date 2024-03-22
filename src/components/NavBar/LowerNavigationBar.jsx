@@ -30,7 +30,7 @@ const LowerNavigationBar = () => {
     },
     {
       NavName: "Browse Question",
-      slug: '/BrowseQuestion/General'
+      slug: `/BrowseQuestion/""/""`
     },
   ]
   return (

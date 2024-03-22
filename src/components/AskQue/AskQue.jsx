@@ -154,15 +154,15 @@ const AskQue = ({ post }) => {
 
       // } 
       // else {
-      //   const dbPost = await appwriteService.createPost({
-      //     ...data,
-      //     userId: userData.$id,
-      //     queImage: null,
-      //     queImageID: null,
-      //     name: userData.name,
-      //     pollQuestion,
-      //     pollOptions: TotalPollOptions,
-      //   }, categoryValue);
+      const dbPost = await appwriteService.createPost({
+        ...data,
+        userId: userData.$id,
+        queImage: null,
+        queImageID: null,
+        name: userData.name,
+        pollQuestion,
+        pollOptions: TotalPollOptions,
+      }, categoryValue);
 
       // }
     }
@@ -507,6 +507,7 @@ const AskQue = ({ post }) => {
               <Button type="submit" className="askque_btn">
                 {post ? "Update Your Question" : "Post Question"}
               </Button>
+              <input type="reset" value="reset" />
             </div>
           </div>
 

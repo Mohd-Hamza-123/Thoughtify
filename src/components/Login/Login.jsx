@@ -32,13 +32,11 @@ const Login = () => {
   return (
     <>
       {/* <UpperNavigationBar /> */}
-      <div className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div
           className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
         >
           <div className="flex justify-center items-center">
-            {/* <Logo /> */}
-            {/* {QueryFlow} */}
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
           <div className="flex flex-col w-full">
@@ -63,21 +61,31 @@ const Login = () => {
               className="max-w-full flex flex-col justify-center items-center"
               onSubmit={handleSubmit(login)}
             >
-              <div className="w-full flex flex-col justify-center items-center">
-                <Input
-                  placeholder="Email"
-                  className="w-80 rounded my-3 px-2 p-1 text-lg bg-gray-300 border-none"
-                  {...register("email", {
-                    required: true,
-                  })}
-                />
-                <Input
-                  className="border-none rounded px-2 p-1 my-3 bg-gray-300 text-lg w-80"
-                  placeholder="Password"
-                  {...register("password", {
-                    required: true,
-                  })}
-                />
+              <div id='Login' className="w-full flex flex-col justify-center items-center mb-3 gap-8">
+                <div className="relative flex flex-col">
+                  <input
+                    required
+                    placeholder=""
+                    className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
+                    {...register("email", {
+                      required: true,
+                    })}
+                  />
+                  <span>Email</span>
+                  <i className="w-full"></i>
+                </div>
+                <div className="relative flex flex-col">
+                  <input
+                    required
+                    placeholder=""
+                    className="border-none rounded px-2 p-1 bg-gray-300 text-lg w-80"
+                    {...register("password", {
+                      required: true,
+                    })}
+                  />
+                  <span>Password</span>
+                  <i className="w-full"></i>
+                </div>
               </div>
               <div>
                 <p>
