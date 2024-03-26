@@ -13,9 +13,12 @@ import location from "../../appwrite/location";
 import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
+import { useAskContext } from "../../context/AskContext";
 
 
 const MyProfile = () => {
+  const { myUserProfile } = useAskContext()
+  console.log(myUserProfile)
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -55,7 +58,11 @@ const MyProfile = () => {
   };
 
   useEffect(() => {
-    getUserProfile();
+    if (slug === myUserProfile.userIdAuth) {
+      setProfileData((prev)=>myUserProfile)
+    } else {
+      getUserProfile();
+    }
     flagFunc();
   }, []);
 
@@ -194,7 +201,7 @@ const MyProfile = () => {
               </li>
 
               <li onClick={() => { }} className="MyProfile_Data_items">
-                More
+                Followers
               </li>
             </ul>
           </section>

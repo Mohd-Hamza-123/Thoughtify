@@ -65,7 +65,18 @@ export class Profile {
             console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
         }
     }
-
+    async listProfilesWithQueries({ listResponders }) {
+        let QueryArr = []
+        if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
+        // console.log(QueryArr)
+        try {
+            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+                QueryArr
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: listProfilesWithQueries :: profile.js :: error", error);
+        }
+    }
     async listSingleProfile(slug) {
         try {
             return await this.databases.getDocument(

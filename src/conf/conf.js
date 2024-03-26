@@ -9,7 +9,8 @@ const conf = {
     appwriteProfileCollectionId: String(import.meta.env.VITE_APPWRITE_PROFILECOLLECTION_ID),
     appwriteBucketIdThumbnail: String(import.meta.env.VITE_APPWRITE_BUCKET_ID_THUMBNAIL),
     appwritePersonalChatParticipantsCollectionId: String(import.meta.env.VITE_APPWRITE_PERSONALCHATPARTICIPANTS_COLLECTION_ID),
-    appwritePersonalChatConverstionsCollectionId: String(import.meta.env.VITE_APPWRITE_PERSONALCHAT_CONVERSATIONS_COLLECTION_ID)
+    appwritePersonalChatConverstionsCollectionId: String(import.meta.env.VITE_APPWRITE_PERSONALCHAT_CONVERSATIONS_COLLECTION_ID),
+    appwrite_Feedback_CollectionId: String(import.meta.env.VITE_APPWRITE_FEEDBACK_COLLECTION_ID)
 }
 
 export default conf;

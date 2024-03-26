@@ -5,7 +5,7 @@
 #PostCard {
     width: 100%;
     height: 200px;
-    padding: 5px 18px 5px 12px;
+    padding: 5px 14px 5px 5px;
     border-radius: 2px;
     text-align: left;
     overflow: hidden;
@@ -31,6 +31,8 @@
 #PostCard_title {
     margin-top: 2px;
     font-size: 20px;
+    /* border: 2px solid black; */
+    overflow: hidden;
     font-weight: bolder;
     color: rgb(62, 62, 62);
     border-radius: 5px;
@@ -39,7 +41,7 @@
     font-family: 'Gabarito', sans-serif;
     word-break: break-all;
     word-wrap: break-word;
-    height: 80px;
+    height: 100px;
 }
 
 #PostCard_title:hover {
@@ -95,15 +97,39 @@
 
 #PostCard_Comments_Icon i:nth-child(1) {
     color: rgb(3, 3, 160);
+    color: black;
 }
 
 #PostCard_Comments_Icon i:nth-child(2) {
-    color: rgb(211, 0, 183);
+    color: rgb(201, 0, 175);
+    color: black;
+}
+
+#PostCard_MaleComments {
+    fill: rgb(0, 0, 0);
+    height: 20px;
+    margin-top: 1px;
+}
+
+#PostCard_MaleComments_p {
+    color: rgb(0, 0, 0);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+#PostCard_FemaleComments {
+    fill: rgb(212, 1, 245);
+    height: 20px;
+}
+
+#PostCard_FemaleComments_p {
+    color: rgb(212, 1, 245);
+    font-weight: 500;
 }
 
 #PostCard_Comments_Icon i p {
     position: absolute;
-    top: 38%;
+    top: 41%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Gabarito', sans-serif;

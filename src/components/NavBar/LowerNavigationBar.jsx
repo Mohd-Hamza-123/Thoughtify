@@ -17,7 +17,7 @@ const LowerNavigationBar = () => {
       slug: '/'
     },
     {
-      NavName: 'New Questions',
+      NavName: 'Getting Started',
       slug: '/'
     },
     {

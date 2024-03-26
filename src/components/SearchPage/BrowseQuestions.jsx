@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./BrowseQuestions.css"
+import { Query } from 'appwrite'
 import { UpperNavigationBar, HorizontalLine, Input, Button, LowerNavigationBar } from '../index'
 import { categoriesArr } from '../AskQue/Category'
 import appwriteService from '../../appwrite/config'
@@ -10,21 +11,22 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 const BrowseQuestions = () => {
   const { category } = useParams()
-  console.log(`${category}`)
   const queries = useSelector((state) => state.queriesSlice.queries);
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      PostAge: 'Recent'
-    }
-  })
+  const { register, handleSubmit, setValue } = useForm({})
   const dispatch = useDispatch();
 
   const submit = async (data) => {
     console.log(data)
-    if (data.AfterDate != '' && data.BeforeDate != '') {
-      console.log("Enter a Valid Filter")
-      return
+
+
+    const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
+    if (filteredQuestions) {
+      // console.log(filteredQuestions)
+      dispatch(getQueriesInRedux({ queries: filteredQuestions.documents }))
+    } else {
+      console.log("No Data")
     }
+
 
   }
 
@@ -33,9 +35,9 @@ const BrowseQuestions = () => {
     dispatch(getQueriesInRedux({ queries: queries.documents }))
   }
   useEffect(() => {
-    if (queries.length === 0) {
-      getQueries()
-    }
+    // if (queries.length === 0) {
+    //   getQueries()
+    // }
   }, [])
 
   return (
@@ -87,6 +89,23 @@ const BrowseQuestions = () => {
           </div>
 
 
+          <div>
+            <p>Filter By Comment :</p>
+            <div className='flex flex-col gap-1'>
+              <div className='flex gap-2'>
+                <input  {...register("Commented")} id="BrowseQuestion_Most_Commented" type="radio" name="Commented" value={'Most Commented'} />
+                <label className="cursor-pointer" htmlFor='BrowseQuestion_Most_Commented'>Most Commented</label>
+              </div>
+              <div className='flex gap-2'>
+                <input {...register("Commented")} id="BrowseQuestion_Least_Commented" type="radio" name="Commented" value={'Least Commented'} />
+                <label className="cursor-pointer" htmlFor='BrowseQuestion_Least_Commented'>Least Commented</label>
+              </div>
+            </div>
+          </div>
+
+
+
+
 
           <div>
             <div>
@@ -107,6 +126,7 @@ const BrowseQuestions = () => {
             <div id='BrowseQuestions_Category' className='flex gap-2'>
               <label htmlFor="">Category : </label>
               <select name="" {...register("category")} id="" className='outline-none'>
+                <option value={'Select Category'}>Select Category</option>
                 {categoriesArr?.map((category, index) => (
                   <option key={category.category + index}>{category.category}</option>
                 ))}
@@ -117,10 +137,8 @@ const BrowseQuestions = () => {
           <div id='BrowseQuestions_FilterByDate'>
             <p>Filter By Date : </p>
             <div className='flex flex-col gap-3'>
-              <div className='flex gap-1'>
-                <label className='' htmlFor="BeforeDate">Before Date :</label>
-                <input type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")} />
-              </div>
+
+
               <div className='flex gap-1'>
                 <label className='' htmlFor="AfterDate">After Date :</label>
                 <input {...register("AfterDate", {
@@ -128,26 +146,15 @@ const BrowseQuestions = () => {
                 })} type="date" name="AfterDate" id="AfterDate" />
               </div>
 
-              <div id='BrowseQuestions_Date_Between' className='flex gap-1'>
-                <label className='' htmlFor="">Between Date :</label>
-                <div className='flex flex-wrap gap-2'>
-                  <div>
-                    <label className='BrowseQuestions_From_To' htmlFor="">From</label>
-                    <input {...register("From")} type="date" name="From" id="" />
-                  </div>
-                  <div>
-                    <label className='BrowseQuestions_From_To' htmlFor="">To</label>
-                    <input {...register("To")} type="date" name="To" id="" />
-                  </div>
-                </div>
+              <div className='flex gap-1'>
+                <label className='' htmlFor="BeforeDate">Before Date :</label>
+                <input type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")} />
               </div>
             </div>
           </div>
 
-
-
           <Button type='Submit' className='BrowseQuestions_ApplyFilter'>Apply Filter</Button>
-
+          <input type='reset' value={'Reset Filter'} className='BrowseQuestions_ResentFilter' />
         </form>
 
 
@@ -165,9 +172,12 @@ const BrowseQuestions = () => {
                     <span>{querie.views}</span>
                     <i className=" fa-solid fa-eye" aria-hidden="true"></i>
                   </div>
+                  <div>
+                    <span>{querie.commentCount}</span>
+                    <i className="fa-solid fa-comment"></i>
+                  </div>
                 </div>
               </Link>
-
             </div>
           ))}
 

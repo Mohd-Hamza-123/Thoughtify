@@ -13,7 +13,7 @@ const ProfileSummary = ({ profileData }) => {
     occupation,
     educationLvl,
   } = profileData;
-  
+
   return (
     <div className="w-full flex relative gap-3">
       <div id="ProfileSummary" className="w-2/3">
@@ -54,20 +54,13 @@ const ProfileSummary = ({ profileData }) => {
           </div>
         </div>
       </div>
-
       <div id="ProfileSummarySecondDiv" className="w-1/3 bg-slate-500 h-full">
-        <div id="ProfileSummary_Status" className="text-white p-4">
-          <h2 className="text-lg font-semibold mb-3">Status</h2>
-          <p>{'Busy' || "No status available"}</p>
-        </div>
-
-        <div id="ProfileSummary_RecentActivity">
-          recent activity
-        </div>
-
-        <div id="ProfileSummary_Suggestions">
-          suggestions
-        </div>
+        <p>Updates By Creater</p>
+        <ul>
+          <li>Welocme {'Name'}. This is a platform where you can ask any doubt.</li>
+          <li>You can have chats with your friends.</li>
+          <li>Stay Active.</li>
+        </ul>
       </div>
     </div>
   );

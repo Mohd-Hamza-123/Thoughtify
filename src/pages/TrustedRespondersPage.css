@@ -1,0 +1,116 @@
+#TrustedRespondersPage {
+    width: 100%;
+    /* border: 2px solid black; */
+}
+
+/* @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap"); */
+
+
+
+.TrustedRespondersPage_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-block: 2rem;
+    gap: 2rem;
+    font-family: 'Varela Round', sans-serif;
+}
+
+.TrustedRespondersPage_container img {
+    height: 180px;
+    width: 180px;
+    max-width: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.TrustedRespondersPage_container h5 {
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.card {
+    height: 70vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    width: clamp(20rem, calc(20rem + 2vw), 22rem);
+    box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    background: #ECE9E6;
+    background: linear-gradient(to right, #FFFFFF, #ECE9E6);
+
+}
+
+.card::-webkit-scrollbar {
+    display: none;
+}
+/* .card::-webkit-scrollbar-thumb{
+    background-color: white;
+}
+.card::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: rgb(22, 190, 246);
+} */
+
+
+.card__body {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+
+.tag {
+    align-self: flex-start;
+    padding: .25em .75em;
+    border-radius: 1em;
+    font-size: .75rem;
+}
+
+.tag+.tag {
+    margin-left: .5em;
+}
+
+.tag-blue {
+    background: #56CCF2;
+    background: linear-gradient(to bottom, #2F80ED, #56CCF2);
+    color: #fafafa;
+}
+
+.tag-brown {
+    background: #D1913C;
+    background: linear-gradient(to bottom, #FFD194, #D1913C);
+    color: #fafafa;
+}
+
+.tag-red {
+    background: #cb2d3e;
+    background: linear-gradient(to bottom, #ef473a, #cb2d3e);
+    color: #fafafa;
+}
+
+.card__body h4 {
+    font-size: 1.5rem;
+    text-transform: capitalize;
+}
+
+.card__footer {
+    display: flex;
+    padding: 1rem;
+}
+
+.user {
+    display: flex;
+    gap: .5rem;
+}
+
+.user__image {
+    border-radius: 50%;
+}
+
+.user__info>small {
+    color: #666;
+}

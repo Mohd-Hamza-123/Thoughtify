@@ -14,7 +14,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, gender }, category) {
+    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, gender, date }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -30,7 +30,8 @@ export class Service {
                 pollQuestion,
                 pollAnswer,
                 profileImgID,
-                gender
+                gender,
+                date
                 // commentBody: ["hello", "how are you"]
             })
         } catch (error) {
@@ -54,6 +55,16 @@ export class Service {
             console.log("Appwrite serive :: updatePost :: error", error);
         }
     }
+    async updatePostViews(postId, views, commentCount) {
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
+                views,
+                commentCount
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
@@ -63,6 +74,7 @@ export class Service {
         }
     }
     async getPost(slug) {
+
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
@@ -70,12 +82,63 @@ export class Service {
             return false
         }
     }
-    async getPosts() {
+    async getPosts(lastPostID) {
+        // console.log(lastPostID)
+        let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`)]
+        if (lastPostID) {
+            QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID)]
+        }
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId)
+            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+                QueryArr
+            )
         } catch (error) {
             console.log("Appwrite serive :: getPosts :: error", error);
             return false
+        }
+    }
+    async getPostsWithQueries({ Title, category,
+        BeforeDate, AfterDate, From, To, PostAge, Viewed,
+        Commented, UserID
+    }) {
+
+        let QueryArr = [];
+
+        if (Title) QueryArr.push(Query.startsWith("title", Title))
+        if (category !== 'Select Category' && category !== undefined) QueryArr.push(Query.equal('category', [`${category}`]))
+        if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
+        if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
+        if (From && To) {
+            QueryArr.push(Query.greaterThanEqual('date', From))
+            QueryArr.push(Query.lessThanEqual('date', To))
+        }
+        if (PostAge === "Oldest") QueryArr.push(Query.orderDesc("$createdAt"))
+        if (Viewed === 'MostViewed') {
+            QueryArr.push(Query.orderDesc("views"))
+        }
+        else if (Viewed === 'lessViewed') {
+            QueryArr.push(Query.orderAsc("views"))
+        }
+        if (Commented === 'Most Commented') {
+            QueryArr.push(Query.orderDesc("commentCount"))
+        } else if (Commented === 'Least Commented') {
+            QueryArr.push(Query.orderAsc('commentCount'))
+        }
+        if (UserID) {
+
+            QueryArr.push(Query.equal("userId", [UserID]))
+            QueryArr.push(Query.limit(4))
+        }
+        // console.log(QueryArr)
+        try {
+
+            if (QueryArr.length === 0) return null
+            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+                QueryArr
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: getPostsWithQueries :: error", error);
+            return null
         }
     }
     async createThumbnail({ file }) {

@@ -1,32 +1,174 @@
-#Chat_Comment_Div{
+#Chat_Comment_Div {
     border-radius: 5px;
-    background-color: ghostwhite;
+    background-color: rgb(255, 255, 255);
     padding: 20px;
-    /* font-size: 20px; */
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     margin: 30px 0px;
 }
-#Chat_Comment_Div_1{
-    background-color: rgba(205, 205, 205, 0.685);
+
+#Chat_Comment_Div_1 {
+    /* background-color: rgba(205, 205, 205, 0.685); */
     border-radius: 2px;
     padding: 5px;
 }
 
-#Chat_Comment{
-    font-size: 18px;
+#Chat_Comment {
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
 }
+
+.Chat_Comment_Name {
+    font-family: 'Poppins', sans-serif;
+}
+
 #Chat_Comment_Div_img {
     height: 27px;
     width: 27px;
     border-radius: 50%;
 }
-#ReplyDiv span{
+
+.Chat_textArea {
+    width: 100%;
+    margin-top: 10px;
+    outline: none;
+    margin-bottom: 10px;
     border: 1px solid grey;
-    padding: 3px 6px;
-    border-radius: 2px;
+    border-radius: 1px;
+    padding: 5px 10px;
+    font-family: 'Gabarito', sans-serif;
 }
 
-#ReplyDiv span:hover{
+/* CSS */
+#Chat_Your_Opinion_Button {
+    background-color: var(--secondryBlue);
+    border-radius: 100px;
+    box-shadow: rgba(44, 187, 182, 0.2) 0 -25px 18px -14px inset, rgba(44, 177, 187, 0.15) 0 1px 2px, rgba(48, 172, 225, 0.15) 0 2px 4px, rgba(44, 180, 187, 0.15) 0 4px 8px, rgba(44, 146, 187, 0.15) 0 8px 16px, rgba(44, 151, 187, 0.15) 0 16px 32px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    display: inline-block;
+    font-family: CerebriSans-Regular, -apple-system, system-ui, Roboto, sans-serif;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 250ms;
+    border: 0;
+    font-weight: 500;
+    font-size: 16px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+#Chat_Your_Opinion_Button:hover {
+    box-shadow: rgba(44, 158, 187, 0.35) 0 -25px 18px -14px inset, rgba(44, 168, 187, 0.25) 0 1px 2px, rgba(44, 144, 187, 0.25) 0 2px 4px, rgba(44, 170, 187, 0.25) 0 4px 8px, rgba(44, 187, 180, 0.25) 0 8px 16px, rgba(44, 165, 187, 0.25) 0 16px 32px;
+    transform: scale(1.05) rotate(-1deg);
+}
+
+
+
+/* <button class="button-27" role="button">Button 27</button> */
+
+/* CSS */
+.Chat-Comment-Reply,
+#ReplyDiv span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    appearance: none;
+    background-color: #000000;
+    border: 2px solid #1A1A1A;
+    border-radius: 15px;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Roobert, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+    margin: 0;
+    min-height: 25px;
+    min-width: 0;
+    outline: none;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.Chat-Comment-Reply:disabled {
+    pointer-events: none;
+}
+
+.Chat-Comment-Reply:hover {
+    box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    transform: translateY(-2px);
+}
+
+.Chat-Comment-Reply:active {
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+#ReplyDiv span:hover {
     background-color: rgb(43, 43, 43);
     color: white;
-    border: 1px solid rgb(0, 0, 0);
+}
+
+.Chat_SubComments_Div {
+    background-color: #e3e3e3e5;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding: 10px;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+/* CSS */
+
+/* CSS */
+
+
+/* CSS */
+.Chat_SubComments_Div button {
+    position: absolute;
+    right: 10px;
+    /* background-color: black; */
+    color: rgb(0, 0, 0);
+    padding: 6px;
+    /* border-radius: 15px; */
+
+}
+
+.Chat_SubComments_Div button :active,
+.Chat_SubComments_Div button :focus {
+    border-bottom-style: none;
+    border-color: #dadada;
+    box-shadow: rgba(0, 0, 0, .3) 0 3px 3px inset;
+    outline: 0;
+}
+
+.Chat_SubComments_Div button :hover {
+    border-bottom-style: none;
+    border-color: #dadada;
+}
+
+.Chat_SubComments_Div p {
+    margin-top: 30px;
+    font-family: 'Gabarito', sans-serif;
+}
+
+.Chat_SubComments_Div span {
+    margin-top: 7px;
+    font-family: 'Rethink Sans', sans-serif;
+    font-weight: bold;
+}
+#Chat_See_Replies{
+    background-color: black;
+    color: white;
+    padding: 4px 7px;
+    font-weight: 500;
+    margin-top: 15px;
+    border-radius: 15px;
+    font-size: 12px;
 }

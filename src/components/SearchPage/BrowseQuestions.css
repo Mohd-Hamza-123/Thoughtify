@@ -13,7 +13,7 @@
 #BrowseQuestions_Filters>div {
     /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
     border-bottom: 2px solid rgba(0, 0, 0, 0.059);
-    
+
     padding: 4px 4px 10px 4px;
 }
 
@@ -22,7 +22,7 @@
     font-family: 'Gabarito', sans-serif;
     margin-bottom: 15px;
     margin-top: 10px;
-    text-decoration:underline;
+    text-decoration: underline;
 }
 
 #BrowseQuestions_Filters label {
@@ -76,6 +76,17 @@
     right: 8px;
 }
 
+.BrowseQuestions_ResentFilter {
+    padding: 5px;
+    font-size: 12px;
+    background-color: var(--secondryBlue);
+    border-radius: 4px;
+    color: white;
+    position: absolute;
+    top: 10px;
+    right: 100px;
+}
+
 #BrowseQuestions_Filtered_Questions {
     width: 72%;
     border-radius: 0px;
@@ -117,5 +128,5 @@
 }
 
 #BrowseQuestions_created_category_views i {
-    font-size: 10px;
+    font-size: 12px;
 }

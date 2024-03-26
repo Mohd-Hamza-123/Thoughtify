@@ -19,7 +19,8 @@ import {
   ViewPost,
   UpperNavigationBar,
 } from "./components/index.js";
-import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, SearchPage } from "./pages/pages.js";
+import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, SearchPage, ForgetPassword } from "./pages/pages.js";
+import TrustedRespondersPage from "./pages/TrustedRespondersPage.jsx";
 
 
 const router = createBrowserRouter(
@@ -43,6 +44,14 @@ const router = createBrowserRouter(
           }
         />
         <Route
+          path="/forgotPassword"
+          element={
+            <AuthLayout authentication={false}>
+              <ForgetPassword />
+            </AuthLayout>
+          }
+        />
+        <Route
           path="/signup"
           element={
             <AuthLayout authentication={false}>
@@ -58,7 +67,12 @@ const router = createBrowserRouter(
             </>
           }
         />
-
+        <Route
+          path="/trustedResponders"
+          element={
+            <TrustedRespondersPage />
+          }
+        />
         <Route
           path="/AskQuestion"
           element={
@@ -103,12 +117,12 @@ const router = createBrowserRouter(
           }
         />
         <Route
-        path="/BrowseQuestion/:category/:searchInput"
-        element = {
-          <>
-          <SearchPage/>
-          </>
-        }
+          path="/BrowseQuestion/:category/:searchInput"
+          element={
+            <>
+              <SearchPage />
+            </>
+          }
         />
       </Route>
     </>

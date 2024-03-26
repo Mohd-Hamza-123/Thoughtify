@@ -1,3 +1,16 @@
-.tox-editor-container{
+.tox-editor-container {
     /* height: 200px; */
+}
+
+
+.tox-tinymce {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+}
+
+.tox-statusbar__branding svg {
+    display: none;
+}
+
+.tox-statusbar__path-item {
+    display: none !important;
 }

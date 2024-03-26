@@ -44,10 +44,19 @@
 }
 
 #ProfileSummarySecondDiv {
-    border: 2px solid red;
-    
-    /* height: 40vh; */
-    /* right: 8.5%; */
-    /* width: 27%; */
-    background-color: rgba(0, 0, 0, 0.251);
+    /* border: 2px solid red; */
+    background-color: rgb(255, 255, 255);
+
+}
+#ProfileSummarySecondDiv p{
+    font-weight: 500;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+#ProfileSummarySecondDiv ul {
+    padding: 10px 30px;
+}
+
+#ProfileSummarySecondDiv ul li {
+    list-style:disc;
 }

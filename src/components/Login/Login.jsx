@@ -65,6 +65,7 @@ const Login = () => {
                 <div className="relative flex flex-col">
                   <input
                     required
+                    type="email"
                     placeholder=""
                     className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
                     {...register("email", {
@@ -77,6 +78,8 @@ const Login = () => {
                 <div className="relative flex flex-col">
                   <input
                     required
+                    minLength={8}
+                    type="password"
                     placeholder=""
                     className="border-none rounded px-2 p-1 bg-gray-300 text-lg w-80"
                     {...register("password", {
@@ -89,7 +92,7 @@ const Login = () => {
               </div>
               <div>
                 <p>
-                  <Link className="hover:underline text-sm">
+                  <Link to={`/forgotPassword`} className="hover:underline text-sm">
                     Forget Your Password ?
                   </Link>
                 </p>

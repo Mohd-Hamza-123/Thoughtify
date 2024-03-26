@@ -77,7 +77,10 @@ const AskQue = ({ post }) => {
   }
 
   const submit = async (data) => {
-
+    let date = new Date()
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    let day = String(date.getDate()).padStart(2, '0');
 
     if (pollQuestion && TotalPollOptions.length <= 1) {
       console.log('There must be 2 options')
@@ -134,6 +137,7 @@ const AskQue = ({ post }) => {
         pollOptions: TotalPollOptions,
         name: userData?.name,
         gender,
+        date: `${year}-${month}-${day}`
       }, categoryValue);
       console.log(dbPost)
     } else {
@@ -472,7 +476,7 @@ const AskQue = ({ post }) => {
                     {TotalPollOptions?.map((options, index) => (
                       <div className="w-full flex justify-start items-center" key={options}>
 
-                        <span className="w-3/4" >{`${index + 1} ) ${options}`}</span>
+                        <span className="w-3/4" >{`${index + 1} ) ${options} `}</span>
 
                         <i className="fa-regular fa-trash-can cursor-pointer" onClick={
                           () => {
@@ -484,8 +488,8 @@ const AskQue = ({ post }) => {
                           }}></i>
                       </div>
                     ))}
-                    <span className={`text-gray-500 ${TotalPollOptions.length >= 2 ? null : 'hidden'}`}>Maximum 4 Options Allowed</span>
-                    {!(TotalPollOptions.length >= 2) && <span className={`text-gray-500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'}`}>Add Minimum 2 Options</span>}
+                    <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} `}>Maximum 4 Options Allowed</span>
+                    {!(TotalPollOptions.length >= 2) && <span className={`text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
                   </div>
 
                   <div className="flex gap-3 h-8 mt-3 items-center">
@@ -502,7 +506,7 @@ const AskQue = ({ post }) => {
               </div>
 
             </div>
-            <div className={`buttons flex justify-end items-center mt-14`}>
+            <div className={`buttons flex justify - end items - center mt - 14`}>
 
               <Button type="submit" className="askque_btn">
                 {post ? "Update Your Question" : "Post Question"}
