@@ -14,7 +14,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, gender, date }, category) {
+    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, date }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -30,7 +30,6 @@ export class Service {
                 pollQuestion,
                 pollAnswer,
                 profileImgID,
-                gender,
                 date
                 // commentBody: ["hello", "how are you"]
             })
@@ -65,6 +64,18 @@ export class Service {
             console.log(error)
         }
     }
+    async updatePostWithQueries({ pollOptions,postId ,totalPollVotes,pollVotersID }) {
+        console.log(pollOptions)
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
+                pollOptions,
+                totalPollVotes,
+                pollVotersID
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
@@ -82,6 +93,7 @@ export class Service {
             return false
         }
     }
+    // Infinte Scroll
     async getPosts(lastPostID) {
         // console.log(lastPostID)
         let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`)]

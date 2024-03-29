@@ -20,7 +20,7 @@
 }
 
 #ViewPost-Question-Container {
-    font-family: 'Poppins', sans-serif;
+
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     width: 100%;
@@ -48,16 +48,21 @@
     width: 96%;
     border-radius: 4px;
     padding: 10px 10px;
+
 }
 
 #ViewPostName {
-    font-size: 15px;
+    font-size: 17px;
+    font-weight: 600;
+    margin-top: 3px;
+    font-family: 'Poppins', sans-serif;
 }
 
 #ViewPost-Title {
     font-size: 35px;
+    margin-top: 20px;
     color: rgb(0, 0, 0);
-
+    font-family: 'Poppins', sans-serif;
 }
 
 .ViewPost-ellipsis-Vertical {
@@ -92,4 +97,73 @@
     background-color: rgb(0, 0, 0);
     transform: scale(1.15);
     transition: all 100ms;
+}
+
+#ViewPost-parse {
+    margin-top: 40px;
+}
+
+#ViewPost_Poll_Div {
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin-top: 20px;
+
+}
+
+#ViewPost_Poll_Div h5 {
+    text-align: center;
+    font-size: 25px;
+
+}
+
+#ViewPost_Poll_Div p {
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    margin: 7px 0px 20px 0px;
+}
+
+#ViewPost_Poll_Div ul li {
+    position: relative;
+}
+
+#ViewPost_Poll_Option {
+    border: 2px solid rgba(87, 87, 87, 0.246);
+    margin: 10px 0px;
+    padding: 5px 12px;
+    font-family: 'Gabarito', sans-serif;
+    border-radius: 5px;
+}
+
+
+#ViewPost_Overlay_Poll {
+    text-align: right;
+    top: 0;
+    left: 0;
+    font-family: 'Gabarito', sans-serif;
+    padding: 5px 12px;
+    position: absolute;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+}
+
+#ViewPost_Overlay_Poll:hover {
+    border: 2px solid rgba(87, 87, 87, 0.682);
+}
+
+#ViewPost_Overlay_Poll.active {
+    border: 2px solid cyan;
+}
+
+#ViewPost_Poll_Answer {
+    font-family: 'Gabarito', sans-serif;
+    margin-bottom: 10px;
+
+}
+
+.ViewPost_Total_Poll_Votes {
+    font-family: 'Gabarito', sans-serif;
+    font-size: 15px;
 }

@@ -5,7 +5,6 @@ import Profile from './Profile'
 import AskQuestion from './AskQuestion'
 import SignupPage from './SignupPage'
 import LoginPage from './LoginPage'
-import GetStarted from './GetStarted'
 import GlobalChatPage from './GlobalChatPage'
 import PersonalChatPage from './PersonalChatPage'
 import SettingPage from './SettingPage'
@@ -22,7 +21,6 @@ export {
     AskQuestion,
     SignupPage,
     LoginPage,
-    GetStarted,
     GlobalChatPage,
     PersonalChatPage,
     SettingPage,

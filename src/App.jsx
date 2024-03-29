@@ -12,6 +12,7 @@ import { getUserProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
 import authService from "./appwrite/auth";
 
+
 function App() {
 
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,8 @@ function App() {
   const [notificationPopUp, setnotificationPopUp] = useState(false)
   const [myUserProfile, setMyUserProfile] = useState({})
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true)
+  const [hasMoreComments, sethasMoreComments] = useState(true)
+  // const [postProfilePicURL, setpostProfilePicURL] = useState('')
   // console.log(myUserProfile)
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ function App() {
           return profile.listProfile({ slug: userData?.$id });
         } else {
           dispatch(logout());
-          navigate("/");
+          navigate("/signup");
         }
       })
       .then((res) => res?.documents[0])
@@ -52,7 +55,11 @@ function App() {
       .then((URL) => {
         if (URL) dispatch(getUserProfile({ userProfileImgURL: URL.href }))
       })
-      .catch((err) => console.log(err.message))
+      .catch((err) => {
+        navigate("/signup");
+        console.log(err)
+      }
+      )
       .finally(() => setLoading(false));
 
 
@@ -72,6 +79,8 @@ function App() {
     <>
       <AskProvider
         value={{
+          hasMoreComments,
+          sethasMoreComments,
           hasMorePostsInHome,
           sethasMorePostsInHome,
           myUserProfile,
@@ -85,6 +94,7 @@ function App() {
           setIsOpen,
         }}
       >
+        {/* <ChooseGender/> */}
         <Feedback />
         <Outlet />
         <Overlay />

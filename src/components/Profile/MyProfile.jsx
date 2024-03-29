@@ -18,7 +18,7 @@ import { useAskContext } from "../../context/AskContext";
 
 const MyProfile = () => {
   const { myUserProfile } = useAskContext()
-  console.log(myUserProfile)
+  // console.log(myUserProfile)
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();

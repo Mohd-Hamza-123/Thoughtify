@@ -88,19 +88,24 @@
 }
 
 .askque_btn {
+    width: 100%;
     background-color: var(--secondryBlue);
     color: white;
     border: none;
-    /* width: 45%; */
+    box-shadow: -3px -3px 7px #ffffff,
+        3px 3px 5px #ceced1;
+    font-family: 'Poppins', sans-serif;
     text-align: center;
     text-wrap: nowrap;
     padding: 8px 28px;
     font-size: 15px;
     border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
 }
 
 .askque_btn:hover {
-    background-color: var(--secondryBlue);
+    background-color: black;
     color: white;
     border: none;
 }

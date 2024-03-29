@@ -11,7 +11,7 @@ const ForgetPassword = () => {
           <div className="flex justify-center items-center">
             <img className="ForgetPassword_Logo" src={QueryFlow} alt="QueryFlow" />
           </div>
-          <div>
+          <div className=''>
             <label htmlFor="">Enter Confirmation Code</label>
             <input type="number" name="" id="" placeholder='Confirmation Code' />
           </div>

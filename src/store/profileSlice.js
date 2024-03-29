@@ -11,7 +11,6 @@ const profileSlice = createSlice({
     reducers: {
         getUserProfile: (state, action) => {
             const { userProfile, userProfileImgURL } = action.payload
-            // console.log(action.payload.userProfileImgURL)
             state.userProfile = userProfile
             state.userProfileImgURL = userProfileImgURL
         }

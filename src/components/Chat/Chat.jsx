@@ -1,25 +1,26 @@
 import React, { useEffect, useRef } from "react";
 import "./Chat.css";
-import { ChatRTE, Button, TextArea } from "../index";
+import { ChatRTE, Button, TextArea, Spinner } from "../index";
 import { useForm } from "react-hook-form";
 import realTime from "../../appwrite/realTime";
 import parse from "html-react-parser";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import appwriteService from "../../appwrite/config";
 import { useNavigate } from 'react-router-dom'
+import { useAskContext } from "../../context/AskContext";
+import { getCommentsInRedux } from "../../store/commentsSlice";
 
 const Chat = ({ post }) => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  // const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
+  // console.log(commentsInRedux)
   // load subcomments
   const fixedReplies = 2;
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
-  // console.log(loadSubComments_Five_Mul)
-  // console.log(loadSubComments_Five_Mul)
-  // console.log(loadSubComments_Five_Mul)
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
   const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([])
-  // console.log(arr_For_Five_Mul)
   const [activeTextArea, setactiveTextArea] = useState(null)
 
 
@@ -28,18 +29,12 @@ const Chat = ({ post }) => {
   const [postid, setpostid] = useState(post.$id);
   const [commentArr, setcommentArr] = useState([]);
   const [replyComment, setreplyComment] = useState("");
-  const { $id: authid, name } = useSelector((state) => state.auth.userData);
-  const userProfile = useSelector((state) => state.profileSlice.userProfile)
-  // console.log(commentArr)
+  const { $id: authid, name } = useSelector((state) => state.auth.userData)
   const { register, watch, control, handleSubmit, setValue, getValues } =
     useForm();
 
-  const getComments = async (lastid, firstid) => {
-    const list_Comment = await realTime.listComment(postid, lastid, firstid);
-    if (list_Comment) {
-      setcommentArr(list_Comment.documents);
-    }
-  };
+
+
   const Submit = async (data) => {
     setValue('commentContent', '');
     if (!data.commentContent) return
@@ -49,7 +44,6 @@ const Chat = ({ post }) => {
         postid,
         authid,
         name,
-        gender: userProfile.gender
       });
       setcommentArr((prev) => [dbCommnet, ...prev]);
     }
@@ -127,6 +121,58 @@ const Chat = ({ post }) => {
         .catch((error) => console.log(error))
     }
   }
+
+
+  // intersection observer
+  const [isLoading, setIsLoading] = useState(false)
+  const { hasMoreComments, sethasMoreComments } = useAskContext()
+  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [lastPostID, setLastPostID] = useState(null)
+  // console.log("Is Intersecting : " + isIntersecting)
+  let spinnerRef = useRef();
+
+  const getComments = async (lastid = null) => {
+    setIsLoading((prev) => true)
+    try {
+      const list_Comment = await realTime.listComment(postid, lastid);
+      console.log(list_Comment)
+      if (commentArr.length < list_Comment.total) {
+        sethasMoreComments((prev) => true)
+      } else {
+        sethasMoreComments((prev) => false)
+      }
+      if (list_Comment) {
+        setcommentArr((prev) => {
+          let array = [...prev, ...list_Comment.documents]
+          let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id
+            , obj])).values());
+          return [...uniqueArray]
+        });
+        let lastID = list_Comment.documents[list_Comment.documents.length - 1].$id
+        setLastPostID((prev) => lastID)
+      }
+    } catch (error) {
+      // console.log(error.message)
+    }
+  };
+  useEffect(() => {
+    const ref = spinnerRef.current;
+    // console.log(ref)
+    if (ref) {
+      const observer = new IntersectionObserver(([entry]) => {
+        setIsIntersecting((prev) => entry.isIntersecting)
+      }, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1
+      })
+
+      observer.observe(ref)
+      return () => ref && observer.unobserve(ref)
+    }
+
+  }, [spinnerRef.current, commentArr])
+
   useEffect(() => {
     if (commentArr.length !== 0) {
       for (let i = 0; i < commentArr.length; i++) {
@@ -134,9 +180,17 @@ const Chat = ({ post }) => {
       }
     }
   }, [commentArr])
+
   useEffect(() => {
     getComments();
   }, []);
+
+  useEffect(() => {
+    if (isIntersecting && hasMoreComments && lastPostID) {
+      getComments(lastPostID);
+    }
+  }, [isIntersecting, hasMoreComments])
+
 
   return (
     <div id="Chat">
@@ -305,26 +359,11 @@ const Chat = ({ post }) => {
         ))}
       </div>
 
+      {(isLoading && hasMoreComments) && < div className="flex justify-center" ref={spinnerRef}>
+        <Spinner />
+      </div>}
 
-      <div className="flex justify-center gap-5">
-        <span
-          className="text-4xl cursor-pointer"
-          onClick={() => {
-            getComments(undefined, commentArr[0].$id);
-          }}
-        >
-          {`<`}
-        </span>
-        <span
-          className="text-4xl cursor-pointer"
-          onClick={() => {
-            getComments(commentArr[commentArr.length - 1].$id, undefined);
-          }}
-        >
-          {`>`}
-        </span>
-      </div>
-    </div>
+    </div >
   );
 };
 

@@ -9,7 +9,6 @@ const queriesSlice = createSlice({
     initialState,
     reducers: {
         getQueriesInRedux: (state, action) => {
-            // console.log(action.payload.queries)
             state.queries = action.payload.queries
         }
     }

@@ -3,11 +3,13 @@ import './TrustedRespondersPage.css'
 import { HorizontalLine, LowerNavigationBar, UpperNavigationBar } from '../components'
 import profile from '../appwrite/profile'
 import { useNavigate } from 'react-router-dom'
-
+import { useSelector } from 'react-redux'
+import { useAskContext } from '../context/AskContext'
 
 
 
 const TrustedRespondersPage = () => {
+
     const [trustedRespondersArr, setTrustedRespondersArr] = useState([]);
     const navigate = useNavigate()
     const getResponders = async () => {
@@ -51,10 +53,43 @@ const TrustedRespondersPage = () => {
             <HorizontalLine />
             <LowerNavigationBar />
             <HorizontalLine />
+            <h3 id='TrustedResponderspage_Heading' className='text-center'>Responders</h3>
+            <div id='TrustedRespondersPage_wrapper_container' className='flex w-full justify-center'>
+               
+                <div className="wrapper">
+                    <div>
+                        <div className="img-area">
+                            <div className="inner-area">
+                                <img src="https://images.unsplash.com/photo-1492288991661-058aa541ff43?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60" alt="" />
+                            </div>
+                        </div>
+
+                        <div className="name">CodingNepal</div>
+
+                        <div className="TrustedRespondersPage_buttons">
+                            <button>Message</button>
+                            <button>Follow</button>
+                        </div>
+                        <div className="social-icons">
+                            <a href="#" className="fb"><i className="fab fa-facebook-f"></i></a>
+                            <a href="#" className="twitter"><i className="fab fa-twitter"></i></a>
+                            <a href="#" className="insta"><i className="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="about tag-red">Designer & Developer</div>
+                        <section>Bio</section>
+                    </div>
+                </div>
+
+            </div>
             <div id='TrustedRespondersPage'>
                 <div className="TrustedRespondersPage_container">
-                    {trustedRespondersArr.map((respondersObj, index) => (
-                        <div key={respondersObj.$id} onClick={() => navigate(`/profile/${respondersObj.userIdAuth}`)} className="card cursor-pointer">
+
+                    {trustedRespondersArr.map((respondersObj, index) => {
+
+                        if (respondersObj.userIdAuth === `65cce8e4b7ca69061cc8`) return
+                        return <div key={respondersObj.$id} onClick={() => navigate(`/profile/${respondersObj.userIdAuth}`)} className="card cursor-pointer">
                             <div className="card__footer">
                                 <div className="w-full user flex flex-col">
                                     <div className='w-full flex justify-center'>
@@ -76,7 +111,7 @@ const TrustedRespondersPage = () => {
                                 <p>{respondersObj.bio}</p>
                             </div>
                         </div>
-                    ))}
+                    })}
                 </div>
             </div>
         </>

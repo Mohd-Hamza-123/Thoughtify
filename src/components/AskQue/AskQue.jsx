@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE, Input, Button, TextArea, HorizontalLine } from "../";
+import { RTE, Input, Button, TextArea, HorizontalLine, Opinions } from "../";
+import conf from "../../conf/conf";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -35,35 +36,19 @@ const AskQue = ({ post }) => {
   // console.log(categoryValue)
   // Poll State
   const [TotalPollOptions, setTotalPollOptions] = useState([]);
+  console.log(TotalPollOptions)
   const [pollQuestion, setPollQuestion] = useState('')
   const [options, setoptions] = useState('')
   // console.log(options)
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
 
-
+  
 
   const handleImageUpload = (arr) => {
     if (arr.length !== 0) {
       setimgArr(arr);
     }
   };
-
-  // const findingImageIndex = (content) => {
-  //   if (imgArr.length !== 0) {
-  //     // console.log(imgArr)
-  //     let minIndex = Infinity;
-  //     let indexResult = null;
-  //     imgArr.forEach((words, index) => {
-  //       let wordIndex = content.indexOf(words);
-
-  //       if (wordIndex !== -1 && wordIndex < minIndex && imgArr[index] !== "") {
-  //         minIndex = wordIndex;
-  //         indexResult = index;
-  //       }
-  //     });
-  //     return indexResult;
-  //   }
-  // };
 
   const selectThumbnail = async (e) => {
 
@@ -77,6 +62,15 @@ const AskQue = ({ post }) => {
   }
 
   const submit = async (data) => {
+
+    // console.log(data)
+    // console.log(TotalPollOptions)
+    const pollOptions = TotalPollOptions.map((obj) => JSON.stringify(obj))
+    // console.log(pollOptions)
+    data.pollQuestion = pollQuestion
+    // console.log(data)
+    // console.log(TotalPollOptions)
+    // return
     let date = new Date()
     let year = date.getFullYear();
     let month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
@@ -86,17 +80,20 @@ const AskQue = ({ post }) => {
       console.log('There must be 2 options')
       return
     }
-
+    if (data.title === '' && data.content !== '') {
+      console.log("Not valid ")
+      return
+    }
     if (!categoryValue) {
       return
     }
 
     if (!data.title && !pollQuestion) {
-      console.log('Title is not there')
+      console.log('Title is not there');
       return
     }
-
-
+    console.log("Ha")
+    // return
     if (post) {
 
       if (thumbnailFile) {
@@ -107,7 +104,7 @@ const AskQue = ({ post }) => {
           ...data,
           queImageID: dbThumbnail.$id,
           pollQuestion,
-          pollOptions: TotalPollOptions,
+          pollOptions
         }, categoryValue);
 
       } else {
@@ -115,7 +112,7 @@ const AskQue = ({ post }) => {
           ...data,
           queImageID: post.queImageID,
           pollQuestion,
-          pollOptions: TotalPollOptions,
+          pollOptions
         }, categoryValue);
       }
 
@@ -124,8 +121,8 @@ const AskQue = ({ post }) => {
       setimgArr((prev) => []);
 
     } else if (!post && thumbnailFile) {
-      const userProfile = await profile.listProfile({ slug: userData.$id })
-      const gender = userProfile.documents[0].gender;
+      // const userProfile = await profile.listProfile({ slug: userData.$id })
+
 
       const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
@@ -134,41 +131,50 @@ const AskQue = ({ post }) => {
         queImageID: dbThumbnail.$id,
         userId: userData.$id,
         pollQuestion,
-        pollOptions: TotalPollOptions,
+        queImage: null,
+        pollOptions,
         name: userData?.name,
-        gender,
         date: `${year}-${month}-${day}`
       }, categoryValue);
-      console.log(dbPost)
+      // console.log(dbPost)
     } else {
 
-      // let imageURLIndex = findingImageIndex(data.content);
-      const userProfile = await profile.listProfile({ slug: userData.$id })
-      const gender = userProfile.documents[0].gender;
-      // if (!isNaN(imageURLIndex)) {
-      //   const dbPost = await appwriteService.createPost({
-      //     ...data,
-      //     userId: userData.$id,
-      //     queImage: imgArr[imageURLIndex],
-      //     name: userData.name,
-      //     queImageID: null,
-      //     pollQuestion,
-      //     pollOptions: TotalPollOptions,
-      //   }, categoryValue);
+      // const userProfile = await profile.listProfile({ slug: userData.$id })
 
-      // } 
-      // else {
-      const dbPost = await appwriteService.createPost({
-        ...data,
-        userId: userData.$id,
-        queImage: null,
-        queImageID: null,
-        name: userData.name,
-        pollQuestion,
-        pollOptions: TotalPollOptions,
-      }, categoryValue);
+      try {
+        const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
 
-      // }
+        const UnsplashRes = await unsplashImg.json();
+        const ImgArrUnsplash = UnsplashRes.results
+
+        const randomIndex = Math.floor(Math.random() * 10);
+        // console.log(ImgArrUnsplash[randomIndex])
+        const ImgURL = ImgArrUnsplash[randomIndex].urls.full
+
+        const dbPost = await appwriteService.createPost({
+          ...data,
+          userId: userData.$id,
+          queImage: ImgURL,
+          queImageID: null,
+          pollQuestion,
+          pollOptions,
+          name: userData?.name,
+          date: `${year}-${month}-${day}`
+        }, categoryValue);
+        console.log("Thubmnai hai")
+      } catch (error) {
+        console.log("Thumbnail nhi")
+        const dbPost = await appwriteService.createPost({
+          ...data,
+          userId: userData.$id,
+          queImage: null,
+          queImageID: null,
+          name: userData.name,
+          pollQuestion,
+          pollOptions,
+        }, categoryValue);
+      }
+
     }
     navigate("/")
     setimgArr((prev) => [])
@@ -187,14 +193,15 @@ const AskQue = ({ post }) => {
 
   useEffect(() => {
     if (post) {
+
       setcategoryValue(post.category)
 
       if (post.pollQuestion) {
         setPollQuestion(post.pollQuestion)
         setpollTextAreaEmpty(false)
       }
-
-      setTotalPollOptions((prev) => post.pollOptions)
+      const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
+      setTotalPollOptions((prev) => pollOptionsArray)
       appwriteService.getThumbnailPreview(post.queImageID)
         .then((res) => {
           setThumbailURL(res.href)
@@ -267,65 +274,39 @@ const AskQue = ({ post }) => {
                   <span>Opinions From :</span>
                 </div>
 
-                <Controller
-                  control={control}
-                  name="opinionsFrom"
-                  defaultValue={'Everyone'}
-                  render={({ field }) => (
-                    <div className="flex pl-6 justify-around w-4/5 text-xl">
-                      <div className="flex-1 flex gap-3 items-center">
-                        <Input
-                          {...field}
-                          defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
-                          type="radio"
-                          value="Everyone"
-                          id="Id1"
-                          className='cursor-pointer'
-                        />
-                        <label htmlFor="Id1" className='cursor-pointer'>Everyone</label>
-                      </div>
 
-                      <div className="flex-1 flex gap-3 items-center text-xl">
-                        <Input
-                          {...field}
-                          defaultChecked={post && post.opinionsFrom === 'Boys' ? true : false}
-                          type="radio"
-                          value="Boys"
-                          id="Id2"
-                          className='cursor-pointer'
-                        />
-                        <label htmlFor="Id2" className='cursor-pointer'>Boys</label>
-                        <i className="fa-solid fa-mars-stroke-up text-blue-700"></i>
-                      </div>
+                <div className="flex pl-6 justify-around w-4/5 text-xl">
+                  <div className="flex-1 flex gap-3 items-center">
+                    <Input
+                      {...register("opinionsFrom", {
+                        required: false
+                      })}
+                      defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
+                      type="radio"
+                      value="Everyone"
+                      name='opinionsFrom'
+                      id="Id1"
+                      className='cursor-pointer'
+                    />
+                    <label htmlFor="Id1" className='cursor-pointer'>Everyone</label>
+                  </div>
 
-                      <div className="flex-1 flex gap-3 items-center text-xl">
-                        <Input
-                          {...field}
-                          type="radio"
-                          value="Girls"
-                          defaultChecked={post && post?.opinionsFrom === 'Girls' ? true : false}
-                          id="Id3"
-                          className='cursor-pointer'
-                        />
-                        <label htmlFor="Id3" className='cursor-pointer'>Girls</label>
-                        <i className="fa-solid fa-mars-stroke text-pink-600"></i>
-                      </div>
 
-                      <div className="flex-1 flex gap-3 items-center text-xl">
-                        <Input
-                          // {...field}
-                          type="radio"
-                          value="Girls"
-                          defaultChecked={''}
-                          id="Id3"
-                          className='cursor-pointer'
-                        />
-                        <label htmlFor="Id3" className='cursor-pointer'>Responders</label>
-                        <i className="fa-solid fa-mars-stroke text-red-600"></i>
-                      </div>
-                    </div>
-                  )}
-                />
+                  <div className="flex-1 flex gap-3 items-center text-xl">
+                    <Input
+                      {...register('opinionsFrom')}
+                      type="radio"
+                      value="Responders"
+                      defaultChecked={''}
+                      id="Id3"
+                      name='opinionsFrom'
+                      className='cursor-pointer'
+                    />
+                    <label htmlFor="Id3" className='cursor-pointer'>Responders</label>
+                    <i className="fa-solid fa-mars-stroke text-red-600"></i>
+                  </div>
+                </div>
+
 
               </div>
             </div>
@@ -362,42 +343,39 @@ const AskQue = ({ post }) => {
               </div>
             </div>
 
-            <Controller
-              name="status"
-              control={control}
-              defaultValue={'Public'}
-              render={({ field }) => (
-                <div id="AskQue_PostType">
-                  <p>Select Post Type:</p>
-                  <div className="flex justify-start gap-6">
-                    <div>
-                      <label className="cursor-pointer" htmlFor="public">Public</label>
-                      <input
-                        className="cursor-pointer"
-                        {...field}
-                        type="radio"
-                        name="postType"
-                        value={'Public'}
-                        id="public"
-                        defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
-                      />
-                    </div>
-                    <div>
-                      <label className="cursor-pointer" htmlFor="private">Private</label>
-                      <input
-                        className="cursor-pointer"
-                        {...field}
-                        type="radio"
-                        name="postType"
-                        id="private"
-                        value={'Private'}
-                        defaultChecked={post && post?.status === "Private" ? true : false}
-                      />
-                    </div>
-                  </div>
+
+            <div id="AskQue_PostType">
+              <p>Select Post Type:</p>
+              <div className="flex justify-start gap-6">
+                <div>
+                  <label className="cursor-pointer" htmlFor="public">Public</label>
+                  <input
+                    className="cursor-pointer"
+                    {...register("status")}
+                    type="radio"
+                    name='status'
+                    value={'Public'}
+                    id="public"
+                    defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
+                  />
                 </div>
-              )}
-            />
+                <div>
+                  <label className="cursor-pointer" htmlFor="private">Private</label>
+                  <input
+                    className="cursor-pointer"
+                    {...register("status", {
+                      required: false
+                    })}
+                    type="radio"
+                    name="status"
+                    id="private"
+                    value={'Private'}
+                    defaultChecked={post && post?.status === "Private" ? true : false}
+                  />
+                </div>
+              </div>
+            </div>
+
 
             <div id="AskQue_SelectCategory">
 
@@ -434,7 +412,7 @@ const AskQue = ({ post }) => {
                 <TextArea
                   placeholder='Ask Pole' className='AskQue_Pole_TextArea'
                   maxLength={110}
-                  value={pollQuestion}
+                  value={`${post ? post.pollQuestion : pollQuestion}`}
                   onChange={(e) => {
                     if (e.currentTarget.value !== '') {
                       setpollTextAreaEmpty(false)
@@ -461,10 +439,24 @@ const AskQue = ({ post }) => {
                         }} />
                       <Button
                         onClick={() => {
-                          console.log(pollTextAreaEmpty)
+                          if (post) {
+                            console.log("You cannot edit Poll")
+                            setoptions("")
+                            return
+                          }
+                          console.log(TotalPollOptions.includes(options))
+                          for (let i = 0; i < TotalPollOptions.length; i++) {
+                            if (TotalPollOptions[i].option === options) {
+                              setoptions("")
+                              return
+                            }
+                          }
                           if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
+                            setTotalPollOptions((prev) => {
+                              let arr = [...prev, { option: options, vote: 0 }]
 
-                            setTotalPollOptions((prev) => [...prev, options])
+                              return [...arr]
+                            })
                           }
                           setoptions("")
                         }}
@@ -473,22 +465,23 @@ const AskQue = ({ post }) => {
                       </Button>
                     </div>
 
-                    {TotalPollOptions?.map((options, index) => (
-                      <div className="w-full flex justify-start items-center" key={options}>
+                    {TotalPollOptions?.map((options, index) => {
+                      console.log(options)
+                      return <div className="w-full flex justify-start items-center" key={options.option}>
 
-                        <span className="w-3/4" >{`${index + 1} ) ${options} `}</span>
+                        <span className="w-3/4" >{`${index + 1} ) ${options.option}`}</span>
 
-                        <i className="fa-regular fa-trash-can cursor-pointer" onClick={
+                        <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
                           () => {
                             setTotalPollOptions((prev) => {
                               let arr = [...prev]
                               arr.splice(index, 1)
                               return [...arr]
                             })
-                          }}></i>
+                          }}></i></span>
                       </div>
-                    ))}
-                    <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} `}>Maximum 4 Options Allowed</span>
+                    })}
+                    <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
                     {!(TotalPollOptions.length >= 2) && <span className={`text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
                   </div>
 
@@ -511,7 +504,7 @@ const AskQue = ({ post }) => {
               <Button type="submit" className="askque_btn">
                 {post ? "Update Your Question" : "Post Question"}
               </Button>
-              <input type="reset" value="reset" />
+
             </div>
           </div>
 

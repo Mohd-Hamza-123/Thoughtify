@@ -12,7 +12,7 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({ postid, commentContent, authid, name, gender
+    async createComment({ postid, commentContent, authid, name,
     }) {
         try {
             return await this.database.createDocument(
@@ -25,7 +25,6 @@ export class RealTime {
                     authid,
                     subComment: [],
                     name,
-                    gender
                 }
             )
         } catch (error) {
@@ -58,47 +57,21 @@ export class RealTime {
         }
     }
 
-    async listComment(postid, lastid, firstid) {
+    async listComment(postid, lastid) {
+        let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`])]
+        if (lastid) {
+            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`])]
+        }
         try {
-            if (lastid === undefined && firstid === undefined) {
-                return await this.database.listDocuments(
-                    conf.appwriteDatabaseId,
-                    conf.appwriteNewCollectionId,
-                    [
-                        Query.equal('postid', `${postid}`),
-                        Query.limit(5),
-                    ])
+            try {
+                return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
+                    QueryArr
+                )
+            } catch (error) {
+                console.log("Appwrite serive :: getPosts :: error", error);
+                return false
             }
-            else if (lastid) {
-                console.log("after page")
-                let res = await this.database.listDocuments(
-                    conf.appwriteDatabaseId,
-                    conf.appwriteNewCollectionId,
-                    [
-                        Query.equal('postid', `${postid}`),
-                        Query.limit(5),
-                        Query.cursorAfter(lastid),
-                    ])
-                if (res.documents.length === 0) {
-                    return undefined
-                }
-                return res
-            } else if (firstid) {
-                console.log("previous page")
-                let res = await this.database.listDocuments(
-                    conf.appwriteDatabaseId,
-                    conf.appwriteNewCollectionId,
-                    [
-                        Query.equal('postid', `${postid}`),
-                        Query.limit(5),
-                        Query.cursorBefore(firstid),
-                    ])
-                console.log(res)
-                if (res.documents.length === 0) {
-                    return undefined
-                }
-                return res
-            }
+
         } catch (error) {
             console.log("listCommnets error in realtime.js")
         }
