@@ -4,7 +4,7 @@
 
 #PostCard {
     width: 100%;
-    height: 200px;
+    height: 210px;
     padding: 5px 14px 5px 5px;
     border-radius: 2px;
     text-align: left;
@@ -26,22 +26,24 @@
 #PostCard_right {
     width: 70%;
     height: 100%;
+    /* border: 2px solid red; */
 }
 
 #PostCard_title {
     margin-top: 2px;
-    font-size: 20px;
-    /* border: 2px solid black; */
+    font-size: 19px;
+    /* border: 1px solid black; */
     overflow: hidden;
     font-weight: bolder;
     color: rgb(62, 62, 62);
-    border-radius: 5px;
-    padding: 8px 8px;
+    /* border-radius: 5px; */
+    /* line-height: 25px; */
+    padding: 6px 5px;
     letter-spacing: 0.4px;
     font-family: 'Gabarito', sans-serif;
-    word-break: break-all;
-    word-wrap: break-word;
-    height: 100px;
+    /* word-break: break-all;
+    word-wrap: break-word; */
+    height:98px;
 }
 
 #PostCard_title:hover {
@@ -52,13 +54,12 @@
     width: 100%;
     height: 150px;
     border-radius: 5px;
-    /* border: 2px solid rgba(0, 0, 0, 0.273); */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.1) inset;
 }
 
 #PostCard-profile-pic {
-    height: 30px;
-    width: 30px;
+    height: 28px;
+    width: 28px;
 }
 
 #PostCard-profile-name {
@@ -68,12 +69,15 @@
 
 .PostCard_category {
     background-color: rgb(242, 242, 242);
-    display: inline;
-    padding: 4px 7px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 6px;
     color: rgb(68, 68, 68);
     border-radius: 10px;
     font-size: 13px;
     font-family: 'Gabarito', sans-serif;
+    border: 1px solid rgba(38, 37, 37, 0.171);
 }
 
 .PostCard_Date {
@@ -88,7 +92,11 @@
 .PostCard_Views i {
     margin-top: 3px;
 }
+#PostCard_Comments_Icon{
+    /* margin-bottom: 10px; */
+    /* border: 2px solid red; */
 
+}
 #PostCard_Comments_Icon i {
     font-size: 30px;
     position: relative;
@@ -137,6 +145,3 @@
 }
 
 
-/* #PostCard_Comments_Icon i:nth-child(1) small {
-    color: blue;
-} */

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./ChatRTE.css";
-import { Editor } from "@tinymce/tinymce-react";
+import { Editor, } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
-const ChatRTE = ({ name, control }) => {
+const ChatRTE = ({ name, control, clearEditorContent, editorRef }) => {
+
   return (
     <div id="ChatRTE" className="w-full">
       <Controller
@@ -17,7 +18,7 @@ const ChatRTE = ({ name, control }) => {
               // autoresize_min_height: 200, // Set minimum height
               autoresize_max_height: 400, //
               menubar: false,
-              plugins: ["lists", "image", ""],
+              plugins: ["lists", "image"],
               toolbar:
                 "image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | code ",
               content_style:
@@ -46,6 +47,9 @@ const ChatRTE = ({ name, control }) => {
             onEditorChange={(commentContent) => {
               onChange(commentContent);
             }}
+            onInit={(evt, editor) => {
+              editorRef.current = editor;
+            }}
           />
         )}
       />
@@ -54,3 +58,4 @@ const ChatRTE = ({ name, control }) => {
 };
 
 export default ChatRTE;
+

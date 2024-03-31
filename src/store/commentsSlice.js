@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 const initialState = {
-    comments: []
+    comments: [],
+    isMerge: true
 }
 
 const commentsSlice = createSlice({
@@ -10,10 +11,20 @@ const commentsSlice = createSlice({
     initialState,
     reducers: {
         getCommentsInRedux: (state, action) => {
-            let array = [...state.comments, ...action.payload.comments]
+            // console.log(action.payload.isMerge)
+            let array = []
+            if (action.payload.isMerge) {
+                // console.log(" merge")
+                array = [...state.comments, ...action.payload.comments]
+            } else if (action.payload.isMerge === null) {
+                array = [...action.payload.comments, ...state.comments]
+            } else {
+                // console.log("Do not merge")
+                array = [...action.payload.comments]
+            }
             let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id
                 , obj])).values());
-        
+
             state.comments = uniqueArray
         },
     }

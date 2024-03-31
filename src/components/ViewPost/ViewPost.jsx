@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import appwriteService from "../../appwrite/config";
-import { Button, Chat, HorizontalLine } from "../index";
+import { Button, Chat, HorizontalLine, UpperNavigationBar, LowerNavigationBar } from "../index";
 import parse from "html-react-parser";
 import { useSelector, useDispatch } from "react-redux";
+import NoProfile from '../../assets/NoProfile.png'
 import { useAskContext } from "../../context/AskContext";
 import "./ViewPost.css";
 import '../../index.css'
@@ -11,35 +12,44 @@ import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 
 const ViewPost = () => {
+  //Data from Redux
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
+  const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
+  const userData = useSelector((state) => state.auth.userData);
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  // console.log(initialPost)
+  const { myUserProfile,
+    setMyUserProfile } = useAskContext()
+  // console.log(myUserProfile)
+  const [isBookMarked, setIsBookMarked] = useState(false)
+
+
   const dispatch = useDispatch()
   const { slug } = useParams();
-
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData);
 
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
-  const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
 
   const [profileImgURL, setprofileImgURL] = useState('')
   const [post, setPost] = useState(null);
-  const isAuther = post && userData ? post.userId === userData.$id : false;
   // console.log(post)
-
+  const isAuther = post && userData ? post.userId === userData.$id : false;
+  // useState for views,comments,date
+  const [postdate, setpostdate] = useState('')
+  const [postViews, setpostViews] = useState(0)
+  const [postCommentCount, setpostCommentCount] = useState(0)
   // poll 
-  // const [pollPercentage, setPollPercentage] = useState(null)
   const [totalPollVotes, setTotalPollVotes] = useState(0)
   const [pollVotersAuthIDsAndVote, setpollVotersAuthIDsAndVote] = useState([])
   const [isPollOpinionVisible, setIsPollOpinionVisible] = useState(false)
-  // console.log(pollVotersAuthIDsAndVote)
-  // console.log(totalPollVotes)
 
-
-
-
-
+  const navigateToRelatedPost = (postId) => {
+    console.log(postId)
+    navigate(`/post/${postId}`);
+  }
   useEffect(() => {
+    // console.log("hi")
     if ((AllVisitedQuestions.some(obj => obj.$id === slug)) === false) {
       appwriteService
         .getPost(slug)
@@ -58,7 +68,7 @@ const ViewPost = () => {
       let postObject = AllVisitedQuestions.find(obj => obj.$id === slug)
       setPost((prev) => postObject)
     }
-  }, []);
+  }, [navigateToRelatedPost]);
   useEffect(() => {
     if (post) {
       // console.log(post.userId)
@@ -66,7 +76,7 @@ const ViewPost = () => {
         obj.userId === post.userId
       ))
       // console.log(ProfileURLIndex)
-      setprofileImgURL(postProfilesPic[ProfileURLIndex].profilePic)
+      setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic)
     }
   }, [post])
   useEffect(() => {
@@ -80,17 +90,63 @@ const ViewPost = () => {
             return obj
           }
         })
-        // return 1
       })
-      // appwriteService
-      //   .getPostsWithQueries({ UserID: post?.userId })
-      //   .then((res) => {
-      //     //  console.log(res)
-      //   })
     }
 
   }, [post])
+  // UseEffect For bookMark
+  useEffect(() => {
+    // console.log(myUserProfile.bookmarks)
+    if ((myUserProfile.bookmarks).includes(post?.$id)) {
+      setIsBookMarked(true)
+      // console.log("kya")
+    } else {
+      setIsBookMarked(false)
+      // console.log("hua")
+    }
+  }, [post])
+  // UseEffect For bookMark
+  useEffect(() => {
+    // console.log(myUserProfile.bookmarks)
+    if (myUserProfile.bookmarks.includes(post?.$id)) {
+      setIsBookMarked(true)
+    } else {
+      setIsBookMarked(false)
+    }
+  }, [myUserProfile])
+  const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
+  const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
+  useEffect(() => {
+    const getRelatedQueries = () => {
+      // console.log(initialPost)
+      let relatedArr = initialPost.filter((initialPostObj) => {
+        // console.log(post)
+        if (initialPostObj?.category
+          === post?.category && post?.$id !== initialPostObj.$id) {
+          return initialPostObj
+        }
+      })
+      if (relatedArr.length > 0) {
+        setRelatedQueriesArr((prev) => relatedArr)
+        setisRelatedQueriesExist(true)
+      } else {
+        setisRelatedQueriesExist(false)
+        setRelatedQueriesArr((prev) => [])
+      }
 
+    }
+    const getDate_Views_Comments_Details = () => {
+      let x = initialPost.find((postinRedux) => postinRedux.$id === post?.$id)
+      // console.log(x)
+      if (x) {
+        setpostCommentCount(x.commentCount)
+        setpostViews(x.views)
+        setpostdate(x.$createdAt)
+      }
+    }
+    if (initialPost.length > 0) getRelatedQueries()
+    if (initialPost.length > 0) getDate_Views_Comments_Details()
+  }, [post,initialPost])
   const deletePost = () => {
     appwriteService.deletePost(post.$id).then(() => {
       console.log("Post Deleted");
@@ -103,7 +159,6 @@ const ViewPost = () => {
       let deletedImg = await appwriteService.deleteThumbnail(post.queImageID)
     }
   }
-
   const updatePoll = async (postId, index, option, vote, pollVoterID) => {
     console.log(post)
     let totalPollVotes = post.totalPollVotes;
@@ -173,80 +228,282 @@ const ViewPost = () => {
       setIsPollOpinionVisible(true)
     }
   }
+  const like_dislike_BookMark = async (flag) => {
+    const likedQuestionsInContext = myUserProfile?.likedQuestions
+    const dislikedQuestionsInContext = myUserProfile?.dislikedQuestions
+    const bookmarksInContext = myUserProfile?.bookmarks
+    const myProfileID_In_Context = myUserProfile?.$id
+
+    const previousLike = post?.like
+    const previousDislike = post?.dislike
+
+    if (flag === 'Like') {
+      try {
+        // console.log(likedQuestions)
+        // console.log(dislikedQuestions)
+        // console.log(bookmarks)
+        // return
+        if (likedQuestionsInContext.includes(post?.$id)) {
+          // update in Query
+          const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike - 1, dislike: previousDislike })
+          setPost((prev) => increaseLike)
+          dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseLike }))
+
+          //Update In Profile
+          let likedQuestions = likedQuestionsInContext.filter((likedPostIDs) => likedPostIDs !== post?.$id)
+          // console.log(likedQuestions)
+          const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions: dislikedQuestionsInContext, bookmarks: bookmarksInContext })
+          // console.log(updateLikeArr_In_MyProfile)
+          setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+
+        } else {
+
+          // return
+          if (dislikedQuestionsInContext.includes(post?.$id)) {
+            // Update in Query
+            const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike + 1, dislike: previousDislike - 1 })
+            dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseLike }))
+            setPost((prev) => increaseLike)
+
+
+
+            //Update In Profile
+            let likedQuestions = [...likedQuestionsInContext]
+            likedQuestions.push(post?.$id)
+
+            let dislikedQuestions = dislikedQuestionsInContext.filter((dislikedPostIDs) => dislikedPostIDs !== post?.$id)
+            const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions, bookmarks: bookmarksInContext })
+            // console.log(updateLikeArr_In_MyProfile)
+            setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+          } else {
+
+            // Update in Query
+            const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike + 1, dislike: previousDislike })
+            // console.log(increaseLike)
+            dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseLike }))
+            setPost((prev) => increaseLike)
+
+            //Update In Profile
+            let likedQuestions = [...likedQuestionsInContext]
+            likedQuestions.push(post?.$id)
+            // console.log(likedQuestions)
+            const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions: dislikedQuestionsInContext, bookmarks: bookmarksInContext })
+            // console.log(updateLikeArr_In_MyProfile)
+            setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+          }
+
+        }
+      } catch (error) {
+        console.log('Post is not Liked ! error')
+      }
+    } else if (flag === 'Dislike') {
+      try {
+        if (dislikedQuestionsInContext.includes(post?.$id)) {
+          // update in Query
+          const decreaseDislike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike, dislike: previousDislike - 1 })
+          setPost((prev) => decreaseDislike)
+          dispatch(getAllVisitedQuestionsInViewPost({ questions: decreaseDislike }))
+
+          //Update In Profile
+          let dislikedQuestions = dislikedQuestionsInContext.filter((dislikedPostIDs) => dislikedPostIDs !== post?.$id)
+          // console.log(likedQuestions)
+          const updateDislikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestionsInContext, dislikedQuestions: dislikedQuestions, bookmarks: bookmarksInContext })
+          // console.log(updateLikeArr_In_MyProfile)
+          setMyUserProfile((prev) => updateDislikeArr_In_MyProfile)
+        } else {
+
+          if (likedQuestionsInContext.includes(post?.$id)) {
+            // Update in Query
+            const increaseDislike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike - 1, dislike: previousDislike + 1 })
+            dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseDislike }))
+            setPost((prev) => increaseDislike)
+
+
+
+            //Update In Profile
+            let dislikedQuestions = [...dislikedQuestionsInContext]
+            dislikedQuestions.push(post?.$id)
+
+            let likedQuestions = likedQuestionsInContext.filter((likedPostIDs) => likedPostIDs !== post?.$id)
+            const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions, bookmarks: bookmarksInContext })
+            // console.log(updateLikeArr_In_MyProfile)
+            setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+          } else {
+
+            const increaseDisLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike, dislike: previousDislike + 1 })
+            // console.log(increaseLike)
+            dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseDisLike }))
+            setPost((prev) => increaseDisLike)
+
+            //Update In Profile
+            let dislikedQuestions = [...dislikedQuestionsInContext]
+            dislikedQuestions.push(post?.$id)
+            // console.log(likedQuestions)
+            const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestionsInContext, dislikedQuestions: dislikedQuestions, bookmarks: bookmarksInContext })
+            // console.log(updateLikeArr_In_MyProfile)
+            setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+          }
+        }
+      } catch (error) {
+        console.log("Error in Dislike")
+      }
+
+    } else {
+
+      if (bookmarksInContext.includes(post?.$id)) {
+        const removeBookmark = bookmarksInContext.filter((bookmarkPostID) => bookmarkPostID !== post?.$id)
+
+        const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myProfileID_In_Context, likedQuestions: likedQuestionsInContext, dislikedQuestions: dislikedQuestionsInContext, bookmarks: removeBookmark })
+        setMyUserProfile((prev) => updateBookMarkInProfile)
+        // console.log(newBookMarkArr)
+      } else {
+        let addBookmark = [...bookmarksInContext]
+        addBookmark.push(post?.$id)
+        // console.log(addBookmark)
+
+        const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myProfileID_In_Context, likedQuestions: likedQuestionsInContext, dislikedQuestions: dislikedQuestionsInContext, bookmarks: addBookmark })
+        setMyUserProfile((prev) => updateBookMarkInProfile)
+      }
+    }
+  }
+
+  const ViewPostRef = useRef()
+  const lastScrollY = useRef(window.scrollY);
+
+  const [isNavbarHidden, setisNavbarHidden] = useState(false)
+  // console.log(isNavbarHidden)
+  const handleScroll = (e) => {
+    // console.log('Hi')
+    let position = e.target.scrollTop;
+    // console.log('lastScrollY ' + lastScrollY.current)
+    // console.log('position ' + position)
+    sessionStorage.setItem('scrollPositionofViewPost', position.toString());
+    if (lastScrollY.current < position) {
+      // console.log('down')
+      setisNavbarHidden(true)
+    } else {
+      // console.log('up')
+      setisNavbarHidden(false)
+    }
+    // setlastScrollY(position)
+    lastScrollY.current = position
+  }
+
+  useEffect(() => {
+    // console.log(ViewPostRef.current)
+    if (ViewPostRef.current) {
+      console.log("HOme")
+      const storedScrollPosition = sessionStorage.getItem('scrollPositionofViewPost');
+      const parsedScrollPosition = parseInt(storedScrollPosition, 10);
+      // console.log(parsedScrollPosition)
+      ViewPostRef.current.scrollTop = parsedScrollPosition
+    }
+  }, [ViewPostRef.current]);
   return post ? (
-    <div className="">
+    <div
+      id="ViewPost_Scroll_Div"
+      ref={ViewPostRef}
+      className="w-full relative"
+      onScroll={handleScroll}
+    >
+      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+        <UpperNavigationBar className='' />
+        <HorizontalLine />
+        <LowerNavigationBar />
+      </nav>
       <HorizontalLine />
       <div id="ViewPost_ViewPost_RecentQuestions_Container" className="flex">
         <div id="ViewPost" className="p-3">
           <div id="ViewPost-Question-Container" className="w-4/6 p-2 bg-white">
-            <div className="mb-3 flex justify-between mx-3 mt-1 relative">
-              <span id="ViewPost-Category">{post.category}</span>
-              <div>
-                <div
-                  className="ViewPost-ellipsis-Vertical"
-                  ref={ViewPost_ellipsis_Vertical}
-                >
-                  <ul>
-                    {isAuther && (
-                      <li
-                        onClick={() => { navigate(`/EditQuestion/${post?.$id}`) }}
-                      >
-                        <Button
-                        >
-                          <i className="fa-regular fa-pen-to-square"></i>
-                        </Button>
-                      </li>
-                    )}
-                    {isAuther && (
-                      <li>
-                        <Button
-                          onClick={() => {
-                            deletePost();
-                            deleteThumbnail();
-                          }}
-                        >
-                          <i className="fa-solid fa-trash"></i>
-                        </Button>
-                      </li>
-                    )}
-                    {/* {isAuther && (
-                      <li onClick={()=>{
-                        console.log(`${window.location.href}`)
-                      }}>
-                        <Button><i className="fa-solid fa-share"></i></Button>
-                      </li>
-                    )} */}
-                    {!isAuther && (
-                      <li>
-                        <Button>Report</Button>
-                      </li>
-                    )}
-                  </ul>
+            <div id="ViewPost_Details" className="mb-3 flex justify-between mx-3 mt-1 relative items-center">
+
+              <div className="flex">
+                <div>
+                  <span id="ViewPost-Category">{post.category}</span>
                 </div>
-                <Button
-                  onMouseOver={() => {
-                    ellipsis_Vertical.current.classList.add("fa-flip");
-                  }}
-                  onMouseOut={() => {
-                    ellipsis_Vertical.current.classList.remove("fa-flip");
-                  }}
-                  onClick={() => {
-                    ViewPost_ellipsis_Vertical.current.classList.toggle("block");
-                  }}
-                >
-                  <i
-                    id="ViewPost_fa-ellipsis"
-                    ref={ellipsis_Vertical}
-                    className="fa-solid fa-ellipsis-vertical text-xl"
-                  ></i>
-                </Button>
+                <div id="ViewPost_Date_Views_comments" className="flex">
+                  <div>
+                    <span className="">{new Date(postdate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span>{postViews}</span>
+                    <i className=" fa-solid fa-eye"></i>
+                  </div>
+                  <div className="flex gap-2">
+                    <span>{postCommentCount}</span>
+                    <i className="fa-solid fa-comment"></i>
+                  </div>
+
+                </div>
               </div>
+
+              <div
+                id="ViewPost_Edit_Delete"
+                onMouseOver={() => {
+                  ellipsis_Vertical.current.classList.add("fa-flip");
+                }}
+                onMouseOut={() => {
+                  ellipsis_Vertical.current.classList.remove("fa-flip");
+                }}
+                onClick={() => {
+                  ViewPost_ellipsis_Vertical.current.classList.toggle("block");
+                }}
+              >
+                {isAuther && <div id="ViewPost_edit_Delete" className="relative">
+
+                  <div>
+                    <div
+                      className="ViewPost-ellipsis-Vertical"
+                      ref={ViewPost_ellipsis_Vertical}
+                    >
+                      <ul>
+                        {isAuther && (
+                          <li
+                            onClick={() => { navigate(`/EditQuestion/${post?.$id}`) }}
+                          >
+                            <Button
+                            >
+                              <i className="fa-regular fa-pen-to-square"></i>
+                            </Button>
+                          </li>
+                        )}
+                        {isAuther && (
+                          <li>
+                            <Button
+                              onClick={() => {
+                                deletePost();
+                                deleteThumbnail();
+                              }}
+                            >
+                              <i className="fa-solid fa-trash"></i>
+                            </Button>
+                          </li>
+                        )}
+
+                        {/* {!isAuther && (
+      <li>
+        <Button>Report</Button>
+      </li>
+    )} */}
+                      </ul>
+                    </div>
+                    <Button>
+                      <i
+                        id="ViewPost_fa-ellipsis"
+                        ref={ellipsis_Vertical}
+                        className="fa-solid fa-ellipsis-vertical text-xl"
+                      ></i>
+                    </Button>
+                  </div>
+                </div>}
+              </div>
+
             </div>
             <div id="ViewPost-Question" className="mt-3">
               <div className="flex gap-2 items-center">
                 <div className="rounded-full">
                   <img
-                    src={`${profileImgURL ? profileImgURL : 'https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png'}`}
+                    src={`${profileImgURL ? profileImgURL : NoProfile}`}
                     id="PostCard-profile-pic"
                     className="rounded-full"
                   />
@@ -311,24 +568,48 @@ const ViewPost = () => {
                   <span>{totalPollVotes}</span>
                 </div>
 
-
-
               </div>}
             </div>
           </div>
 
-          <div className="Chat w-4/6 mt-6">
-            <Chat post={post} />
-          </div>
-        </div>
-        <div id="ViewPost_RecentQuestions" className="">
-          <p>Recent Question Asked by {post.name}</p>
-          <section>
+          <section id="ViewPost_Like_Dislike_BookMark">
+            <div onClick={() => like_dislike_BookMark('Like')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+              <Button>
+                <span>{post?.like}</span>
+                <i className="fa-solid fa-thumbs-up"></i>
+              </Button>
+            </div>
+
+            <div onClick={() => like_dislike_BookMark('Dislike')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+              <Button>
+                <span>{post?.dislike}</span>
+                <i className="fa-solid fa-thumbs-down"></i>
+              </Button>
+            </div>
+
+            <div onClick={() => like_dislike_BookMark('BooKMark')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+              <Button><i className={`fa-${isBookMarked ? 'solid' : 'regular'} fa-bookmark`}></i></Button>
+            </div>
 
           </section>
+          <div className="Chat w-4/6 mt-6">
+            <Chat post={post} navigateToRelatedPost={navigateToRelatedPost} />
+          </div>
         </div>
+        <div id="ViewPost_RelatedQuestions" className={`${isNavbarHidden ? '' : 'active'}`}>
+          <p>{post?.category} Related :</p>
+          {!isRelatedQueriesExist && <span className="">No Related Post is Available of {post?.category}</span>}
+
+          {isRelatedQueriesExist && <ul>
+            {relatedQueriesArr?.map((QuestionObj, index) => {
+              return <li key={QuestionObj?.$id} onClick={() => navigateToRelatedPost(QuestionObj?.$id)} className="cursor-pointer">{QuestionObj?.title ? QuestionObj?.title : QuestionObj?.pollQuestion
+              }</li>
+            })}
+          </ul>}
+        </div>
+
       </div>
-    </div>
+    </div >
   ) : null;
 };
 

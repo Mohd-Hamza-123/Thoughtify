@@ -15,13 +15,14 @@ export class Profile {
         this.storage = new Storage(this.client)
     }
 
-    async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name, profileImgID }) {
+    async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name, profileImgID, profileImgURL }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
                 userIdAuth,
                 gender,
                 name,
-                profileImgID
+                profileImgID,
+                profileImgURL
             })
         } catch (error) {
             console.log("Appwrite serive :: createProfile :: profile.js :: error", error)
@@ -29,7 +30,7 @@ export class Profile {
     }
 
     async updateProfile(id, { bio, educationLvl, occupation,
-        profileImgID
+        profileImgID, profileImgURL
     }, links, interestedIn) {
         // console.log(profileImgID)
         try {
@@ -39,13 +40,24 @@ export class Profile {
                 educationLvl,
                 occupation,
                 interestedIn,
-                profileImgID
+                profileImgID,
+                profileImgURL
             })
         } catch (error) {
             console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
         }
     }
-
+    async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID, {
+                likedQuestions,
+                dislikedQuestions,
+                bookmarks,
+            })
+        } catch (error) {
+            console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
+        }
+    }
     async listProfile({ slug }) {
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,

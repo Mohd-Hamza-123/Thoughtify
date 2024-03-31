@@ -11,6 +11,7 @@ import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
 import authService from "./appwrite/auth";
+import { getInitialPost } from "./store/postsSlice";
 
 
 function App() {
@@ -70,6 +71,8 @@ function App() {
     try {
       const previesViews = await appwriteService.getPost(PostId)
       const updateViews = await appwriteService.updatePostViews(PostId, previesViews.views + 1, previesViews.commentCount);
+      // console.log(updateViews)
+      dispatch(getInitialPost({ initialPosts: [updateViews] }))
     } catch (error) {
       console.log("Error")
     }

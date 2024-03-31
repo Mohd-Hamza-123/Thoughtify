@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { Container, PostCard, NavBar, AskQue, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight } from "../components/index";
@@ -60,7 +60,6 @@ const Home = () => {
     getAllPosts();
   }, []);
 
-
   useEffect(() => {
     const ref = spinnerRef.current;
     // console.log(ref)
@@ -115,23 +114,26 @@ const Home = () => {
 
 
   const HomePageRef = useRef()
-  const [lastScrollY, setlastScrollY] = useState(window.scrollY)
+
+  const lastScrollY = useRef(window.scrollY);
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
   // console.log(isNavbarHidden)
   const handleScroll = (e) => {
-    let position = e.target.scrollTop
-    // setlastScrollY(position)
+    let position = e.target.scrollTop;
+    // console.log('lastScrollY ' + lastScrollY.current)
+    // console.log('position ' + position)
     sessionStorage.setItem('scrollPosition', position.toString());
-    if (lastScrollY < position) {
+    if (lastScrollY.current < position) {
       // console.log('down')
       setisNavbarHidden(true)
     } else {
       // console.log('up')
       setisNavbarHidden(false)
     }
-    setlastScrollY(position)
-
+    // setlastScrollY(position)
+    lastScrollY.current = position
   }
+
 
   useEffect(() => {
     // console.log(HomePageRef.current)
@@ -150,7 +152,8 @@ const Home = () => {
       id="Home"
       ref={HomePageRef}
       className="w-full relative"
-      onScroll={handleScroll}>
+      onScroll={handleScroll}
+      >
       <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
         <UpperNavigationBar className='' />
         <HorizontalLine />

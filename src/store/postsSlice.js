@@ -15,9 +15,8 @@ const postSlice = createSlice({
             state.initialPosts = uniqueArray
         },
         getpostUploaderProfilePic: (state, action) => {
-            // console.log(action.payload)
+            
             const { userId, profilePic } = action.payload;
-            // console.log(profilePic)
             let array = [...state.postUploaderProfilePic, { userId, profilePic }]
             let uniqueArray = Array.from(new Map(array.map(obj => [obj.userId, obj])).values());
             state.postUploaderProfilePic = uniqueArray

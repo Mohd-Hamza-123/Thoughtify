@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./PostCard.css";
 import profile from "../../appwrite/profile";
 import appwriteService from "../../appwrite/config";
-import realTime from "../../appwrite/realTime";
+import NoProfile from '../../assets/NoProfile.png'
 import { useSelector, useDispatch } from 'react-redux'
 import { Query } from 'appwrite'
 import { getpostUploaderProfilePic } from "../../store/postsSlice";
@@ -25,7 +25,7 @@ const PostCard = ({
   // console.log(postProfilesPic)
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
-  
+
 
 
   const getPostData = async () => {
@@ -36,53 +36,33 @@ const PostCard = ({
   }
 
   const profileData = async () => {
-    profile.listProfile({ slug: userId })
-      .then((res) => {
-        // console.log(res)
-        if (res?.documents[0].$id) {
-          return res?.documents[0].profileImgID
+
+    const isProfilePicAlreadyInReduxIndex = postProfilesPic.findIndex((profile) => profile.userId === userId)
+    // console.log(isProfilePicAlreadyInReduxIndex)
+    if (isProfilePicAlreadyInReduxIndex === -1) {
+
+      const gettinProfiles = await profile.listProfile({ slug: userId })
+      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0].profileImgID)
+      setprofileImgURL(gettingProfileImgURL.href)
+
+      if (postProfilesPic.length !== 0) {
+        for (let i = 0; i < postProfilesPic.length; i++) {
+          if (postProfilesPic[i].profilePic !== gettingProfileImgURL.href) {
+            dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL.href }))
+          }
         }
-      })
-      .then((ID) => {
-        profile.getStoragePreview(ID)
-          .then((res) => {
-            setprofileImgURL(res.href)
-            // console.log(postProfilesPic.length)
-            if (postProfilesPic.length !== 0) {
-              // console.log("HI")
-              for (let i = 0; i < postProfilesPic.length; i++) {
-                if (postProfilesPic[i].profilePic !== res.href) {
-                  dispatch(getpostUploaderProfilePic({ userId, profilePic: res.href }))
-                }
-              }
-            } else {
-              // console.log('bye')
-              dispatch(getpostUploaderProfilePic({ userId, profilePic: res.href }))
-            }
+      } else {
+        dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL.href }))
+      }
+    } else {
+      setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
+      // setprofileImgURL(gettingProfileImgURL.href)
+    }
 
-
-          })
-          .catch((err) => console.log(err))
-      })
   }
-
-
-
-  // useEffect(() => {
-  //   const getAllComments = async () => {
-  //     appwriteService
-  //       .getPost($id)
-  //       .then((res) => {
-  //         settotalComments((prev) => res.commentCount)
-  //       })
-  //       .catch((err) => settotalComments(0))
-  //   }
-  //   getAllComments()
-  // }, [])
 
   useEffect(() => {
     if (userId) {
-      // console.log($id)
       profileData()
     }
   }, [])
@@ -142,7 +122,7 @@ const PostCard = ({
               <Link to={`profile/${userId}`}>
                 <div className="rounded-full">
                   <img
-                    src={`${profileImgURL}`}
+                    src={`${profileImgURL ? profileImgURL : NoProfile}`}
                     id="PostCard-profile-pic"
                     className="rounded-full"
                     alt=""

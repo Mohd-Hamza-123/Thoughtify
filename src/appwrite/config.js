@@ -64,7 +64,7 @@ export class Service {
             console.log(error)
         }
     }
-    async updatePostWithQueries({ pollOptions,postId ,totalPollVotes,pollVotersID }) {
+    async updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID }) {
         console.log(pollOptions)
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
@@ -74,6 +74,16 @@ export class Service {
             })
         } catch (error) {
             console.log(error)
+        }
+    }
+    async updatePost_Like_DisLike({ postId, like, dislike }) {
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
+                like,
+                dislike,
+            })
+        } catch (error) {
+            console.log("UpdatePost_like_dislike_bookmark" + error)
         }
     }
     async deletePost(slug) {
@@ -96,9 +106,9 @@ export class Service {
     // Infinte Scroll
     async getPosts(lastPostID) {
         // console.log(lastPostID)
-        let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`)]
+        let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
         if (lastPostID) {
-            QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID)]
+            QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
         }
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,

@@ -11,14 +11,15 @@ import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
 
 const AskQue = ({ post }) => {
-
+console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
         slug: post?.slug || "slug",
         content: post?.content || "",
-        pollAnswer: post?.pollAnswer || ''
+        pollAnswer: post?.pollAnswer || '',
+        opinionsFrom: post?.opinionsFrom || '',
       },
     });
 
@@ -28,6 +29,7 @@ const AskQue = ({ post }) => {
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
   const [thumbailURL, setThumbailURL] = useState('')
+  // console.log(thumbailURL)
   const [imgArr, setimgArr] = useState([]);
 
   // Category State
@@ -36,13 +38,13 @@ const AskQue = ({ post }) => {
   // console.log(categoryValue)
   // Poll State
   const [TotalPollOptions, setTotalPollOptions] = useState([]);
-  console.log(TotalPollOptions)
+  // console.log(TotalPollOptions)
   const [pollQuestion, setPollQuestion] = useState('')
   const [options, setoptions] = useState('')
   // console.log(options)
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
 
-  
+
 
   const handleImageUpload = (arr) => {
     if (arr.length !== 0) {
@@ -202,10 +204,16 @@ const AskQue = ({ post }) => {
       }
       const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
       setTotalPollOptions((prev) => pollOptionsArray)
-      appwriteService.getThumbnailPreview(post.queImageID)
-        .then((res) => {
-          setThumbailURL(res.href)
-        })
+      // console.log(post)
+      if (post.queImageID) {
+        appwriteService.getThumbnailPreview(post.queImageID)
+          .then((res) => {
+            setThumbailURL(res.href)
+          })
+      } else {
+        setThumbailURL((prev) => post.queImage)
+      }
+
     } else {
 
     }
@@ -281,6 +289,7 @@ const AskQue = ({ post }) => {
                       {...register("opinionsFrom", {
                         required: false
                       })}
+                      // defaultChecked
                       defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
                       type="radio"
                       value="Everyone"
@@ -297,7 +306,7 @@ const AskQue = ({ post }) => {
                       {...register('opinionsFrom')}
                       type="radio"
                       value="Responders"
-                      defaultChecked={''}
+                      defaultChecked={post && post?.opinionsFrom === 'Responders' ? true : false}
                       id="Id3"
                       name='opinionsFrom'
                       className='cursor-pointer'

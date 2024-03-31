@@ -1,23 +1,20 @@
+#ViewPost_Scroll_Div {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
 #ViewPost_ViewPost_RecentQuestions_Container {
     width: 100%;
-    /* border: 2px solid yellow; */
+    margin-top: 20vh;
 }
 
 #ViewPost {
     width: 70%;
 }
 
-#ViewPost_RecentQuestions {
-    width: 30%;
-    border: 2px solid green;
-    padding: 10px;
-    position: sticky;
-    right: 0;
-    top: 0;
-    height: 60vh;
-    /* right: 15px;
-    top: 150px; */
-}
+
 
 #ViewPost-Question-Container {
 
@@ -31,12 +28,13 @@
 }
 
 #ViewPost-Category {
-    text-align: left !important;
-    padding: 2px 4px;
-    border-radius: 5px;
+    background-color: rgb(242, 242, 242);
+    display: inline;
+    padding: 4px 7px;
+    color: rgb(68, 68, 68);
+    border-radius: 10px;
     font-size: 13px;
-    background-color: rgba(88, 88, 88, 0.17);
-    color: rgba(32, 32, 32, 0.513);
+    font-family: 'Gabarito', sans-serif;
 }
 
 #ViewPost_fa-ellipsis {
@@ -58,18 +56,67 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/* comment count ,views, data */
+#ViewPost_Details {
+    display: flex;
+}
+
+#ViewPost_Details>div:nth-child(1) {
+    /* width: 35%; */
+    /* border: 2px solid red; */
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+#ViewPost_Date_Views_comments>div {
+    align-items: center;
+}
+
+#ViewPost_Date_Views_comments {
+    font-weight: 500;
+    display: flex;
+    gap: 20px;
+    font-size: 15px;
+    align-items: center;
+}
+
+
+
+#ViewPost_Edit_Delete {
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 15px;
+    cursor: pointer;
+    /* border: 2px solid red !important; */
+}
+
+#ViewPost_Date_Views_Comments {
+    fill: rgb(0, 0, 0);
+    height: 20px;
+    margin-top: 1px;
+}
+
 #ViewPost-Title {
     font-size: 35px;
     margin-top: 20px;
+    margin-bottom: 10px;
     color: rgb(0, 0, 0);
     font-family: 'Poppins', sans-serif;
+    line-height: 44px;
+    letter-spacing: 1px;
 }
-
+#ViewPost_edit_Delete{
+    /* border: 2px solid red; */
+}
 .ViewPost-ellipsis-Vertical {
     display: none;
     position: absolute;
-    right: 15px;
-    /* background: #000; */
+    /* border: 2px solid green; */
+    top: 60%;
+    right: 20px;
     border-radius: 5px;
 }
 
@@ -79,8 +126,8 @@
     align-items: center;
     border-bottom: 1px solid white;
     color: white;
-    height: 32px;
-    width: 32px;
+    height: 35px;
+    width: 35px;
     /* padding: 4px 10px; */
     background-color: rgb(0, 0, 0);
     border-radius: 50%;
@@ -90,6 +137,8 @@
 
 .ViewPost-ellipsis-Vertical ul li i {
     font-size: 15px;
+    margin-bottom: 8px;
+    display: inline-block;
 }
 
 .ViewPost-ellipsis-Vertical ul li:hover {
@@ -157,6 +206,48 @@
     border: 2px solid cyan;
 }
 
+
+
+/* Like dislike bookmark */
+
+#ViewPost_Like_Dislike_BookMark {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#ViewPost_Like_Dislike_BookMark>div {
+    /* border: 1px solid rgba(0, 0, 0, 0.269); */
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding: 5px;
+    width: 33.33%;
+    position: relative;
+    /* background-color: b; */
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#ViewPost_Like_Dislike_BookMark>div:nth-child(1) i {
+    margin-bottom: 10px;
+}
+
+#ViewPost_Like_Dislike_BookMark>div button {
+    display: flex;
+    gap: 10px;
+    font-weight: 600;
+    justify-content: center;
+    align-items: center;
+}
+
+#ViewPost_Like_Dislike_BookMark>div i {
+    font-size: 25px;
+}
+
 #ViewPost_Poll_Answer {
     font-family: 'Gabarito', sans-serif;
     margin-bottom: 10px;
@@ -166,4 +257,43 @@
 .ViewPost_Total_Poll_Votes {
     font-family: 'Gabarito', sans-serif;
     font-size: 15px;
+}
+
+
+#ViewPost_RelatedQuestions {
+    width: 30%;
+    border: 1px dotted var(--secondryBlue);
+    padding: 15px;
+    position: sticky;
+    right: 0;
+    top: 10px;
+    font-family: 'Poppins', sans-serif;
+    height: fit-content;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    background-color: white;
+    margin-top: 10px;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+#ViewPost_RelatedQuestions.active {
+    top: 22vh;
+    transition: all 0.3s;
+}
+
+#ViewPost_RelatedQuestions p {
+    font-weight: 600;
+}
+
+#ViewPost_RelatedQuestions span {
+    display: block;
+    margin-top: 10px;
+}
+
+#ViewPost_RelatedQuestions ul li {
+    list-style: disc;
+    list-style-position: inside;
+    margin-top: 5px;
+    padding: 4px 1px;
+    /* background-color: red; */
 }

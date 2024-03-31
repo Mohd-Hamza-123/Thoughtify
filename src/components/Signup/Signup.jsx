@@ -45,11 +45,13 @@ const Signup = () => {
       let blob = await response.blob();
       const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' })
       const createProfileBucket = await profile.createBucket({ file })
-      // console.log(createProfileBucket)
+      const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
+      const profileImgURL = getProfileURL.href
       const userProfile = await profile.createProfile({
         name: data.name,
         userIdAuth: userData?.$id,
-        profileImgID: createProfileBucket.$id
+        profileImgID: createProfileBucket.$id,
+        profileImgURL,
       })
       console.log(userProfile)
       setMyUserProfile((prev) => userProfile)

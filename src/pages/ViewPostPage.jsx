@@ -4,9 +4,6 @@ const ViewPostPage = () => {
     
     return (
         <>
-            <UpperNavigationBar />
-            <HorizontalLine />
-            <LowerNavigationBar />
             <ViewPost />
         </>
     )

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import "./Chat.css";
+import NoProfile from '../../assets/NoProfile.png'
 import { ChatRTE, Button, TextArea, Spinner } from "../index";
 import { useForm } from "react-hook-form";
 import realTime from "../../appwrite/realTime";
@@ -10,12 +11,19 @@ import appwriteService from "../../appwrite/config";
 import { useNavigate } from 'react-router-dom'
 import { useAskContext } from "../../context/AskContext";
 import { getCommentsInRedux } from "../../store/commentsSlice";
+import profile from "../../appwrite/profile";
+import { getInitialPost, getpostUploaderProfilePic } from "../../store/postsSlice";
+import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 
-const Chat = ({ post }) => {
+const Chat = ({ post, navigateToRelatedPost }) => {
+  // console.log(post.commentCount)
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  // const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
+  const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
+  const postUploaderPics = useSelector((state) => state.postsSlice.postUploaderProfilePic)
+
   // console.log(commentsInRedux)
+
   // load subcomments
   const fixedReplies = 2;
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
@@ -23,138 +31,114 @@ const Chat = ({ post }) => {
   const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([])
   const [activeTextArea, setactiveTextArea] = useState(null)
 
-
   const [postCommentCount, setpostCommentCount] = useState(null)
   // console.log(postCommentCount)
   const [postid, setpostid] = useState(post.$id);
   const [commentArr, setcommentArr] = useState([]);
+  // console.clear()
+  // console.log(commentArr)
   const [replyComment, setreplyComment] = useState("");
   const { $id: authid, name } = useSelector((state) => state.auth.userData)
-  const { register, watch, control, handleSubmit, setValue, getValues } =
+  const { register, watch, control, handleSubmit, setValue, getValues, reset } =
     useForm();
-
-
-
-  const Submit = async (data) => {
-    setValue('commentContent', '');
-    if (!data.commentContent) return
-    if (post) {
-      const dbCommnet = await realTime.createComment({
-        ...data,
-        postid,
-        authid,
-        name,
-      });
-      setcommentArr((prev) => [dbCommnet, ...prev]);
-    }
-
-    if (postCommentCount || postCommentCount === 0) {
-      console.log("PostCommentCount A")
-      appwriteService.updatePostViews(postid, post.views, postCommentCount + 1)
-        .then((res) => {
-          setpostCommentCount((prev) => prev + 1)
-          // console.log(res)
-        })
-        .catch((error) => console.log(error))
-    } else {
-      console.log("PostCommentCount B")
-      appwriteService.updatePostViews(postid, post.views, post.commentCount + 1)
-        .then((res) => {
-          setpostCommentCount((prev) => post.commentCount + 1)
-          // console.log(res)
-        })
-        .catch((error) => console.log(error))
-    }
-
-
-
-  };
-
-  const CommentReply = (
-    subComment,
-    messageid,
-    commentContent,
-    postid,
-    index
-  ) => {
-    if (index || index === 0) {
-      subComment.splice(index, 1);
-      // console.log(subComment);
-    }
-    realTime
-      .updateComment(
-        {
-          messageid,
-          postid,
-          commentContent,
-          authid,
-        },
-        subComment
-      )
-      .then((res) => {
-        getComments();
-      });
-  };
-  const deleteComments = async (documentid) => {
-    realTime
-      .deleteComment(documentid)
-      .then((res) => getComments())
-      .catch((err) => console.log(err.message));
-
-    if (postCommentCount) {
-      console.log("PostCommentCount C")
-      appwriteService
-        .updatePostViews(postid, post.views, postCommentCount - 1)
-        .then((res) => {
-          setpostCommentCount((prev) => prev - 1)
-          // console.log(res)
-        })
-        .catch((error) => console.log(error))
-    } else {
-      console.log("PostCommentCount D")
-      appwriteService
-        .updatePostViews(postid, post.views, post.commentCount - 1)
-        .then((res) => {
-          setpostCommentCount((prev) => post.commentCount - 1)
-          // console.log(res)
-        })
-        .catch((error) => console.log(error))
-    }
-  }
-
-
   // intersection observer
   const [isLoading, setIsLoading] = useState(false)
   const { hasMoreComments, sethasMoreComments } = useAskContext()
   const [isIntersecting, setIsIntersecting] = useState(false)
-  const [lastPostID, setLastPostID] = useState(null)
-  // console.log("Is Intersecting : " + isIntersecting)
+  const [lastPostID, setLastPostID] = useState(null);
+  // console.log(lastPostID)
+
+  // console.log(totalComments)
+
   let spinnerRef = useRef();
+  // let see = document.querySelector('#tinymce')
+  // console.log(see)
+
+
+  useEffect(() => {
+    const getProfilePics = async () => {
+      // console.log(commentArr)
+      let array = commentArr;
+      let uniqueArray = Array.from(new Map(array.map(obj => [obj.authid
+        , obj])).values());
+      // console.log(uniqueArray)
+      // console.log(postUploaderPics)
+      let wantProfileIds = uniqueArray.filter((objofUniqueArr) => {
+        return !postUploaderPics.some((objOfRedux) => objOfRedux.userId === objofUniqueArr.authid)
+      })
+      // console.log(wantProfileIds)
+      if (wantProfileIds.length > 0) {
+        for (let i = 0; i < wantProfileIds.length; i++) {
+          let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
+          // console.log(listedProfile.documents[0].profileImgURL)
+          // console.log(listedProfile.documents[0].userIdAuth)
+          let userId = listedProfile.documents[0].userIdAuth
+          let profilePic = listedProfile.documents[0].profileImgURL
+          dispatch(getpostUploaderProfilePic({ userId, profilePic }))
+        }
+      }
+    }
+    if (commentArr.length > 0) {
+      getProfilePics()
+    }
+  }, [commentArr])
+
+
 
   const getComments = async (lastid = null) => {
-    setIsLoading((prev) => true)
     try {
-      const list_Comment = await realTime.listComment(postid, lastid);
-      console.log(list_Comment)
-      if (commentArr.length < list_Comment.total) {
-        sethasMoreComments((prev) => true)
+      setIsLoading(true)
+      const comments = await realTime.listComment(post?.$id, lastid);
+      // console.log(comments)
+
+      if (commentArr.length < comments.total) {
+        sethasMoreComments(true)
       } else {
-        sethasMoreComments((prev) => false)
+        sethasMoreComments(false)
       }
-      if (list_Comment) {
-        setcommentArr((prev) => {
-          let array = [...prev, ...list_Comment.documents]
-          let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id
-            , obj])).values());
-          return [...uniqueArray]
-        });
-        let lastID = list_Comment.documents[list_Comment.documents.length - 1].$id
-        setLastPostID((prev) => lastID)
-      }
+      dispatch(getCommentsInRedux({ comments: comments.documents, isMerge: true }))
     } catch (error) {
-      // console.log(error.message)
+      setcommentArr((prev) => {
+        const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
+        // console.log(arr)
+        if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
+        // console.log(arr[arr.length - 1].$id)
+        if (arr.length !== 0) {
+          return arr
+        } else {
+          return []
+        }
+      })
+      setIsLoading(false)
+    } finally {
+      // setIsLoading(false)
     }
   };
+
+  useEffect(() => {
+
+    setcommentArr((prev) => {
+      const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
+      // console.log(arr)
+      if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
+      // console.log(arr[arr.length - 1].$id)
+      return arr
+    })
+
+  }, [commentsInRedux, navigateToRelatedPost])
+
+  useEffect(() => {
+
+    if (isIntersecting) {
+      // console.log(lastPostID)
+      getComments(lastPostID)
+    }
+  }, [isIntersecting])
+
+
+  useEffect(() => {
+    getComments();
+  }, [navigateToRelatedPost]);
   useEffect(() => {
     const ref = spinnerRef.current;
     // console.log(ref)
@@ -173,24 +157,125 @@ const Chat = ({ post }) => {
 
   }, [spinnerRef.current, commentArr])
 
+
+  const Submit = async (data) => {
+    clearEditorContent()
+    reset()
+    if (!data.commentContent) return
+    if (post) {
+      const dbCommnet = await realTime.createComment({
+        ...data,
+        postid,
+        authid,
+        name,
+      });
+      // setcommentArr((prev) => [dbCommnet, ...prev]);
+      dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
+      // console.log(dbCommnet)
+    }
+
+    if (postCommentCount || postCommentCount === 0) {
+      console.log("PostCommentCount A")
+      appwriteService.updatePostViews(postid, post.views, postCommentCount + 1)
+        .then((res) => {
+          setpostCommentCount((prev) => prev + 1)
+          console.log(res)
+          dispatch(getInitialPost({ initialPosts: [res] }))
+        })
+        .catch((error) => console.log(error))
+    } else {
+      console.log("PostCommentCount B")
+      appwriteService.updatePostViews(postid, post.views, post.commentCount + 1)
+        .then((res) => {
+          setpostCommentCount((prev) => post.commentCount + 1)
+          console.log(res)
+          // dispatch(getAllVisitedQuestionsInViewPost({ questions: res }))
+          dispatch(getInitialPost({ initialPosts: [res] }))
+        })
+        .catch((error) => console.log(error))
+    }
+  };
+  const CommentReply = (
+    subComment,
+    messageid,
+    commentContent,
+    postid,
+    index
+  ) => {
+    let copiedSubComment = [...subComment]
+    if (index || index === 0) {
+      // console.log(index)
+      // console.log(subComment)
+
+      // console.log(copiedSubComment)
+      copiedSubComment.splice(index, 1);
+      // subComment.splice(index, 1);
+      // console.log(copiedSubComment);
+    }
+    realTime
+      .updateComment(
+        {
+          messageid,
+          postid,
+          commentContent,
+          authid,
+        },
+        copiedSubComment
+      )
+      .then((res) => {
+        getComments();
+      });
+  };
+  const deleteComments = async (documentid) => {
+
+    realTime
+      .deleteComment(documentid)
+      .then(() => {
+        let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
+        // console.log("dispatched")
+        dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
+      })
+      .catch((err) => console.log(err.message));
+
+    if (postCommentCount) {
+      // console.log("PostCommentCount C")
+      appwriteService
+        .updatePostViews(postid, post.views, postCommentCount - 1)
+        .then((res) => {
+          dispatch(getInitialPost({ initialPosts: [res] }))
+          setpostCommentCount((prev) => prev - 1)
+          // console.log(res)
+        })
+        .catch((error) => console.log(error))
+    } else {
+      console.log("PostCommentCount D")
+      appwriteService
+        .updatePostViews(postid, post.views, post.commentCount - 1)
+        .then((res) => {
+          dispatch(getInitialPost({ initialPosts: [res] }))
+          setpostCommentCount((prev) => post.commentCount - 1)
+          // console.log(res)
+        })
+        .catch((error) => console.log(error))
+    }
+  }
+
   useEffect(() => {
-    if (commentArr.length !== 0) {
-      for (let i = 0; i < commentArr.length; i++) {
-        setarr_For_Five_Mul((prev) => [...prev, { subCommentID: commentArr[i].$id, five_Multiple: 1 }])
+    if (commentArr) {
+      if (commentArr.length !== 0) {
+        for (let i = 0; i < commentArr.length; i++) {
+          setarr_For_Five_Mul((prev) => [...prev, { subCommentID: commentArr[i]?.$id, five_Multiple: 1 }])
+        }
       }
     }
   }, [commentArr])
 
-  useEffect(() => {
-    getComments();
-  }, []);
-
-  useEffect(() => {
-    if (isIntersecting && hasMoreComments && lastPostID) {
-      getComments(lastPostID);
+  const editorRef = useRef(null)
+  const clearEditorContent = () => {
+    if (editorRef.current) {
+      editorRef.current.setContent('');
     }
-  }, [isIntersecting, hasMoreComments])
-
+  }
 
   return (
     <div id="Chat">
@@ -200,6 +285,8 @@ const Chat = ({ post }) => {
             control={control}
             name="commentContent"
             defaultValue={getValues("commentContent")}
+            editorRef={editorRef}
+            clearEditorContent={clearEditorContent}
           />
         </div>
         <div className="flex justify-end mt-3">
@@ -214,24 +301,33 @@ const Chat = ({ post }) => {
       </form>
 
       <div>
-        {commentArr?.map((comment) => (
-          <div key={comment.$id} id="Chat_Comment_Div">
+        {commentArr?.map((comment) => {
+
+          let profilePicIndex = postUploaderPics.findIndex((obj) => (obj.userId === comment.authid));
+
+          let profilePicURL;
+          if (profilePicIndex !== -1) {
+            profilePicURL = postUploaderPics[profilePicIndex].profilePic
+          }
+
+          // console.log(profilePicURL)
+          return <div key={comment?.$id} id="Chat_Comment_Div">
             <section>
               <div className="flex justify-between mb-5">
 
                 <div className="flex gap-2">
                   <img
                     id="Chat_Comment_Div_img"
-                    src="https://images.unsplash.com/photo-1618641986557-1ecd230959aa?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
+                    src={`${profilePicURL ? profilePicURL : NoProfile}`}
                     alt=""
                   />
-                  <span className="text-red-700 font-bold Chat_Comment_Name">{comment.name}</span>
+                  <span className="text-red-700 font-bold Chat_Comment_Name">{comment?.name}</span>
                 </div>
                 <div>
-                  {authid === comment.authid && (
+                  {authid === comment?.authid && (
                     <span
                       onClick={() => {
-                        deleteComments(comment.$id);
+                        deleteComments(comment?.$id);
                       }}
                       className="cursor-pointer"
                     >
@@ -243,7 +339,7 @@ const Chat = ({ post }) => {
               </div>
 
               <div id="Chat_Comment_Div_1">
-                <div id="Chat_Comment">{comment.commentContent ? parse(comment.commentContent) : ''}</div>
+                <div id="Chat_Comment">{comment?.commentContent ? parse(comment?.commentContent) : ''}</div>
               </div>
             </section>
 
@@ -253,13 +349,7 @@ const Chat = ({ post }) => {
               <span
                 className="cursor-pointer"
                 onClick={() => {
-                  // AddCommentTextarea(
-                  //   comment.$id,
-                  //   comment.commentContent,
-                  //   post.$id,
-                  //   comment.textAreaVisible
-                  // );
-                  setactiveTextArea((prev) => comment.$id)
+                  setactiveTextArea((prev) => comment?.$id)
                 }}
               >
                 Reply
@@ -267,10 +357,10 @@ const Chat = ({ post }) => {
             </div>
 
 
-            <div className={`${activeTextArea === comment.$id ? '' : 'hidden'}`}>
+            <div className={`${activeTextArea === comment?.$id ? '' : 'hidden'}`}>
               <textarea
                 name=""
-                id={`id_${comment.$id}`}
+                id={`id_${comment?.$id}`}
                 rows="4"
                 value={replyComment}
                 className="Chat_textArea"
@@ -279,7 +369,7 @@ const Chat = ({ post }) => {
 
               <Button
                 onClick={() => {
-                  if (comment.subComment.length > 100) return
+                  if (comment?.subComment?.length > 100) return
                   CommentReply(
                     [
                       JSON.stringify({
@@ -287,11 +377,11 @@ const Chat = ({ post }) => {
                         authid: authid,
                         name: name,
                       }),
-                      ...comment.subComment,
+                      ...comment?.subComment,
                     ],
-                    comment.$id,
-                    comment.commentContent,
-                    post.$id,
+                    comment?.$id,
+                    comment?.commentContent,
+                    post?.$id,
                     null
                   );
                   setreplyComment((prev) => '')
@@ -306,10 +396,10 @@ const Chat = ({ post }) => {
 
 
             <div className={``}>
-              {comment.subComment.map((sub, index) => {
+              {comment?.subComment?.map((sub, index) => {
 
                 // console.log(id_For_Five_Mul)
-                if (comment.$id != id_For_Five_Mul) {
+                if (comment?.$id != id_For_Five_Mul) {
                   if (index >= fixedReplies) return
                 } else {
                   if (index >= loadSubComments_Five_Mul) return
@@ -323,10 +413,10 @@ const Chat = ({ post }) => {
                       className=""
                       onClick={() => {
                         CommentReply(
-                          comment.subComment,
-                          comment.$id,
-                          comment.commentContent,
-                          post.$id,
+                          comment?.subComment,
+                          comment?.$id,
+                          comment?.commentContent,
+                          post?.$id,
                           index
                         );
                       }}
@@ -334,29 +424,29 @@ const Chat = ({ post }) => {
                       <i className="fa-solid fa-trash"></i>
                     </button>
                   )}
-                  <span className="cursor-pointer" onClick={() => navigate(`/profile/${JSON.parse(sub).authid}`)}>{JSON.parse(sub).name}</span>
-                  <p>{JSON.parse(sub).sub}</p>
+                  <span className="cursor-pointer" onClick={() => navigate(`/profile/${JSON.parse(sub)?.authid}`)}>{JSON.parse(sub)?.name}</span>
+                  <p>{JSON.parse(sub)?.sub}</p>
 
                 </div>
               })}
             </div>
             <button className={''} id="Chat_See_Replies" onClick={() => {
 
-              setid_For_Five_Mul((prev) => comment.$id)
-              const currentCommentID = comment.$id;
+              setid_For_Five_Mul((prev) => comment?.$id)
+              const currentCommentID = comment?.$id;
               if (currentCommentID !== id_For_Five_Mul && id_For_Five_Mul !== null) {
                 setloadSubComments_Five_Mul((prev) => fixedReplies + 2)
               }
-              if (loadSubComments_Five_Mul >= comment.subComment.length) return
+              if (loadSubComments_Five_Mul >= comment?.subComment?.length) return
 
               setloadSubComments_Five_Mul((prev) => prev + 3)
 
-            }}>{`${(loadSubComments_Five_Mul >= comment.subComment.length && comment.$id === id_For_Five_Mul) || comment.subComment.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
+            }}>{`${(loadSubComments_Five_Mul >= comment?.subComment?.length && comment?.$id === id_For_Five_Mul) || comment?.subComment?.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
             <div>
-              <small>{new Date(comment.$createdAt).toLocaleString()}</small>
+              <small>{new Date(comment?.$createdAt).toLocaleString()}</small>
             </div>
           </div>
-        ))}
+        })}
       </div>
 
       {(isLoading && hasMoreComments) && < div className="flex justify-center" ref={spinnerRef}>

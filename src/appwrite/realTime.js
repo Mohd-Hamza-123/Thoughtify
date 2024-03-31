@@ -57,11 +57,12 @@ export class RealTime {
         }
     }
 
-    async listComment(postid, lastid) {
-        let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`])]
+    async listComment(postid, lastid, IgnoredCommentsIDs) {
+        let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
         if (lastid) {
-            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`])]
+            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
         }
+        // return
         try {
             try {
                 return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
