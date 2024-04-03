@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     userProfile: {},
-    userProfileImgURL: ''
+    userProfileImgURL: '',
+    totalPostsbyMe: 0,
+    totalCommentsbyMe: 0,
 }
 
 const profileSlice = createSlice({
@@ -13,11 +15,17 @@ const profileSlice = createSlice({
             const { userProfile, userProfileImgURL } = action.payload
             state.userProfile = userProfile
             state.userProfileImgURL = userProfileImgURL
+        },
+        getTotalPostByMe: (state, action) => {
+            state.totalPostsbyMe = action.payload.totalPostsbyMe
+        },
+        getTotalCommentsByMe: (state, action) => {
+            state.totalCommentsbyMe = action.payload.totalCommentsbyMe
         }
     }
 })
 
 
-export const { getUserProfile } = profileSlice.actions;
+export const { getUserProfile, getTotalPostByMe, getTotalCommentsByMe } = profileSlice.actions;
 export default profileSlice.reducer
 

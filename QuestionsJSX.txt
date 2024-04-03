@@ -4,14 +4,11 @@ import appwriteService from '../../appwrite/config'
 import { Input, Button, Spinner } from '../'
 import { useForm } from 'react-hook-form'
 import { Link, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { categoriesArr } from '../AskQue/Category'
 import { useAskContext } from '../../context/AskContext'
-import { getTotalPostByMe } from '../../store/profileSlice'
 const Questions = ({ visitedProfileUserID }) => {
-  const TotalPostByMe = useSelector((state) => state.profileSlice?.totalPostsbyMe)
-  const dispatch = useDispatch()
-  console.log(TotalPostByMe)
+  // console.log(visitedProfileUserID)
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
   const [queries, setQueries] = useState([])
@@ -23,16 +20,15 @@ const Questions = ({ visitedProfileUserID }) => {
     sethasMorePostsInProfileFilterQuestions, } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
-  const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
+
 
   const submit = async (data) => {
     if (visitedProfileUserID === userData.$id) {
-      data.UserID = visitedProfileUserID
-
+      data.UserID = userData?.$id
+      
       sethasMorePostsInProfileFilterQuestions(true)
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
-
-      // console.log(filteredQuestions)
+      console.log(filteredQuestions)
       const isArray = Array.isArray(filteredQuestions)
       if (isArray) {
         sethasMorePostsInProfileFilterQuestions(false)
@@ -103,19 +99,6 @@ const Questions = ({ visitedProfileUserID }) => {
     }
 
   }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
-  // getting total posts
-  useEffect(() => {
-    if (TotalPostByMe == 0) {
-      appwriteService
-        .getPosts()
-        .then((res) => {
-          settotalNumberofPosts((prev) => res.total)
-          dispatch(getTotalPostByMe({ totalPostsbyMe: res.total }))
-        })
-    } else {
-      settotalNumberofPosts((prev) => TotalPostByMe)
-    }
-  }, [])
   return (
 
     <div id='Profile_Questions_Filter' className='flex'>
@@ -123,7 +106,7 @@ const Questions = ({ visitedProfileUserID }) => {
       <form id='Profile_Filter_Questions_Form' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
 
         <div id='Profile_Questions_Title'>
-
+          <p id='Profile_Questions_Title_Total_Posts'>Total Posts : 5</p>
           <p>Filter by Post Title :</p>
           <div className='flex gap-2'>
             <label htmlFor='Profile_Questions_Title_Filter'>Title : </label>
@@ -232,6 +215,9 @@ const Questions = ({ visitedProfileUserID }) => {
           sethasMorePostsInProfile_Questionss(false)
         }} value={'Reset Filter'} className='Profile_Questions_ResentFilter' />
       </form>
+
+
+
       <div id='Profile_Questions_Filtered_Questions'>
 
         {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
@@ -239,16 +225,16 @@ const Questions = ({ visitedProfileUserID }) => {
           if (isPostAvailable !== true) {
             return
           }
-          return <div key={querie?.$id}>
-            <span className={`${querie?.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{querie?.name}</span>
+          return <div key={querie.$id}>
+            <span className={`${querie.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{querie.name}</span>
 
-            <Link to={`/post/${querie?.$id}/${null}`}>
-              <p>{querie?.title}</p>
+            <Link to={`/post/${querie.$id}`}>
+              <p>{querie.title}</p>
               <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
-                <span>{new Date(querie?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                <span>{querie?.category}</span>
+                <span>{new Date(querie.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <span>{querie.category}</span>
                 <div className='flex justify-center items-center'>
-                  <span>{querie?.views}</span>
+                  <span>{querie.views}</span>
                   <i className=" fa-solid fa-eye" aria-hidden="true"></i>
                 </div>
                 <div>

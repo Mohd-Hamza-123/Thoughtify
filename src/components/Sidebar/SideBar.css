@@ -1,3 +1,11 @@
+#SideBarContainer {
+    /* width: 100vw;
+    height: 100vw;
+    border: 40px solid red;
+    position: relative;
+    display: none; */
+}
+
 .SideBar {
     overflow-x: hidden;
     overflow-y: scroll;
@@ -14,9 +22,11 @@
     border-bottom-left-radius: 20px;
     border-top-left-radius: 20px;
 }
-.SideBar::-webkit-scrollbar{
+
+.SideBar::-webkit-scrollbar {
     display: none;
 }
+
 .SideBar hr {
     height: 1px;
     background-color: rgb(5, 5, 5);
@@ -31,16 +41,15 @@
 .SideBar.Active {
     transform: translateX(0);
     position: absolute;
-    top: 80vh;
+    top: 0;
     right: 0px;
     width: 22%;
     height: 100vh;
     color: rgb(0, 0, 0);
-    background-color: ghostwhite;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    
+    background-color: whitesmoke;
     transition: transform 200ms ease-in-out;
-    z-index: 100;
-    border-bottom-left-radius: 20px;
-    border-top-left-radius: 20px;
 }
 
 .SideBarCross {}

@@ -12,7 +12,7 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({ postid, commentContent, authid, name,
+    async createComment({ postid, commentContent, authid, name, date, category
     }) {
         try {
             return await this.database.createDocument(
@@ -25,6 +25,8 @@ export class RealTime {
                     authid,
                     subComment: [],
                     name,
+                    date,
+                    category,
                 }
             )
         } catch (error) {
@@ -57,6 +59,13 @@ export class RealTime {
         }
     }
 
+    async getSingleComment(documentid) {
+        try {
+            return await this.database.getDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
+        } catch (error) {
+            console.log("DeleteComment error in realtime.js")
+        }
+    }
     async listComment(postid, lastid, IgnoredCommentsIDs) {
         let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
         if (lastid) {
@@ -87,6 +96,43 @@ export class RealTime {
             )
         } catch (error) {
             console.log("customProfileFilter error in realtime.js")
+        }
+    }
+
+    async getCommentsWithQueries({ Title, category,
+        BeforeDate, AfterDate, PostAge, UserID, lastPostID
+    }) {
+        // console.log(lastPostID)
+        let QueryArr = [Query.limit(5)];
+        if (lastPostID) {
+            QueryArr.push(Query.cursorAfter(lastPostID))
+        }
+
+        if (Title) QueryArr.push(Query.startsWith("title", Title))
+        if (category !== 'All Category' && category !== undefined) QueryArr.push(Query.equal('category', [`${category}`]))
+        if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
+        if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
+
+        if (PostAge === "Oldest") { QueryArr.push(Query.orderAsc("$createdAt")) } else if (PostAge === 'Recent') {
+            QueryArr.push(Query.orderDesc("$createdAt"))
+        }
+
+
+        if (UserID) {
+            QueryArr.push(Query.equal("authid", [UserID]))
+        }
+
+        try {
+
+            if (QueryArr.length <= 1) return []
+            return await this.database.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteNewCollectionId,
+                QueryArr
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: getPostsWithQueries :: error", error);
+            return null
         }
     }
 

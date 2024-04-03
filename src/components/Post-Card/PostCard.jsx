@@ -22,13 +22,16 @@ const PostCard = ({
 }) => {
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
-  // console.log(postProfilesPic)
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  // console.log(queImage)
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
 
 
 
   const getPostData = async () => {
+
+    // console.log(queImageID)
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
         setthumbnailURL(res.href)
@@ -69,9 +72,12 @@ const PostCard = ({
 
   useEffect(() => {
 
-    if (queImageID) {
+
+    if (!queImage && queImageID) {
       getPostData()
     }
+
+
 
   }, [queImageID, category]);
 
@@ -95,17 +101,17 @@ const PostCard = ({
       <div id="PostCard" className="flex flex-row-reverse w-full">
         <div id="PostCard_left" className="" >
           <Link to={`/post/${$id}`}>
-            {queImageID ? (
+            {queImage ? (
               <img
                 id="Post-Card-img"
-                src={`${thumbnailURL ? thumbnailURL : queImage}`}
+                src={`${queImage}`}
                 alt="Image"
                 className="w-full"
               />
             ) : (
               <img
                 id="Post-Card-img"
-                src={`${queImage ? queImage : `https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg`}`}
+                src={`${thumbnailURL ? thumbnailURL : `https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg`}`}
                 alt="Image"
                 className="w-full"
               />
@@ -135,7 +141,7 @@ const PostCard = ({
                 </h4>
               </Link>
             </div>
-            <Link to={`/post/${$id}`}>
+            <Link to={`/post/${$id}/${null}`}>
               <h3 id="PostCard_title">{countTitle(title)}</h3>
             </Link>
           </div>

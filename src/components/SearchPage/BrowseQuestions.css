@@ -1,3 +1,8 @@
+#BrowseQuestions{
+    width: 100vw;
+    height: 100vh;
+}
+
 #BrowseQuestions_Filters {
     width: 28%;
     font-family: 'Poppins', sans-serif;
@@ -7,7 +12,7 @@
     background-color: white;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 80vh;
+    height: 64vh;
 }
 
 #BrowseQuestions_Filters>div {
@@ -74,6 +79,13 @@
     position: absolute;
     top: 10px;
     right: 8px;
+    transform: scale(1);
+    transition: transform 0.3s;
+}
+
+.BrowseQuestions_ApplyFilter:active {
+    transform: scale(1.2);
+    transition: transform 0.3s;
 }
 
 .BrowseQuestions_ResentFilter {
@@ -85,8 +97,13 @@
     position: absolute;
     top: 10px;
     right: 100px;
+    transform: scale(1);
+    transition: transform 0.3s;
 }
-
+.BrowseQuestions_ResentFilter:active{
+    transform: scale(1.2);
+    transition: transform 0.3s;
+}
 #BrowseQuestions_Filtered_Questions {
     width: 72%;
     border-radius: 0px;
@@ -94,9 +111,12 @@
     background-color: transparent;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 80vh;
+    height: 66vh;
 }
-
+#BrowseQuestions_Filtered_Questions>p{
+    font-weight: 600;
+    font-family: 'Varela Round', sans-serif;
+}
 #BrowseQuestions_Filtered_Questions>div {
     border-radius: 5px;
     padding: 7px;

@@ -60,7 +60,7 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          path="/post/:slug"
+          path="/post/:slug/:filterCommentID"
           element={
             <>
               <ViewPostPage />
@@ -74,6 +74,7 @@ const router = createBrowserRouter(
           }
         />
         <Route
+        // loader={getProfilePicData}
           path="/AskQuestion"
           element={
             <>

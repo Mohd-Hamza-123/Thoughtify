@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    queries: []
+    queries: [],
+    flag: false
 }
 
 const queriesSlice = createSlice({
@@ -9,11 +10,18 @@ const queriesSlice = createSlice({
     initialState,
     reducers: {
         getQueriesInRedux: (state, action) => {
-            state.queries = action.payload.queries
+            let array = []
+            if (action.payload.flag === true) {
+                array = [...action.payload.queries]
+            } else {
+                array = [...state.queries, ...action.payload.queries]
+            }
+            let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id, obj])).values());
+            state.queries = [...uniqueArray]
         }
     }
 
 })
 
-export const { getQueriesInRedux} = queriesSlice.actions;
+export const { getQueriesInRedux } = queriesSlice.actions;
 export default queriesSlice.reducer

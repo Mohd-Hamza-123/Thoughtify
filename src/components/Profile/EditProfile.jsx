@@ -9,6 +9,7 @@ import profile from "../../appwrite/profile";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { getCanvasPreview, getCroppedFile } from "./getCanvasPreview";
+import { useAskContext } from "../../context/AskContext";
 
 
 const MinimumDimension = 50;
@@ -26,7 +27,7 @@ const EditProfile = ({
     $id,
   } = profileData;
 
-
+  const { myUserProfile, setMyUserProfile } = useAskContext()
   const userData = useSelector((state) => state.auth.userData)
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ const EditProfile = ({
   const [URLerror, setURLerror] = useState("");
   const [interestedTag, setInterestedTag] = useState("");
   const [linksArr, setLinksArr] = useState([]);
-  
+
   const [EducationLevel, setEducationLevel] = useState("");
   const [OccupationInput, setOccupationInput] = useState("");
   const [seePreviewBefore, setseePreviewBefore] = useState('')
@@ -138,6 +139,7 @@ const EditProfile = ({
             linksArr,
             interestedTagArr,
           );
+          setMyUserProfile(profileData)
         } else {
           let profileData = await profile.updateProfile(
             $id,
@@ -145,6 +147,7 @@ const EditProfile = ({
             linksArr,
             interestedTagArr,
           );
+          setMyUserProfile(profileData)
         }
       } else {
         if (data.occupation) {
@@ -154,6 +157,7 @@ const EditProfile = ({
             linksArr,
             interestedTagArr,
           );
+          setMyUserProfile(profileData)
         } else {
           let profileData = await profile.updateProfile(
             $id,
@@ -165,9 +169,10 @@ const EditProfile = ({
             linksArr,
             interestedTagArr,
           );
+          setMyUserProfile(profileData)
         }
       }
-      // navigate(`/profile/${profileImgID}`)
+      navigate(`/profile/${userData?.$id}`)
       setseePreviewBefore('')
       console.log("Profile Updated")
     }

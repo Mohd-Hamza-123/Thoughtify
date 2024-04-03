@@ -14,7 +14,7 @@ const HomeRight = () => {
                 <p>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
                     {categoriesArr?.map((category, index) => (
-                        <span onClick={() => navigate(`/BrowseQuestion/${category.category}/''`)} className='cursor-pointer' key={category.category}>{category.category}</span>
+                        <span onClick={() => navigate(`/BrowseQuestion/${category.category}/${null}`)} className='cursor-pointer' key={category.category}>{category.category}</span>
                     ))}
                 </div>
             </div>

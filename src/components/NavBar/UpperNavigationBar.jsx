@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 const NavigationBar = () => {
   const { register, handleSubmit, setValue } = useForm()
   const authStatus = useSelector((state) => state.auth.status);
-  // console.log(authStatus)
+
   const userProfileData = useSelector((state) => state.profileSlice.userProfile)
   const BarItems = [
     {
@@ -28,19 +28,22 @@ const NavigationBar = () => {
     },
   ];
   const [profileImgURL, setprofileImgURL] = useState('')
-  // const upperNav = useRef();
+
   const navigate = useNavigate();
   const { isOpen, setIsOpen, notificationPopUp,
-    setnotificationPopUp } = useAskContext();
-  const userData = useSelector((state) => state.auth.userData)
+    setnotificationPopUp, myUserProfile } = useAskContext();
+  const userData = useSelector((state) => state.auth.userData);
 
   const getProfileData = async () => {
-    const profileData = await profile.listProfile({ slug: userData?.$id })
-    // console.log(profileData)
-    if (profileData.documents.length > 0) {
-      const profileImgID = profileData.documents[0].profileImgID
-      const profileImgURL = await profile.getStoragePreview(profileImgID)
-      setprofileImgURL(profileImgURL.href)
+    if (myUserProfile) {
+      setprofileImgURL(myUserProfile?.profileImgURL)
+    } else {
+      const profileData = await profile.listProfile({ slug: userData?.$id })
+      if (profileData.documents.length > 0) {
+        const profileImgID = profileData.documents[0].profileImgID
+        const profileImgURL = await profile.getStoragePreview(profileImgID)
+        setprofileImgURL(profileImgURL.href)
+      }
     }
   }
 
@@ -52,16 +55,14 @@ const NavigationBar = () => {
     setIsOpen(true);
   };
   const submit = async (data) => {
-    console.log(data)
-    navigate(`/BrowseQuestion/''/${data.searchQuestion}`)
+    // console.log(data)
+    navigate(`/BrowseQuestion/${null}/${data.searchQuestion}`)
     setValue("searchQuestion", "")
   }
   return (
     <>
       <nav
-        // ref={upperNav}
         id={"nav"}
-        className={`flex ${isOpen ? "lightdark" : ""}`}
       >
         <Container>
           <div className="flex justify-between px-7 py-2">
@@ -121,7 +122,7 @@ const NavigationBar = () => {
               </div>}
               {authStatus && (
                 <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-                  <img src={profileImgURL} alt="" />
+                  <img src={profileImgURL ? profileImgURL : profileImgURL} alt="" />
                 </div>
               )}
               {!authStatus && <ul className="flex items-center">
@@ -129,7 +130,7 @@ const NavigationBar = () => {
                   Item.active ? (
                     <li key={Item.name} className="">
                       <button
-                       id='UpperNavigationBar_Buttons'
+                        id='UpperNavigationBar_Buttons'
                         className="inline-bock px-6 py-2 duration-200 hover:bg-white hover:text-black rounded-full"
                         onClick={() => navigate(Item.slug)}
                       >
@@ -140,7 +141,7 @@ const NavigationBar = () => {
                 )}
               </ul>}
             </div>
-            <SideBar />
+
           </div>
         </Container>
       </nav>
@@ -149,3 +150,5 @@ const NavigationBar = () => {
 };
 
 export default NavigationBar;
+
+

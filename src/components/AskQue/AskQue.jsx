@@ -5,13 +5,17 @@ import { RTE, Input, Button, TextArea, HorizontalLine, Opinions } from "../";
 import conf from "../../conf/conf";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import appwriteService from "../../appwrite/config";
 import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
+import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
+import { getInitialPost } from "../../store/postsSlice";
 
 const AskQue = ({ post }) => {
-console.log(post)
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  // console.log(initialPost)
+  console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -24,12 +28,14 @@ console.log(post)
     });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
 
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
+  console.log(thumbnailFile)
   const [thumbailURL, setThumbailURL] = useState('')
-  // console.log(thumbailURL)
+  console.log(thumbailURL)
   const [imgArr, setimgArr] = useState([]);
 
   // Category State
@@ -65,18 +71,15 @@ console.log(post)
 
   const submit = async (data) => {
 
-    // console.log(data)
-    // console.log(TotalPollOptions)
     const pollOptions = TotalPollOptions.map((obj) => JSON.stringify(obj))
-    // console.log(pollOptions)
     data.pollQuestion = pollQuestion
-    // console.log(data)
-    // console.log(TotalPollOptions)
-    // return
+
     let date = new Date()
     let year = date.getFullYear();
-    let month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+    let month = String(date.getMonth() + 1).padStart(2, '0');
     let day = String(date.getDate()).padStart(2, '0');
+    let formattedDate = `${year}-${month}-${day}`
+
 
     if (pollQuestion && TotalPollOptions.length <= 1) {
       console.log('There must be 2 options')
@@ -94,90 +97,143 @@ console.log(post)
       console.log('Title is not there');
       return
     }
-    console.log("Ha")
+
+
+
+
     // return
     if (post) {
-
+      console.log(thumbailURL)
       if (thumbnailFile) {
+        console.log("hi")
         const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
         const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
         const dbPost = await appwriteService.updatePost(post.$id, {
           ...data,
           queImageID: dbThumbnail.$id,
+          queImage: null,
           pollQuestion,
           pollOptions
         }, categoryValue);
 
-      } else {
-        const dbPost = await appwriteService.updatePost(post.$id, {
+        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+      } else if (thumbailURL && !post?.queImageID) {
+        console.log(thumbailURL)
+        const dbPost = await appwriteService.updatePost(post?.$id, {
           ...data,
-          queImageID: post.queImageID,
+          queImage: thumbailURL,
+          queImageID: null,
           pollQuestion,
           pollOptions
         }, categoryValue);
+        console.log(dbPost)
+        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+      } else if (thumbailURL && post?.queImageID) {
+        const dbPost = await appwriteService.updatePost(post?.$id, {
+          ...data,
+          queImage: null,
+          queImageID: post?.queImageID,
+          pollQuestion,
+          pollOptions
+        }, categoryValue);
+        console.log(dbPost)
+        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+      } else {
+
+        try {
+          console.log("hi")
+          const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
+
+          const UnsplashRes = await unsplashImg.json();
+          const ImgArrUnsplash = UnsplashRes.results
+
+          const randomIndex = Math.floor(Math.random() * 10);
+          // console.log(ImgArrUnsplash[randomIndex])
+          const ImgURL = ImgArrUnsplash[randomIndex].urls.full
+          console.log(ImgURL)
+          const dbPost = await appwriteService.updatePost(post?.$id, {
+            ...data,
+            queImage: ImgURL,
+            queImageID: null,
+            pollQuestion,
+            pollOptions,
+          }, categoryValue);
+          console.log(dbPost)
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+        } catch (error) {
+          console.log("hi")
+          const dbPost = await appwriteService.updatePost(post.$id, {
+            ...data,
+            userId: userData.$id,
+            queImage: null,
+            queImageID: null,
+            pollQuestion,
+            pollOptions,
+          }, categoryValue);
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+        }
+
       }
 
-
       navigate("/");
-      setimgArr((prev) => []);
-
-    } else if (!post && thumbnailFile) {
-      // const userProfile = await profile.listProfile({ slug: userData.$id })
-
-
-      const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
-
-      const dbPost = await appwriteService.createPost({
-        ...data,
-        queImageID: dbThumbnail.$id,
-        userId: userData.$id,
-        pollQuestion,
-        queImage: null,
-        pollOptions,
-        name: userData?.name,
-        date: `${year}-${month}-${day}`
-      }, categoryValue);
-      // console.log(dbPost)
     } else {
 
-      // const userProfile = await profile.listProfile({ slug: userData.$id })
-
-      try {
-        const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-
-        const UnsplashRes = await unsplashImg.json();
-        const ImgArrUnsplash = UnsplashRes.results
-
-        const randomIndex = Math.floor(Math.random() * 10);
-        // console.log(ImgArrUnsplash[randomIndex])
-        const ImgURL = ImgArrUnsplash[randomIndex].urls.full
+      if (thumbnailFile) {
+        const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
         const dbPost = await appwriteService.createPost({
           ...data,
-          userId: userData.$id,
-          queImage: ImgURL,
-          queImageID: null,
+          queImageID: dbThumbnail?.$id,
+          userId: userData?.$id,
           pollQuestion,
+          queImage: null,
           pollOptions,
           name: userData?.name,
-          date: `${year}-${month}-${day}`
-        }, categoryValue);
-        console.log("Thubmnai hai")
-      } catch (error) {
-        console.log("Thumbnail nhi")
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          userId: userData.$id,
-          queImage: null,
-          queImageID: null,
-          name: userData.name,
-          pollQuestion,
-          pollOptions,
-        }, categoryValue);
+          date: formattedDate
+        }, categoryValue)
+        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+      } else {
+
+        try {
+          const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
+          const UnsplashRes = await unsplashImg.json();
+          const ImgArrUnsplash = UnsplashRes.results
+          const randomIndex = Math.floor(Math.random() * 10);
+          const ImgURL = ImgArrUnsplash[randomIndex].urls.full
+
+          const dbPost = await appwriteService.createPost({
+            ...data,
+            userId: userData.$id,
+            queImage: ImgURL,
+            queImageID: null,
+            pollQuestion,
+            pollOptions,
+            name: userData?.name,
+            date: formattedDate
+          }, categoryValue);
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+        } catch (error) {
+          const dbPost = await appwriteService.createPost({
+            ...data,
+            userId: userData.$id,
+            queImage: null,
+            queImageID: null,
+            pollQuestion,
+            pollOptions,
+            name: userData?.name,
+            date: formattedDate
+          }, categoryValue);
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+        }
+        navigate("/");
       }
 
     }
+
+
     navigate("/")
     setimgArr((prev) => [])
   }
@@ -345,9 +401,15 @@ console.log(post)
                   id="BrowseThumbnail"
                   onChange={selectThumbnail}
                 />
-                {thumbailURL && <span onClick={() => {
+                {thumbailURL && <span onClick={async () => {
                   setThumbailURL('')
                   setthumbnailFile(null)
+                  try {
+                    const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
+                  } catch (error) {
+                    console.log("AskQue delete Img error.")
+                  }
+
                 }}>Remove Image</span>}
               </div>
             </div>
@@ -414,7 +476,7 @@ console.log(post)
 
             </div>
 
-            <div id="AskQue_Pole" className="mt-6">
+            {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
               <p>Add Pole : (Optional) </p>
 
               <div id="AskQue_Pole_Options">
@@ -475,7 +537,7 @@ console.log(post)
                     </div>
 
                     {TotalPollOptions?.map((options, index) => {
-                      console.log(options)
+                      // console.log(options)
                       return <div className="w-full flex justify-start items-center" key={options.option}>
 
                         <span className="w-3/4" >{`${index + 1} ) ${options.option}`}</span>
@@ -507,7 +569,7 @@ console.log(post)
 
               </div>
 
-            </div>
+            </div>}
             <div className={`buttons flex justify - end items - center mt - 14`}>
 
               <Button type="submit" className="askque_btn">

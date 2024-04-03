@@ -37,7 +37,7 @@ export class Service {
             console.log("Appwrite serive :: createPost :: error", error)
         }
     }
-    async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer }, category) {
+    async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer,queImage }, category) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
                 title,
@@ -49,6 +49,7 @@ export class Service {
                 opinionsFrom,
                 status,
                 pollAnswer,
+                queImage
             })
         } catch (error) {
             console.log("Appwrite serive :: updatePost :: error", error);
@@ -121,20 +122,29 @@ export class Service {
     }
     async getPostsWithQueries({ Title, category,
         BeforeDate, AfterDate, From, To, PostAge, Viewed,
-        Commented, UserID
+        Commented, UserID, Like_Dislike, lastPostID
     }) {
-
-        let QueryArr = [];
-
+        console.log(lastPostID)
+        let QueryArr = [Query.limit(5)];
+        if (lastPostID) {
+            QueryArr.push(Query.cursorAfter(lastPostID))
+        }
+        if (Like_Dislike === 'Most Liked') {
+            QueryArr.push(Query.orderDesc("like"))
+        } else if (Like_Dislike === 'Most Disliked') {
+            QueryArr.push(Query.orderDesc("dislike"))
+        }
         if (Title) QueryArr.push(Query.startsWith("title", Title))
-        if (category !== 'Select Category' && category !== undefined) QueryArr.push(Query.equal('category', [`${category}`]))
+        if (category !== 'All Category' && category !== undefined) QueryArr.push(Query.equal('category', [`${category}`]))
         if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
         if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
         if (From && To) {
             QueryArr.push(Query.greaterThanEqual('date', From))
             QueryArr.push(Query.lessThanEqual('date', To))
         }
-        if (PostAge === "Oldest") QueryArr.push(Query.orderDesc("$createdAt"))
+        if (PostAge === "Oldest") { QueryArr.push(Query.orderAsc("$createdAt")) } else if (PostAge === 'Recent') {
+            QueryArr.push(Query.orderDesc("$createdAt"))
+        }
         if (Viewed === 'MostViewed') {
             QueryArr.push(Query.orderDesc("views"))
         }
@@ -147,14 +157,12 @@ export class Service {
             QueryArr.push(Query.orderAsc('commentCount'))
         }
         if (UserID) {
-
             QueryArr.push(Query.equal("userId", [UserID]))
-            QueryArr.push(Query.limit(4))
         }
-        // console.log(QueryArr)
+  
         try {
 
-            if (QueryArr.length === 0) return null
+            if (QueryArr.length <= 1) return []
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
                 QueryArr
             )

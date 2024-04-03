@@ -9,7 +9,7 @@
     height: 115px;
     position: fixed;
     top: 0px;
-    z-index: 100;
+    z-index: 5;
     background-color: #FFFFFF;
     transition: all 0.3s ease-in-out;
     left: 0;
@@ -49,7 +49,12 @@
     top: 0;
     /* border: 2px solid red; */
     padding: 5px;
+    transition: all 0.3s;
+}
 
+.Home_Right.active {
+    top: 120px;
+    transition: all 0.3s;
 }
 
 .Home_loader {

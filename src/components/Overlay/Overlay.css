@@ -8,6 +8,7 @@
     transition: opacity 0.3s ease;
     transition: top 0ms;
     overflow: hidden;
+    z-index:5;
 }
 
 #Overlay.active {
@@ -15,4 +16,5 @@
     opacity: 0.4;
     transition: opacity 0.3s ease;
     transition: top 0ms;
+    /* z-index:5; */
 }

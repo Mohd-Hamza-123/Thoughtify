@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import "./BrowseQuestions.css"
-import { Query } from 'appwrite'
-import { UpperNavigationBar, HorizontalLine, Input, Button, LowerNavigationBar } from '../index'
+import { UpperNavigationBar, HorizontalLine, Input, Button, LowerNavigationBar, Spinner } from '../index'
 import { categoriesArr } from '../AskQue/Category'
 import appwriteService from '../../appwrite/config'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,39 +8,124 @@ import { getQueriesInRedux } from '../../store/queries'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
+import { useAskContext } from '../../context/AskContext'
+
 const BrowseQuestions = () => {
-  const { category } = useParams()
-  const queries = useSelector((state) => state.queriesSlice.queries);
-  const { register, handleSubmit, setValue } = useForm({})
-  const dispatch = useDispatch();
+  const { category, searchInput } = useParams()
+  // console.log(category)
+  // console.log(searchInput)
+
+  const { register, handleSubmit, setValue, reset, getValues } = useForm({})
+
+  const [queries, setQueries] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  // console.log('IsLoading : ' + isLoading)
+  let spinnerRef = useRef();
+  const [lastPostID, setLastPostID] = useState(null)
+  // console.log(lastPostID)
+  // const [submitData, setSubmitData] = useState({})
+  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [totalFilteredQueries, settotalFilteredQueries] = useState(0)
+
+  // console.log('isIntersecting : ' + isIntersecting)
+  const { hasMorePostsInBrowseQuestions,
+    sethasMorePostsInBrowseQuestions } = useAskContext()
+  const [isPostAvailable, setisPostAvailable] = useState(true)
 
   const submit = async (data) => {
-    console.log(data)
-
-
+    // console.log(data)
+    sethasMorePostsInBrowseQuestions(true)
     const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
-    if (filteredQuestions) {
-      // console.log(filteredQuestions)
-      dispatch(getQueriesInRedux({ queries: filteredQuestions.documents }))
+    // console.log(filteredQuestions)
+    const isArray = Array.isArray(filteredQuestions)
+
+    if (isArray) {
+      sethasMorePostsInBrowseQuestions(false)
+      setIsLoading(false)
+      settotalFilteredQueries(0)
+      setLastPostID(null)
+      setisPostAvailable(false)
     } else {
-      console.log("No Data")
+      setIsLoading(true)
+      setisPostAvailable(true)
+      if (filteredQuestions.documents.length > 0) {
+        settotalFilteredQueries(filteredQuestions.total)
+        setQueries((prev) => filteredQuestions.documents)
+      } else {
+        settotalFilteredQueries(0)
+        setQueries((prev) => [])
+        setisPostAvailable(false)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (queries.length >= totalFilteredQueries) {
+      setIsLoading(false)
+      sethasMorePostsInBrowseQuestions(false)
+      setLastPostID((prev) => null)
+    } else {
+      setLastPostID((prev) => queries[queries.length - 1]?.$id)
+      setIsLoading(true)
+      sethasMorePostsInBrowseQuestions(true)
+    }
+  }, [queries, isIntersecting, isLoading])
+
+  useEffect(() => {
+    // console.log("bye")
+    const getMoreQueries = async () => {
+      const data = getValues()
+      const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
+      console.log(filteredQuestions)
+      if (filteredQuestions.length !== 0) {
+        setQueries((prev) => [...prev, ...filteredQuestions.documents])
+      }
+
     }
 
+    if (isIntersecting) {
+      if (lastPostID !== null) {
+        getMoreQueries()
+      }
+    }
+  }, [isIntersecting])
 
-  }
-
-  const getQueries = async () => {
-    const queries = await appwriteService.getPosts();
-    dispatch(getQueriesInRedux({ queries: queries.documents }))
-  }
   useEffect(() => {
-    // if (queries.length === 0) {
-    //   getQueries()
-    // }
-  }, [])
+    const ref = spinnerRef.current;
+    if (ref) {
+      const observer = new IntersectionObserver(([entry]) => {
 
+        setIsIntersecting((prev) => entry.isIntersecting)
+      }, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1
+      })
+
+      observer.observe(ref)
+      return () => ref && observer.unobserve(ref)
+    }
+
+  }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
+
+  useEffect(() => {
+    // console.log(searchInput)
+    // console.log(category)
+    if (category !== 'null') {
+      // console.log("hi")
+      setValue("category", category);
+      const data = getValues()
+      // console.log(data)
+      submit(data)
+    } else if (searchInput !== 'null') {
+      setValue("Title", searchInput);
+      const data = getValues()
+      // console.log(data)
+      submit(data)
+    }
+  }, [searchInput])
   return (
-    <>
+    <div id='BrowseQuestions'>
       <UpperNavigationBar />
       <HorizontalLine />
       <LowerNavigationBar />
@@ -125,8 +209,8 @@ const BrowseQuestions = () => {
             <p>Filter By Category : </p>
             <div id='BrowseQuestions_Category' className='flex gap-2'>
               <label htmlFor="">Category : </label>
-              <select name="" {...register("category")} id="" className='outline-none'>
-                <option value={'Select Category'}>Select Category</option>
+              <select name="category" {...register("category")} id="" className='outline-none'>
+                <option defaultChecked value={'All Category'}>All Category</option>
                 {categoriesArr?.map((category, index) => (
                   <option key={category.category + index}>{category.category}</option>
                 ))}
@@ -154,16 +238,23 @@ const BrowseQuestions = () => {
           </div>
 
           <Button type='Submit' className='BrowseQuestions_ApplyFilter'>Apply Filter</Button>
-          <input type='reset' value={'Reset Filter'} className='BrowseQuestions_ResentFilter' />
+          <input type='reset' onClick={() => {
+            reset()
+            sethasMorePostsInBrowseQuestions(false)
+          }} value={'Reset Filter'} className='BrowseQuestions_ResentFilter' />
         </form>
 
 
         <div id='BrowseQuestions_Filtered_Questions'>
-          {queries?.map((querie, index) => (
-            <div key={querie.$id}>
+          {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
+          {queries?.map((querie, index) => {
+            if (isPostAvailable !== true) {
+              return
+            }
+            return <div key={querie.$id}>
               <span className={`${querie.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{querie.name}</span>
 
-              <Link to={`/post/${querie.$id}`}>
+              <Link to={`/post/${querie.$id}/${null}`}>
                 <p>{querie.title}</p>
                 <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
                   <span>{new Date(querie.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
@@ -176,16 +267,28 @@ const BrowseQuestions = () => {
                     <span>{querie.commentCount}</span>
                     <i className="fa-solid fa-comment"></i>
                   </div>
+                  <div>
+                    <span>{querie?.like}</span>
+                    <i className="fa-solid fa-thumbs-up"></i>
+                  </div>
+
+                  <div>
+                    <span>{querie?.dislike}</span>
+                    <i className="fa-solid fa-thumbs-down"></i>
+                  </div>
                 </div>
               </Link>
             </div>
-          ))}
+          })}
 
+          {(isLoading && hasMorePostsInBrowseQuestions) && <section ref={spinnerRef} className='flex justify-center'>
+            <Spinner />
+          </section>}
         </div>
 
 
       </div>
-    </>
+    </div>
   )
 }
 

@@ -8,18 +8,23 @@ import {
   Questions,
   ProfileSummary,
 } from "../index";
+import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
 import location from "../../appwrite/location";
 import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
+import { getOtherUserProfile } from "../../store/usersProfileSlice";
 
 
 const MyProfile = () => {
+  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
+  // console.log(othersUserProfile)
   const { myUserProfile } = useAskContext()
-  // console.log(myUserProfile)
+
   const { slug } = useParams();
+  // console.log(slug)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
@@ -33,24 +38,35 @@ const MyProfile = () => {
   // console.log(activeNavRender)
 
   const getUserProfile = async () => {
-    const listprofileData = await profile.listProfile({ slug });
-    // console.log(listprofileData)
-    if (listprofileData) {
-      setProfileData({ ...listprofileData.documents[0] });
+    const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
+    )
+    // console.log(isUserAlreadyInReduxState)
+    const index = isUserAlreadyInReduxState;
+    if (isUserAlreadyInReduxState === -1) {
+      const listprofileData = await profile.listProfile({ slug });
+      if (listprofileData) {
+        setProfileData({ ...listprofileData.documents[0] });
+        dispatch(getOtherUserProfile({ userProfileArr: [listprofileData.documents[0]] }))
+      }
+      getUserProfileImg(listprofileData.documents[0].profileImgID)
+    } else {
+      setProfileData((prev) => othersUserProfile[index]);
+      setURLimg((prev) => othersUserProfile[index].profileImgURL)
     }
-    getUserProfileImg(listprofileData.documents[0].profileImgID)
+
   };
 
   const getUserProfileImg = async (imgID) => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
-      setURLimg(Preview)
+      setURLimg(Preview.href)
+      // console.log(Preview)
     }
 
   }
   const flagFunc = async () => {
     let locations = await location.GetLocation();
-    setcountryName(locations.country);
+    setcountryName(locations?.country);
     if (locations) {
       let flagURL = await avatar.getFlag(locations.countryCode, 20, 20);
       setflag(flagURL.href);
@@ -58,8 +74,9 @@ const MyProfile = () => {
   };
 
   useEffect(() => {
-    if (slug === myUserProfile.userIdAuth) {
-      setProfileData((prev)=>myUserProfile)
+    if (slug === userData?.$id) {
+      setProfileData((prev) => myUserProfile)
+      setURLimg(myUserProfile?.profileImgURL)
     } else {
       getUserProfile();
     }
@@ -69,11 +86,11 @@ const MyProfile = () => {
   useEffect(() => {
     // console.log(activeNav)
     switch (activeNav) {
-      case 'Opinions': setactiveNavRender(<Opinions />)
+      case 'Opinions': setactiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
-      case 'Favourites': setactiveNavRender(<Favourite />)
+      case 'Favourites': setactiveNavRender(<Favourite visitedProfileUserID={slug} />)
         break;
-      case 'Questions': setactiveNavRender(<Questions />)
+      case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
         break;
       default: setactiveNavRender(<ProfileSummary profileData={profileData} />)
     }
@@ -90,10 +107,7 @@ const MyProfile = () => {
               id="MyProfile_Img_Div"
               className="w-1/4 h-full flex justify-center items-center"
             >
-              <img
-                src={URLimg.href || 'https://i.pinimg.com/736x/01/35/f3/0135f3c592342631da4308a8b60b98bc.jpg'}
-                alt=""
-              />
+              <img src={URLimg ? URLimg : NoProfile} />
             </div>
             <div
               id="MyProfile_Name_Div"

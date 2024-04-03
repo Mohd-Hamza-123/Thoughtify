@@ -15,13 +15,14 @@ import profile from "../../appwrite/profile";
 import { getInitialPost, getpostUploaderProfilePic } from "../../store/postsSlice";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 
-const Chat = ({ post, navigateToRelatedPost }) => {
+const Chat = ({ post, navigateToRelatedPost, slug }) => {
   // console.log(post.commentCount)
+  // console.log(post)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
   const postUploaderPics = useSelector((state) => state.postsSlice.postUploaderProfilePic)
-
+  // console.log(post)
   // console.log(commentsInRedux)
 
   // load subcomments
@@ -56,6 +57,7 @@ const Chat = ({ post, navigateToRelatedPost }) => {
 
 
   useEffect(() => {
+    // console.log("hi")
     const getProfilePics = async () => {
       // console.log(commentArr)
       let array = commentArr;
@@ -70,8 +72,7 @@ const Chat = ({ post, navigateToRelatedPost }) => {
       if (wantProfileIds.length > 0) {
         for (let i = 0; i < wantProfileIds.length; i++) {
           let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
-          // console.log(listedProfile.documents[0].profileImgURL)
-          // console.log(listedProfile.documents[0].userIdAuth)
+
           let userId = listedProfile.documents[0].userIdAuth
           let profilePic = listedProfile.documents[0].profileImgURL
           dispatch(getpostUploaderProfilePic({ userId, profilePic }))
@@ -81,9 +82,7 @@ const Chat = ({ post, navigateToRelatedPost }) => {
     if (commentArr.length > 0) {
       getProfilePics()
     }
-  }, [commentArr])
-
-
+  }, [])
 
   const getComments = async (lastid = null) => {
     try {
@@ -116,7 +115,7 @@ const Chat = ({ post, navigateToRelatedPost }) => {
   };
 
   useEffect(() => {
-
+    // console.log("HI")
     setcommentArr((prev) => {
       const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
       // console.log(arr)
@@ -125,7 +124,7 @@ const Chat = ({ post, navigateToRelatedPost }) => {
       return arr
     })
 
-  }, [commentsInRedux, navigateToRelatedPost])
+  }, [isIntersecting,post,slug,commentsInRedux])
 
   useEffect(() => {
 
@@ -137,8 +136,10 @@ const Chat = ({ post, navigateToRelatedPost }) => {
 
 
   useEffect(() => {
+    // console.log("HI")
     getComments();
-  }, [navigateToRelatedPost]);
+  }, [slug,post]);
+
   useEffect(() => {
     const ref = spinnerRef.current;
     // console.log(ref)
@@ -160,7 +161,14 @@ const Chat = ({ post, navigateToRelatedPost }) => {
 
   const Submit = async (data) => {
     clearEditorContent()
-    reset()
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Adding 
+    const day = ('0' + currentDate.getDate()).slice(-2);
+    const formattedDate = `${year}-${month}-${day}`;
+
+
+
     if (!data.commentContent) return
     if (post) {
       const dbCommnet = await realTime.createComment({
@@ -168,6 +176,8 @@ const Chat = ({ post, navigateToRelatedPost }) => {
         postid,
         authid,
         name,
+        category: post?.category,
+        date: formattedDate,
       });
       // setcommentArr((prev) => [dbCommnet, ...prev]);
       dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))

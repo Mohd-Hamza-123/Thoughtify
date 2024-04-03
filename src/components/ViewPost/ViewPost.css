@@ -108,9 +108,11 @@
     line-height: 44px;
     letter-spacing: 1px;
 }
-#ViewPost_edit_Delete{
+
+#ViewPost_edit_Delete {
     /* border: 2px solid red; */
 }
+
 .ViewPost-ellipsis-Vertical {
     display: none;
     position: absolute;
@@ -259,26 +261,32 @@
     font-size: 15px;
 }
 
-
-#ViewPost_RelatedQuestions {
+.ViewPost_Related_Filter_Comment_Questions {
     width: 30%;
-    border: 1px dotted var(--secondryBlue);
+    /* border: 1px dotted var(--secondryBlue); */
     padding: 15px;
     position: sticky;
     right: 0;
+    /* border: 2px solid red; */
     top: 10px;
     font-family: 'Poppins', sans-serif;
     height: fit-content;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     background-color: white;
     margin-top: 10px;
+    margin-bottom: 15px;
     border-radius: 10px;
     transition: all 0.3s;
 }
 
-#ViewPost_RelatedQuestions.active {
+.ViewPost_Related_Filter_Comment_Questions.active {
     top: 22vh;
     transition: all 0.3s;
+}
+
+#ViewPost_RelatedQuestions {
+    width: 100%;
+
 }
 
 #ViewPost_RelatedQuestions p {
@@ -295,5 +303,30 @@
     list-style-position: inside;
     margin-top: 5px;
     padding: 4px 1px;
-    /* background-color: red; */
+}
+
+.ViewPost_Filtered_Comments {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.ViewPost_Filtered_Comments>p {
+    font-weight: 600;
+    margin-bottom: 15px;
+
+}
+
+.ViewPost_Filtered_Comments_Name_Delete {
+    margin-bottom: 10px;
+}
+
+.ViewPost_Filtered_Comments_Name_Delete>p {
+    text-decoration: underline;
+}
+
+.ViewPost_Filtered_Comments article {
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.442);
 }

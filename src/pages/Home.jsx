@@ -43,12 +43,13 @@ const Home = () => {
           }
           if (posts) {
             setPosts((prev) => posts.documents)
-            let lastID = posts.documents[posts.documents.length - 1].$id
+            let lastID = posts.documents[posts.documents.length - 1]?.$id
             setLastPostID((prev) => lastID)
             dispatch(getInitialPost({ initialPosts: posts.documents }))
           }
         } else {
-          setPosts(initialPost)
+          // console.log(initialPost)
+          setPosts((prev) => [...initialPost])
         }
       } catch (error) {
         console.log(error)
@@ -107,8 +108,10 @@ const Home = () => {
   }, [isIntersecting, hasMorePostsInHome])
 
   useEffect(() => {
-    if (initialPost.length !== 0 && hasMorePostsInHome) {
+    if (initialPost.length !== 0) {
       setPosts((prev) => initialPost)
+    } else {
+      setPosts((prev) => [])
     }
   }, [initialPost])
 
@@ -153,7 +156,7 @@ const Home = () => {
       ref={HomePageRef}
       className="w-full relative"
       onScroll={handleScroll}
-      >
+    >
       <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
         <UpperNavigationBar className='' />
         <HorizontalLine />
@@ -174,13 +177,34 @@ const Home = () => {
           </div>}
 
         </div>
-        <div className="Home_Right">
+        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
           <HomeRight />
         </div>
       </div>
     </div>
   ) : (
-    null
+    <div
+      id="Home"
+      ref={HomePageRef}
+      className="w-full relative"
+      onScroll={handleScroll}
+    >
+      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+        <UpperNavigationBar className='' />
+        <HorizontalLine />
+        <LowerNavigationBar />
+      </nav>
+
+      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
+        <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
+          No Posts
+        </div>
+        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+          <HomeRight />
+        </div>
+      </div>
+
+    </div>
   );
 };
 

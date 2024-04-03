@@ -6,6 +6,7 @@ import { login, logout } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
+import {SideBar} from "./components";
 import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
@@ -14,8 +15,11 @@ import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 
 
-function App() {
 
+function App() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
@@ -23,11 +27,9 @@ function App() {
   const [myUserProfile, setMyUserProfile] = useState({})
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true)
   const [hasMoreComments, sethasMoreComments] = useState(true)
-  // const [postProfilePicURL, setpostProfilePicURL] = useState('')
-  // console.log(myUserProfile)
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
+  const [hasMorePostsInBrowseQuestions, sethasMorePostsInBrowseQuestions] = useState(true)
+  const [hasMorePostsInProfileFilterQuestions, sethasMorePostsInProfileFilterQuestions] = useState(true)
+  const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
 
 
   useEffect(() => {
@@ -45,7 +47,6 @@ function App() {
       })
       .then((res) => res?.documents[0])
       .then((userProfile) => {
-        // console.log(userProfile)
         setMyUserProfile((prev) => userProfile)
         dispatch(getUserProfile({ userProfile }))
         return userProfile.profileImgID
@@ -58,20 +59,18 @@ function App() {
       })
       .catch((err) => {
         navigate("/signup");
+
         console.log(err)
       }
       )
       .finally(() => setLoading(false));
-
-
-
   }, []);
 
   const increaseViews = async (PostId) => {
     try {
       const previesViews = await appwriteService.getPost(PostId)
       const updateViews = await appwriteService.updatePostViews(PostId, previesViews.views + 1, previesViews.commentCount);
-      // console.log(updateViews)
+      
       dispatch(getInitialPost({ initialPosts: [updateViews] }))
     } catch (error) {
       console.log("Error")
@@ -82,6 +81,11 @@ function App() {
     <>
       <AskProvider
         value={{
+          hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions,
+          hasMorePostsInProfileFilterQuestions,
+          sethasMorePostsInProfileFilterQuestions,
+          hasMorePostsInBrowseQuestions,
+          sethasMorePostsInBrowseQuestions,
           hasMoreComments,
           sethasMoreComments,
           hasMorePostsInHome,
@@ -97,9 +101,10 @@ function App() {
           setIsOpen,
         }}
       >
-        {/* <ChooseGender/> */}
+
         <Feedback />
         <Outlet />
+        <SideBar />
         <Overlay />
       </AskProvider>
     </>

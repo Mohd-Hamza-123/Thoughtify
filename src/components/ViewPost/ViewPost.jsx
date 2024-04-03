@@ -10,14 +10,20 @@ import "./ViewPost.css";
 import '../../index.css'
 import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
+import { getInitialPost } from "../../store/postsSlice";
+import realTime from "../../appwrite/realTime";
+import { getCommentsInRedux } from "../../store/commentsSlice";
 
 const ViewPost = () => {
   //Data from Redux
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
+  const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
+  // console.log(commentsInRedux)
   const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
+  console.log(AllVisitedQuestions)
   const userData = useSelector((state) => state.auth.userData);
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  // console.log(initialPost)
+  console.log(initialPost)
   const { myUserProfile,
     setMyUserProfile } = useAskContext()
   // console.log(myUserProfile)
@@ -25,7 +31,8 @@ const ViewPost = () => {
 
 
   const dispatch = useDispatch()
-  const { slug } = useParams();
+  const { slug, filterCommentID } = useParams();
+  // console.log(filterCommentID)
   const navigate = useNavigate();
 
   const ellipsis_Vertical = useRef();
@@ -33,7 +40,7 @@ const ViewPost = () => {
 
   const [profileImgURL, setprofileImgURL] = useState('')
   const [post, setPost] = useState(null);
-  // console.log(post)
+  console.log(post)
   const isAuther = post && userData ? post.userId === userData.$id : false;
   // useState for views,comments,date
   const [postdate, setpostdate] = useState('')
@@ -45,12 +52,57 @@ const ViewPost = () => {
   const [isPollOpinionVisible, setIsPollOpinionVisible] = useState(false)
 
   const navigateToRelatedPost = (postId) => {
-    console.log(postId)
-    navigate(`/post/${postId}`);
+
+    navigate(`/post/${postId}/${null}`);
   }
+  // Filter Comment in ViewPost
+  const [filteredComment, setfilteredComment] = useState(null)
+  // console.log(filteredComment)
+  // console.clear()
+  // console.log("Hi")
+  const deleteComments = async (documentid) => {
+
+    // return
+    realTime
+      .deleteComment(documentid)
+      .then(() => {
+        // console.log("deleted")
+        let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
+        // console.log("dispatched")
+        dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
+      })
+      .catch((err) => console.log(err.message));
+
+
+
+    appwriteService
+      .updatePostViews(post?.$id, post.views, post.commentCount - 1)
+      .then((res) => {
+        dispatch(getInitialPost({ initialPosts: [res] }))
+        
+        setpostCommentCount((prev) => post.commentCount - 1)
+      })
+      .catch((error) => console.log(error))
+
+    setfilteredComment((prev) => null)
+  }
+
+  useEffect(() => {
+    if (filterCommentID !== 'null') {
+      realTime
+        .getSingleComment(filterCommentID)
+        .then((res) => {
+          
+          setfilteredComment(res)
+        })
+        .catch((res) => { console.log("bye") })
+    }
+  }, [filterCommentID])
+
+
   useEffect(() => {
     // console.log("hi")
-    if ((AllVisitedQuestions.some(obj => obj.$id === slug)) === false) {
+    if ((initialPost.some(obj => obj.$id === slug)) === false) {
       appwriteService
         .getPost(slug)
         .then((post) => {
@@ -65,11 +117,13 @@ const ViewPost = () => {
           console.log("ViewPost Component Error");
         });
     } else {
-      let postObject = AllVisitedQuestions.find(obj => obj.$id === slug)
+      let postObject = initialPost.find(obj => obj.$id === slug)
       setPost((prev) => postObject)
     }
-  }, [navigateToRelatedPost]);
+  }, [slug]);
+
   useEffect(() => {
+    // console.log("Hi")
     if (post) {
       // console.log(post.userId)
       const ProfileURLIndex = postProfilesPic.findIndex((obj) => (
@@ -106,17 +160,20 @@ const ViewPost = () => {
     }
   }, [post])
   // UseEffect For bookMark
+
   useEffect(() => {
-    // console.log(myUserProfile.bookmarks)
+    // console.log("Hamza")
     if (myUserProfile.bookmarks.includes(post?.$id)) {
       setIsBookMarked(true)
     } else {
       setIsBookMarked(false)
     }
   }, [myUserProfile])
+
   const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
   const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
   useEffect(() => {
+    // console.log("Hi")
     const getRelatedQueries = () => {
       // console.log(initialPost)
       let relatedArr = initialPost.filter((initialPostObj) => {
@@ -146,11 +203,15 @@ const ViewPost = () => {
     }
     if (initialPost.length > 0) getRelatedQueries()
     if (initialPost.length > 0) getDate_Views_Comments_Details()
-  }, [post,initialPost])
+  }, [post, initialPost])
   const deletePost = () => {
-    appwriteService.deletePost(post.$id).then(() => {
-      console.log("Post Deleted");
-    });
+    appwriteService
+      .deletePost(post.$id)
+      .then(() => {
+        const newInitialPost = initialPost.filter((prevPosts) => prevPosts.$id !== post?.$id)
+        // console.log(newInitialPost)
+        dispatch(getInitialPost({ initialPosts: [...newInitialPost], initialPostsFlag: false }))
+      })
     navigate("/");
   };
   const deleteThumbnail = async () => {
@@ -390,9 +451,9 @@ const ViewPost = () => {
   }
 
   useEffect(() => {
-    // console.log(ViewPostRef.current)
+    //  console.log("Hi")
     if (ViewPostRef.current) {
-      console.log("HOme")
+      // console.log("HOme")
       const storedScrollPosition = sessionStorage.getItem('scrollPositionofViewPost');
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
       // console.log(parsedScrollPosition)
@@ -419,7 +480,7 @@ const ViewPost = () => {
 
               <div className="flex">
                 <div>
-                  <span id="ViewPost-Category">{post.category}</span>
+                  <span id="ViewPost-Category">{post?.category}</span>
                 </div>
                 <div id="ViewPost_Date_Views_comments" className="flex">
                   <div>
@@ -593,21 +654,37 @@ const ViewPost = () => {
 
           </section>
           <div className="Chat w-4/6 mt-6">
-            <Chat post={post} navigateToRelatedPost={navigateToRelatedPost} />
+            <Chat post={post} navigateToRelatedPost={navigateToRelatedPost} slug={slug} />
           </div>
         </div>
-        <div id="ViewPost_RelatedQuestions" className={`${isNavbarHidden ? '' : 'active'}`}>
-          <p>{post?.category} Related :</p>
-          {!isRelatedQueriesExist && <span className="">No Related Post is Available of {post?.category}</span>}
+        <div className={`ViewPost_Related_Filter_Comment_Questions ${isNavbarHidden ? '' : 'active'}`}>
+          <div id="ViewPost_RelatedQuestions">
+            <p>{post?.category} Related :</p>
+            {!isRelatedQueriesExist && <span className="">No Related Post is Available of {post?.category}</span>}
 
-          {isRelatedQueriesExist && <ul>
-            {relatedQueriesArr?.map((QuestionObj, index) => {
-              return <li key={QuestionObj?.$id} onClick={() => navigateToRelatedPost(QuestionObj?.$id)} className="cursor-pointer">{QuestionObj?.title ? QuestionObj?.title : QuestionObj?.pollQuestion
-              }</li>
-            })}
-          </ul>}
+            {isRelatedQueriesExist && <ul>
+              {relatedQueriesArr?.map((QuestionObj, index) => {
+                return <li key={QuestionObj?.$id} onClick={() => navigateToRelatedPost(QuestionObj?.$id)} className="cursor-pointer">{QuestionObj?.title ? QuestionObj?.title : QuestionObj?.pollQuestion
+                }</li>
+              })}
+            </ul>}
+          </div>
+
+          {(filterCommentID !== 'null' && filteredComment) && <div className={`ViewPost_Filtered_Comments`}>
+            <p>Your Comment :</p>
+            <div>
+              <div className="flex justify-between ViewPost_Filtered_Comments_Name_Delete">
+                <p>{filteredComment?.name}</p>
+                {filteredComment.authid === userData.$id && <i onClick={() => {
+                  deleteComments(filterCommentID)
+                }} className="fa-solid fa-trash cursor-pointer"></i>}
+              </div>
+              <article>
+                {parse(filteredComment?.commentContent)}
+              </article>
+            </div>
+          </div>}
         </div>
-
       </div>
     </div >
   ) : null;

@@ -6,7 +6,6 @@ import { occupation_Arr } from "./Profile_arr";
 const ProfileSummary = ({ profileData }) => {
   const {
     bio,
-    gender,
     links,
     interestedIn,
     featuredImgId,
