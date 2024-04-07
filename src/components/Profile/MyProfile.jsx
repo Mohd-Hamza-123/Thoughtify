@@ -7,6 +7,7 @@ import {
   Opinions,
   Questions,
   ProfileSummary,
+  ChatInProfile,
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
@@ -21,10 +22,9 @@ import { getOtherUserProfile } from "../../store/usersProfileSlice";
 const MyProfile = () => {
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   // console.log(othersUserProfile)
-  const { myUserProfile } = useAskContext()
-
+  const { myUserProfile, setMyUserProfile } = useAskContext()
+  // console.log(myUserProfile)
   const { slug } = useParams();
-  // console.log(slug)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
@@ -40,7 +40,7 @@ const MyProfile = () => {
   const getUserProfile = async () => {
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
     )
-    // console.log(isUserAlreadyInReduxState)
+    // console.log(isUserAlreadyInReduxState);
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
       const listprofileData = await profile.listProfile({ slug });
@@ -55,7 +55,6 @@ const MyProfile = () => {
     }
 
   };
-
   const getUserProfileImg = async (imgID) => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
@@ -73,10 +72,76 @@ const MyProfile = () => {
     }
   };
 
+  const follow_Unfollow = async () => {
+
+    if (!myUserProfile) return;
+
+    const isFollowing = myUserProfile?.following?.includes(slug);
+    let updateFollowArr = [...myUserProfile.following];
+    const receiverProfileIndex = othersUserProfile.findIndex((profile) => profile.userIdAuth === slug)
+
+
+    if (isFollowing) {
+      updateFollowArr.splice(updateFollowArr.indexOf(slug), 1);
+      console.log("unfollow");
+      const follow = await profile.updateEveryProfileAttribute({
+        profileID: myUserProfile.$id,
+        following: updateFollowArr,
+      });
+      setMyUserProfile(follow);
+    } else if (myUserProfile.blockedUsers.includes(slug)) {
+      console.log("You have Unblock to follow");
+      return;
+    } else {
+      updateFollowArr.push(slug);
+      const follow = await profile.updateEveryProfileAttribute({
+        profileID: myUserProfile.$id,
+        following: updateFollowArr,
+      });
+      setMyUserProfile(follow);
+      let receiverDetails
+      if (receiverProfileIndex !== -1) {
+        receiverDetails = othersUserProfile[receiverProfileIndex]
+      } else {
+
+      }
+      const updateReceiver = await profile.updateEveryProfileAttribute({
+        profileID: receiverDetails?.$id,
+      })
+    }
+
+
+
+  }
+  const block_Unblock = async () => {
+
+    if (!myUserProfile) return;
+
+    const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
+    let updateBlockedArr = [...myUserProfile.blockedUsers];
+
+    if (isBlocked) {
+      updateBlockedArr.splice(updateBlockedArr.indexOf(slug), 1);
+      console.log("unBlock");
+    } else if (myUserProfile.following.includes(slug)) {
+      console.log("You have to unfollow to Block");
+      return;
+    } else {
+      updateBlockedArr.push(slug);
+    }
+
+    const follow = await profile.updateEveryProfileAttribute({
+      profileID: myUserProfile.$id,
+      blockedUsers: updateBlockedArr
+    });
+
+    setMyUserProfile(follow);
+  }
+
   useEffect(() => {
     if (slug === userData?.$id) {
-      setProfileData((prev) => myUserProfile)
-      setURLimg(myUserProfile?.profileImgURL)
+      setProfileData((prev) => myUserProfile);
+      setURLimg(myUserProfile?.profileImgURL);
     } else {
       getUserProfile();
     }
@@ -92,9 +157,28 @@ const MyProfile = () => {
         break;
       case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
         break;
+      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData} />)
+        break;
       default: setactiveNavRender(<ProfileSummary profileData={profileData} />)
     }
   }, [activeNav, profileData])
+
+  const [isFollowing, setisFollowing] = useState(false)
+  const [isBlocked, setisBlocked] = useState(false)
+  useEffect(() => {
+
+    if (myUserProfile.following.includes(slug)) {
+      setisFollowing(true)
+    } else {
+      setisFollowing(false)
+    }
+
+    if (myUserProfile.blockedUsers.includes(slug)) {
+      setisBlocked(true)
+    } else {
+      setisBlocked(false)
+    }
+  }, [myUserProfile])
 
 
   return (
@@ -115,26 +199,27 @@ const MyProfile = () => {
             >
               <section className="flex flex-col items-left">
                 <h6>{profileData?.name}</h6>
-                <div>
-                  <span>Gender : </span>
-                  <span>{profileData?.gender}</span>
-                </div>
               </section>
               <div id="MyProfile_3Buttons" className="flex gap-3">
                 {!realUser && (
                   <Button onClick={() => {
                     navigate(`/ChatRoom/${userData?.$id}/${slug}`)
-                  }} className="p-2 rounded-sm">Message</Button>
+                  }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
                 )}
                 {!realUser && (
-                  <Button className="p-2 rounded-sm">Follow</Button>
+                  <Button
+                    className="p-2 rounded-sm"
+                    onClick={follow_Unfollow}
+                  >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
                 )}
-                {!realUser && <Button className="p-2 rounded-sm">Block</Button>}
+                {!realUser && <Button
+                  className="p-2 rounded-sm"
+                  onClick={block_Unblock}
+                >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
                 {realUser && (
                   <Button
                     className="p-2 rounded-sm"
                     onClick={() => {
-                      // seteditProfileBoolean((prev) => !prev);
                       navigate(`/EditProfile/${slug}`)
                     }}
 
@@ -152,7 +237,7 @@ const MyProfile = () => {
 
           <div
             id="MyProfile_Header_Right"
-            className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
+            className="w-1/3 flex flex-col items-start justify-center gap-4 p-5"
           >
             <div className="flex w-full">
               <p className="w-1/2">Country :</p>
@@ -171,13 +256,10 @@ const MyProfile = () => {
               <span>38</span>
             </div>
             <div className="flex w-full">
-              <p className="w-1/2">QueryFlow Age :</p>
-              <span>4 hours</span>
+              <p className="w-1/2">Joined :</p>
+              <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
             </div>
-            <div className="flex w-full">
-              <p className="w-1/2">Last seen :</p>
-              <span>1 hour ago</span>
-            </div>
+
           </div>
         </div>
         <div className="MyProfile_HorizontalLine"></div>
@@ -211,11 +293,13 @@ const MyProfile = () => {
                   setactiveNav('Favourites')
                 }}
                 className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
-                Favourites
+                Bookmarks
               </li>
 
-              <li onClick={() => { }} className="MyProfile_Data_items">
-                Followers
+              <li onClick={() => {
+                setactiveNav('ProfileChats')
+              }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
+                Chats
               </li>
             </ul>
           </section>

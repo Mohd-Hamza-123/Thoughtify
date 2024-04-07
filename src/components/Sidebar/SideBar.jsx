@@ -166,7 +166,7 @@ const SideBar = () => {
               </svg>
             </div>
 
-            <p>Chat Room</p>
+            <p>Getting Started</p>
           </div>
 
           <div className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center" onClick={() => navigate('BrowseQuestion/null/null')}>

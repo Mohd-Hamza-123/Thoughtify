@@ -1,26 +1,28 @@
-#forget_Password {
+#LoginWithPhone_Container {
     height: 100%;
     background-color: rgb(246, 248, 250);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
+  
 }
 
-#forget_Password img {
-    height: 50px;
+#LoginWithPhone_Container img {
+    height: 60px;
 }
 
-#forget_Password>div {
+#LoginWithPhone_Container>div {
+    /* border: 2px solid black; */
     padding: 10px;
-    width: 90%;
+    width: 80% !important;
     border-radius: 10px;
-    height: 60%;
+    height: 50%;
     background-color: #ffffff;
     position: relative;
     box-shadow: 20px 20px 40px #00000041, inset -20px -20px 40px #ffffffbb;
     animation: rotate 1s normal;
 }
 
-#forget_Password input {
+#LoginWithPhone_Container input {
     padding: 5px 10px;
     transition: 0.6s;
     outline: none;
@@ -30,57 +32,55 @@
     font-size: 15px;
 }
 
-
-
-#forget_Password i {
+#LoginWithPhone_Container i {
     height: 1px;
     background-color: black;
     transition: 0.6s;
 }
 
-#forget_Password input:focus,
-#forget_Password input:valid {
+#LoginWithPhone_Container input:focus,
+#LoginWithPhone_Container input:valid {
     background-color: rgb(25, 25, 28);
     color: white;
 }
 
-#forget_Password input:not(:valid):not(:placeholder-shown) {
+#LoginWithPhone_Container input:not(:valid):not(:placeholder-shown) {
     background-color: black;
     color: red;
 }
 
-#forget_Password input:not(:valid):not(:placeholder-shown)~span {
+#LoginWithPhone_Container input:not(:valid):not(:placeholder-shown)~span {
     font-size: 0.85em;
     transform: translateY(-30px);
     transition: 0.6s;
 }
 
-#forget_Password input:not(:valid):not(:placeholder-shown)~i {
+#LoginWithPhone_Container input:not(:valid):not(:placeholder-shown)~i {
     border: none;
     height: 0px;
     background-color: transparent;
     transition: 0.6;
 }
-#forget_Password form{
+#LoginWithPhone_Container form{
     margin-top: 20px;
     margin-bottom: 10px;
 }
-#forget_Password form input:focus~i,
-#forget_Password form input:valid~i {
+#LoginWithPhone_Container form input:focus~i,
+#LoginWithPhone_Container form input:valid~i {
     border: none;
     height: 0px;
     background-color: transparent;
     transition: 0.6;
 }
 
-#forget_Password form input:focus~span,
-#forget_Password form input:valid~span {
+#LoginWithPhone_Container form input:focus~span,
+#LoginWithPhone_Container form input:valid~span {
     font-size: 0.85em;
     transform: translateY(-30px);
     transition: 0.6s;
 }
 
-#forget_Password form span {
+#LoginWithPhone_Container form span {
     position: absolute;
     top: 3px;
     left: 0;
@@ -93,19 +93,6 @@
     letter-spacing: 1px;
 }
 
-#Google_Login{
-    width:100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-}
 
-#Google_Login button{
-    width: 30%;
-    border-radius: 5px;
-    padding: 5px 7px;
-    background-color: red;
-}
 
 

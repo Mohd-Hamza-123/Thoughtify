@@ -20,6 +20,7 @@ const PostCard = ({
   views,
   commentCount
 }) => {
+  // console.log(userId)
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
@@ -30,7 +31,6 @@ const PostCard = ({
 
 
   const getPostData = async () => {
-
     // console.log(queImageID)
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
@@ -45,17 +45,19 @@ const PostCard = ({
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0].profileImgID)
-      setprofileImgURL(gettingProfileImgURL.href)
+      // console.log(userId)
+      // console.log(gettinProfiles)
+      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
+      setprofileImgURL(gettingProfileImgURL?.href)
 
       if (postProfilesPic.length !== 0) {
         for (let i = 0; i < postProfilesPic.length; i++) {
-          if (postProfilesPic[i].profilePic !== gettingProfileImgURL.href) {
-            dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL.href }))
+          if (postProfilesPic[i].profilePic !== gettingProfileImgURL?.href) {
+            dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL?.href }))
           }
         }
       } else {
-        dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL.href }))
+        dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL?.href }))
       }
     } else {
       setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
@@ -131,7 +133,6 @@ const PostCard = ({
                     src={`${profileImgURL ? profileImgURL : NoProfile}`}
                     id="PostCard-profile-pic"
                     className="rounded-full"
-                    alt=""
                   />
                 </div>
               </Link>

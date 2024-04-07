@@ -11,28 +11,48 @@
 
 
 
-.container {
-    width: 60%;
-    height: 100vh;
+.PersonalChat_container {
+    width: 100%;
+    height: 100%;
+    /* border: 2px solid pink; */
+    font-family: 'Poppins', sans-serif;
+}
+
+.PersonalChat_container>div:nth-child(1) {
+    height: 10%;
+    background-color: #F2F2F2;
+}
+
+#Personalchat {
+    width: 100%;
+    height: 90%;
+    background-color: #F2F2F2;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .room--container {
-    padding: 1em;
-    height: 100%;
-    background-color: var(--secondaryBgColor);
-    border: 1px solid var(--borderColor1);
+    /* padding: 1em; */
+    height: 97%;
+    width: 90%;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     display: flex;
+    overflow: hidden;
     justify-content: space-between;
     flex-direction: column;
-    /* gap: 10px; */
 }
 
 /* receiver div */
 #PersonalChat_Receiver_div {
     height: 12%;
-    /* border: 2px solid red; */
+    border-bottom: 2px solid rgba(172, 171, 171, 0.317);
     overflow: hidden;
-    color: white;
+    color: black !important;
+    /* border-radius: 5px; */
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 #PersonalChat_Receiver_div>div:nth-child(1) {
@@ -64,46 +84,45 @@
     justify-content: center;
 }
 
-.form--wrapper {
-    width: 600px;
-    width: 600px;
-    padding: 2em;
-}
 
-.field--wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    padding: 0.5em 0;
-}
 
-#PersonalChatDeleteBtn {
-    color: white;
-    border: 2px solid white;
+
+
+.PersonalChatDeleteBtn {
+    color: rgb(255, 255, 255);
     padding: 3px 6px;
-    border-radius: 4px;
+    background-color: red;
+    border-radius: 5px;
 }
+
 
 /* Form Input Styling */
 .PeronalChat_Form>div {
-    height: 50px;
+    height: 55px;
     overflow: hidden;
 }
 
-#PersonalChatTextArea {
-    background: var(--mainBgColor);
-    border: none;
-    font-weight: 500;
-    border-bottom: 1px solid var(--borderColor1);
-    /* border-radius: 3px; */
+
+
+.PersonalChat_TextArea_btn_div>div:nth-child(1) {
     width: 90%;
+    height: inherit;
+}
+
+.PersonalChat_TextArea_btn_div>div:nth-child(2) {
+    width: 10%;
+}
+
+#PersonalChatTextArea {
+    font-weight: 500;
     padding: 4px 5px;
-    color: whitesmoke;
+    color: rgb(255, 255, 255);
     outline: none;
     font-size: 15px;
+    background-color: #3b3b3b;
     height: inherit;
-    border: 1px solid rgba(255, 255, 255, 0.264);
     text-shadow: none !important;
+    width: 100%;
 }
 
 #PersonalChatTextArea::-webkit-scrollbar {
@@ -112,32 +131,25 @@
 
 /* Button Styling */
 
-.btn {
-    padding: 0.5em 1em;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: 0.3s;
-}
 
-.btn--lg {
-    padding: 1em 2em;
-}
-
-.btn--main {
-    background-color: rgba(219, 26, 90, 1);
-    color: #fff;
+.send-btn--wrapper {
+    width: 100%;
+    height: 100%;
 }
 
 #PersonalChatSubmit {
-    background-color: #8db3dd;
-    color: white;
-    height: inherit;
-
+    cursor: pointer;
+    background-color: white;
+    color: rgb(0, 0, 0);
+    height: 100%;
+    width: 100%;
+    transition: all 0.3s;
+    font-weight: 600;
 }
-
-.btn:hover {
-    opacity: 0.7;
+#PersonalChatSubmit:active{
+    font-size: larger;
+    transition: all 0.3s;
+    
 }
 
 /* Header Styling */
@@ -167,15 +179,13 @@
 
 
 #PersonalChat_Messages {
-    /* overflow-x: hidden;
-    overflow-y: visible; */
     overflow-x: hidden;
     overflow-y: auto;
-    /* border: 2px solid yellow; */
     height: 80%;
     display: flex;
     flex-direction: column;
-    /* justify-content: flex-end; */
+    background-color: rgb(246, 246, 246);
+    /* border-bottom: 2px solid rgb(0, 0, 0); */
 }
 
 #PersonalChat_Messages> :first-child {
@@ -197,17 +207,14 @@
 
 .message--wrapper {
     display: flex;
-    /* border: 2px solid rgb(0, 234, 255); */
     flex-direction: column-reverse;
     gap: 0.5em;
     margin: 10px;
-    height: 100px;
 }
 
 .message--header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: end;
 }
 
 .message--body {
@@ -220,6 +227,24 @@
     word-wrap: break-word;
 }
 
+.message--body span {
+    font-size: 20px;
+    color: white;
+}
+
+.PersonalChatMyColor {
+    background-color: #16BEF6;
+    max-width: 60%;
+}
+
+.PersonalChatYourColor {
+    background-color: black;
+    max-width: 60%;
+    
+}
+.PersonalChatYourColor span{
+    color:#ffffff ;
+}
 .message--body--owner {
     border: 1px solid rgba(219, 26, 90, 1);
     background-color: var(--secondaryBgColor);

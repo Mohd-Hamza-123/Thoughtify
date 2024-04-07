@@ -20,7 +20,7 @@ const ViewPost = () => {
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
   // console.log(commentsInRedux)
   const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
-  console.log(AllVisitedQuestions)
+  // console.log(AllVisitedQuestions)
   const userData = useSelector((state) => state.auth.userData);
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
   console.log(initialPost)
@@ -74,7 +74,6 @@ const ViewPost = () => {
       .catch((err) => console.log(err.message));
 
 
-
     appwriteService
       .updatePostViews(post?.$id, post.views, post.commentCount - 1)
       .then((res) => {
@@ -120,7 +119,7 @@ const ViewPost = () => {
       let postObject = initialPost.find(obj => obj.$id === slug)
       setPost((prev) => postObject)
     }
-  }, [slug]);
+  }, [slug,initialPost]);
 
   useEffect(() => {
     // console.log("Hi")

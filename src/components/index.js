@@ -35,4 +35,5 @@ import HomeRight from "./Post-Card/HomeRight";
 import BrowseQuestions from "./SearchPage/BrowseQuestions";
 import Feedback from "./Feedback/Feedback";
 import Spinner from "./Spinner/Spinner";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight,BrowseQuestions , Feedback,Spinner}
+import ChatInProfile from "./Profile/ChatInProfile";
+export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, GlobalChat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight,BrowseQuestions , Feedback,Spinner, ChatInProfile}

@@ -9,6 +9,7 @@ import QueryFlow from "../../assets/QueryFlow.png";
 import '../../index.css'
 import profile from "../../appwrite/profile";
 import { useForm } from "react-hook-form";
+import NoProfile from '../../assets/NoProfile.png'
 
 const NavigationBar = () => {
   const { register, handleSubmit, setValue } = useForm()
@@ -122,7 +123,7 @@ const NavigationBar = () => {
               </div>}
               {authStatus && (
                 <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-                  <img src={profileImgURL ? profileImgURL : profileImgURL} alt="" />
+                  <img src={profileImgURL ? profileImgURL : NoProfile} alt="" />
                 </div>
               )}
               {!authStatus && <ul className="flex items-center">

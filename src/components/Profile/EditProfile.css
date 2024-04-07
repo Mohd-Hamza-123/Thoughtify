@@ -156,7 +156,7 @@
 }
 
 
-#EditProfile_ChooseImg {
+.EditProfile_ChooseImg {
     background-color: var(--secondryBlue);
     color: white;
     font-weight: 500;

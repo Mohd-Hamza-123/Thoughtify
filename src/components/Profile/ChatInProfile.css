@@ -1,0 +1,28 @@
+#ChatInProfile {
+    width: 100%;
+    /* border: 1px solid black; */
+}
+
+.ChatInProfileNav {
+    width: 100%;
+    /* border: 1px solid #d07171; */
+}
+
+.ChatInProfileNav ul {
+    width: 100% !important;
+    display: flex;
+    width: fit-content;
+    background-color: white;
+    /* padding: 5px 5px; */
+}
+
+.ChatInProfileNav ul li {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    padding: 4px 4px;
+}
+
+.ChatInProfileNav ul li.active {
+    border-bottom: 3px solid #16BEF6;
+}

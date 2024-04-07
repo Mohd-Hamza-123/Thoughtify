@@ -15,7 +15,7 @@ export class PersonalChat {
     }
 
     async createPersonalChatRoom({ ChatRoomID }, participantsDetails) {
-        console.log(typeof participantsDetails)
+    
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, ChatRoomID, {
                 participantsDetails

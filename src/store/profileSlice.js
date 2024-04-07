@@ -5,6 +5,8 @@ const initialState = {
     userProfileImgURL: '',
     totalPostsbyMe: 0,
     totalCommentsbyMe: 0,
+    filteredBookmarkPosts: [],
+    flagForBookmark: false,
 }
 
 const profileSlice = createSlice({
@@ -21,11 +23,17 @@ const profileSlice = createSlice({
         },
         getTotalCommentsByMe: (state, action) => {
             state.totalCommentsbyMe = action.payload.totalCommentsbyMe
+        },
+        getFilteredBookmarkPosts: (state, action) => {
+            const { flagForBookmark, filteredBookmarkPosts } = action.payload;
+            let array = [...state.filteredBookmarkPosts, ...filteredBookmarkPosts]
+            let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id, obj])).values());
+            state.filteredBookmarkPosts = uniqueArray
         }
     }
 })
 
 
-export const { getUserProfile, getTotalPostByMe, getTotalCommentsByMe } = profileSlice.actions;
+export const { getUserProfile, getTotalPostByMe, getTotalCommentsByMe, getFilteredBookmarkPosts } = profileSlice.actions;
 export default profileSlice.reducer
 

@@ -54,11 +54,13 @@ const ProfileSummary = ({ profileData }) => {
         </div>
       </div>
       <div id="ProfileSummarySecondDiv" className="w-1/3 bg-slate-500 h-full">
-        <p>Updates By Creater</p>
-        <ul>
-          <li>Welocme {'Name'}. This is a platform where you can ask any doubt.</li>
-          <li>You can have chats with your friends.</li>
-          <li>Stay Active.</li>
+        {/* <p>Updates By Creater</p> */}
+        <ul className="flex flex-col gap-2">
+          <li>Welcome, {profileData.name}</li>
+          <li>This is your one-stop shop for getting answers and connecting with others.</li>
+          <li>Connect with friends!   Chat with your friends, discuss topics that interest you, and build a supportive network.</li>
+          <li>Get involved!   The more active you are, the more you'll get out of this platform. Share your knowledge, answer questions, and make a difference.</li>
+          <li>Become a responder and help others by answering questions. Once you've replied to 50 questions, you can be promoted to responder.</li>
         </ul>
       </div>
     </div>

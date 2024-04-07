@@ -20,7 +20,7 @@ const Questions = ({ visitedProfileUserID }) => {
   const [totalFilteredQueries, settotalFilteredQueries] = useState(0)
   const [isIntersecting, setIsIntersecting] = useState(false)
   const { hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions, } = useAskContext()
+    sethasMorePostsInProfileFilterQuestions } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
@@ -229,7 +229,7 @@ const Questions = ({ visitedProfileUserID }) => {
         <Button type='Submit' className='Profile_Questions_ApplyFilter'>Apply Filter</Button>
         <input type='reset' onClick={() => {
           reset()
-          sethasMorePostsInProfile_Questionss(false)
+          sethasMorePostsInProfileFilterQuestions(false)
         }} value={'Reset Filter'} className='Profile_Questions_ResentFilter' />
       </form>
       <div id='Profile_Questions_Filtered_Questions'>

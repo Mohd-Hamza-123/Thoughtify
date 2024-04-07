@@ -29,9 +29,10 @@ const Login = () => {
       setError(error.message);
     }
   };
+  
   return (
     <>
-      {/* <UpperNavigationBar /> */}
+   
       <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <div
           className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
@@ -98,11 +99,22 @@ const Login = () => {
                 </p>
               </div>
               <div>
-                <Button type="submit" className="mt-3">
+                <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 bg-slate-800 text-white">
                   Login
                 </Button>
               </div>
             </form>
+
+            <div className="flex justify-center">
+              <button onClick={() => {
+                const googleAuthentcation = authService.googleAuth()
+                // console.log(googleAuthentcation)
+              }} type="button" className="login-with-google-btn" >
+                Sign in with Google
+              </button>
+            </div>
+         
+
           </div>
         </div>
       </div>

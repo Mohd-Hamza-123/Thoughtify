@@ -36,6 +36,80 @@ export class AuthService {
         }
     }
 
+    googleAuth() {
+        try {
+            return this.account.createOAuth2Session(
+                'google',
+                'http://localhost:5173/',
+                'http://localhost:5173/login'
+            )
+        } catch (error) {
+            console.log("Login_Google :: ERROR " + error);
+        }
+    }
+    githubAuth() {
+        try {
+            this.account.createOAuth2Session(
+                'github',
+                'http://localhost:5173/',
+                'http://localhost:5173/login'
+            )
+        } catch (error) {
+            console.log("Login_Google :: ERROR " + error);
+        }
+    }
+    facebookAuth() {
+        try {
+            this.account.createOAuth2Session(
+                'facebook',
+                'http://localhost:5173/',
+                'http://localhost:5173/login'
+            )
+        } catch (error) {
+            console.log("Login_Google :: ERROR " + error);
+        }
+    }
+
+    async emailVerification() {
+        try {
+            return await this.account.createVerification(`http://localhost:5173/`);
+
+        } catch (error) {
+            console.log("Login_Google :: ERROR " + error);
+        }
+    }
+
+    async verifyWithUserId_secret(id, secret) {
+        try {
+            return await this.account.updateVerification(id, secret)
+
+        } catch (error) {
+            console.log("update Verification:: ERROR " + error);
+        }
+    }
+
+    async forgetPassword(email) {
+        try {
+            const promise = this.account.createRecovery(email, 'http://localhost:5173/reset-password');
+
+            return promise
+        } catch (error) {
+            console.log("Forget Password :: ERROR " + error);
+        }
+    }
+    
+    async resetPassword(userID, secret, password, RepeatPassword) {
+        try {
+            const promise = this.account.updateRecovery(userID, secret, password, RepeatPassword)
+
+            return promise
+        } catch (error) {
+            console.log("Reset Password :: ERROR " + error);
+            return false
+        }
+    }
+
+
     async getCurrentUser() {
         try {
             return await this.account.get()
@@ -60,6 +134,7 @@ export class AuthService {
             console.log("ListUsers :: ERROR" + error)
         }
     }
+
 
 }
 

@@ -11,7 +11,7 @@ import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
 import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
-
+import googlelogin from '../../assets/googlelogin.jpg'
 const Signup = () => {
   const { myUserProfile, setMyUserProfile } = useAskContext()
   const authRateLimit =
@@ -65,36 +65,13 @@ const Signup = () => {
   }
 
 
-
-  // const createID = useCallback((value) => {
-  //   if (value && typeof value === "string") {
-  //     return value
-  //       .trim()
-  //       .replace(/[^a-zA-Z\d\s]+/g, "-")
-  //       .replace(/\s/g, "-");
-  //   }
-  //   return "";
-  // }, []);
-
-  // useEffect(() => {
-  //   const subscription = watch((value, { name }) => {
-  //     if (name === "name") {
-  //       setValue("ID", createID(value.name), {
-  //         shouldValidate: true,
-  //       });
-  //     }
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [watch, setValue, createID]);
   return (
 
     <div id="Signup_container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 
       <div
         id="Signup"
-        className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg rounded-lg`}
+        className={`flex items-center justify-center flex-col mx-auto rounded-lg`}
       >
         <div>
           <div className="flex justify-center items-center">
@@ -102,7 +79,7 @@ const Signup = () => {
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
           <div className="flex flex-col w-full">
-            <h1 className="font-bold text-3xl mt-3 text-center text-black">
+            <h1 className="font-bold text-2xl mt-2 text-center">
               Sign-In
             </h1>
 
@@ -177,9 +154,18 @@ const Signup = () => {
                 </Button>
               </div>
             </form>
-            <div className="flex justify-center mt-2">
-              <Button>Google Login</Button>
+            <p className="text-center mt-2">Or</p>
+
+            <div className="flex justify-center">
+              <button onClick={() => {
+                const googleAuthentcation = authService.googleAuth()
+                // console.log(googleAuthentcation)
+              }} type="button" className="login-with-google-btn" >
+                Sign in with Google
+              </button>
             </div>
+
+          
           </div>
         </div>
       </div>

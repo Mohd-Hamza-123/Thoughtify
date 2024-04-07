@@ -1,7 +1,8 @@
 #MyProfile_Parent {
     background-color: rgb(242, 242, 242);
+    font-family: 'Gabarito', sans-serif;
+    
 }
-
 
 .MyProfile_HorizontalLine {
     width: 100%;
@@ -63,9 +64,8 @@
 
 #MyProfile_3Buttons Button:nth-child(odd) {
     background-color: rgb(7, 225, 7);
-    width: 14%;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1px;
     color: white;
     transform: scale(1);
     transition: transform 0.3s ease 0s;
@@ -73,9 +73,8 @@
 
 #MyProfile_3Buttons Button:nth-child(even) {
     background-color: rgb(22, 190, 246);
-    width: 15%;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1px;
     color: white;
     transform: scale(1);
     transition: transform 0.3s ease 0s;

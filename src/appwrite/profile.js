@@ -29,6 +29,24 @@ export class Profile {
         }
     }
 
+    async updateEveryProfileAttribute({ profileID = null, following = null, blockedUsers = null }) {
+        let updateObj = {}
+        if (following) {
+            updateObj.following = following
+        }
+        if (blockedUsers) {
+            updateObj.blockedUsers = blockedUsers
+        }
+
+        console.log(updateObj)
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
+                updateObj
+            )
+        } catch (error) {
+            console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
+        }
+    }
     async updateProfile(id, { bio, educationLvl, occupation,
         profileImgID, profileImgURL
     }, links, interestedIn) {
@@ -130,7 +148,10 @@ export class Profile {
     }
 
     async getStoragePreview(fileid) {
-        return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
+        // console.log(fileid)
+        if (fileid) {
+            return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
+        }
     }
 
 }

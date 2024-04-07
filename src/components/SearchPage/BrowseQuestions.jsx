@@ -33,7 +33,8 @@ const BrowseQuestions = () => {
   const [isPostAvailable, setisPostAvailable] = useState(true)
 
   const submit = async (data) => {
-    // console.log(data)
+    console.log(data)
+    // return
     sethasMorePostsInBrowseQuestions(true)
     const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
     // console.log(filteredQuestions)

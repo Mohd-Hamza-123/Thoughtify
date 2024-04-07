@@ -22,7 +22,7 @@ const Opinions = ({ visitedProfileUserID }) => {
   const [totalFilteredcomments, settotalFilteredcomments] = useState(0)
   const [isIntersecting, setIsIntersecting] = useState(false)
   const { hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions, } = useAskContext()
+    sethasMorePostsInProfileFilterOpinions, increaseViews } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
@@ -34,7 +34,6 @@ const Opinions = ({ visitedProfileUserID }) => {
     if (visitedProfileUserID === userData.$id) {
       data.UserID = visitedProfileUserID
       // console.log(data)
-
       // return
       sethasMorePostsInProfileFilterOpinions(true)
       const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
@@ -180,7 +179,7 @@ const Opinions = ({ visitedProfileUserID }) => {
           if (isPostAvailable !== true) {
             return
           }
-          return <div key={comment?.$id}>
+          return <div onClick={() => increaseViews(comment?.postid)} key={comment?.$id}>
             <span className={`${comment?.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{comment?.name}</span>
 
             <Link to={`/post/${comment?.postid}/${comment?.$id}`}>

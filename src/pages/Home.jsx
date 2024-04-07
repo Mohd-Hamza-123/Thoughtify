@@ -1,31 +1,34 @@
 import React, { useCallback, useRef } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect } from "react"
+import { useState } from "react"
 import { Container, PostCard, NavBar, AskQue, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight } from "../components/index";
 import { useSelector, useDispatch } from "react-redux";
 import "./Home.css";
 import appwriteService from "../appwrite/config";
 import { useAskContext } from "../context/AskContext";
-import profile from "../appwrite/profile";
 import { getInitialPost } from "../store/postsSlice";
+import authService from "../appwrite/auth";
 
 
 const Home = () => {
+
   const dispatch = useDispatch()
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  // console.log(initialPost)
+
+  const userProfileCollection = useSelector((state) => state.userProfileSlice?.userProfileArr)
+  console.log(userProfileCollection)
+
+
   const { increaseViews, hasMorePostsInHome,
     sethasMorePostsInHome } = useAskContext();
-  // console.log(hasMorePostsInHome)
-  const [posts, setPosts] = useState([]);
 
+  const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false)
-  // console.log(isLoading)
+
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
-  // console.log(isIntersecting)
-  const [maximumPostsNumber, setmaximumPostsNumber] = useState(null)
 
+  const [maximumPostsNumber, setmaximumPostsNumber] = useState(null)
 
   let spinnerRef = useRef();
 
@@ -121,6 +124,7 @@ const Home = () => {
   const lastScrollY = useRef(window.scrollY);
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
   // console.log(isNavbarHidden)
+
   const handleScroll = (e) => {
     let position = e.target.scrollTop;
     // console.log('lastScrollY ' + lastScrollY.current)

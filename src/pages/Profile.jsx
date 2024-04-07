@@ -1,9 +1,9 @@
 import React from "react";
 import { UpperNavigationBar, Container, MyProfile } from "../components/index";
-
+import './Profile.css'
 const Profile = () => {
   return (
-    <div className="">
+    <div className="Profile">
       <Container>
         <UpperNavigationBar />
         <MyProfile />
