@@ -57,7 +57,7 @@
     margin-right: 20px;
 }
 
-#search_icon_div {
+.search_icon_div {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -114,25 +114,42 @@
     justify-content: center;
     align-items: center;
     margin-right: 30px;
+    font-family: 'Poppins', sans-serif;
     margin-left: 15px;
     position: relative;
 }
 
+#UpperNavigationBar_Bell_Div>span {
+    position: absolute;
+    color: white;
+    top: 7px;
+    font-weight: lighter;
+    right: -8px;
+    background-color: red;
+    border-radius: 50%;
+    width: 15px;
+    font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15px;
+
+}
+
 #UpperNavigationBar_Bell_Div i {
-    font-size: 17px;
+    font-size: 20px;
 }
 
 #UpperNavigationBar_Bell_Div section {
     display: none;
     position: fixed;
     top: 60px;
-    /* padding: 10px; */
     border-radius: 5px;
-    background-color: whitesmoke;
+    background-color: rgb(254, 254, 254);
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     right: 100px;
     font-family: 'Poppins', sans-serif;
-    width: 18vw;
+    max-width: 30vw;
     max-height: 40vh;
     overflow-x: hidden;
     z-index: 100;
@@ -143,14 +160,35 @@
     display: block;
 }
 
+#UpperNavigationBar_Bell_Div section ul {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    /* gap: 7px; */
+    align-items: flex-start;
+}
+
+#UpperNavigationBar_Bell_Div section ul a {
+    width: 100%;
+    text-align: left;
+}
+
 #UpperNavigationBar_Bell_Div section ul li {
     width: 100%;
+    list-style-position: inside;
+    list-style: circle;
     user-select: none;
-    padding: 5px 10px;
+    padding: 10px 10px;
+    background-color: whitesmoke;
+}
+
+#UpperNavigationBar_Bell_Div section ul li.unRead {
+
+    background-color: white;
 }
 
 #UpperNavigationBar_Bell_Div section ul li:hover {
-    background-color: rgba(74, 74, 74, 0.097);
+    background-color: rgba(74, 74, 74, 0.154);
 }
 
 #UpperNavigationBar_Notificaton_PopUp_overlay {

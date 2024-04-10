@@ -35,7 +35,7 @@ const HomeRight = () => {
                 {userAuthStatus && <span className='cursor-pointer' onClick={() => setfeedbackPopUp((prev) => !prev)}>Feedback</span>}
                 <span >About Creater</span>
                 <span className='cursor-pointer' onClick={() => navigate(`/trustedResponders`)}>Trusted Responders</span>
-                {!isEmailVerified && <span onClick={verifyEmail}
+                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail}
                     className='cursor-pointer'>Verify Your Email</span>}
             </div>
         </>

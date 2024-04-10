@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "./store/authSlice";
+import { login } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { PersonalChat, SideBar } from "./components";
+import { SideBar } from "./components";
 import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
@@ -17,6 +17,7 @@ import avatar from "./appwrite/avatars";
 
 
 function App() {
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,8 +25,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [notificationPopUp, setnotificationPopUp] = useState(false)
-  const [myUserProfile, setMyUserProfile] = useState({})
-  // console.log(myUserProfile)
+  const [myUserProfile, setMyUserProfile] = useState(null)
+  const userData = useSelector((state) => state.auth.userData)
+  const [notificationShow, setNotificationShow] = useState(null)
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true)
   const [hasMoreComments, sethasMoreComments] = useState(true)
   const [hasMorePostsInBrowseQuestions, sethasMorePostsInBrowseQuestions] = useState(true)
@@ -33,8 +35,7 @@ function App() {
   const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
   const [hasMorePostsInProfileFilterBookmark, sethasMorePostsInProfileFilterBookmark] = useState(true)
   const indicator = useRef(true);
-
-
+  // console.log(indicator.current)
 
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -62,21 +63,17 @@ function App() {
 
   }, [])
 
-
-
   useEffect(() => {
-
-
+    
     const fetchData = async () => {
       try {
         const userData = await authService.getCurrentUser();
         // console.log(userData)
-
         if (userData) {
           dispatch(login({ userData }))
 
           const userProfile = await profile.listProfile({ slug: userData?.$id });
-          // console.log(userProfile)
+          console.log(userProfile)
           if (userProfile.documents.length === 0 || userProfile.total === 0) {
             // console.log("HI")
             let profileAvatar = await avatar.profileAvatar(userData?.name);
@@ -93,6 +90,7 @@ function App() {
               profileImgURL,
             })
             setMyUserProfile((prev) => userProfile)
+            indicator.current = false;
             dispatch(getUserProfile({ userProfile }))
             if (userProfile) {
               navigate("/");
@@ -102,8 +100,8 @@ function App() {
 
           } else {
 
-
             setMyUserProfile(prev => userProfile.documents[0]);
+            indicator.current = false
             dispatch(getUserProfile({ userProfile: userProfile.documents[0] }));
 
             const profileImageID = userProfile.documents[0]?.profileImgID
@@ -125,20 +123,26 @@ function App() {
         console.log(err);
       } finally {
         setLoading(false);
+
       }
     };
 
     if (indicator.current) {
       fetchData();
-      indicator.current = false
     }
-
-
-
 
   }, []);
 
-
+  useEffect(() => {
+    async function getData() {
+      const userData = await authService.getCurrentUser();
+      const userProfile = await profile.listProfile({ slug: userData?.$id });
+      setMyUserProfile(prev => userProfile?.documents[0]);
+    }
+    if (!myUserProfile && userData) {
+      getData()
+    }
+  }, [userData])
 
   const increaseViews = async (PostId) => {
     try {
@@ -170,6 +174,8 @@ function App() {
           setMyUserProfile,
           notificationPopUp,
           setnotificationPopUp,
+          notificationShow,
+          setNotificationShow,
           increaseViews,
           feedbackPopUp,
           setfeedbackPopUp,
@@ -182,10 +188,10 @@ function App() {
         <Outlet />
         <SideBar />
         <Overlay />
-        {/* <PersonalChat/> */}
+
       </AskProvider>
     </>
-  ) : null;
+  ) : '...loading';
 }
 
 export default App;

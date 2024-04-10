@@ -29,7 +29,7 @@ export class Profile {
         }
     }
 
-    async updateEveryProfileAttribute({ profileID = null, following = null, blockedUsers = null }) {
+    async updateEveryProfileAttribute({ profileID = null, following = null, blockedUsers = null, followers }) {
         let updateObj = {}
         if (following) {
             updateObj.following = following
@@ -37,7 +37,9 @@ export class Profile {
         if (blockedUsers) {
             updateObj.blockedUsers = blockedUsers
         }
-
+        if(followers){
+            updateObj.followers = followers
+        }
         console.log(updateObj)
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,

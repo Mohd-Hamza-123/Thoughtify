@@ -185,7 +185,7 @@ const EditProfile = ({
             linksArr,
             interestedTagArr,
           );
-          setMyUserProfile(profileData)
+          setMyUserProfile(profileData);
         }
       }
       navigate(`/profile/${userData?.$id}`)

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./UpperNavigationBar.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
 import { Container, SideBar } from "../index";
 import { useSelector } from "react-redux/es/hooks/useSelector";
@@ -11,11 +11,14 @@ import profile from "../../appwrite/profile";
 import { useForm } from "react-hook-form";
 import NoProfile from '../../assets/NoProfile.png'
 
+import notification from '../../appwrite/notification'
+
 const NavigationBar = () => {
   const { register, handleSubmit, setValue } = useForm()
   const authStatus = useSelector((state) => state.auth.status);
-
   const userProfileData = useSelector((state) => state.profileSlice.userProfile)
+
+
   const BarItems = [
     {
       name: "Login",
@@ -32,7 +35,7 @@ const NavigationBar = () => {
 
   const navigate = useNavigate();
   const { isOpen, setIsOpen, notificationPopUp,
-    setnotificationPopUp, myUserProfile } = useAskContext();
+    setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow } = useAskContext();
   const userData = useSelector((state) => state.auth.userData);
 
   const getProfileData = async () => {
@@ -40,7 +43,7 @@ const NavigationBar = () => {
       setprofileImgURL(myUserProfile?.profileImgURL)
     } else {
       const profileData = await profile.listProfile({ slug: userData?.$id })
-      if (profileData.documents.length > 0) {
+      if (profileData?.documents?.length > 0) {
         const profileImgID = profileData.documents[0].profileImgID
         const profileImgURL = await profile.getStoragePreview(profileImgID)
         setprofileImgURL(profileImgURL.href)
@@ -60,6 +63,25 @@ const NavigationBar = () => {
     navigate(`/BrowseQuestion/${null}/${data.searchQuestion}`)
     setValue("searchQuestion", "")
   }
+
+  const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
+  useEffect(() => {
+    notification
+      .getNotification({ userID: userData?.$id })
+      .then((res) => {
+        // console.log(res);
+        setNotificationShow((prev) => res?.documents)
+
+        const notificationBoolean = res?.documents.some((note) => note.isRead === false)
+
+        if (notificationBoolean) {
+          setIsUnreadNotificationExist(true)
+        } else {
+          setIsUnreadNotificationExist(false)
+        }
+      })
+      .catch((err) => console.log(err))
+  }, [])
   return (
     <>
       <nav
@@ -82,7 +104,7 @@ const NavigationBar = () => {
               <div id="UpperNavigationBar_Search_Bar" className=" flex justify-center items-center">
                 <form onSubmit={handleSubmit(submit)}>
                   <div className="search_div">
-                    <div id="search_icon_div" className="">
+                    <div className="search_icon_div">
                       <button type="submit">
                         <svg
                           id="search_icon"
@@ -96,7 +118,6 @@ const NavigationBar = () => {
                     </div>
 
                     <div className="search_div_input">
-
                       <Input
                         {...register("searchQuestion", {
                           required: true
@@ -106,16 +127,19 @@ const NavigationBar = () => {
                         type="search"
                         placeholder="Search Question"
                       />
-
                     </div>
                   </div>
                 </form>
               </div>
               {authStatus && <div id="UpperNavigationBar_Bell_Div" className="">
+                {isUnreadNotificationExist && <span>!</span>}
                 <i onClick={() => setnotificationPopUp((prev) => !prev)} className="fa-regular fa-bell cursor-pointer"></i>
                 <section className={`${notificationPopUp ? 'active' : ''}`}>
                   <ul>
-                    <li onClick={() => setnotificationPopUp((prev) => !prev)}>Notification 1</li>
+                    {notificationShow && notificationShow?.map((note) => {
+                      return <Link to={note.slug} key={note?.$id}><li onClick={() => { setnotificationPopUp((prev) => !prev) }} className={`${note.isRead ? '' : 'unRead'}`}>{note?.content}</li></Link>
+                    })}
+                    {!notificationShow && <li onClick={() => { setnotificationPopUp((prev) => !prev) }}>No Notifications</li>}
                   </ul>
                 </section>
                 <div onClick={() => setnotificationPopUp((prev) => false)} className={`${notificationPopUp ? 'active' : ''}`} id="UpperNavigationBar_Notificaton_PopUp_overlay">

@@ -8,7 +8,6 @@ const ProfileSummary = ({ profileData }) => {
     bio,
     links,
     interestedIn,
-    featuredImgId,
     occupation,
     educationLvl,
   } = profileData;

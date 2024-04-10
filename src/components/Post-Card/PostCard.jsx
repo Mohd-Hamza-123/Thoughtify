@@ -22,12 +22,13 @@ const PostCard = ({
 }) => {
   // console.log(userId)
   const dispatch = useDispatch();
-  const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
+  const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
+  console.log(postProfilesPic)
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  // console.log(queImage)
+  const { myUserProfile, setMyUserProfile } = useAskContext()
+  console.log(myUserProfile)
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
-
 
 
   const getPostData = async () => {
@@ -45,7 +46,7 @@ const PostCard = ({
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-      // console.log(userId)
+
       // console.log(gettinProfiles)
       const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
@@ -60,8 +61,12 @@ const PostCard = ({
         dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL?.href }))
       }
     } else {
-      setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
-      // setprofileImgURL(gettingProfileImgURL.href)
+      if (userId === myUserProfile?.userIdAuth) {
+        setprofileImgURL((prev) => myUserProfile?.profileImgURL)
+      } else {
+        setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
+      }
+
     }
 
   }
@@ -74,14 +79,12 @@ const PostCard = ({
 
   useEffect(() => {
 
-
     if (!queImage && queImageID) {
       getPostData()
     }
 
-
-
   }, [queImageID, category]);
+
 
   function countTitle(title) {
     let str = `${title}`;
@@ -98,6 +101,7 @@ const PostCard = ({
       return `${limitedWordsString} ...`;
     }
   }
+  
   return (
     <>
       <div id="PostCard" className="flex flex-row-reverse w-full">

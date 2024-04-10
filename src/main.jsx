@@ -9,15 +9,10 @@ import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
-  Routes,
 } from "react-router-dom";
 import {
-  Login,
-  Signup,
+
   AuthLayout,
-  NavBar,
-  ViewPost,
-  UpperNavigationBar,
 } from "./components/index.js";
 import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, SearchPage, ForgetPassword, ResetPassword } from "./pages/pages.js";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage.jsx";
@@ -74,7 +69,6 @@ const router = createBrowserRouter(
           }
         />
         <Route
-          // loader={getProfilePicData}
           path="/AskQuestion"
           element={
             <>

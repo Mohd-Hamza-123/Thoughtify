@@ -13,6 +13,7 @@ import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 import { getInitialPost } from "../../store/postsSlice";
 import realTime from "../../appwrite/realTime";
 import { getCommentsInRedux } from "../../store/commentsSlice";
+import notification from "../../appwrite/notification";
 
 const ViewPost = () => {
   //Data from Redux
@@ -23,7 +24,7 @@ const ViewPost = () => {
   // console.log(AllVisitedQuestions)
   const userData = useSelector((state) => state.auth.userData);
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  console.log(initialPost)
+  // console.log(initialPost)
   const { myUserProfile,
     setMyUserProfile } = useAskContext()
   // console.log(myUserProfile)
@@ -40,7 +41,7 @@ const ViewPost = () => {
 
   const [profileImgURL, setprofileImgURL] = useState('')
   const [post, setPost] = useState(null);
-  console.log(post)
+  // console.log(post)
   const isAuther = post && userData ? post.userId === userData.$id : false;
   // useState for views,comments,date
   const [postdate, setpostdate] = useState('')
@@ -58,10 +59,8 @@ const ViewPost = () => {
   // Filter Comment in ViewPost
   const [filteredComment, setfilteredComment] = useState(null)
   // console.log(filteredComment)
-  // console.clear()
-  // console.log("Hi")
-  const deleteComments = async (documentid) => {
 
+  const deleteComments = async (documentid) => {
     // return
     realTime
       .deleteComment(documentid)
@@ -78,7 +77,7 @@ const ViewPost = () => {
       .updatePostViews(post?.$id, post.views, post.commentCount - 1)
       .then((res) => {
         dispatch(getInitialPost({ initialPosts: [res] }))
-        
+
         setpostCommentCount((prev) => post.commentCount - 1)
       })
       .catch((error) => console.log(error))
@@ -91,7 +90,7 @@ const ViewPost = () => {
       realTime
         .getSingleComment(filterCommentID)
         .then((res) => {
-          
+
           setfilteredComment(res)
         })
         .catch((res) => { console.log("bye") })
@@ -119,7 +118,7 @@ const ViewPost = () => {
       let postObject = initialPost.find(obj => obj.$id === slug)
       setPost((prev) => postObject)
     }
-  }, [slug,initialPost]);
+  }, [slug, initialPost]);
 
   useEffect(() => {
     // console.log("Hi")
@@ -299,10 +298,7 @@ const ViewPost = () => {
 
     if (flag === 'Like') {
       try {
-        // console.log(likedQuestions)
-        // console.log(dislikedQuestions)
-        // console.log(bookmarks)
-        // return
+
         if (likedQuestionsInContext.includes(post?.$id)) {
           // update in Query
           const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike - 1, dislike: previousDislike })
@@ -350,6 +346,13 @@ const ViewPost = () => {
             const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions: dislikedQuestionsInContext, bookmarks: bookmarksInContext })
             // console.log(updateLikeArr_In_MyProfile)
             setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
+          }
+
+          try {
+            const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId });
+            console.log(createNotification)
+          } catch (error) {
+            console.log(error)
           }
 
         }

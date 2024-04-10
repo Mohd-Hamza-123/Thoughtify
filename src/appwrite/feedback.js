@@ -12,10 +12,13 @@ export class FeedbackService {
         this.databases = new Databases(this.client)
     }
 
-    async createFeedBack(feedback) {
+    async createFeedBack({ feedback, username, userID, email }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwrite_Feedback_CollectionId, ID.unique(), {
-                feedback
+                feedback,
+                username,
+                userID,
+                email,
             })
         } catch (error) {
             console.log(" createFeedBack :: ERROR " + error);

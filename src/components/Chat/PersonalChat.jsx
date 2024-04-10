@@ -98,7 +98,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
             <div className='flex items-center px-5 gap-4'>
               <div>
-                <img src={receiverImage ? receiverImage : NoProfile} alt="pic" />
+                <img src={receiverImage ? receiverImage : NoProfile} />
               </div>
 
               <div>

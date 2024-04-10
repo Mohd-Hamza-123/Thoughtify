@@ -11,11 +11,12 @@ import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 import { getInitialPost } from "../../store/postsSlice";
+import notification from "../../appwrite/notification";
 
 const AskQue = ({ post }) => {
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  // console.log(initialPost)
-  console.log(post)
+
+  // console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -49,7 +50,7 @@ const AskQue = ({ post }) => {
   const [options, setoptions] = useState('')
   // console.log(options)
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
-
+  const slugForNotification = useRef(null)
 
 
   const handleImageUpload = (arr) => {
@@ -195,6 +196,7 @@ const AskQue = ({ post }) => {
           date: formattedDate
         }, categoryValue)
         dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+        slugForNotification.current = `post/${dbPost?.$id}/null`
       } else {
 
         try {
@@ -215,6 +217,7 @@ const AskQue = ({ post }) => {
             date: formattedDate
           }, categoryValue);
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          slugForNotification.current = `post/${dbPost?.$id}/null`
         } catch (error) {
           const dbPost = await appwriteService.createPost({
             ...data,
@@ -226,11 +229,15 @@ const AskQue = ({ post }) => {
             name: userData?.name,
             date: formattedDate
           }, categoryValue);
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }));
+          slugForNotification.current = `post/${dbPost?.$id}/null`
         }
         navigate("/");
       }
-
+ 
+      // const createNotification = await notification.createNotification({ content: `${userData.name} has posted a post`, isRead: false, slug: slugForNotification.current, name: userData?.name, userID: userData.$id });
+      // console.log(createNotification);
+      
     }
 
 

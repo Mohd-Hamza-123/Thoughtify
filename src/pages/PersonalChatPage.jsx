@@ -40,9 +40,8 @@ const PersonalChatPage = () => {
 
     let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID)
 
-
     if (isChatRoomExists) {
-      // console.log('chat Room exists')
+      // console.log('chat Room exists');
 
     } else {
       console.log(receiverName)

@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
 import { getOtherUserProfile } from "../../store/usersProfileSlice";
+import notification from "../../appwrite/notification";
 
 
 const MyProfile = () => {
@@ -25,6 +26,7 @@ const MyProfile = () => {
   const { myUserProfile, setMyUserProfile } = useAskContext()
   // console.log(myUserProfile)
   const { slug } = useParams();
+  console.log(slug)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
@@ -37,16 +39,23 @@ const MyProfile = () => {
   const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData} />)
   // console.log(activeNavRender)
 
-  const getUserProfile = async () => {
+  useEffect(() => {
+    getOtherUserProfile(slug)
+  }, [slug]);
+
+  const getUserProfile = async (slug) => {
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
     )
+    // console.log(othersUserProfile)
     // console.log(isUserAlreadyInReduxState);
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
+      // console.log(slug)
       const listprofileData = await profile.listProfile({ slug });
+      // console.log(listprofileData)
       if (listprofileData) {
         setProfileData({ ...listprofileData.documents[0] });
-        dispatch(getOtherUserProfile({ userProfileArr: [listprofileData.documents[0]] }))
+        dispatch(getOtherUserProfile({ userProfileArr: [listprofileData?.documents[0]] }))
       }
       getUserProfileImg(listprofileData.documents[0].profileImgID)
     } else {
@@ -71,59 +80,112 @@ const MyProfile = () => {
       setflag(flagURL.href);
     }
   };
-
+  // console.log(myUserProfile)
   const follow_Unfollow = async () => {
 
     if (!myUserProfile) return;
 
-    const isFollowing = myUserProfile?.following?.includes(slug);
-    let updateFollowArr = [...myUserProfile.following];
-    const receiverProfileIndex = othersUserProfile.findIndex((profile) => profile.userIdAuth === slug)
+    let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
+    // console.log(updateFollowArr)
+
+    const isFollowing = updateFollowArr?.filter((profileObj) => profileObj.profileID === slug);
 
 
-    if (isFollowing) {
-      updateFollowArr.splice(updateFollowArr.indexOf(slug), 1);
-      console.log("unfollow");
+    if (isFollowing.length > 0) {
+      console.log("d")
+
+      // updating sender profile
+      const findDeleteIndex = updateFollowArr.findIndex((profileObj) => profileObj.profileID === slug);
+      console.log(updateFollowArr[findDeleteIndex])
+
+      updateFollowArr.splice(findDeleteIndex, 1);
+      // console.log(updateFollowArr)
+      // return
+      const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
+
       const follow = await profile.updateEveryProfileAttribute({
         profileID: myUserProfile.$id,
-        following: updateFollowArr,
+        following: stringifyUpdateFollowArr,
       });
       setMyUserProfile(follow);
-    } else if (myUserProfile.blockedUsers.includes(slug)) {
+
+      // updating receiver profile
+      let receiver = await profile.listProfile({ slug });
+      let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj));
+      // console.log(receiverDetails);
+      if (receiverDetails.length === 0) return
+      receiverDetails = receiverDetails.filter((profile) => profile.profileID !== userData?.$id);
+      // receiverDetails.push({ profileID: userData.$id, name: userData.name })
+      receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
+
+      const updateReceiver = await profile.updateEveryProfileAttribute({
+        profileID: receiver.documents[0].$id,
+        followers: receiverDetails,
+      })
+      // console.log(updateReceiver)
+
+
+    } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
       console.log("You have Unblock to follow");
       return;
     } else {
-      updateFollowArr.push(slug);
+      console.log("fs");
+      // return
+      let receiver = await profile.listProfile({ slug })
+      // console.log(receiver)
+      updateFollowArr.push({ profileID: slug, name: receiver.documents[0].name });
+      const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
+
       const follow = await profile.updateEveryProfileAttribute({
         profileID: myUserProfile.$id,
-        following: updateFollowArr,
+        following: stringifyUpdateFollowArr,
       });
       setMyUserProfile(follow);
-      let receiverDetails
-      if (receiverProfileIndex !== -1) {
-        receiverDetails = othersUserProfile[receiverProfileIndex]
-      } else {
 
+
+      // creating notification 
+
+      try {
+        const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug });
+        console.log(createNotification)
+      } catch (error) {
+        console.log(error)
       }
+
+
+      // updating receiver profile
+
+      let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj))
+      console.log(receiverDetails);
+      receiverDetails.push({ profileID: userData.$id, name: userData.name })
+      receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
+
       const updateReceiver = await profile.updateEveryProfileAttribute({
-        profileID: receiverDetails?.$id,
+        profileID: receiver.documents[0].$id,
+        followers: receiverDetails,
       })
+      console.log(updateReceiver)
     }
 
 
 
   }
   const block_Unblock = async () => {
-
+    // return
     if (!myUserProfile) return;
 
     const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
     let updateBlockedArr = [...myUserProfile.blockedUsers];
-
+    let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
+    // console.log(updateFollowArr)
+    let isFollowing = false;
+    isFollowing = updateFollowArr.some((profile) => profile.profileID === slug)
+    // console.log(isFollowing)
+    // return
     if (isBlocked) {
       updateBlockedArr.splice(updateBlockedArr.indexOf(slug), 1);
       console.log("unBlock");
-    } else if (myUserProfile.following.includes(slug)) {
+    } else if (isFollowing) {
       console.log("You have to unfollow to Block");
       return;
     } else {
@@ -139,14 +201,17 @@ const MyProfile = () => {
   }
 
   useEffect(() => {
+
+    setactiveNav((prev) => 'Profile Summary')
+
     if (slug === userData?.$id) {
       setProfileData((prev) => myUserProfile);
       setURLimg(myUserProfile?.profileImgURL);
     } else {
-      getUserProfile();
+      getUserProfile(slug);
     }
     flagFunc();
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
     // console.log(activeNav)
@@ -164,21 +229,32 @@ const MyProfile = () => {
   }, [activeNav, profileData])
 
   const [isFollowing, setisFollowing] = useState(false)
-  const [isBlocked, setisBlocked] = useState(false)
-  useEffect(() => {
+  // console.log(isFollowing)
+  const [isBlocked, setisBlocked] = useState(false);
 
-    if (myUserProfile.following.includes(slug)) {
-      setisFollowing(true)
-    } else {
-      setisFollowing(false)
+  useEffect(() => {
+    // console.log(myUserProfile)
+    if (!myUserProfile) {
+      profile
+        .listProfile({ slug })
+        .then((res) => {
+          setMyUserProfile(res?.documents[0])
+        })
+      return
     }
+
+    if (Array.isArray(myUserProfile.following) === false) return
+
+    const parseMyUserProfile = myUserProfile.following.map(obj => JSON.parse(obj));
+    const receiverProfile = parseMyUserProfile.filter(obj => obj.profileID === slug);
+    setisFollowing(receiverProfile.length > 0);
 
     if (myUserProfile.blockedUsers.includes(slug)) {
       setisBlocked(true)
     } else {
       setisBlocked(false)
     }
-  }, [myUserProfile])
+  }, [myUserProfile, slug])
 
 
   return (
@@ -253,7 +329,11 @@ const MyProfile = () => {
 
             <div className="flex w-full">
               <p className="w-1/2">Followers :</p>
-              <span>38</span>
+              <span>{profileData?.followers?.length}</span>
+            </div>
+            <div className="flex w-full">
+              <p className="w-1/2">Following :</p>
+              <span>{profileData?.following?.length}</span>
             </div>
             <div className="flex w-full">
               <p className="w-1/2">Joined :</p>

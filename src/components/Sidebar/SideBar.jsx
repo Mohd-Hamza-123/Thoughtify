@@ -15,9 +15,11 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const SideBar = useRef();
   const [name, setname] = useState("Name");
-  const { isOpen, setIsOpen } = useAskContext();
+  const { isOpen, setIsOpen, myUserProfile,
+    setMyUserProfile } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
+
   // console.log(userData)
   useEffect(() => {
     if (status) {
@@ -48,6 +50,7 @@ const SideBar = () => {
         .logout()
         .then(() => {
           dispatch(logout());
+          setMyUserProfile(null)
           setIsOpen(false);
           navigate("/");
         })

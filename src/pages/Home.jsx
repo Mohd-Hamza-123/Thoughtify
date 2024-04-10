@@ -16,7 +16,7 @@ const Home = () => {
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
 
   const userProfileCollection = useSelector((state) => state.userProfileSlice?.userProfileArr)
-  console.log(userProfileCollection)
+  // console.log(userProfileCollection)
 
 
   const { increaseViews, hasMorePostsInHome,

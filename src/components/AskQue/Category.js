@@ -20,9 +20,9 @@ const categoriesArr = [
     { category: 'Relationships', slug: '/SearchQuestion/Relationships' },
     { category: 'Philosophy', slug: '/SearchQuestion/Philosophy' },
     { category: 'History', slug: '/SearchQuestion/History' },
-    { category: 'Politics', slug: '/SearchQuestion/Politics' },
+    { category: 'Funny', slug: '/SearchQuestion/Funny' },
     { category: 'Environment', slug: '/SearchQuestion/Environment' },
     { category: 'Social Issues', slug: '/SearchQuestion/SocialIssues' },
-];
+]
 
 export { categoriesArr }

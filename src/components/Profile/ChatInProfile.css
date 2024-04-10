@@ -3,6 +3,56 @@
     /* border: 1px solid black; */
 }
 
+
+.ChatInProfile_wrapper {
+    width: 100%;
+    max-width: 31.25rem;
+    margin: 1rem auto;
+}
+
+.ChatInProfile_wrapper svg {
+    width: 30px;
+}
+
+/* .label {
+    font-size: .625rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: +1.3px;
+    margin-bottom: 1rem;
+} */
+
+.searchBar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#searchQueryInput {
+    width: 100%;
+    height: 2rem;
+    background: #ffffff;
+    outline: none;
+    border: none;
+    border-radius: 1.625rem;
+    padding: 0 3.5rem 0 1.5rem;
+    font-size: 1rem;
+}
+
+#searchQuerySubmit {
+    width: 3.5rem;
+    height: 2.8rem;
+    margin-left: -3.5rem;
+    background: none;
+    border: none;
+    outline: none;
+}
+
+#searchQuerySubmit:hover {
+    cursor: pointer;
+}
+
 .ChatInProfileNav {
     width: 100%;
     /* border: 1px solid #d07171; */
@@ -21,8 +71,62 @@
     display: flex;
     justify-content: center;
     padding: 4px 4px;
+  
 }
 
 .ChatInProfileNav ul li.active {
     border-bottom: 3px solid #16BEF6;
+}
+
+.ChatInProfile_Search_div {
+    width: 50%;
+}
+
+.ChatInProfile_Search_div input {
+    width: 100%;
+    outline: none;
+}
+
+.ChatInProfile_Two_Sections section {
+    width: 100%;
+
+}
+
+.ChatInProfile_Two_Sections section ul li {
+    cursor: pointer;
+    width: 60%;
+    margin: 0 auto;
+    display: flex;
+    padding: 7px 8px;
+    align-items: center;
+    background-color: white;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    margin-top: 10px;
+    gap: 30px;
+}
+
+.ChatInProfile_Two_Sections section ul span {
+    font-size: 25px;
+    width: 80%;
+    word-wrap: break-word;
+    font-weight: lighter;
+}
+
+.ChatInProfile_Two_Sections section ul button {
+    width: 20%;
+    padding: 4px 5px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 15px;
+    background-color: #16BEF6;
+    color: white;
+    border: 1px solid #16BEF6;
+}
+
+.ChatInProfile_Two_Sections section ul button:hover {
+    border: 1px solid black;
+    background-color: black;
+    color: white;
 }

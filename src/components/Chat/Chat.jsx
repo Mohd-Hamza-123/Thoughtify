@@ -14,15 +14,16 @@ import { getCommentsInRedux } from "../../store/commentsSlice";
 import profile from "../../appwrite/profile";
 import { getInitialPost, getpostUploaderProfilePic } from "../../store/postsSlice";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
+import notification from "../../appwrite/notification";
 
 const Chat = ({ post, navigateToRelatedPost, slug }) => {
-  // console.log(post.commentCount)
+
   // console.log(post)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
   const postUploaderPics = useSelector((state) => state.postsSlice.postUploaderProfilePic)
-  // console.log(post)
+
   // console.log(commentsInRedux)
 
   // load subcomments
@@ -49,7 +50,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   const [lastPostID, setLastPostID] = useState(null);
   // console.log(lastPostID)
 
-  // console.log(totalComments)
+
 
   let spinnerRef = useRef();
   // let see = document.querySelector('#tinymce')
@@ -124,7 +125,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
       return arr
     })
 
-  }, [isIntersecting,post,slug,commentsInRedux])
+  }, [isIntersecting, post, slug, commentsInRedux])
 
   useEffect(() => {
 
@@ -138,7 +139,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   useEffect(() => {
     // console.log("HI")
     getComments();
-  }, [slug,post]);
+  }, [slug, post]);
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -181,7 +182,9 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
       });
       // setcommentArr((prev) => [dbCommnet, ...prev]);
       dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
-      // console.log(dbCommnet)
+
+      const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authid, postID: post.$id, userIDofReceiver: post?.userId });
+      console.log(createNotification)
     }
 
     if (postCommentCount || postCommentCount === 0) {
@@ -214,13 +217,9 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   ) => {
     let copiedSubComment = [...subComment]
     if (index || index === 0) {
-      // console.log(index)
-      // console.log(subComment)
 
-      // console.log(copiedSubComment)
       copiedSubComment.splice(index, 1);
-      // subComment.splice(index, 1);
-      // console.log(copiedSubComment);
+
     }
     realTime
       .updateComment(

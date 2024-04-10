@@ -11,7 +11,8 @@ const conf = {
     appwritePersonalChatParticipantsCollectionId: String(import.meta.env.VITE_APPWRITE_PERSONALCHATPARTICIPANTS_COLLECTION_ID),
     appwritePersonalChatConverstionsCollectionId: String(import.meta.env.VITE_APPWRITE_PERSONALCHAT_CONVERSATIONS_COLLECTION_ID),
     appwrite_Feedback_CollectionId: String(import.meta.env.VITE_APPWRITE_FEEDBACK_COLLECTION_ID),
-    unsplashApiKey : String(import.meta.env.VITE_UNSPLASH_API_KEY)
+    appwrite_Notification_CollectionID: String(import.meta.env.VITE_APPWRITE_NOTIFICATION_COLLECTION_ID),
+    unsplashApiKey: String(import.meta.env.VITE_UNSPLASH_API_KEY)
 }
 // console.log(conf)
 export default conf;
