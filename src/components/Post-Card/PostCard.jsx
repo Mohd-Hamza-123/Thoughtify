@@ -23,10 +23,10 @@ const PostCard = ({
   // console.log(userId)
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
-  console.log(postProfilesPic)
+  // console.log(postProfilesPic)
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
   const { myUserProfile, setMyUserProfile } = useAskContext()
-  console.log(myUserProfile)
+  // console.log(myUserProfile)
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
 

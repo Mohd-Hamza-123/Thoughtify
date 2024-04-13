@@ -1,0 +1,32 @@
+.FindFriendsPage_Main {
+    /* border: 2px solid red; */
+    font-family: 'Gabarito', sans-serif;
+    display: flex;
+    padding: 20px;
+}
+
+.FindFriendsPage_Main section:nth-child(1) {
+    width: 30%;
+    border: 2px solid rgba(33, 247, 154, 0.788);
+}
+
+.FindFriendsPage_Main section:nth-child(2) {
+    width: 70%;
+    border: 2px solid rgb(30, 64, 255);
+}
+.FindFriendsPage_ListFriends{
+    display: flex;
+    margin-top: 10px;
+    gap: 15px;
+    align-items: center;
+
+}
+.FindFriendsPage_ListFriends img{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
+.FindFriendsPage_ListFriends p{
+    font-size: 25px;
+  
+}

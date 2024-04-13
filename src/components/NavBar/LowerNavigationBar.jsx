@@ -21,8 +21,8 @@ const LowerNavigationBar = () => {
       slug: '/'
     },
     {
-      NavName: "Find Friends",
-      slug: '/'
+      NavName: "Find People",
+      slug: '/Find-People'
     },
     {
       NavName: "Got a Question",

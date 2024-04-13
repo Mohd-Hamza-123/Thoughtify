@@ -17,7 +17,7 @@ import avatar from "./appwrite/avatars";
 
 
 function App() {
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -35,14 +35,13 @@ function App() {
   const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
   const [hasMorePostsInProfileFilterBookmark, sethasMorePostsInProfileFilterBookmark] = useState(true)
   const indicator = useRef(true);
-  // console.log(indicator.current)
+
 
 
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get('secret');
   const userId = urlParams.get('userId');
-  // console.log(secret)
-  // console.log(userId)
+
 
   useEffect(() => {
     if (userId && secret) {
@@ -64,7 +63,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    
+
     const fetchData = async () => {
       try {
         const userData = await authService.getCurrentUser();
@@ -73,7 +72,7 @@ function App() {
           dispatch(login({ userData }))
 
           const userProfile = await profile.listProfile({ slug: userData?.$id });
-          console.log(userProfile)
+          // console.log(userProfile)
           if (userProfile.documents.length === 0 || userProfile.total === 0) {
             // console.log("HI")
             let profileAvatar = await avatar.profileAvatar(userData?.name);
@@ -90,7 +89,7 @@ function App() {
               profileImgURL,
             })
             setMyUserProfile((prev) => userProfile)
-            indicator.current = false;
+
             dispatch(getUserProfile({ userProfile }))
             if (userProfile) {
               navigate("/");
@@ -101,7 +100,7 @@ function App() {
           } else {
 
             setMyUserProfile(prev => userProfile.documents[0]);
-            indicator.current = false
+
             dispatch(getUserProfile({ userProfile: userProfile.documents[0] }));
 
             const profileImageID = userProfile.documents[0]?.profileImgID
@@ -129,6 +128,7 @@ function App() {
 
     if (indicator.current) {
       fetchData();
+      indicator.current = false
     }
 
   }, []);

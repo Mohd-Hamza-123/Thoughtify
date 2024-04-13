@@ -35,33 +35,11 @@ export class AuthService {
             console.log("Login :: ERROR " + error);
         }
     }
-
+  
     googleAuth() {
         try {
             return this.account.createOAuth2Session(
                 'google',
-                'http://localhost:5173/',
-                'http://localhost:5173/login'
-            )
-        } catch (error) {
-            console.log("Login_Google :: ERROR " + error);
-        }
-    }
-    githubAuth() {
-        try {
-            this.account.createOAuth2Session(
-                'github',
-                'http://localhost:5173/',
-                'http://localhost:5173/login'
-            )
-        } catch (error) {
-            console.log("Login_Google :: ERROR " + error);
-        }
-    }
-    facebookAuth() {
-        try {
-            this.account.createOAuth2Session(
-                'facebook',
                 'http://localhost:5173/',
                 'http://localhost:5173/login'
             )
@@ -97,7 +75,7 @@ export class AuthService {
             console.log("Forget Password :: ERROR " + error);
         }
     }
-    
+
     async resetPassword(userID, secret, password, RepeatPassword) {
         try {
             const promise = this.account.updateRecovery(userID, secret, password, RepeatPassword)
