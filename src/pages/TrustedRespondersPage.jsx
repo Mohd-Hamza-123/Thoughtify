@@ -55,7 +55,7 @@ const TrustedRespondersPage = () => {
             <HorizontalLine />
             <h3 id='TrustedResponderspage_Heading' className='text-center'>Responders</h3>
             <div id='TrustedRespondersPage_wrapper_container' className='flex w-full justify-center'>
-               
+
                 <div className="wrapper">
                     <div>
                         <div className="img-area">

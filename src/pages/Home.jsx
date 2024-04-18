@@ -7,15 +7,16 @@ import "./Home.css";
 import appwriteService from "../appwrite/config";
 import { useAskContext } from "../context/AskContext";
 import { getInitialPost } from "../store/postsSlice";
-import authService from "../appwrite/auth";
+
 
 
 const Home = () => {
-
+  // console.log(TrustedResponders)
   const dispatch = useDispatch()
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  // console.log(initialPost)
 
-  const userProfileCollection = useSelector((state) => state.userProfileSlice?.userProfileArr)
+  // const userProfileCollection = useSelector((state) => state.userProfileSlice?.userProfileArr)
   // console.log(userProfileCollection)
 
 
@@ -37,7 +38,7 @@ const Home = () => {
       setIsLoading((prev) => true)
       try {
         if (initialPost.length === 0) {
-          const posts = await appwriteService.getPosts(lastPostID)
+          const posts = await appwriteService.getPosts({ lastPostID })
           setmaximumPostsNumber((prev) => posts.total)
           if (initialPost.length < posts.total) {
             sethasMorePostsInHome((prev) => true)
@@ -88,7 +89,7 @@ const Home = () => {
       const getAllPosts = async () => {
         // console.log(initialPost[initialPost.length - 1].$id)
         let LastID = initialPost[initialPost.length - 1].$id;
-        const posts = await appwriteService.getPosts(LastID)
+        const posts = await appwriteService.getPosts({ lastPostID: LastID })
         // console.log(posts)
         // setPosts((prev) => [...prev, posts])
         if (initialPost.length < posts.total) {
@@ -170,11 +171,12 @@ const Home = () => {
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div className="Home_Left flex flex-col gap-6">
-          {posts?.map((post) => (
-            <div key={post?.$id} onClick={() => increaseViews(post.$id)}>
+          {posts?.map((post) => {
+            // if (TrustedResponders && post.trustedResponderPost !== true) return
+            return <div key={post?.$id} onClick={() => increaseViews(post.$id)}>
               <PostCard {...post} />
             </div>
-          ))}
+          })}
 
           {(isLoading && hasMorePostsInHome) && <div ref={spinnerRef} className="flex justify-center">
             <span className="Home_loader"></span>
@@ -201,7 +203,7 @@ const Home = () => {
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
-          No Posts
+          No Internet
         </div>
         <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
           <HomeRight />

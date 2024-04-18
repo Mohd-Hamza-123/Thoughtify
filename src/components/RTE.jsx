@@ -62,6 +62,11 @@ const RTE = ({
                   input.setAttribute("accept", "image/*");
                   input.onchange = function (e) {
                     const file = input.files[0];
+                    const MAX_FILE_SIZE = 1 * 1024 * 1024;
+                    if (file.size > MAX_FILE_SIZE) {
+                      console.log("Image Must be Less then and Equal to 1 MB ")
+                      return
+                    }
                     const reader = new FileReader();
                     reader.onload = function () {
                       callback(reader.result, {

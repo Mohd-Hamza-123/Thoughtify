@@ -1,16 +1,18 @@
 import React from "react";
 import "./Overlay.css";
 import { useAskContext } from "../../context/AskContext";
-const Overlay = ({ booleanOverlay = false }) => {
-  const { isOpen, setIsOpen } = useAskContext();
+const Overlay = () => {
+  const { setIsOpen, isOverlayBoolean, setisOverlayBoolean, SetSettingPopUp } = useAskContext();
 
   return (
     <div
       onClick={() => {
         setIsOpen(false);
+        setisOverlayBoolean(false)
+        SetSettingPopUp(false)
       }}
       id="Overlay"
-      className={`${isOpen ? "active" : ""} ${booleanOverlay ? "active" : ""}`}
+      className={`${isOverlayBoolean ? "active" : ""}`}
     ></div>
   );
 };

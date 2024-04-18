@@ -10,7 +10,7 @@ import "./ViewPost.css";
 import '../../index.css'
 import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
-import { getInitialPost } from "../../store/postsSlice";
+import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice";
 import realTime from "../../appwrite/realTime";
 import { getCommentsInRedux } from "../../store/commentsSlice";
 import notification from "../../appwrite/notification";
@@ -20,10 +20,11 @@ const ViewPost = () => {
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
   // console.log(commentsInRedux)
-  const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
-  // console.log(AllVisitedQuestions)
+  // const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
+
   const userData = useSelector((state) => state.auth.userData);
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts);
+  const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
   // console.log(initialPost)
   const { myUserProfile,
     setMyUserProfile } = useAskContext()
@@ -206,9 +207,11 @@ const ViewPost = () => {
     appwriteService
       .deletePost(post.$id)
       .then(() => {
-        const newInitialPost = initialPost.filter((prevPosts) => prevPosts.$id !== post?.$id)
-        // console.log(newInitialPost)
-        dispatch(getInitialPost({ initialPosts: [...newInitialPost], initialPostsFlag: false }))
+        const newInitialPost = initialPost?.filter((prevPosts) => prevPosts?.$id !== post?.$id)
+        dispatch(getInitialPost({ initialPosts: [...newInitialPost], initialPostsFlag: false }));
+
+        const newRespondersPost = initialTrustedPosts?.filter((prevPosts) => prevPosts?.$id !== post?.$id);
+        dispatch(getResponderInitialPosts({ initialResponderPosts: [...newRespondersPost], initialPostsFlag: false }));
       })
     navigate("/");
   };
@@ -689,7 +692,15 @@ const ViewPost = () => {
         </div>
       </div>
     </div >
-  ) : null;
+  ) : <div className="">
+
+    <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+      <UpperNavigationBar className='' />
+      <HorizontalLine />
+      <LowerNavigationBar />
+    </nav>
+    <p className="text-3xl text-black">Post is Not Available</p>
+  </div>;
 };
 
 export default ViewPost;

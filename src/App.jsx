@@ -6,7 +6,7 @@ import { login } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { SideBar } from "./components";
+import { Loader, SideBar } from "./components";
 import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
@@ -14,6 +14,7 @@ import { Feedback } from "./components";
 import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import avatar from "./appwrite/avatars";
+import Setting from "./components/Setting/Setting";
 
 
 function App() {
@@ -23,7 +24,9 @@ function App() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
+  const [SettingPopUp, SetSettingPopUp] = useState(false);
   const [notificationPopUp, setnotificationPopUp] = useState(false)
   const [myUserProfile, setMyUserProfile] = useState(null)
   const userData = useSelector((state) => state.auth.userData)
@@ -34,6 +37,8 @@ function App() {
   const [hasMorePostsInProfileFilterQuestions, sethasMorePostsInProfileFilterQuestions] = useState(true)
   const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
   const [hasMorePostsInProfileFilterBookmark, sethasMorePostsInProfileFilterBookmark] = useState(true)
+  const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] = useState(true)
+ 
   const indicator = useRef(true);
 
 
@@ -166,6 +171,7 @@ function App() {
           sethasMorePostsInProfileFilterQuestions,
           hasMorePostsInBrowseQuestions,
           sethasMorePostsInBrowseQuestions,
+          hasMorePostInTrustedPost, sethasMorePostInTrustedPost,
           hasMoreComments,
           sethasMoreComments,
           hasMorePostsInHome,
@@ -179,19 +185,22 @@ function App() {
           increaseViews,
           feedbackPopUp,
           setfeedbackPopUp,
+          SettingPopUp, SetSettingPopUp,
+          isOverlayBoolean, setisOverlayBoolean,
           isOpen,
           setIsOpen,
         }}
       >
 
         <Feedback />
+        <Setting />
         <Outlet />
         <SideBar />
         <Overlay />
 
       </AskProvider>
     </>
-  ) : '...loading';
+  ) : <Loader />;
 }
 
 export default App;

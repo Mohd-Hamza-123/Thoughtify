@@ -37,7 +37,7 @@ export class Profile {
         if (blockedUsers) {
             updateObj.blockedUsers = blockedUsers
         }
-        if(followers){
+        if (followers) {
             updateObj.followers = followers
         }
         console.log(updateObj)
@@ -78,10 +78,19 @@ export class Profile {
             console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
         }
     }
-    async listProfile({ slug }) {
+    async listProfile({ slug, name }) {
+        // console.log(name)
+        let QueryArr = []
+        if (slug) {
+            QueryArr.push(Query.equal("userIdAuth", [`${slug}`]))
+        }
+        if (name) {
+            QueryArr.push(Query.equal("name", [`${name}`]))
+        }
+        // console.log(QueryArr)
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
-                [Query.equal("userIdAuth", [`${slug}`])]
+                QueryArr
             )
         } catch (error) {
             console.log("Appwrite serive :: listProfile :: profile.js :: error", error);

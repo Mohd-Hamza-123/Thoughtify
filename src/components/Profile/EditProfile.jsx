@@ -280,7 +280,11 @@ const EditProfile = ({
   const onSelectFile = async (e) => {
     setprevFileURL('')
     const file = e.currentTarget?.files[0];
-
+    const MAX_FILE_SIZE = 1 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      console.log("Image Must be Less then and Equal to 1 MB ")
+      return
+    }
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       setImageURL(reader.result);

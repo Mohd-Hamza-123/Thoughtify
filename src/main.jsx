@@ -17,6 +17,7 @@ import {
 import { Profile, Home, EditProfilePage, AskQuestion, ViewPostPage, EditAskQuestion, PersonalChatPage, SignupPage, LoginPage, SearchPage, ForgetPassword, ResetPassword } from "./pages/pages.js";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage.jsx";
 import FindFriends from "./pages/FindFriends.jsx";
+import RespondersSectionPage from "./pages/RespondersSectionPage.jsx";
 
 
 const router = createBrowserRouter(
@@ -128,11 +129,17 @@ const router = createBrowserRouter(
           }
         />
 
-        <Route 
-        path="/Find-People"
-        element={
-          <FindFriends/>
-        }
+        <Route
+          path="/Find-People"
+          element={
+            <FindFriends />
+          }
+        />
+        <Route
+          path="/Responders-Section"
+          element={
+            <RespondersSectionPage />
+          }
         />
       </Route>
     </>

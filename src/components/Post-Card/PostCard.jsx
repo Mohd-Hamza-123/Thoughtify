@@ -18,9 +18,11 @@ const PostCard = ({
   queImageID,
   $createdAt,
   views,
-  commentCount
+  commentCount,
+  isTrustedresponded = false
 }) => {
-  // console.log(userId)
+  // console.log(TrustedResponders)
+
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
   // console.log(postProfilesPic)
@@ -46,7 +48,6 @@ const PostCard = ({
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-
       // console.log(gettinProfiles)
       const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
@@ -101,7 +102,7 @@ const PostCard = ({
       return `${limitedWordsString} ...`;
     }
   }
-  
+
   return (
     <>
       <div id="PostCard" className="flex flex-row-reverse w-full">

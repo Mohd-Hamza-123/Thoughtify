@@ -1,0 +1,31 @@
+/* HTML: <div class="loader"></div> */
+.LoaderPage{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.loader {
+    width: 20px;
+    aspect-ratio: 1;
+    animation: l13-0 2s linear infinite;
+  }
+  .loader::before,
+  .loader::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(at 30% 30%,#0000,#000a) #16BEF6;
+    animation: l13-1 0.5s cubic-bezier(.5,-500,.5,500) infinite;
+  }
+  .loader::after {
+    animation-delay: -0.15s;
+  }
+  @keyframes l13-0 { 
+    100% { transform:rotate(360deg)} 
+  }
+  @keyframes l13-1 { 
+    100% { transform:translate(0.5px)} 
+  }

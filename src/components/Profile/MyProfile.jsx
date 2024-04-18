@@ -24,9 +24,9 @@ const MyProfile = () => {
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   // console.log(othersUserProfile)
   const { myUserProfile, setMyUserProfile } = useAskContext()
-  // console.log(myUserProfile)
+  
   const { slug } = useParams();
-  console.log(slug)
+  // console.log(slug)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
@@ -46,11 +46,10 @@ const MyProfile = () => {
   const getUserProfile = async (slug) => {
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
     )
-    // console.log(othersUserProfile)
-    // console.log(isUserAlreadyInReduxState);
+
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
-      // console.log(slug)
+      console.log("no")
       const listprofileData = await profile.listProfile({ slug });
       // console.log(listprofileData)
       if (listprofileData) {
@@ -59,6 +58,7 @@ const MyProfile = () => {
       }
       getUserProfileImg(listprofileData.documents[0].profileImgID)
     } else {
+      // console.log("yes")
       setProfileData((prev) => othersUserProfile[index]);
       setURLimg((prev) => othersUserProfile[index].profileImgURL)
     }

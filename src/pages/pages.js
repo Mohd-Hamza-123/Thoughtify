@@ -6,7 +6,6 @@ import AskQuestion from './AskQuestion'
 import SignupPage from './SignupPage'
 import LoginPage from './LoginPage'
 import PersonalChatPage from './PersonalChatPage'
-import SettingPage from './SettingPage'
 import ViewPostPage from './ViewPostPage'
 import ForgetPassword from './ForgetPassword'
 import EditAskQuestion from './EditAskQuestion'
@@ -23,7 +22,6 @@ export {
     SignupPage,
     LoginPage,
     PersonalChatPage,
-    SettingPage,
     ViewPostPage,
     ForgetPassword,
     SearchPage,

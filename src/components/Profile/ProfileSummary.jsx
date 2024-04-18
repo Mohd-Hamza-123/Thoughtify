@@ -20,8 +20,8 @@ const ProfileSummary = ({ profileData }) => {
           <pre id="ProfileSummayPre" className="whitespace-pre-wrap">{bio}</pre>
           <div className="ProfileSummary_Links mt-3">
             <span>Links </span>
-            {links?.map((link) => (
-              <div key={JSON.parse(link).URL} className="flex gap-2 items-center">
+            {links?.map((link,index) => (
+              <div key={JSON.parse(link).URL + index} className="flex gap-2 items-center">
                 <i className="fa-solid fa-link"></i>
                 <a href={JSON.parse(link).URL} target="_blank" className="text-blue-600">
                   {JSON.parse(link).Title}

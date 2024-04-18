@@ -18,7 +18,7 @@ const LowerNavigationBar = () => {
     },
     {
       NavName: 'Responders Section',
-      slug: '/'
+      slug: "/Responders-Section"
     },
     {
       NavName: "Find People",

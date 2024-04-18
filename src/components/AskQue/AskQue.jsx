@@ -10,7 +10,7 @@ import appwriteService from "../../appwrite/config";
 import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
-import { getInitialPost } from "../../store/postsSlice";
+import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice";
 import notification from "../../appwrite/notification";
 
 const AskQue = ({ post }) => {
@@ -34,9 +34,9 @@ const AskQue = ({ post }) => {
 
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
-  console.log(thumbnailFile)
+  // console.log(thumbnailFile)
   const [thumbailURL, setThumbailURL] = useState('')
-  console.log(thumbailURL)
+  // console.log(thumbailURL)
   const [imgArr, setimgArr] = useState([]);
 
   // Category State
@@ -60,8 +60,14 @@ const AskQue = ({ post }) => {
   };
 
   const selectThumbnail = async (e) => {
-
+  
     const file = e.currentTarget.files[0]
+    // console.log(file.size)
+    const MAX_FILE_SIZE = 1 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      console.log("Image Must be Less then and Equal to 1 MB ")
+      return
+    }
     setthumbnailFile(file)
     const reader = new FileReader()
     reader.onload = () => {
@@ -181,6 +187,9 @@ const AskQue = ({ post }) => {
 
       navigate("/");
     } else {
+      const UploaderResponder = await profile.listProfile({ slug: userData?.$id });
+      // console.log(UploaderResponder)
+      const trustedResponderPost = UploaderResponder.documents[0].trustedResponder;
 
       if (thumbnailFile) {
         const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
@@ -193,9 +202,15 @@ const AskQue = ({ post }) => {
           queImage: null,
           pollOptions,
           name: userData?.name,
-          date: formattedDate
+          date: formattedDate,
+          trustedResponderPost,
         }, categoryValue)
         dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+
+        if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
+
+
         slugForNotification.current = `post/${dbPost?.$id}/null`
       } else {
 
@@ -214,9 +229,13 @@ const AskQue = ({ post }) => {
             pollQuestion,
             pollOptions,
             name: userData?.name,
-            date: formattedDate
+            date: formattedDate,
+            trustedResponderPost
           }, categoryValue);
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
+
           slugForNotification.current = `post/${dbPost?.$id}/null`
         } catch (error) {
           const dbPost = await appwriteService.createPost({
@@ -227,17 +246,21 @@ const AskQue = ({ post }) => {
             pollQuestion,
             pollOptions,
             name: userData?.name,
-            date: formattedDate
+            date: formattedDate,
+            trustedResponderPost
           }, categoryValue);
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }));
+
+          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
+
           slugForNotification.current = `post/${dbPost?.$id}/null`
         }
         navigate("/");
       }
- 
+
       // const createNotification = await notification.createNotification({ content: `${userData.name} has posted a post`, isRead: false, slug: slugForNotification.current, name: userData?.name, userID: userData.$id });
       // console.log(createNotification);
-      
+
     }
 
 

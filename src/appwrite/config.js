@@ -14,7 +14,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, date }, category) {
+    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, date, trustedResponderPost }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -30,8 +30,8 @@ export class Service {
                 pollQuestion,
                 pollAnswer,
                 profileImgID,
-                date
-                // commentBody: ["hello", "how are you"]
+                date,
+                trustedResponderPost
             })
         } catch (error) {
             console.log("Appwrite serive :: createPost :: error", error)
@@ -105,12 +105,26 @@ export class Service {
         }
     }
     // Infinte Scroll
-    async getPosts(lastPostID) {
-        // console.log(lastPostID)
+    async getPosts({ lastPostID, TrustedResponders }) {
+
         let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
-        if (lastPostID) {
-            QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+
+
+        if (TrustedResponders) {
+            if (lastPostID) {
+                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+            }
+            QueryArr.push(Query.equal("trustedResponderPost", [true]))
+            QueryArr.push(Query.isNotNull("trustedResponderPost"))
+
+        } else {
+            if (lastPostID) {
+                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+            }
         }
+
+
+
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
                 QueryArr
@@ -124,7 +138,7 @@ export class Service {
         BeforeDate, AfterDate, From, To, PostAge, Viewed,
         Commented, UserID, Like_Dislike, lastPostID,
     }) {
-       
+
         let QueryArr = [Query.limit(5)]
         if (lastPostID) {
             QueryArr.push(Query.cursorAfter(lastPostID))
