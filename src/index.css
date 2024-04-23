@@ -12,14 +12,15 @@
 
 html,
 body {
-    /* background-color: rgb(79, 77, 77); */
+    background-color: #FFFFFF !important;
     height: 100%;
     width: 100%;
     overflow-x: hidden;
-    /* overflow-y: hidden; */
+    transition: background-color 1s ease !important;
 }
-body.active{
-    /* overflow-y:hidden; */
+
+body.darkMode {
+    background-color: #1a1a1a !important;
 }
 
 .block {

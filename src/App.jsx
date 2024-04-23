@@ -6,7 +6,7 @@ import { login } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { Loader, SideBar } from "./components";
+import { Loader, NotificationPop, SideBar } from "./components";
 import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
@@ -15,21 +15,23 @@ import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import avatar from "./appwrite/avatars";
 import Setting from "./components/Setting/Setting";
+import notification from "./appwrite/notification";
 
 
 function App() {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  // console.log(loading)
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
-  const [notificationPopUp, setnotificationPopUp] = useState(false)
+  const [notificationPopUp, setnotificationPopUp] = useState(false);
   const [myUserProfile, setMyUserProfile] = useState(null)
-  const userData = useSelector((state) => state.auth.userData)
+  const userData = useSelector((state) => state.auth.userData);
+  // console.log(userData);
   const [notificationShow, setNotificationShow] = useState(null)
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true)
   const [hasMoreComments, sethasMoreComments] = useState(true)
@@ -37,16 +39,40 @@ function App() {
   const [hasMorePostsInProfileFilterQuestions, sethasMorePostsInProfileFilterQuestions] = useState(true)
   const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
   const [hasMorePostsInProfileFilterBookmark, sethasMorePostsInProfileFilterBookmark] = useState(true)
-  const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] = useState(true)
- 
+  const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] = useState(true);
+  //For Notification Pop
+  const [notificationPopMsg, setnotificationPopMsg] = useState('')
+  const [notificationPopMsgNature, setNotificationPopMsgNature] = useState(false);
+  // For notification bell icon
+  const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
   const indicator = useRef(true);
 
+  const [queries, setQueries] = useState([])
 
 
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get('secret');
   const userId = urlParams.get('userId');
 
+  const body = document.getElementsByTagName('body');
+  // console.log(body)
+  // useState for DarkAndNight Mode
+
+  const [isDarkModeOn, setisDarkModeOn] = useState(localStorage.getItem("isDarkModeOn") === 'true');
+  console.log(isDarkModeOn);
+  useEffect(() => {
+    if (body) {
+      if (isDarkModeOn) {
+        console.log("hio")
+        localStorage.setItem("isDarkModeOn", true);
+        body[0].classList.add("darkMode")
+      } else {
+        console.log("bio")
+        localStorage.setItem("isDarkModeOn", false)
+        body[0].classList.remove("darkMode")
+      }
+    }
+  }, [isDarkModeOn])
 
   useEffect(() => {
     if (userId && secret) {
@@ -70,6 +96,7 @@ function App() {
   useEffect(() => {
 
     const fetchData = async () => {
+
       try {
         const userData = await authService.getCurrentUser();
         // console.log(userData)
@@ -127,7 +154,6 @@ function App() {
         console.log(err);
       } finally {
         setLoading(false);
-
       }
     };
 
@@ -149,6 +175,42 @@ function App() {
     }
   }, [userData])
 
+  // getting notifications
+  const [notifications, setnotifications] = useState(null);
+
+  useEffect(() => {
+    async function getNotification() {
+      const userData = await authService.getCurrentUser();
+      try {
+        const res = await notification.getNotification({ userID: userData?.$id });
+
+        // console.log(res);
+
+        setnotifications((prev) => res?.documents)
+
+        if (res?.total > 25) {
+          const totalItemsToDelete = res?.total - 25;
+          console.log(totalItemsToDelete);
+
+          const limitToDelete = Math.min(totalItemsToDelete, 50);
+          const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id, limit: limitToDelete });
+          console.log(listdocumentstoDelete);
+
+          for (let i = 0; i < limitToDelete; i++) {
+            let notificationID = listdocumentstoDelete?.documents[i]?.$id;
+            if (!notificationID) return;
+            notification.deleteNotication({ notificationID });
+          }
+        }
+
+      } catch (error) {
+
+      }
+
+
+    }
+    getNotification()
+  }, [])
   const increaseViews = async (PostId) => {
     try {
       const previesViews = await appwriteService.getPost(PostId)
@@ -159,11 +221,21 @@ function App() {
       console.log("Error")
     }
   }
+  const deleteNotication = async () => {
+    const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id });
+
+    for (let i = 0; i < listdocumentstoDelete.documents.length; i++) {
+      let notificationID = listdocumentstoDelete?.documents[i]?.$id;
+      if (!notificationID) return;
+      notification.deleteNotication({ notificationID });
+    }
+  }
 
   return !loading ? (
     <>
       <AskProvider
         value={{
+          queries, setQueries,
           hasMorePostsInProfileFilterBookmark,
           sethasMorePostsInProfileFilterBookmark,
           hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions,
@@ -189,9 +261,15 @@ function App() {
           isOverlayBoolean, setisOverlayBoolean,
           isOpen,
           setIsOpen,
+          notificationPopMsg, setnotificationPopMsg,
+          notificationPopMsgNature, setNotificationPopMsgNature,
+          notifications, setnotifications,
+          deleteNotication,
+          isUnreadNotificationExist, setIsUnreadNotificationExist,
+          isDarkModeOn, setisDarkModeOn
         }}
       >
-
+        <NotificationPop notificationPopMsg={notificationPopMsg} notificationPopMsgNature={notificationPopMsgNature} />
         <Feedback />
         <Setting />
         <Outlet />

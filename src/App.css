@@ -1,6 +1,20 @@
 :root {
     --secondryBlue: rgb(22, 190, 246);
 }
-/* #sub_Root.active{
-    overflow: hidden;
-} */
+
+.GoToHomePageDiv {
+    cursor: pointer;
+    position: fixed !important;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    top: 10px;
+    left: 5px;
+}
+
+.GoToHomePageDiv>div>img {
+    height: 20px;
+}
+.GoToHomePageDiv>section>img {
+    height: 20px;
+}

@@ -7,7 +7,7 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import { Input } from "../index";
 import QueryFlow from "../../assets/QueryFlow.png";
 import '../../index.css'
-import profile from "../../appwrite/profile";
+
 import { useForm } from "react-hook-form";
 import NoProfile from '../../assets/NoProfile.png'
 
@@ -17,7 +17,6 @@ const NavigationBar = () => {
   const { register, handleSubmit, setValue } = useForm()
   const authStatus = useSelector((state) => state.auth.status);
   const userProfileData = useSelector((state) => state.profileSlice.userProfile)
-
 
   const BarItems = [
     {
@@ -31,61 +30,77 @@ const NavigationBar = () => {
       slug: "/signup",
     },
   ];
-  const [profileImgURL, setprofileImgURL] = useState('')
+  const [profileImgURL, setprofileImgURL] = useState('');
 
   const navigate = useNavigate();
-  const { isOpen, setIsOpen, notificationPopUp,
-    setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow } = useAskContext();
+  const { setIsOpen, notificationPopUp,
+    setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow, setisOverlayBoolean, notifications, setnotifications, setNotificationPopMsgNature, setnotificationPopMsg, deleteNotication, isUnreadNotificationExist, setIsUnreadNotificationExist, isDarkModeOn } = useAskContext();
+  // console.log(isDarkModeOn)
   const userData = useSelector((state) => state.auth.userData);
 
-  const getProfileData = async () => {
-    if (myUserProfile) {
-      setprofileImgURL(myUserProfile?.profileImgURL)
-    } else {
-      const profileData = await profile.listProfile({ slug: userData?.$id })
-      if (profileData?.documents?.length > 0) {
-        const profileImgID = profileData.documents[0].profileImgID
-        const profileImgURL = await profile.getStoragePreview(profileImgID)
-        setprofileImgURL(profileImgURL.href)
-      }
-    }
-  }
+  // const getProfileData = async () => {
+  //   if (myUserProfile) {
+  //     setprofileImgURL(myUserProfile?.profileImgURL)
+  //   } else {
+  //     const profileData = await profile.listProfile({ slug: userData?.$id })
+  //     if (profileData?.documents?.length > 0) {
+  //       const profileImgID = profileData.documents[0].profileImgID
+  //       const profileImgURL = await profile.getStoragePreview(profileImgID)
+  //       setprofileImgURL(profileImgURL.href)
+  //     }
+  //   }
+  // }
 
   useEffect(() => {
-    getProfileData()
+    // getProfileData()
   }, [userProfileData])
 
   const toggleSideBar = () => {
     setIsOpen(true);
+    setisOverlayBoolean(true)
   };
   const submit = async (data) => {
     // console.log(data)
     navigate(`/BrowseQuestion/${null}/${data.searchQuestion}`)
     setValue("searchQuestion", "")
   }
-
-  const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
-  useEffect(() => {
+  const updateNotification = async (notificationID) => {
+    console.log(notificationID)
     notification
-      .getNotification({ userID: userData?.$id })
+      .updateNotification({ notificationID, isRead: true })
       .then((res) => {
-        // console.log(res);
-        setNotificationShow((prev) => res?.documents)
-
-        const notificationBoolean = res?.documents.some((note) => note.isRead === false)
-
-        if (notificationBoolean) {
-          setIsUnreadNotificationExist(true)
-        } else {
-          setIsUnreadNotificationExist(false)
-        }
+        // console.log(res)
+        const newNotificationArr = notifications?.map((note) => {
+          if (note.$id !== notificationID) {
+            return note
+          } else {
+            return res
+          }
+        })
+        setnotifications((prev) => newNotificationArr)
       })
       .catch((err) => console.log(err))
-  }, [])
+  }
+
+
+  useEffect(() => {
+
+    setNotificationShow((prev) => notifications)
+    const notificationBoolean = notifications?.some((note) => note.isRead === false)
+
+    if (notificationBoolean) {
+      setIsUnreadNotificationExist(true)
+    } else {
+      setIsUnreadNotificationExist(false)
+    }
+
+
+  }, [notifications])
   return (
     <>
       <nav
         id={"nav"}
+      className={`${isDarkModeOn ? 'darkMode' : ''}`}
       >
         <Container>
           <div className="flex justify-between px-7 py-2">
@@ -94,8 +109,8 @@ const NavigationBar = () => {
                 className="cursor-pointer gap-2 flex item-center"
                 onClick={() => navigate("/")}
               >
-                <img className={`logo`} src={QueryFlow} alt="Logo" />
-                <h1 className='logo_Name'>QueryFlow</h1>
+                <img className={`logo ${isDarkModeOn ? 'darkMode' : ''}`} src={QueryFlow} alt="Logo" />
+                <h1 className={`logo_Name ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Thoughtify</h1>
               </div>
 
             </div>
@@ -104,7 +119,7 @@ const NavigationBar = () => {
               <div id="UpperNavigationBar_Search_Bar" className=" flex justify-center items-center">
                 <form onSubmit={handleSubmit(submit)}>
                   <div className="search_div">
-                    <div className="search_icon_div">
+                    <div className={`search_icon_div ${isDarkModeOn ? 'darkMode' : ''}`}>
                       <button type="submit">
                         <svg
                           id="search_icon"
@@ -122,8 +137,8 @@ const NavigationBar = () => {
                         {...register("searchQuestion", {
                           required: true
                         })}
-                        id="UppperNavigationBar_search_Input"
-                        className={`font-bold text-black  rounded-t-none rounded-b-none`}
+                        id="UpperNavigationBar_search_Input"
+                        className={`font-bold text-black  rounded-t-none rounded-b-none ${isDarkModeOn ? "darkMode" : ''}`}
                         type="search"
                         placeholder="Search Question"
                       />
@@ -131,23 +146,59 @@ const NavigationBar = () => {
                   </div>
                 </form>
               </div>
-              {authStatus && <div id="UpperNavigationBar_Bell_Div" className="">
+              {authStatus && <div id="UpperNavigationBar_Bell_Div">
                 {isUnreadNotificationExist && <span>!</span>}
-                <i onClick={() => setnotificationPopUp((prev) => !prev)} className="fa-regular fa-bell cursor-pointer"></i>
+                <i onClick={() => setnotificationPopUp((prev) => !prev)} className={`fa-regular fa-bell cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
                 <section className={`${notificationPopUp ? 'active' : ''}`}>
-                  <ul>
-                    {notificationShow && notificationShow?.map((note) => {
-                      return <Link to={note.slug} key={note?.$id}><li onClick={() => { setnotificationPopUp((prev) => !prev) }} className={`${note.isRead ? '' : 'unRead'}`}>{note?.content}</li></Link>
+                  {notifications?.length > 0 && <span
+                    onClick={() => {
+                      deleteNotication();
+                      setnotifications((prev) => [])
+                      setNotificationPopMsgNature(true)
+                      setnotificationPopMsg("Notifications  Deleted")
+                    }}
+                    className="inline-block px-2 cursor-pointer text-right mt-2 rounded-sm bg-black text-white">Delete All Notifications</span>}
+                  <ul className="UpperNavigationBarNotificationUL">
+                    {notificationShow && notificationShow?.map((note, index) => {
+                      return <li key={note?.$id} className={`${note.isRead ? 'Read' : 'unRead'} flex gap-1 items-center`}>
+                        <div className="flex items-center gap-2">
+                          <img
+                            onClick={
+                              () => {
+                                navigate(`profile/${note?.userID}`)
+
+                              }}
+                            id="UpperNavigationBar_Notification_profilePic" src={note?.userProfilePic || NoProfile} alt="" />
+                          <p onClick={() => {
+                            setnotificationPopUp((prev) => !prev)
+                            updateNotification(note?.$id);
+                            navigate(note.slug)
+                          }}> {note?.content}</p>
+                        </div>
+                        <i onClick={() => {
+                          notification.deleteNotication({ notificationID: note?.$id })
+                            .then((res) => {
+                              setnotifications((prev) => {
+                                return prev.filter((noti) => noti?.$id !== note?.$id)
+                              })
+                              setNotificationPopMsgNature(true)
+                              setnotificationPopMsg("Notification Deleted")
+                            })
+
+                        }} className={`fa-solid fa-trash UpperNavBar_deleteNotification cursor-pointer `}></i>
+                      </li>
+
                     })}
-                    {!notificationShow && <li onClick={() => { setnotificationPopUp((prev) => !prev) }}>No Notifications</li>}
+                    {notifications?.length <= 0 && <li onClick={() => { setnotificationPopUp((prev) => !prev) }}>No Notifications</li>}
                   </ul>
+
                 </section>
                 <div onClick={() => setnotificationPopUp((prev) => false)} className={`${notificationPopUp ? 'active' : ''}`} id="UpperNavigationBar_Notificaton_PopUp_overlay">
                 </div>
               </div>}
               {authStatus && (
                 <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-                  <img src={profileImgURL ? profileImgURL : NoProfile} alt="" />
+                  <img src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile} alt="" />
                 </div>
               )}
               {!authStatus && <ul className="flex items-center">

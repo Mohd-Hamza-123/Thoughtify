@@ -3,15 +3,14 @@ import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
 import { RTE, Input, Button, TextArea, HorizontalLine, Opinions } from "../";
 import conf from "../../conf/conf";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import appwriteService from "../../appwrite/config";
 import { categoriesArr } from "./Category";
 import profile from "../../appwrite/profile";
-import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice";
-import notification from "../../appwrite/notification";
+
 
 const AskQue = ({ post }) => {
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
@@ -31,12 +30,11 @@ const AskQue = ({ post }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
-
+  const { setnotificationPopMsg, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
-  // console.log(thumbnailFile)
   const [thumbailURL, setThumbailURL] = useState('')
-  // console.log(thumbailURL)
+
   const [imgArr, setimgArr] = useState([]);
 
   // Category State
@@ -51,7 +49,8 @@ const AskQue = ({ post }) => {
   // console.log(options)
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
   const slugForNotification = useRef(null)
-
+  //
+  const [isUploading, setIsUploading] = useState(false)
 
   const handleImageUpload = (arr) => {
     if (arr.length !== 0) {
@@ -60,12 +59,13 @@ const AskQue = ({ post }) => {
   };
 
   const selectThumbnail = async (e) => {
-  
+
     const file = e.currentTarget.files[0]
-    // console.log(file.size)
+
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      console.log("Image Must be Less then and Equal to 1 MB ")
+      setnotificationPopMsg((prev) => "Image Must be Less then and Equal to 1 MB ")
+      e.currentTarget.value = ''
       return
     }
     setthumbnailFile(file)
@@ -89,68 +89,92 @@ const AskQue = ({ post }) => {
 
 
     if (pollQuestion && TotalPollOptions.length <= 1) {
-      console.log('There must be 2 options')
+
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'There must be 2 Poll options')
       return
     }
-    if (data.title === '' && data.content !== '') {
-      console.log("Not valid ")
-      return
-    }
+
+
     if (!categoryValue) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Select a Category. Choose General If not Specific')
       return
     }
 
     if (!data.title && !pollQuestion) {
-      console.log('Title is not there');
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Title is Empty')
       return
     }
 
-
-
-
-    // return
+    setIsUploading((prev) => true)
     if (post) {
-      console.log(thumbailURL)
+
       if (thumbnailFile) {
-        console.log("hi")
-        const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
-        const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+        try {
+          const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
+          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
-        const dbPost = await appwriteService.updatePost(post.$id, {
-          ...data,
-          queImageID: dbThumbnail.$id,
-          queImage: null,
-          pollQuestion,
-          pollOptions
-        }, categoryValue);
+          const dbPost = await appwriteService.updatePost(post.$id, {
+            ...data,
+            queImageID: dbThumbnail.$id,
+            queImage: null,
+            pollQuestion,
+            pollOptions
+          }, categoryValue);
 
-        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Updated')
+        } catch (error) {
+          setNotificationPopMsgNature((prev) => false)
+          setnotificationPopMsg((prev) => 'Post is Not Updated')
+        }
+
       } else if (thumbailURL && !post?.queImageID) {
-        console.log(thumbailURL)
-        const dbPost = await appwriteService.updatePost(post?.$id, {
-          ...data,
-          queImage: thumbailURL,
-          queImageID: null,
-          pollQuestion,
-          pollOptions
-        }, categoryValue);
-        console.log(dbPost)
-        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+        try {
+          const dbPost = await appwriteService.updatePost(post?.$id, {
+            ...data,
+            queImage: thumbailURL,
+            queImageID: null,
+            pollQuestion,
+            pollOptions
+          }, categoryValue);
+          console.log(dbPost)
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Updated')
+        } catch (error) {
+          setNotificationPopMsgNature((prev) => false)
+          setnotificationPopMsg((prev) => 'Post is Not Updated')
+        }
+
 
       } else if (thumbailURL && post?.queImageID) {
-        const dbPost = await appwriteService.updatePost(post?.$id, {
-          ...data,
-          queImage: null,
-          queImageID: post?.queImageID,
-          pollQuestion,
-          pollOptions
-        }, categoryValue);
-        console.log(dbPost)
-        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+
+        try {
+          const dbPost = await appwriteService.updatePost(post?.$id, {
+            ...data,
+            queImage: null,
+            queImageID: post?.queImageID,
+            pollQuestion,
+            pollOptions
+          }, categoryValue);
+          console.log(dbPost)
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Updated')
+        } catch (error) {
+          setNotificationPopMsgNature((prev) => false)
+          setnotificationPopMsg((prev) => 'Post is Not Updated')
+        }
+
       } else {
 
         try {
-          console.log("hi")
           const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
 
           const UnsplashRes = await unsplashImg.json();
@@ -169,9 +193,10 @@ const AskQue = ({ post }) => {
           }, categoryValue);
           console.log(dbPost)
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Updated')
         } catch (error) {
-          console.log("hi")
+          // console.log("hi")
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
             userId: userData.$id,
@@ -188,30 +213,39 @@ const AskQue = ({ post }) => {
       navigate("/");
     } else {
       const UploaderResponder = await profile.listProfile({ slug: userData?.$id });
-      // console.log(UploaderResponder)
+
       const trustedResponderPost = UploaderResponder.documents[0].trustedResponder;
 
       if (thumbnailFile) {
-        const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+        try {
+          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
 
-        const dbPost = await appwriteService.createPost({
-          ...data,
-          queImageID: dbThumbnail?.$id,
-          userId: userData?.$id,
-          pollQuestion,
-          queImage: null,
-          pollOptions,
-          name: userData?.name,
-          date: formattedDate,
-          trustedResponderPost,
-        }, categoryValue)
-        dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          const dbPost = await appwriteService.createPost({
+            ...data,
+            queImageID: dbThumbnail?.$id,
+            userId: userData?.$id,
+            pollQuestion,
+            queImage: null,
+            pollOptions,
+            name: userData?.name,
+            date: formattedDate,
+            trustedResponderPost,
+          }, categoryValue);
+
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Created')
+
+          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          slugForNotification.current = `post/${dbPost?.$id}/null`
+          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
+        } catch (error) {
+          setNotificationPopMsgNature((prev) => false)
+          setnotificationPopMsg((prev) => 'Post is not Created')
+        }
 
 
-        if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
 
 
-        slugForNotification.current = `post/${dbPost?.$id}/null`
       } else {
 
         try {
@@ -232,6 +266,10 @@ const AskQue = ({ post }) => {
             date: formattedDate,
             trustedResponderPost
           }, categoryValue);
+
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => 'Post Created')
+
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
 
           if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
@@ -263,9 +301,9 @@ const AskQue = ({ post }) => {
 
     }
 
-
     navigate("/")
     setimgArr((prev) => [])
+    setIsUploading((prev) => false)
   }
 
   const slugTransform = useCallback((value) => {
@@ -319,15 +357,16 @@ const AskQue = ({ post }) => {
     <>
       <HorizontalLine />
       <div
-        className={`ask_Que_Container`}
+        className={`ask_Que_Container ${isDarkModeOn ? 'darkMode' : ''}`}
       >
-        <h3 className="text-center text-4xl">"Got a Question? Ask Away!"</h3>
+        <h3 className={`text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
 
         <form id="AskQue_Form" onSubmit={handleSubmit(submit)} className="flex">
           <div id="AskQue_InsideFormLeft">
             <div className="Question_Title flex gap-3">
-              <h4 className="my-4 text-xl">Title</h4>
+              <h4 className={`my-4 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Title</h4>
               <TextArea
+                className={`${isDarkModeOn ? 'darkMode' : ''}`}
                 maxLength="250"
                 id="Que_Title"
                 placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
@@ -349,7 +388,7 @@ const AskQue = ({ post }) => {
               />
             </div>
             <div className="Descripton flex flex-col gap-3">
-              <h4 className="my-3 text-xl">Additional Details (Optional)</h4>
+              <h4 className={`my-3 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Additional Details (Optional)</h4>
               <div className="Description_div">
                 <RTE
                   name="content"
@@ -360,12 +399,12 @@ const AskQue = ({ post }) => {
               </div>
             </div>
             <div className="Opinions">
-              <h4 className="my-4 mb-6 mt-5 text-xl">
+              <h4 className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                 Whom Opinion are You interested ?
               </h4>
               <div className="flex justify-between items-center ">
                 <div className="w-1/5  text-center text-xl">
-                  <span>Opinions From :</span>
+                  <span className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Opinions From :</span>
                 </div>
 
 
@@ -383,7 +422,7 @@ const AskQue = ({ post }) => {
                       id="Id1"
                       className='cursor-pointer'
                     />
-                    <label htmlFor="Id1" className='cursor-pointer'>Everyone</label>
+                    <label htmlFor="Id1" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Everyone</label>
                   </div>
 
 
@@ -397,12 +436,10 @@ const AskQue = ({ post }) => {
                       name='opinionsFrom'
                       className='cursor-pointer'
                     />
-                    <label htmlFor="Id3" className='cursor-pointer'>Responders</label>
+                    <label htmlFor="Id3" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Responders</label>
                     <i className="fa-solid fa-mars-stroke text-red-600"></i>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
@@ -413,7 +450,7 @@ const AskQue = ({ post }) => {
           <div id="AskQue_insideForm_right">
 
             <div id="AskQue_Thumbnail_preview">
-              <div id="AskQue_Thumbnail">
+              <div id="AskQue_Thumbnail" className={`${isDarkModeOn ? 'text-white border-white' : 'text-black border-black'}`}>
                 {!thumbailURL && <p className="text-center">Add Thumbail for Your Question
                   <br />
                   or thumbnail will be set according to category
@@ -424,7 +461,7 @@ const AskQue = ({ post }) => {
               </div>
 
               <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
-                <label className="AskQue_BrowseThumbnail" htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
+                <label className={`AskQue_BrowseThumbnail ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
                 <input className="hidden" type="file"
                   name="thumbnailImage"
                   accept="image/*"
@@ -445,11 +482,11 @@ const AskQue = ({ post }) => {
             </div>
 
 
-            <div id="AskQue_PostType">
-              <p>Select Post Type:</p>
+            <div id="AskQue_PostType" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+              <p className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Select Post Type:</p>
               <div className="flex justify-start gap-6">
                 <div>
-                  <label className="cursor-pointer" htmlFor="public">Public</label>
+                  <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="public">Public</label>
                   <input
                     className="cursor-pointer"
                     {...register("status")}
@@ -461,7 +498,7 @@ const AskQue = ({ post }) => {
                   />
                 </div>
                 <div>
-                  <label className="cursor-pointer" htmlFor="private">Private</label>
+                  <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="private">Private</label>
                   <input
                     className="cursor-pointer"
                     {...register("status", {
@@ -478,9 +515,8 @@ const AskQue = ({ post }) => {
             </div>
 
 
-            <div id="AskQue_SelectCategory">
-
-              <p className="mb-3">Select Category : </p>
+            <div id="AskQue_SelectCategory" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+              <p className={`mb-3 ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Select Category : </p>
               <div className="dropdown">
                 <div
                   className="dropdown-header flex items-center justify-between"
@@ -488,7 +524,7 @@ const AskQue = ({ post }) => {
                     setselectCategoryVisible((prev) => !prev)
                   }}
                 >
-                  < span className="">{categoryValue ? categoryValue : `Select Item`}</span>
+                  < span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{categoryValue ? categoryValue : `Select Item`}</span>
                   <i className="fa-solid fa-caret-down"></i>
                 </div>
 
@@ -507,11 +543,11 @@ const AskQue = ({ post }) => {
             </div>
 
             {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
-              <p>Add Pole : (Optional) </p>
+              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Add Pole : (Optional) </p>
 
               <div id="AskQue_Pole_Options">
                 <TextArea
-                  placeholder='Ask Pole' className='AskQue_Pole_TextArea'
+                  placeholder='Ask Pole' className={`AskQue_Pole_TextArea ${isDarkModeOn ? 'darkMode' : ''}`}
                   maxLength={110}
                   value={`${post ? post.pollQuestion : pollQuestion}`}
                   onChange={(e) => {
@@ -541,11 +577,12 @@ const AskQue = ({ post }) => {
                       <Button
                         onClick={() => {
                           if (post) {
-                            console.log("You cannot edit Poll")
+                            setNotificationPopMsgNature((prev) => false)
+                            setnotificationPopMsg((prev) => "You cannot edit Poll")
                             setoptions("")
                             return
                           }
-                          console.log(TotalPollOptions.includes(options))
+
                           for (let i = 0; i < TotalPollOptions.length; i++) {
                             if (TotalPollOptions[i].option === options) {
                               setoptions("")
@@ -558,9 +595,19 @@ const AskQue = ({ post }) => {
 
                               return [...arr]
                             })
+                          } else {
+                            if (!pollQuestion) {
+                              setNotificationPopMsgNature((prev) => false)
+                              setnotificationPopMsg((prev) => "Write a Poll")
+                              setoptions("")
+                              return
+                            }
+                            setNotificationPopMsgNature((prev) => false)
+                            setnotificationPopMsg((prev) => "Maximum 4 Options Allowed")
                           }
                           setoptions("")
                         }}
+
                         className="border text-sm p-1">
                         Add options
                       </Button>
@@ -587,7 +634,7 @@ const AskQue = ({ post }) => {
                   </div>
 
                   <div className="flex gap-3 h-8 mt-3 items-center">
-                    <label htmlFor="">Opinion : </label>
+                    <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="">Opinion : </label>
                     <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
                       {...register('pollAnswer', {
                         required: false
@@ -602,9 +649,12 @@ const AskQue = ({ post }) => {
             </div>}
             <div className={`buttons flex justify - end items - center mt - 14`}>
 
-              <Button type="submit" className="askque_btn">
+              {!isUploading && <Button type="submit" className={`askque_btn ${isDarkModeOn ? 'darkMode' : ''}`}>
                 {post ? "Update Your Question" : "Post Question"}
-              </Button>
+              </Button>}
+              {isUploading && <Button type="submit" className={`askque_btn ${isDarkModeOn ? 'darkMode' : ''}`}>
+                {post ? "Updating..." : "Uploading..."}
+              </Button>}
 
             </div>
           </div>

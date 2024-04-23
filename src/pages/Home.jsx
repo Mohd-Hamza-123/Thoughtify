@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { useEffect } from "react"
 import { useState } from "react"
-import { Container, PostCard, NavBar, AskQue, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight } from "../components/index";
+import { PostCard, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, SecondLoader, Button } from "../components/index";
 import { useSelector, useDispatch } from "react-redux";
 import "./Home.css";
 import appwriteService from "../appwrite/config";
@@ -11,19 +11,16 @@ import { getInitialPost } from "../store/postsSlice";
 
 
 const Home = () => {
-  // console.log(TrustedResponders)
+
   const dispatch = useDispatch()
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
   // console.log(initialPost)
-
-  // const userProfileCollection = useSelector((state) => state.userProfileSlice?.userProfileArr)
-  // console.log(userProfileCollection)
-
-
   const { increaseViews, hasMorePostsInHome,
-    sethasMorePostsInHome } = useAskContext();
+    sethasMorePostsInHome, setnotificationPopMsg,
+    setNotificationPopMsgNature, isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
+  // console.log(posts)
   const [isLoading, setIsLoading] = useState(false)
 
   const [lastPostID, setLastPostID] = useState(null)
@@ -39,7 +36,13 @@ const Home = () => {
       try {
         if (initialPost.length === 0) {
           const posts = await appwriteService.getPosts({ lastPostID })
-          setmaximumPostsNumber((prev) => posts.total)
+          setmaximumPostsNumber((prev) => posts.total);
+          // console.log(posts);
+
+          if (posts === false) {
+            setPosts((prev) => false)
+          }
+
           if (initialPost.length < posts.total) {
             sethasMorePostsInHome((prev) => true)
           } else {
@@ -84,14 +87,13 @@ const Home = () => {
   }, [spinnerRef.current, posts])
 
   useEffect(() => {
-    // console.log(maximumPostsNumber)
+
     if (isIntersecting && hasMorePostsInHome) {
       const getAllPosts = async () => {
-        // console.log(initialPost[initialPost.length - 1].$id)
+
         let LastID = initialPost[initialPost.length - 1].$id;
         const posts = await appwriteService.getPosts({ lastPostID: LastID })
-        // console.log(posts)
-        // setPosts((prev) => [...prev, posts])
+
         if (initialPost.length < posts.total) {
           sethasMorePostsInHome((prev) => true)
         } else {
@@ -108,7 +110,7 @@ const Home = () => {
       }
       getAllPosts()
     }
-    // console.log(initialPost)
+
   }, [isIntersecting, hasMorePostsInHome])
 
   useEffect(() => {
@@ -124,59 +126,57 @@ const Home = () => {
 
   const lastScrollY = useRef(window.scrollY);
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
-  // console.log(isNavbarHidden)
+
 
   const handleScroll = (e) => {
     let position = e.target.scrollTop;
-    // console.log('lastScrollY ' + lastScrollY.current)
-    // console.log('position ' + position)
+
     sessionStorage.setItem('scrollPosition', position.toString());
     if (lastScrollY.current < position) {
-      // console.log('down')
+
       setisNavbarHidden(true)
     } else {
-      // console.log('up')
+
       setisNavbarHidden(false)
     }
-    // setlastScrollY(position)
+
     lastScrollY.current = position
   }
 
 
   useEffect(() => {
-    // console.log(HomePageRef.current)
+
     if (HomePageRef.current) {
-      // console.log("HOme")
+
       const storedScrollPosition = sessionStorage.getItem('scrollPosition');
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-      // console.log(parsedScrollPosition)
+
       HomePageRef.current.scrollTop = parsedScrollPosition
     }
   }, [HomePageRef.current, posts]);
 
 
-  return posts?.length > 0 ? (
-    <div
+  if (posts?.length > 0) {
+    return <div
       id="Home"
       ref={HomePageRef}
-      className="w-full relative"
+      className={`w-full relative ${isDarkModeOn ? "darkMode" : ''}`}
       onScroll={handleScroll}
     >
-      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
         <UpperNavigationBar className='' />
         <HorizontalLine />
         <LowerNavigationBar />
       </nav>
 
 
-      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
+      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
         <div className="Home_Left flex flex-col gap-6">
-          {posts?.map((post) => {
-            // if (TrustedResponders && post.trustedResponderPost !== true) return
-            return <div key={post?.$id} onClick={() => increaseViews(post.$id)}>
+          {posts?.map((post) => (
+            <div key={post?.$id} onClick={() => increaseViews(post.$id)}>
               <PostCard {...post} />
             </div>
-          })}
+          ))}
 
           {(isLoading && hasMorePostsInHome) && <div ref={spinnerRef} className="flex justify-center">
             <span className="Home_loader"></span>
@@ -188,8 +188,8 @@ const Home = () => {
         </div>
       </div>
     </div>
-  ) : (
-    <div
+  } else if (posts === false) {
+    return <div
       id="Home"
       ref={HomePageRef}
       className="w-full relative"
@@ -203,7 +203,10 @@ const Home = () => {
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
-          No Internet
+          <p className="text-center select-none">Internet Connection Error or May be you are not Logged In</p>
+          <Button onClick={() => {
+            location.reload()
+          }} className="Reload_Page_Btn">Reload Page</Button>
         </div>
         <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
           <HomeRight />
@@ -211,7 +214,32 @@ const Home = () => {
       </div>
 
     </div>
-  );
+  } else {
+    return <div
+      id="Home"
+      ref={HomePageRef}
+      className="w-full relative"
+      onScroll={handleScroll}
+    >
+      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+        <UpperNavigationBar className='' />
+        <HorizontalLine />
+        <LowerNavigationBar />
+      </nav>
+
+      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
+        <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
+          {initialPost?.length === 0 && <SecondLoader />}
+        </div>
+        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+          <HomeRight />
+        </div>
+      </div>
+
+    </div>
+  }
+
+
 };
 
 export default Home;

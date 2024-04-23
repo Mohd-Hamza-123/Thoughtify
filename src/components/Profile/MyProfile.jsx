@@ -24,7 +24,7 @@ const MyProfile = () => {
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   // console.log(othersUserProfile)
   const { myUserProfile, setMyUserProfile } = useAskContext()
-  
+
   const { slug } = useParams();
   // console.log(slug)
   const navigate = useNavigate();
@@ -49,14 +49,14 @@ const MyProfile = () => {
 
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
-      console.log("no")
+      // console.log("no")
       const listprofileData = await profile.listProfile({ slug });
       // console.log(listprofileData)
       if (listprofileData) {
         setProfileData({ ...listprofileData.documents[0] });
         dispatch(getOtherUserProfile({ userProfileArr: [listprofileData?.documents[0]] }))
       }
-      getUserProfileImg(listprofileData.documents[0].profileImgID)
+      getUserProfileImg(listprofileData?.documents[0]?.profileImgID);
     } else {
       // console.log("yes")
       setProfileData((prev) => othersUserProfile[index]);
@@ -92,7 +92,7 @@ const MyProfile = () => {
 
 
     if (isFollowing.length > 0) {
-      console.log("d")
+   
 
       // updating sender profile
       const findDeleteIndex = updateFollowArr.findIndex((profileObj) => profileObj.profileID === slug);
@@ -146,7 +146,7 @@ const MyProfile = () => {
       // creating notification 
 
       try {
-        const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug });
+        const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug, userProfilePic: myUserProfile?.profileImgURL });
         console.log(createNotification)
       } catch (error) {
         console.log(error)

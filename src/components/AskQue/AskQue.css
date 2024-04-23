@@ -4,23 +4,16 @@
 #askQue_div {
     width: 100%;
     height: 100%;
-    background-color: rgb(232, 232, 232);
-    border: 2px solid red;
 }
 
 .ask_Que_Container {
     padding: 14px;
     width: 100%;
     color: black;
-    background: white;
     overflow-x: hidden;
     overflow-y: scroll;
     font-family: 'Gabarito', sans-serif;
     scroll-behavior: smooth;
-}
-
-.ask_Que_Container h3 {
-    /* font-family: 'Varela Round', sans-serif; */
 }
 
 .ask_Que_Container::-webkit-scrollbar {
@@ -34,9 +27,12 @@
 
 #AskQue_InsideFormLeft {
     width: 70%;
-    /* border: 2px solid green; */
     padding: 10px;
 
+}
+
+#AskQue_InsideFormLeft textarea.darkMode {
+    background-color: white;
 }
 
 #AskQue_InsideFormLeft h4 {
@@ -92,8 +88,7 @@
     background-color: var(--secondryBlue);
     color: white;
     border: none;
-    box-shadow: -3px -3px 7px #ffffff,
-        3px 3px 5px #ceced1;
+    margin-top: 20px;
     font-family: 'Poppins', sans-serif;
     text-align: center;
     text-wrap: nowrap;
@@ -104,35 +99,29 @@
     letter-spacing: 0.4px;
 }
 
-.askque_btn:hover {
-    background-color: black;
-    color: white;
-    border: none;
+.askque_btn.darkMode {
+    background-color: #FF3500;
 }
-
-
 
 #AskQue_Thumbnail_preview {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* border: 2px  green; */
-
 }
 
 #AskQue_Thumbnail {
     height: 250px;
     width: 90%;
     margin-top: 80px;
-    border: 2px dotted rgba(63, 63, 63, 0.514);
+    /* border: 2px dotted rgba(63, 63, 63, 0.514); */
+    border-width: 2px;
+    border-style: dotted;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 5px;
     overflow: hidden;
-    /* font-family: 'Poppins', sans-serif; */
-    color: rgba(0, 0, 0, 0.601);
 }
 
 #AskQue_Thumbnail img {
@@ -156,7 +145,6 @@
 }
 
 #AskQue_PostType {
-    background-color: #ffffff;
     margin-top: 10px;
     padding: 10px;
     border-radius: 5px;
@@ -164,19 +152,21 @@
     /* Adding a subtle box shadow */
 }
 
+#AskQue_PostType.darkMode {
+    background-color: #1A1A1A;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
 #AskQue_PostType p {
     font-weight: bold;
     margin-bottom: 10px;
-    color: #333;
-    /* Dark color for the text */
+    /* color: #333; */
 }
 
 #AskQue_PostType label {
     display: inline-block;
     margin-right: 10px;
-    color: #000000;
     font-weight: 500;
-    /* Blue as the secondary color */
 }
 
 #AskQue_PostType input[type="radio"] {
@@ -189,6 +179,10 @@
     padding: 10px;
     max-width: 100%;
 
+}
+
+#AskQue_SelectCategory.darkMode {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
 
 #AskQue_SelectCategory p {
@@ -255,4 +249,8 @@
     outline: none;
     resize: none;
     padding: 3px 6px;
+}
+
+.AskQue_Pole_TextArea.darkMode {
+    border: 2px solid white;
 }

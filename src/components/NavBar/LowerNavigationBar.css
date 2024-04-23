@@ -1,15 +1,21 @@
 #LowerNavigationBar {
     background: rgb(233 233 233 / 70%);
     background-color: rgb(22, 190, 246);
-   
+    transition: background-color 1s ease;
 }
-#LowerNavigationBar ul li{
+
+#LowerNavigationBar.darkMode {
+    background-color: #FF3500;
+}
+
+#LowerNavigationBar ul li {
     cursor: pointer;
     color: white;
     font-weight: 500;
     transform: scale(1);
     transition: transform 0.2s ease;
 }
+
 #LowerNavigationBar ul li:hover {
     color: rgb(255, 255, 255);
     transform: scale(1.15);

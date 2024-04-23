@@ -28,10 +28,14 @@ const EditProfile = ({
     profileImgURL,
   } = profileData;
 
-  const { myUserProfile, setMyUserProfile } = useAskContext()
-  const userData = useSelector((state) => state.auth.userData)
+  const { myUserProfile,
+    setMyUserProfile,
+    setNotificationPopMsgNature,
+    setnotificationPopMsg
+  } = useAskContext()
+  const userData = useSelector((state) => state.auth.userData);
+
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const imgRef = useRef(null)
   const canvasRef = useRef(null)
   const url = useRef();
@@ -44,7 +48,7 @@ const EditProfile = ({
   const [cropSelection, setCropSelection] = useState(null)
   const [interestedTagArr, setInterestedTagArr] = useState([]);
   const [file, setFile] = useState(null);
-  console.log(file)
+  // console.log(file)
   const [canvasPreview, setcanvasPreview] = useState(true)
   const [prevFileURL, setprevFileURL] = useState('')
   const [imageURL, setImageURL] = useState("");
@@ -61,7 +65,10 @@ const EditProfile = ({
     },
   });
 
-  const [prevProfilePic, setprevProfilePic] = useState('')
+  const [prevProfilePic, setprevProfilePic] = useState('');
+
+  // Updating Profile Indicator
+  const [isUpdating, setisUpdating] = useState(false)
   useEffect(() => {
 
 
@@ -119,17 +126,20 @@ const EditProfile = ({
       });
     }
   };
-  console.log(prevFileURL)
+  // console.log(prevFileURL)
   const submit = async (data) => {
-
+    setisUpdating((prev) => true)
+    // return
     if (!prevFileURL && !file) {
-      console.log("see preview")
       setseePreviewBefore('Make sure to see preview before uploading image')
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg("Make sure to see preview before uploading image")
       return
     }
     if (seePreviewBefore !== '') {
-      console.log('see preview')
       setseePreviewBefore('Make sure to see preview before uploading image')
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg("Make sure to see preview before uploading image")
       return
     }
 
@@ -188,18 +198,21 @@ const EditProfile = ({
           setMyUserProfile(profileData);
         }
       }
-      navigate(`/profile/${userData?.$id}`)
+      navigate(`/profile/${userData?.$id}`);
       setseePreviewBefore('')
-      console.log("Profile Updated")
+      setNotificationPopMsgNature((prev) => true)
+      setnotificationPopMsg("Profile Updated");
+      setisUpdating((prev) => false)
     }
   };
+
   const addTag = (e) => {
     let tag = e.currentTarget.value.replace(/\s+/g, " ").toUpperCase();
     setInterestedTag(tag);
   };
 
   const addTags = () => {
-    console.log(interestedTag);
+    // console.log(interestedTag);
     if (
       interestedTagArr.includes(interestedTag) ||
       interestedTagArr.length === 10 ||
@@ -233,14 +246,7 @@ const EditProfile = ({
 
   const addLinks = async (e) => {
     if (!URL || !Title) return;
-    // try {
-    //   let res = await fetch(`${URL}`);
-    //   // console.log(res);
-    //   setURLerror("");
-    // } catch (error) {
-    //   setURLerror("Enter Valid URL");
-    //   return;
-    // }
+
 
     function isValidURL(URL) {
       // Regular expression for a valid URL
@@ -249,24 +255,28 @@ const EditProfile = ({
       // Test the provided URL against the regular expression
       return urlRegex.test(URL);
     }
-    if (isValidURL(URL)) {
-      console.log("Valid URL");
-    } else {
+
+    if (!isValidURL(URL)) {
       setURLerror("Enter Valid URL");
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "Enter Valid URL")
       return;
     }
 
     if (linksArr.length >= 15) {
       setURLerror("Maximum 15 Links Allowed");
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "Maximum 15 Links Allowed")
       return;
     }
 
     for (let i = 0; i < linksArr.length; i++) {
-      let obj = linksArr[i];
-      let objURL = obj.URL;
+      let objURL = JSON.parse(linksArr[i]).URL;
+
       if (URL === objURL) {
-        console.log("value is already there");
         setURLerror("Same URL not Allowed");
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg((prev) => "Same URL not Allowed")
         return;
       }
     }
@@ -282,13 +292,15 @@ const EditProfile = ({
     const file = e.currentTarget?.files[0];
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      console.log("Image Must be Less then and Equal to 1 MB ")
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")
       return
     }
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       setImageURL(reader.result);
       setseePreviewBefore('Make sure to see preview before uploading image')
+
     });
     reader.readAsDataURL(file);
 
@@ -747,7 +759,7 @@ const EditProfile = ({
                 id="EditProfile_submit_btn"
                 className="flex justify-center items-center"
               >
-                Update Profile
+                {`${isUpdating ? "Updating..." : 'Update Profile'}`}
                 <i className="fa-solid fa-file-arrow-up"></i>
               </Button>
             </div>

@@ -1,0 +1,36 @@
+
+.SecondLoader_loader {
+    width: 40px;
+    aspect-ratio: 1;
+    display: grid;
+    border: 4px solid #16BEF6;
+    border-radius: 50%;
+    border-color: black #16BEF6;
+    animation: l16 1s infinite linear;
+}
+
+.SecondLoader_loader::before,
+.SecondLoader_loader::after {
+    content: "";
+    grid-area: 1/1;
+    margin: 2px;
+    border: inherit;
+    border-radius: 50%;
+}
+
+.SecondLoader_loader::before {
+    border-color: #f03355 #0000;
+    animation: inherit;
+    animation-duration: .5s;
+    animation-direction: reverse;
+}
+
+.SecondLoader_loader::after {
+    margin: 8px;
+}
+
+@keyframes l16 {
+    100% {
+        transform: rotate(1turn)
+    }
+}

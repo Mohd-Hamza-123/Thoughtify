@@ -29,7 +29,7 @@
 
 .SideBar hr {
     height: 1px;
-    background-color: rgb(5, 5, 5);
+    background-color: rgba(0, 0, 0, 0.459);
     border: none;
 }
 
@@ -47,9 +47,37 @@
     height: 100vh;
     color: rgb(0, 0, 0);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-    
+
     background-color: whitesmoke;
     transition: transform 200ms ease-in-out;
 }
 
-.SideBarCross {}
+.SideBarItems:hover {
+    background-color: rgba(165, 165, 165, 0.267);
+}
+
+.SideBar_Day_Night_Mode {
+    /* border-top: 1px solid rgba(0, 0, 0, 0.459); */
+    padding-top: 10px;
+    gap: 5px;
+}
+
+.SideBar_Day_Night_Mode>div {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.44);
+}
+
+.SideBar_Day_Night_Mode>div:nth-child(1) {
+    background-color: black;
+    color: white;
+}
+
+.SideBar_Day_Night_Mode>div>i {
+    font-size: 25px;
+}

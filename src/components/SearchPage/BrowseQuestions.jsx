@@ -12,14 +12,13 @@ import { useAskContext } from '../../context/AskContext'
 
 const BrowseQuestions = () => {
   const { category, searchInput } = useParams()
-  // console.log(category)
-  // console.log(searchInput)
+
 
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
 
-  const [queries, setQueries] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  // console.log('IsLoading : ' + isLoading)
+ 
+
   let spinnerRef = useRef();
   const [lastPostID, setLastPostID] = useState(null)
   // console.log(lastPostID)
@@ -29,14 +28,16 @@ const BrowseQuestions = () => {
 
   // console.log('isIntersecting : ' + isIntersecting)
   const { hasMorePostsInBrowseQuestions,
-    sethasMorePostsInBrowseQuestions } = useAskContext()
+    sethasMorePostsInBrowseQuestions, queries, setQueries } = useAskContext();
   const [isPostAvailable, setisPostAvailable] = useState(true)
-
+  
+  // isSearching
+  const [isSearching, setisSearching] = useState(false)
   const submit = async (data) => {
-    console.log(data)
-    // return
+    // console.log(data)
+    setisSearching((prev) => true)
     sethasMorePostsInBrowseQuestions(true)
-    const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
+    const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data });
     // console.log(filteredQuestions)
     const isArray = Array.isArray(filteredQuestions)
 
@@ -50,21 +51,22 @@ const BrowseQuestions = () => {
       setIsLoading(true)
       setisPostAvailable(true)
       if (filteredQuestions.documents.length > 0) {
-        settotalFilteredQueries(filteredQuestions.total)
+        settotalFilteredQueries(filteredQuestions.total);
         setQueries((prev) => filteredQuestions.documents)
       } else {
         settotalFilteredQueries(0)
-        setQueries((prev) => [])
+        setQueries((prev) => []);
         setisPostAvailable(false)
       }
     }
+    setisSearching((prev) => false)
   }
 
   useEffect(() => {
     if (queries.length >= totalFilteredQueries) {
       setIsLoading(false)
       sethasMorePostsInBrowseQuestions(false)
-      setLastPostID((prev) => null)
+      setLastPostID((prev) => null);
     } else {
       setLastPostID((prev) => queries[queries.length - 1]?.$id)
       setIsLoading(true)
@@ -73,15 +75,13 @@ const BrowseQuestions = () => {
   }, [queries, isIntersecting, isLoading])
 
   useEffect(() => {
-    // console.log("bye")
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
       console.log(filteredQuestions)
       if (filteredQuestions.length !== 0) {
-        setQueries((prev) => [...prev, ...filteredQuestions.documents])
+        setQueries((prev) => [...prev, ...filteredQuestions.documents]);
       }
-
     }
 
     if (isIntersecting) {
@@ -110,10 +110,9 @@ const BrowseQuestions = () => {
   }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
 
   useEffect(() => {
-    // console.log(searchInput)
-    // console.log(category)
+
     if (category !== 'null') {
-      // console.log("hi")
+
       setValue("category", category);
       const data = getValues()
       // console.log(data)
@@ -124,7 +123,7 @@ const BrowseQuestions = () => {
       // console.log(data)
       submit(data)
     }
-  }, [searchInput])
+  }, [searchInput]);
   return (
     <div id='BrowseQuestions'>
       <UpperNavigationBar />
@@ -238,7 +237,7 @@ const BrowseQuestions = () => {
             </div>
           </div>
 
-          <Button type='Submit' className='BrowseQuestions_ApplyFilter'>Apply Filter</Button>
+          <Button type='Submit' className='BrowseQuestions_ApplyFilter'>{isSearching ? 'Searching...' : 'Apply Filter'}</Button>
           <input type='reset' onClick={() => {
             reset()
             sethasMorePostsInBrowseQuestions(false)

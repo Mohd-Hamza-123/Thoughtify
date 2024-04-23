@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { login as authLogin } from "../../store/authSlice";
 import QueryFlow from '../../assets/QueryFlow.png'
 import './Login.css'
+import goBack from '../../assets/goBack.png'
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -29,11 +30,15 @@ const Login = () => {
       setError(error.message);
     }
   };
-  
+
   return (
     <>
-   
+
       <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <section onClick={() => navigate("/")} className="GoToHomePageDiv">
+          <div><img src={goBack} alt="" /></div>
+          <span>Home</span>
+        </section>
         <div
           className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
         >
@@ -113,7 +118,7 @@ const Login = () => {
                 Sign in with Google
               </button>
             </div>
-         
+
 
           </div>
         </div>

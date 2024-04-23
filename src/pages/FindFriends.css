@@ -1,5 +1,4 @@
 #FindFriendsPage {
-    background-color: #F2F2F2 !important;
     width: 100vw;
     height: 100vh;
     overflow-x: hidden;
@@ -56,7 +55,6 @@
 }
 
 .FindFriendsPage_Main {
-    /* background-color: #F2F2F2; */
     font-family: 'Gabarito', sans-serif;
     display: flex;
     padding: 20px;
@@ -67,12 +65,10 @@
     height: 60vh;
     overflow-x: hidden;
     overflow-y: scroll;
-    /* border: 2px solid rgba(33, 247, 154, 0.788); */
 }
 
 .FindFriendsPage_Main section:nth-child(2) {
     width: 70%;
-    /* border: 2px solid rgb(30, 64, 255); */
     padding: 0px 15px;
 }
 
@@ -101,10 +97,15 @@
     background-color: white;
     padding: 15px 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    /* display: flex; */
     margin-top: 10px;
     gap: 15px;
 
+}
+
+.FindFriendsPage_ListFriends_Searched_Person.darkMode {
+    background-color: #131315;
+    color: white;
+    box-shadow: rgba(197, 197, 197, 0.509) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
 .FindFriendsPage_ListFriends_Searched_Person img {

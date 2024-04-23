@@ -15,8 +15,18 @@
     font-weight: lighter;
 }
 
+.HomeRight_Category.darkMode span {
+    background-color: rgb(18 18 18);
+    color: white !important;
+}
+
 .HomeRight_Category span:hover {
     background-color: rgb(199, 199, 199);
+}
+
+.HomeRight_Category.darkMode span:hover {
+    background-color: rgb(91, 89, 89);
+    color: white !important;
 }
 
 .HomeRight_Privacy {

@@ -29,17 +29,25 @@ export class Profile {
         }
     }
 
-    async updateEveryProfileAttribute({ profileID = null, following = null, blockedUsers = null, followers }) {
+    async updateEveryProfileAttribute({
+        profileID = null,
+        following = null,
+        blockedUsers = null,
+        followers = null,
+        othersCanFilterYourOpinions = null,
+        othersCanFilterYourPosts = null, othersSeeYourFollowers_Following = null,
+        whoCanMsgYou = null,
+    }) {
         let updateObj = {}
-        if (following) {
-            updateObj.following = following
-        }
-        if (blockedUsers) {
-            updateObj.blockedUsers = blockedUsers
-        }
-        if (followers) {
-            updateObj.followers = followers
-        }
+        if (following) updateObj.following = following
+        if (blockedUsers) updateObj.blockedUsers = blockedUsers
+        if (followers) updateObj.followers = followers
+
+        if (othersCanFilterYourOpinions || othersCanFilterYourOpinions === false) updateObj.othersCanFilterYourOpinions = othersCanFilterYourOpinions
+        if (othersCanFilterYourPosts || othersCanFilterYourPosts === false) updateObj.othersCanFilterYourPosts = othersCanFilterYourPosts
+        if (othersSeeYourFollowers_Following) updateObj.othersSeeYourFollowers_Following = othersSeeYourFollowers_Following
+        if (whoCanMsgYou) updateObj.whoCanMsgYou = whoCanMsgYou
+
         console.log(updateObj)
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
@@ -164,7 +172,7 @@ export class Profile {
             return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
         }
     }
-
+    
 }
 
 const profile = new Profile()

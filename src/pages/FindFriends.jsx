@@ -7,32 +7,43 @@ import profile from '../appwrite/profile'
 import { useSelector, useDispatch } from 'react-redux'
 import './FindFriends.css'
 import { getOtherUserProfile } from '../store/usersProfileSlice'
+import { useAskContext } from '../context/AskContext'
 
 const FindFriends = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [searchValue, setsearchValue] = useState('')
+  const [isSearching, setisSearching] = useState(false)
   const userData = useSelector((state) => state.auth.userData)
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
-  console.log(othersUserProfile)
+  const { notificationPopMsg, setnotificationPopMsg,
+    notificationPopMsgNature, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
   const [searchedPerson, setsearchedPerson] = useState(null);
 
   const { handleSubmit, reset, register } = useForm();
   const submit = async (data) => {
+    setisSearching((prev) => true);
     try {
-      const GettingName = await profile.listProfile({ name: data.searchValue })
+      const GettingName = await profile.listProfile({ name: data.searchValue });
+      console.log(GettingName);
+      if (GettingName?.documents.length === 0) {
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg((prev) => 'No Users Found');
+        setisSearching((prev) => false)
+        return
+      }
       setsearchedPerson(GettingName?.documents[0]);
       if (GettingName?.documents[0].userIdAuth !== userData.$id) {
         dispatch(getOtherUserProfile({ userProfileArr: [GettingName?.documents[0]] }))
       }
-
       reset()
     } catch (error) {
       console.log(error)
     }
+    setisSearching((prev) => false)
   }
-  const nav = () => {
-    navigate(`/profile/${searchedPerson?.userIDAuth}`);
+  const nav = (slug) => {
+    console.log(slug)
+    navigate(slug);
   }
 
   return (
@@ -43,10 +54,10 @@ const FindFriends = () => {
         <LowerNavigationBar />
         <HorizontalLine />
       </header>
-      <h3 className='FindFirendsPage_Heading text-center'>Explore New Connections </h3>
+      <h3 className={`FindFirendsPage_Heading text-center ${isDarkModeOn ? "text-white" : 'text-black'}`}>Explore New Connections </h3>
       <main className='FindFriendsPage_Main'>
-        <section>
-          <p>Suggestions</p>
+        <section className='p-3'>
+          <p className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>Suggestions</p>
           <div>
             {othersUserProfile?.map((profile) => (
               <div key={profile?.$id} onClick={() => navigate(`/profile/${profile?.userIdAuth}`)} className='FindFriendsPage_ListFriends cursor-pointer'>
@@ -76,10 +87,10 @@ const FindFriends = () => {
           </div>
 
           <div>
+            {isSearching && <div className={`flex justify-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Searching...</div>}
+            {(searchedPerson && !isSearching) && <div className={`cursor-pointer FindFriends_Profile_Details ${isDarkModeOn ? 'darkMode' : ''}`} onClick={() => nav(`/profile/${searchedPerson?.userIdAuth}`)}>
 
-            {searchedPerson && <div className='cursor-pointer' onClick={nav}>
-
-              <div className='FindFriendsPage_ListFriends_Searched_Person'>
+              <div className={`FindFriendsPage_ListFriends_Searched_Person ${isDarkModeOn ? 'darkMode' : ''}`}>
                 <div className='flex gap-3 items-center'>
                   <div><img src={searchedPerson?.profileImgURL || NoProfile} /></div>
                   <p>{searchedPerson?.name}</p>

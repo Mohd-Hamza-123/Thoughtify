@@ -6,13 +6,19 @@
     width: 100%;
     height: 210px;
     padding: 5px 14px 5px 5px;
-    border-radius: 2px;
+    border-radius: 10px;
     text-align: left;
     overflow: hidden;
     background-color: rgba(255, 255, 255, 0.842);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.1) inset;
+    transition: background-color 1s ease;
 }
 
+#PostCard.darkMode {
+    background-color: #131315;
+    box-shadow: rgba(197, 197, 197, 0.509) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    color: white;
+}
 
 #PostCard_left {
     display: flex;
@@ -32,22 +38,25 @@
 #PostCard_title {
     margin-top: 2px;
     font-size: 19px;
-    /* border: 1px solid black; */
     overflow: hidden;
     font-weight: bolder;
     color: rgb(62, 62, 62);
-    /* border-radius: 5px; */
-    /* line-height: 25px; */
     padding: 6px 5px;
     letter-spacing: 0.4px;
     font-family: 'Gabarito', sans-serif;
-    /* word-break: break-all;
-    word-wrap: break-word; */
-    height:98px;
+    height: 98px;
+}
+
+#PostCard_title.darkMode {
+    color: rgb(224, 224, 224);
 }
 
 #PostCard_title:hover {
     color: #11161a;
+}
+
+#PostCard_title.darkMode:hover {
+    color: white;
 }
 
 #Post-Card-img {
@@ -63,7 +72,6 @@
 }
 
 #PostCard-profile-name {
-    color: black;
     font-family: 'Gabarito', sans-serif;
 }
 
@@ -92,11 +100,13 @@
 .PostCard_Views i {
     margin-top: 3px;
 }
-#PostCard_Comments_Icon{
+
+#PostCard_Comments_Icon {
     /* margin-bottom: 10px; */
     /* border: 2px solid red; */
 
 }
+
 #PostCard_Comments_Icon i {
     font-size: 30px;
     position: relative;
@@ -120,12 +130,11 @@
 }
 
 #PostCard_MaleComments_p {
-    color: rgb(0, 0, 0);
     font-weight: 500;
     font-size: 14px;
 }
 
-#PostCard_FemaleComments {
+/* #PostCard_FemaleComments {
     fill: rgb(212, 1, 245);
     height: 20px;
 }
@@ -133,7 +142,7 @@
 #PostCard_FemaleComments_p {
     color: rgb(212, 1, 245);
     font-weight: 500;
-}
+} */
 
 #PostCard_Comments_Icon i p {
     position: absolute;
@@ -144,4 +153,10 @@
     font-size: 12px;
 }
 
+#PostCard_Comments_Icon svg {
+    fill: black;
+}
 
+#PostCard_Comments_Icon svg.darkMode {
+    fill: white;
+}

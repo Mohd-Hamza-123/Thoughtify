@@ -11,7 +11,7 @@ import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
 import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
-import googlelogin from '../../assets/googlelogin.jpg'
+import goBack from '../../assets/goBack.png'
 const Signup = () => {
   const { myUserProfile, setMyUserProfile } = useAskContext()
   const authRateLimit =
@@ -68,7 +68,10 @@ const Signup = () => {
   return (
 
     <div id="Signup_container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-
+      <div onClick={() => navigate("/")} className="GoToHomePageDiv">
+        <div><img src={goBack} alt="" /></div>
+        <span>Home</span>
+      </div>
       <div
         id="Signup"
         className={`flex items-center justify-center flex-col mx-auto rounded-lg`}
@@ -165,7 +168,7 @@ const Signup = () => {
               </button>
             </div>
 
-          
+
           </div>
         </div>
       </div>

@@ -5,14 +5,21 @@
     /* border: 2px solid red; */
 }
 
+#Home.darkMode {
+    /* background-color: #131315; */
+}
+
 .Home_Nav_Container {
     height: 115px;
     position: fixed;
     top: 0px;
     z-index: 5;
-    background-color: #FFFFFF;
-    transition: all 0.3s ease-in-out;
-    left: 0;
+    transition: all 0.3s ease-in-out, background-color 1s ease;
+
+}
+
+.Home_Nav_Container.darkMode {
+    background-color: rgb(29, 28, 28);
 }
 
 .Home_Nav_Container.active {
@@ -21,6 +28,11 @@
 
 #Home_RIGHT_LEFT {
     margin-top: 120px;
+    transition: background-color 0.2s ease;
+}
+
+#Home_RIGHT_LEFT.darkMode {
+    /* background-color: #202021; */
 }
 
 #MainHome_loader {
@@ -114,4 +126,23 @@
     100% {
         transform: rotate(-360deg);
     }
+}
+
+.Reload_Page_Btn {
+    margin-left: 15px;
+    background-color: var(--secondryBlue);
+    border-radius: 100px;
+    box-shadow: rgba(44, 187, 182, 0.2) 0 -25px 18px -14px inset, rgba(44, 177, 187, 0.15) 0 1px 2px, rgba(48, 172, 225, 0.15) 0 2px 4px, rgba(44, 180, 187, 0.15) 0 4px 8px, rgba(44, 146, 187, 0.15) 0 8px 16px, rgba(44, 151, 187, 0.15) 0 16px 32px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    display: inline-block;
+    padding: 7px 20px;
+    text-align: center;
+    text-decoration: none;
+    border: 0;
+    font-weight: 500;
+    font-size: 16px;
+    -moz-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }

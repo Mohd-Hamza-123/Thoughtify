@@ -367,8 +367,14 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    border-radius: 5px;
     background-color: var(--secondryBlue);
-    /* box-shadow: 0 0 20px 10px var(--secondryBlue); */
+    transform: scale(1);
+    transition: transform 0.2s ease-in;
+}
+
+#EditProfile_submit_btn:active {
+    transform: scale(1.3);
 }
 
 #EditProfile_submit_btn i {

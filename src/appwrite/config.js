@@ -78,6 +78,9 @@ export class Service {
         }
     }
     async updatePost_Like_DisLike({ postId, like, dislike }) {
+        // console.log(like)
+        if (like === -1) return
+        if (dislike === -1) return
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
                 like,
@@ -225,6 +228,15 @@ export class Service {
         return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
     }
 
+    // update post in realtime
+
+    async postRealTime() {
+        let res = null
+        const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteProfileCollectionId}.documents.${slug}`, (response) => {
+            console.log(response)
+        })
+
+    }
 }
 
 const appwriteService = new Service()

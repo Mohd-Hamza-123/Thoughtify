@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 const LowerNavigationBar = () => {
   const UserAuthStatus = useSelector((state) => state.auth.status)
   // console.log(UserAuthStatus)
-  const { setisAskQueVisible, isAskQueVisible, isOpen } = useAskContext();
+  const { setisAskQueVisible, isAskQueVisible, isOpen, isDarkModeOn } = useAskContext();
   const navigate = useNavigate();
 
   const arr = [
@@ -37,7 +37,7 @@ const LowerNavigationBar = () => {
     <>
       <nav
         id="LowerNavigationBar"
-        className={`lower_Nav flex ${isOpen ? "lightdark" : ""}`}
+        className={`lower_Nav flex ${isOpen ? "lightdark" : ""} ${isDarkModeOn ? "darkMode" : ""}`}
       >
         <ul className="flex justify-around w-full">
           {arr?.map((nav) => (

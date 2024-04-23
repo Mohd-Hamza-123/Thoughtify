@@ -109,8 +109,8 @@ const Questions = ({ visitedProfileUserID }) => {
       appwriteService
         .getPosts()
         .then((res) => {
-          settotalNumberofPosts((prev) => res.total)
-          dispatch(getTotalPostByMe({ totalPostsbyMe: res.total }))
+          settotalNumberofPosts((prev) => res?.total)
+          dispatch(getTotalPostByMe({ totalPostsbyMe: res?.total }))
         })
     } else {
       settotalNumberofPosts((prev) => TotalPostByMe)

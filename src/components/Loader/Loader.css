@@ -1,31 +1,109 @@
 /* HTML: <div class="loader"></div> */
-.LoaderPage{
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.LoaderPage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
+  justify-content: center;
 }
-.loader {
-    width: 20px;
-    aspect-ratio: 1;
-    animation: l13-0 2s linear infinite;
+
+.LoaderPage img {
+  height: 160px;
+  filter: brightness(200%);
+  animation: scaleAnimation 2s alternate;
+  transform: scale(1.1);
+}
+
+@keyframes scaleAnimation {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
   }
-  .loader::before,
-  .loader::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(at 30% 30%,#0000,#000a) #16BEF6;
-    animation: l13-1 0.5s cubic-bezier(.5,-500,.5,500) infinite;
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
   }
-  .loader::after {
-    animation-delay: -0.15s;
+
+  100% {
+    transform: scale(1.1);
+    opacity: 1;
   }
-  @keyframes l13-0 { 
-    100% { transform:rotate(360deg)} 
+}
+
+
+
+.LoaderPage h1 {
+  text-align: center;
+  color: rgb(47, 47, 47);
+  font-size: 28px;
+  margin-top: 10px;
+  font-family: 'Gabarito', sans-serif;
+}
+
+.LoaderPage_loader {
+  width: 18px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #00CAFF;
+  animation: l10 1.5s infinite linear;
+}
+
+@keyframes l10 {
+  0% {
+    box-shadow:
+      0 -30px red, calc(30px*0.707) calc(-30px*0.707) black, 30px 0 red, 0 0 black,
+      0 0 red, 0 0 black, 0 0 red, 0 0 black
   }
-  @keyframes l13-1 { 
-    100% { transform:translate(0.5px)} 
+
+  12.5% {
+    box-shadow:
+      0 0 red, calc(30px*0.707) calc(-30px*0.707) black, 30px 0 red, calc(30px*0.707) calc(30px*0.707) black,
+      0 0 red, 0 0 black, 0 0 red, 0 0 black
   }
+
+  25% {
+    box-shadow:
+      0 0 red, 0 0 black, 30px 0 red, calc(30px*0.707) calc(30px*0.707) black,
+      0 30px red, 0 0 black, 0 0 red, 0 0 black
+  }
+
+  37.5% {
+    box-shadow:
+      0 0 red, 0 0 black, 0 0 red, calc(30px*0.707) calc(30px*0.707) black,
+      0 30px red, calc(-30px*0.707) calc(30px*0.707) black, 0 0 red, 0 0 black
+  }
+
+  50% {
+    box-shadow:
+      0 0 red, 0 0 black, 0 0 red, 0 0 black,
+      0 30px red, calc(-30px*0.707) calc(30px*0.707) black, -30px 0 red, 0 0 black
+  }
+
+  62.5% {
+    box-shadow:
+      0 0 red, 0 0 black, 0 0 red, 0 0 black,
+      0 0 red, calc(-30px*0.707) calc(30px*0.707) black, -30px 0 red, calc(-30px*0.707) calc(-30px*0.707) black
+  }
+
+  75% {
+    box-shadow:
+      0 -30px red, 0 0 black, 0 0 red, 0 0 black,
+      0 0 red, 0 0 black, -30px 0 red, calc(-30px*0.707) calc(-30px*0.707) black
+  }
+
+  87.5% {
+    box-shadow:
+      0 -30px red, calc(30px*0.707) calc(-30px*0.707) black, 0 0 red, 0 0 black,
+      0 0 red, 0 0 black, 0 0 red, calc(-30px*0.707) calc(-30px*0.707) black
+  }
+
+  100% {
+    box-shadow:
+      0 -30px red, calc(30px*0.707) calc(-30px*0.707) black, 30px 0 red, 0 0 black,
+      0 0 red, 0 0 black, 0 0 red, 0 0 black
+  }
+
+}

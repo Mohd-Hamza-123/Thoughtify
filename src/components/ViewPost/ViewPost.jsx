@@ -14,36 +14,46 @@ import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice
 import realTime from "../../appwrite/realTime";
 import { getCommentsInRedux } from "../../store/commentsSlice";
 import notification from "../../appwrite/notification";
+import conf from "../../conf/conf";
+import { Client } from "appwrite";
 
 const ViewPost = () => {
-  //Data from Redux
-  const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
-  const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
-  // console.log(commentsInRedux)
-  // const AllVisitedQuestions = useSelector((state) => state.viewPostsSlice.questions)
-
-  const userData = useSelector((state) => state.auth.userData);
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts);
-  const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
-  // console.log(initialPost)
-  const { myUserProfile,
-    setMyUserProfile } = useAskContext()
-  // console.log(myUserProfile)
-  const [isBookMarked, setIsBookMarked] = useState(false)
+  let client = new Client()
+    .setEndpoint(conf.appwriteURL)
+    .setProject(conf.appwriteProjectId)
 
 
+  const [post, setPost] = useState(null);
+  // console.log(post)
   const dispatch = useDispatch()
   const { slug, filterCommentID } = useParams();
-  // console.log(filterCommentID)
   const navigate = useNavigate();
-
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
 
-  const [profileImgURL, setprofileImgURL] = useState('')
-  const [post, setPost] = useState(null);
-  // console.log(post)
+
+  //Data from Redux
+  const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
+  const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
+  const userData = useSelector((state) => state.auth.userData);
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts);
+  const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
+
+  const { myUserProfile,
+    setMyUserProfile,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature
+  } = useAskContext()
+
+  // console.log(myUserProfile)
   const isAuther = post && userData ? post.userId === userData.$id : false;
+  // console.log(myUserProfile)
+  const [isBookMarked, setIsBookMarked] = useState(false)
+
+  const [profileImgURL, setprofileImgURL] = useState('')
+
+  // console.log(post)
+
   // useState for views,comments,date
   const [postdate, setpostdate] = useState('')
   const [postViews, setpostViews] = useState(0)
@@ -52,15 +62,20 @@ const ViewPost = () => {
   const [totalPollVotes, setTotalPollVotes] = useState(0)
   const [pollVotersAuthIDsAndVote, setpollVotersAuthIDsAndVote] = useState([])
   const [isPollOpinionVisible, setIsPollOpinionVisible] = useState(false)
+  const [filteredComment, setfilteredComment] = useState(null)
+
+  // update UI for Pole Percentage
+  const [selectedIndex, setselectedIndex] = useState(0)
+  // update LikeDislike UI
+  const [Like_Dislike, setLike_Dislike] = useState(null)
+  const [likeCount, setlikeCount] = useState(0);
+  const [disLikeCount, setdisLikeCount] = useState(0)
+
 
   const navigateToRelatedPost = (postId) => {
 
     navigate(`/post/${postId}/${null}`);
   }
-  // Filter Comment in ViewPost
-  const [filteredComment, setfilteredComment] = useState(null)
-  // console.log(filteredComment)
-
   const deleteComments = async (documentid) => {
     // return
     realTime
@@ -98,9 +113,7 @@ const ViewPost = () => {
     }
   }, [filterCommentID])
 
-
   useEffect(() => {
-    // console.log("hi")
     if ((initialPost.some(obj => obj.$id === slug)) === false) {
       appwriteService
         .getPost(slug)
@@ -121,19 +134,18 @@ const ViewPost = () => {
     }
   }, [slug, initialPost]);
 
+
   useEffect(() => {
-    // console.log("Hi")
+
     if (post) {
-      // console.log(post.userId)
       const ProfileURLIndex = postProfilesPic.findIndex((obj) => (
         obj.userId === post.userId
       ))
-      // console.log(ProfileURLIndex)
       setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic)
     }
   }, [post])
   useEffect(() => {
-    // console.log(post)
+    // console.log(post);
     if (post) {
       setTotalPollVotes((prev) => post.totalPollVotes)
       setpollVotersAuthIDsAndVote((prev) => {
@@ -149,25 +161,68 @@ const ViewPost = () => {
   }, [post])
   // UseEffect For bookMark
   useEffect(() => {
-    // console.log(myUserProfile.bookmarks)
-    if ((myUserProfile.bookmarks).includes(post?.$id)) {
-      setIsBookMarked(true)
-      // console.log("kya")
+    if ((myUserProfile?.bookmarks)?.includes(post?.$id)) {
+      setIsBookMarked(true);
     } else {
-      setIsBookMarked(false)
-      // console.log("hua")
+      setIsBookMarked(false);
     }
-  }, [post])
-  // UseEffect For bookMark
 
+    if (post) {
+      if (post?.pollVotersID.length === 0) {
+        setselectedIndex((prev) => null)
+      } else {
+        let parseArr = post?.pollVotersID?.map((obj) => JSON.parse(obj));
+        let myPollIndex = parseArr?.filter((obj) => obj?.pollVoterID === userData?.$id);
+        if (myPollIndex?.length === 0) {
+          setselectedIndex(null)
+        } else {
+          setselectedIndex((prev) => myPollIndex[0]?.optionNum)
+        }
+
+      }
+
+      setlikeCount((prev) => post?.like)
+      setdisLikeCount((prev) => post?.dislike)
+    }
+
+    if (post === undefined) {
+      let postObject = initialPost.find(obj => obj.$id === slug)
+      setPost((prev) => postObject)
+    }
+  }, [post]);
+  // UseEffect For bookMark
   useEffect(() => {
-    // console.log("Hamza")
-    if (myUserProfile.bookmarks.includes(post?.$id)) {
+
+    if (myUserProfile?.bookmarks?.includes(post?.$id)) {
       setIsBookMarked(true)
     } else {
       setIsBookMarked(false)
+    }
+
+    if (myUserProfile) {
+      if (myUserProfile?.likedQuestions.includes(slug)) {
+        setLike_Dislike((prev) => "liked")
+      } else if (myUserProfile?.dislikedQuestions.includes(slug)) {
+        setLike_Dislike((prev) => 'disliked')
+      }
+      else {
+        setLike_Dislike((prev) => 'none')
+      }
     }
   }, [myUserProfile])
+
+  // Update Post in RealTime
+  useEffect(() => {
+    const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteCollectionId}.documents.${slug}`, (response) => {
+      // console.log(response)
+      if (response.events.includes("databases.*.collections.*.documents.*.update")) {
+        // console.log("Document updated");
+        setPost((prev) => response?.payload)
+      }
+    })
+
+    return () => realtime()
+  }, [])
 
   const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
   const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
@@ -207,11 +262,18 @@ const ViewPost = () => {
     appwriteService
       .deletePost(post.$id)
       .then(() => {
+        setNotificationPopMsgNature((prev) => true);
+        setnotificationPopMsg((prev) => 'Post Deleted');
+
         const newInitialPost = initialPost?.filter((prevPosts) => prevPosts?.$id !== post?.$id)
         dispatch(getInitialPost({ initialPosts: [...newInitialPost], initialPostsFlag: false }));
 
         const newRespondersPost = initialTrustedPosts?.filter((prevPosts) => prevPosts?.$id !== post?.$id);
         dispatch(getResponderInitialPosts({ initialResponderPosts: [...newRespondersPost], initialPostsFlag: false }));
+      })
+      .catch(() => {
+        setNotificationPopMsgNature((prev) => false);
+        setnotificationPopMsg((prev) => 'Post is not Deleted');
       })
     navigate("/");
   };
@@ -222,7 +284,7 @@ const ViewPost = () => {
     }
   }
   const updatePoll = async (postId, index, option, vote, pollVoterID) => {
-    console.log(post)
+    // console.log(post)
     let totalPollVotes = post.totalPollVotes;
     let pollOptions = post.pollOptions.map(obj => JSON.parse(obj));
     let pollVotersID = [...post.pollVotersID].map((obj) => JSON.parse(obj))
@@ -267,8 +329,7 @@ const ViewPost = () => {
         // console.log("Ye to koi aur selected option hai")
       }
     }
-    // console.log(pollVotersID)
-    console.log(pollOptions)
+
 
     for (let i = 0; i < pollOptions.length; i++) {
       // console.log(pollOptions[i])
@@ -281,7 +342,7 @@ const ViewPost = () => {
     // console.log(pollOptions)
     // return
     const update = await appwriteService.updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID })
-    console.log(update)
+    // console.log(update)
     setPost((prev) => update)
     dispatch(getAllVisitedQuestionsInViewPost({ questions: update }))
     setTotalPollVotes((prev) => update.totalPollVotes)
@@ -324,8 +385,6 @@ const ViewPost = () => {
             dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseLike }))
             setPost((prev) => increaseLike)
 
-
-
             //Update In Profile
             let likedQuestions = [...likedQuestionsInContext]
             likedQuestions.push(post?.$id)
@@ -352,8 +411,22 @@ const ViewPost = () => {
           }
 
           try {
-            const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId });
-            console.log(createNotification)
+
+            if (userData?.$id !== post?.userId) {
+              // Getting Post Uploader profile to know whether he follows you or not.
+              const getPostUploaderProfile = await profile?.listProfile({ slug: post?.userId });
+
+              let followersArr = getPostUploaderProfile?.documents[0]?.followers
+              followersArr = followersArr?.map((obj) => JSON.parse(obj))
+              // console.log(followersArr)
+              const isNotificationSend = followersArr?.findIndex((profile) => profile?.profileID === userData?.$id);
+
+              // console.log(isNotificationSend)
+              if (isNotificationSend !== -1) {
+                const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId, userProfilePic: myUserProfile?.profileImgURL });
+                console.log(createNotification)
+              }
+            }
           } catch (error) {
             console.log(error)
           }
@@ -437,7 +510,7 @@ const ViewPost = () => {
   const lastScrollY = useRef(window.scrollY);
 
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
-  // console.log(isNavbarHidden)
+
   const handleScroll = (e) => {
     // console.log('Hi')
     let position = e.target.scrollTop;
@@ -453,6 +526,22 @@ const ViewPost = () => {
     }
     // setlastScrollY(position)
     lastScrollY.current = position
+  }
+  const deletePostComments = async () => {
+    try {
+      const listComments = await realTime.listComment(post?.$id);
+      console.log(listComments)
+      let totalCommentsToDelete = listComments?.total;
+      while (totalCommentsToDelete > 0) {
+        const listComments = await realTime.listComment(post?.$id);
+        totalCommentsToDelete = listComments?.total;
+        for (let i = 0; i < listComments?.documents?.length; i++) {
+          realTime.deleteComment(listComments.documents[i].$id)
+        }
+      }
+    } catch (error) {
+      console.log("Comments Can't be deleted")
+    }
   }
 
   useEffect(() => {
@@ -539,6 +628,7 @@ const ViewPost = () => {
                               onClick={() => {
                                 deletePost();
                                 deleteThumbnail();
+                                deletePostComments();
                               }}
                             >
                               <i className="fa-solid fa-trash"></i>
@@ -566,7 +656,10 @@ const ViewPost = () => {
 
             </div>
             <div id="ViewPost-Question" className="mt-3">
-              <div className="flex gap-2 items-center">
+
+              <div onClick={() => {
+                navigate(`/profile/${post?.userId}`)
+              }} className="flex gap-2 items-center cursor-pointer">
                 <div className="rounded-full">
                   <img
                     src={`${profileImgURL ? profileImgURL : NoProfile}`}
@@ -575,25 +668,25 @@ const ViewPost = () => {
                   />
                 </div>
                 <div id='ViewPostName'>
-                  <h5>{post.name}</h5>
+                  <h5>{post?.name}</h5>
                 </div>
               </div>
 
               <div className="mt-3 mb-2">
                 <h2 id="ViewPost-Title" className="text-3xl font-bold">
-                  {post.title}
+                  {post?.title}
                 </h2>
               </div>
 
               <div id="ViewPost-parse">{parse(post?.content)}</div>
 
-              {post.pollQuestion && <div id="ViewPost_Poll_Div">
+              {post?.pollQuestion && <div id="ViewPost_Poll_Div">
                 <h5>Poll </h5>
-                <p>{post.pollQuestion}</p>
+                <p>{post?.pollQuestion}</p>
                 <ul>
-                  {post.pollOptions?.map((option, index) => {
+                  {post?.pollOptions?.map((option, index) => {
                     // console.log(option)
-                    let selectedOption;
+
                     let parsedOption = JSON.parse(option).option
                     // console.log(parsedOption)
                     let parsedVote = JSON.parse(option).vote
@@ -602,15 +695,8 @@ const ViewPost = () => {
                     // console.log(individualPollVote)
                     let VoterIDandVote = pollVotersAuthIDsAndVote.map((obj) => JSON.parse(obj))
 
-                    if (VoterIDandVote.length === 0) {
-                      selectedOption = -1
-                    } else {
-                      selectedOption = VoterIDandVote[0].optionNum
-                      // console.log(selectedOption)
-                    }
-                    // console.log(x)
-                    // console.log(pollVotersAuthIDsAndVote)
 
+                    // console.log(selectedOption)
                     let percentage = (individualPollVote / totalPollVotes) * 100;
                     percentage = percentage.toFixed(0)
                     if (isNaN(percentage)) {
@@ -618,16 +704,29 @@ const ViewPost = () => {
                     }
                     // console.log(percentage)
 
-                    return <li onClick={() => updatePoll(post.$id, index, parsedOption, parsedVote, userData.$id)} key={parsedOption}>
+                    return <li className={`${index === selectedIndex ? "active" : ''} cursor-pointer`} onClick={() => {
+
+                      updatePoll(post.$id, index, parsedOption, parsedVote, userData.$id)
+
+                      setselectedIndex((prev) => index)
+
+                    }} key={parsedOption}>
                       <div id="ViewPost_Poll_Option">{parsedOption}</div>
-                      <div id="ViewPost_Overlay_Poll" className={`${index === selectedOption ? "active" : ''}`}>{percentage}%</div>
+                      <div id="ViewPost_Overlay_Poll" >
+                        {percentage}%
+                      </div>
+                      <div style={{
+                        width: `${percentage}%`
+                      }} className={`${index === selectedIndex ? `PollPercentageMeter active` : 'PollPercentageMeter'}`}>
+
+                      </div>
                     </li>
                   })}
                 </ul>
 
 
                 {isPollOpinionVisible && <div id="ViewPost_Poll_Answer">
-                  <span>{post.pollAnswer}</span>
+                  <span>{post?.pollAnswer}</span>
                 </div>}
                 <div className="flex gap-3 ViewPost_Total_Poll_Votes">
                   <span>Total Votes :</span>
@@ -639,21 +738,62 @@ const ViewPost = () => {
           </div>
 
           <section id="ViewPost_Like_Dislike_BookMark">
-            <div onClick={() => like_dislike_BookMark('Like')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+            <div onClick={() => {
+              like_dislike_BookMark('Like')
+              setLike_Dislike((prev) => 'liked');
+              if (myUserProfile?.likedQuestions?.includes(slug)) {
+                setlikeCount((prev) => {
+                  if (prev === 0) return prev
+                  return prev - 1
+                });
+              } else {
+                setlikeCount((prev) => prev + 1);
+                if (myUserProfile?.dislikedQuestions?.includes(slug)) {
+                  setdisLikeCount((prev) => {
+                    if (prev === 0) return prev
+                    return prev - 1
+                  })
+                }
+              }
+
+
+            }} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
               <Button>
-                <span>{post?.like}</span>
-                <i className="fa-solid fa-thumbs-up"></i>
+                <span>{likeCount}</span>
+                <i className={`fa-${Like_Dislike === 'liked' ? 'solid' : 'regular'} fa-thumbs-up`}></i>
               </Button>
             </div>
 
-            <div onClick={() => like_dislike_BookMark('Dislike')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+            <div onClick={() => {
+              like_dislike_BookMark('Dislike')
+              setLike_Dislike((prev) => 'disliked');
+              if (myUserProfile?.dislikedQuestions?.includes(slug)) {
+                setdisLikeCount((prev) => {
+                  if (prev === 0) return prev
+                  return prev - 1
+                })
+              } else {
+                setdisLikeCount((prev) => prev + 1);
+
+                if (myUserProfile?.likedQuestions?.includes(slug)) {
+                  setlikeCount((prev) => {
+                    if (prev === 0) return prev
+                    return prev - 1
+                  })
+                }
+              }
+
+            }} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
               <Button>
-                <span>{post?.dislike}</span>
-                <i className="fa-solid fa-thumbs-down"></i>
+                <span>{disLikeCount}</span>
+                <i className={`fa-${Like_Dislike === 'disliked' ? 'solid' : 'regular'} fa-thumbs-down`}></i>
               </Button>
             </div>
 
-            <div onClick={() => like_dislike_BookMark('BooKMark')} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
+            <div onClick={() => {
+              like_dislike_BookMark('BooKMark');
+              setIsBookMarked((prev) => !prev)
+            }} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
               <Button><i className={`fa-${isBookMarked ? 'solid' : 'regular'} fa-bookmark`}></i></Button>
             </div>
 
@@ -680,7 +820,7 @@ const ViewPost = () => {
             <div>
               <div className="flex justify-between ViewPost_Filtered_Comments_Name_Delete">
                 <p>{filteredComment?.name}</p>
-                {filteredComment.authid === userData.$id && <i onClick={() => {
+                {filteredComment?.authid === userData?.$id && <i onClick={() => {
                   deleteComments(filterCommentID)
                 }} className="fa-solid fa-trash cursor-pointer"></i>}
               </div>
@@ -693,7 +833,6 @@ const ViewPost = () => {
       </div>
     </div >
   ) : <div className="">
-
     <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
       <UpperNavigationBar className='' />
       <HorizontalLine />

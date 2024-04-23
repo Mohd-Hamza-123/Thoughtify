@@ -22,9 +22,10 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
-  const postUploaderPics = useSelector((state) => state.postsSlice.postUploaderProfilePic)
+  const postUploaderPics = useSelector((state) => state.postsSlice.postUploaderProfilePic);
 
-  // console.log(commentsInRedux)
+
+
 
   // load subcomments
   const fixedReplies = 2;
@@ -40,12 +41,12 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   // console.clear()
   // console.log(commentArr)
   const [replyComment, setreplyComment] = useState("");
-  const { $id: authid, name } = useSelector((state) => state.auth.userData)
-  const { register, watch, control, handleSubmit, setValue, getValues, reset } =
+  const { $id: authid, name } = useSelector((state) => state.auth?.userData || {});
+  const { control, handleSubmit, getValues } =
     useForm();
   // intersection observer
   const [isLoading, setIsLoading] = useState(false)
-  const { hasMoreComments, sethasMoreComments } = useAskContext()
+  const { hasMoreComments, sethasMoreComments, setnotificationPopMsg, setNotificationPopMsgNature, myUserProfile } = useAskContext()
   const [isIntersecting, setIsIntersecting] = useState(false)
   const [lastPostID, setLastPostID] = useState(null);
   // console.log(lastPostID)
@@ -161,51 +162,80 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
 
 
   const Submit = async (data) => {
-    clearEditorContent()
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Adding 
-    const day = ('0' + currentDate.getDate()).slice(-2);
-    const formattedDate = `${year}-${month}-${day}`;
 
-
-
+    clearEditorContent();
     if (!data.commentContent) return
     if (post) {
-      const dbCommnet = await realTime.createComment({
-        ...data,
-        postid,
-        authid,
-        name,
-        category: post?.category,
-        date: formattedDate,
-      });
-      // setcommentArr((prev) => [dbCommnet, ...prev]);
-      dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
 
-      const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authid, postID: post.$id, userIDofReceiver: post?.userId });
-      console.log(createNotification)
-    }
+      if (post?.opinionsFrom === 'Responders' && myUserProfile?.trustedResponder !== true) {
+        setNotificationPopMsgNature((prev) => false);
+        setnotificationPopMsg((prev) => 'Only Responders can Comment on this post.')
+        return
+      }
 
-    if (postCommentCount || postCommentCount === 0) {
-      console.log("PostCommentCount A")
-      appwriteService.updatePostViews(postid, post.views, postCommentCount + 1)
-        .then((res) => {
-          setpostCommentCount((prev) => prev + 1)
-          console.log(res)
-          dispatch(getInitialPost({ initialPosts: [res] }))
-        })
-        .catch((error) => console.log(error))
-    } else {
-      console.log("PostCommentCount B")
-      appwriteService.updatePostViews(postid, post.views, post.commentCount + 1)
-        .then((res) => {
-          setpostCommentCount((prev) => post.commentCount + 1)
-          console.log(res)
-          // dispatch(getAllVisitedQuestionsInViewPost({ questions: res }))
-          dispatch(getInitialPost({ initialPosts: [res] }))
-        })
-        .catch((error) => console.log(error))
+      const currentDate = new Date();
+      const year = currentDate.getFullYear();
+      const month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
+      const day = ('0' + currentDate.getDate()).slice(-2);
+      const formattedDate = `${year}-${month}-${day}`;
+
+      try {
+        const dbCommnet = await realTime.createComment({
+          ...data,
+          postid,
+          authid,
+          name,
+          category: post?.category,
+          date: formattedDate,
+        });
+
+        dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
+
+        setNotificationPopMsgNature((prev) => true)
+        setnotificationPopMsg((prev) => 'Comment Posted')
+
+        if (authid !== post?.userId) {
+          // Getting Post Uploader profile to know whether he follows you or not.
+          const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
+
+          console.log(getPostUploaderProfile);
+          let followersArr = getPostUploaderProfile.documents[0].followers
+          followersArr = followersArr?.map((obj) => JSON.parse(obj))
+          console.log(followersArr)
+          const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authid);
+
+          // console.log(isNotificationSend)
+          // If He follows you , notification will be sent
+          if (isNotificationSend !== -1) {
+            const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authid, postID: post.$id, userIDofReceiver: post?.userId, userProfilePic: myUserProfile?.profileImgURL });
+            console.log(createNotification)
+          }
+        }
+
+        if (postCommentCount || postCommentCount === 0) {
+          console.log("PostCommentCount A")
+          appwriteService.updatePostViews(postid, post.views, postCommentCount + 1)
+            .then((res) => {
+              setpostCommentCount((prev) => prev + 1)
+              console.log(res)
+              dispatch(getInitialPost({ initialPosts: [res] }))
+            })
+            .catch((error) => console.log(error))
+        } else {
+          console.log("PostCommentCount B")
+          appwriteService.updatePostViews(postid, post.views, post.commentCount + 1)
+            .then((res) => {
+              setpostCommentCount((prev) => post.commentCount + 1)
+              // console.log(res)
+              // dispatch(getAllVisitedQuestionsInViewPost({ questions: res }))
+              dispatch(getInitialPost({ initialPosts: [res] }))
+            })
+            .catch((error) => console.log(error))
+        }
+      } catch (error) {
+
+      }
+
     }
   };
   const CommentReply = (

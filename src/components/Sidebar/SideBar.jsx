@@ -15,7 +15,7 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const SideBar = useRef();
   const [name, setname] = useState("Name");
-  const { isOpen, setIsOpen, myUserProfile, SettingPopUp, SetSettingPopUp, setMyUserProfile } = useAskContext();
+  const { isOpen, setIsOpen, SetSettingPopUp, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -65,13 +65,12 @@ const SideBar = () => {
         <div className="flex justify-between items-center px-1">
           <div
             onClick={() => {
-              console.log(SideBar);
+              // console.log(SideBar);
               SideBar.current.classList.remove("Active");
             }}
             className="SideBarCross flex gap-3 justify-start items-center"
           >
             <UserCircle />
-
             <div>
               <p className="font-bold">{name}</p>
             </div>
@@ -81,6 +80,7 @@ const SideBar = () => {
             className="cursor-pointer"
             onClick={() => {
               setIsOpen(false);
+              setisOverlayBoolean(false)
             }}
           >
             <svg
@@ -95,14 +95,14 @@ const SideBar = () => {
         </div>
         <div className="SideBarContent mt-7 flex flex-col gap-3">
 
-
-          {/* <hr /> */}
-
           <Link to={`/profile/${userData?.$id}`}>
             <div
               id="Sidebar_Svg"
-              className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center"
-              onClick={() => setIsOpen(false)}
+              className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center"
+              onClick={() => {
+                setIsOpen(false);
+                setisOverlayBoolean(false);
+              }}
             >
               <div>
                 <svg
@@ -120,9 +120,10 @@ const SideBar = () => {
 
           <Link to={`/EditProfile/${userData?.$id}`}>
             <div
-              className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center cursor-pointer"
+              className="SideBarItems flex gap-5 py-2 rounded-md px-6  justify-start items-center cursor-pointer"
               onClick={() => {
                 setIsOpen(false);
+                setisOverlayBoolean(false)
               }}
             >
               <div>
@@ -142,7 +143,8 @@ const SideBar = () => {
 
           <div onClick={() => {
             setIsOpen(false);
-          }} className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center">
+            setisOverlayBoolean(false)
+          }} className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center">
             <div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -155,7 +157,11 @@ const SideBar = () => {
             <p>About Creater</p>
           </div>
 
-          {false && <div className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center" onClick={() => navigate('BrowseQuestion/null/null')}>
+          {true && <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={() => {
+            setIsOpen(false);
+            setisOverlayBoolean(false)
+            navigate('/trustedResponders')
+          }}>
             <div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +172,7 @@ const SideBar = () => {
               </svg>
             </div>
 
-            <p>About Creater</p>
+            <p>Trusted Responders</p>
           </div>}
 
 
@@ -174,8 +180,12 @@ const SideBar = () => {
 
           {isOpen && (
             <div
-              className="flex gap-5 py-2 rounded-md px-6  hover:bg-gray-500 justify-start items-center cursor-pointer"
-              onClick={logouthandle}
+              className="SideBarItems flex gap-5 py-2 rounded-md px-6  justify-start items-center cursor-pointer"
+              onClick={() => {
+                setIsOpen(false);
+                setisOverlayBoolean(false)
+                logouthandle();
+              }}
             >
               <div>
                 <svg
@@ -190,6 +200,23 @@ const SideBar = () => {
               <p>LogOut</p>
             </div>
           )}
+          <hr />
+          <div className="flex SideBar_Day_Night_Mode">
+            <div onClick={() => {
+              setisDarkModeOn((prev) => true)
+              setIsOpen(false);
+              setisOverlayBoolean(false);
+            }}>
+              <i className="fa-regular fa-moon"></i>
+            </div>
+            <div onClick={() => {
+              setisDarkModeOn((prev) => false)
+              setIsOpen(false);
+              setisOverlayBoolean(false);
+            }}>
+              <i className="fa-solid fa-sun"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -6,13 +6,13 @@ const initialState = {
 };
 
 const userProfileSlice = createSlice({
-    name: "other",
+    name: "userProfileSlice",
     initialState,
     reducers: {
         getOtherUserProfile: (state, action) => {
             let arr = []
             arr = [...state.userProfileArr, ...action.payload.userProfileArr]
-            // console.log(arr)
+            // console.log(arr);
             let uniqueArray = Array.from(new Map(arr.map(obj => [obj?.$id, obj])).values());
             state.userProfileArr = uniqueArray
         },

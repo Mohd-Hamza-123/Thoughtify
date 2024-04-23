@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { RespondersSection } from '../components'
+import './RespondersSectionPage.css'
 import { useSelector, useDispatch } from "react-redux";
 import { useAskContext } from '../context/AskContext';
 import appwriteService from '../appwrite/config';
@@ -13,7 +13,7 @@ const RespondersSectionPage = () => {
 
 
     const { increaseViews, hasMorePostInTrustedPost,
-        sethasMorePostInTrustedPost } = useAskContext();
+        sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();
 
     const [posts, setPosts] = useState([]);
     const [isLoading, setIsLoading] = useState(false)
@@ -133,7 +133,7 @@ const RespondersSectionPage = () => {
         lastScrollY.current = position
     }
 
-
+    console.log(isNavbarHidden)
     useEffect(() => {
         // console.log(RespondersSectionPageRef.current)
         if (RespondersSectionPageRef.current) {
@@ -147,13 +147,13 @@ const RespondersSectionPage = () => {
 
     return (
         <div
-            id="RespnderSectionPage"
+            id="ResponderSectionPage"
             ref={RespondersSectionPageRef}
             className="w-full relative"
             onScroll={handleScroll}
         >
-            <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
-                <UpperNavigationBar className='' />
+            <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
+                <UpperNavigationBar />
                 <HorizontalLine />
                 <LowerNavigationBar />
             </nav>
@@ -161,11 +161,8 @@ const RespondersSectionPage = () => {
             <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
                 <div className="Home_Left flex flex-col gap-6">
                     {posts?.map((post) => {
-                        // if (TrustedResponders && post.trustedResponderPost !== true) return
-                        return <div style={{
-                            "boxShadow": "2px 0 19px -4px #16BEF6",
-                            "margin": "0px 0px 15px 0px"
-                        }} key={post?.$id} onClick={() => increaseViews(post.$id)}>
+
+                        return <div className={`RespondersSectionPage_PostCard ${isDarkModeOn ? 'darkMode' : ''}`} key={post?.$id} onClick={() => increaseViews(post.$id)}>
                             <PostCard {...post} isTrustedresponded={true} />
                         </div>
                     })}
