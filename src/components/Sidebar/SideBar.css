@@ -1,10 +1,4 @@
-#SideBarContainer {
-    /* width: 100vw;
-    height: 100vw;
-    border: 40px solid red;
-    position: relative;
-    display: none; */
-}
+#SideBarContainer {}
 
 .SideBar {
     overflow-x: hidden;
@@ -23,6 +17,11 @@
     border-top-left-radius: 20px;
 }
 
+body.darkMode .SideBar {
+    background-color: black;
+    color: white;
+}
+
 .SideBar::-webkit-scrollbar {
     display: none;
 }
@@ -33,10 +32,23 @@
     border: none;
 }
 
+body .SideBar hr {
+    background-color: rgba(255, 255, 255, 0.459);
+}
+
 #Sidebar_Svg svg {
-    fill: black;
     transform: scale(1.3);
 }
+
+.SideBarContent svg {
+    fill: black;
+}
+
+body.darkMode .SideBarContent svg {
+    fill: white;
+}
+
+
 
 .SideBar.Active {
     transform: translateX(0);

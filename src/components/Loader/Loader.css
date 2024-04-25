@@ -1,6 +1,7 @@
 /* HTML: <div class="loader"></div> */
 .LoaderPage {
   width: 100vw;
+  background-color: white;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -9,11 +10,19 @@
   justify-content: center;
 }
 
+body.darkMode .LoaderPage {
+  background-color: #02020A;
+}
+
 .LoaderPage img {
   height: 160px;
   filter: brightness(200%);
   animation: scaleAnimation 2s alternate;
   transform: scale(1.1);
+}
+
+body.darkMode .LoaderPage img {
+  filter: brightness(200%) invert(100%);
 }
 
 @keyframes scaleAnimation {
@@ -37,10 +46,14 @@
 
 .LoaderPage h1 {
   text-align: center;
-  color: rgb(47, 47, 47);
   font-size: 28px;
   margin-top: 10px;
   font-family: 'Gabarito', sans-serif;
+  color: black;
+}
+
+body.darkMode .LoaderPage h1 {
+  color: white;
 }
 
 .LoaderPage_loader {
@@ -49,6 +62,11 @@
   border-radius: 50%;
   background: #00CAFF;
   animation: l10 1.5s infinite linear;
+}
+
+body.darkMode .LoaderPage_loader {
+  background: #FF3500;
+  animation: l11 1.5s infinite linear;
 }
 
 @keyframes l10 {
@@ -105,5 +123,60 @@
       0 -30px red, calc(30px*0.707) calc(-30px*0.707) black, 30px 0 red, 0 0 black,
       0 0 red, 0 0 black, 0 0 red, 0 0 black
   }
+}
 
+@keyframes l11 {
+  0% {
+    box-shadow:
+      0 -30px aqua, calc(30px*0.707) calc(-30px*0.707) white, 30px 0 aqua, 0 0 white,
+      0 0 aqua, 0 0 white, 0 0 aqua, 0 0 white
+  }
+
+  12.5% {
+    box-shadow:
+      0 0 aqua, calc(30px*0.707) calc(-30px*0.707) white, 30px 0 aqua, calc(30px*0.707) calc(30px*0.707) white,
+      0 0 aqua, 0 0 white, 0 0 aqua, 0 0 white
+  }
+
+  25% {
+    box-shadow:
+      0 0 aqua, 0 0 white, 30px 0 aqua, calc(30px*0.707) calc(30px*0.707) white,
+      0 30px aqua, 0 0 white, 0 0 aqua, 0 0 white
+  }
+
+  37.5% {
+    box-shadow:
+      0 0 aqua, 0 0 white, 0 0 aqua, calc(30px*0.707) calc(30px*0.707) white,
+      0 30px aqua, calc(-30px*0.707) calc(30px*0.707) white, 0 0 aqua, 0 0 white
+  }
+
+  50% {
+    box-shadow:
+      0 0 aqua, 0 0 white, 0 0 aqua, 0 0 white,
+      0 30px aqua, calc(-30px*0.707) calc(30px*0.707) white, -30px 0 aqua, 0 0 white
+  }
+
+  62.5% {
+    box-shadow:
+      0 0 aqua, 0 0 white, 0 0 aqua, 0 0 white,
+      0 0 aqua, calc(-30px*0.707) calc(30px*0.707) white, -30px 0 aqua, calc(-30px*0.707) calc(-30px*0.707) white
+  }
+
+  75% {
+    box-shadow:
+      0 -30px aqua, 0 0 white, 0 0 aqua, 0 0 white,
+      0 0 aqua, 0 0 white, -30px 0 aqua, calc(-30px*0.707) calc(-30px*0.707) white
+  }
+
+  87.5% {
+    box-shadow:
+      0 -30px aqua, calc(30px*0.707) calc(-30px*0.707) white, 0 0 aqua, 0 0 white,
+      0 0 aqua, 0 0 white, 0 0 aqua, calc(-30px*0.707) calc(-30px*0.707) white
+  }
+
+  100% {
+    box-shadow:
+      0 -30px aqua, calc(30px*0.707) calc(-30px*0.707) white, 30px 0 aqua, 0 0 white,
+      0 0 aqua, 0 0 white, 0 0 aqua, 0 0 white
+  }
 }

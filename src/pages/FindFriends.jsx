@@ -57,16 +57,16 @@ const FindFriends = () => {
       <h3 className={`FindFirendsPage_Heading text-center ${isDarkModeOn ? "text-white" : 'text-black'}`}>Explore New Connections </h3>
       <main className='FindFriendsPage_Main'>
         <section className='p-3'>
-          <p className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>Suggestions</p>
+          <p className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>Searched</p>
           <div>
             {othersUserProfile?.map((profile) => (
               <div key={profile?.$id} onClick={() => navigate(`/profile/${profile?.userIdAuth}`)} className='FindFriendsPage_ListFriends cursor-pointer'>
                 <div><img src={profile?.profileImgURL} /></div>
-                <p>{profile?.name}</p>
+                <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{profile?.name}</p>
               </div>
             ))}
             {othersUserProfile?.length === 0 && <div className='FindFriendsPage_ListFriends'>
-              <p>No Suggestion Available</p>
+              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Users are here</p>
             </div>}
           </div>
         </section>

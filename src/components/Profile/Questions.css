@@ -9,10 +9,28 @@
     font-size: 15px;
     border: 1px solid #0000001f, 1px solid rgba(0, 0, 0, 0.122) inset;
     border-radius: 6px;
-    background-color: white;
+    /* background-color: white; */
     overflow-x: hidden;
     overflow-y: scroll;
     height: 64vh;
+}
+
+#Profile_Filter_Questions_Form.darkMode {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
+
+}
+
+#Profile_Filter_Questions_Form.darkMode input,
+#Profile_Filter_Questions_Form.darkMode select {
+    border: 1px solid red;
+    color: black;
+}
+
+#Profile_Filter_Questions_Form.darkMode>div {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.392);
+    padding: 4px 4px 10px 4px;
 }
 
 #Profile_Filter_Questions_Form>div {
@@ -87,6 +105,10 @@
     transition: transform 0.3s;
 }
 
+.Profile_Questions_ApplyFilter.darkMode {
+    background-color: #FF3500;
+}
+
 .Profile_Questions_ApplyFilter:active {
     transform: scale(1.2);
     transition: transform 0.3s;
@@ -103,6 +125,11 @@
     right: 100px;
     transform: scale(1);
     transition: transform 0.3s;
+}
+
+.Profile_Questions_ResentFilter.darkMode {
+    background-color: #FF3500;
+    color: white !important;
 }
 
 .Profile_Questions_ResentFilter:active {
@@ -135,8 +162,21 @@
     background-color: white;
 }
 
+#Profile_Questions_Filtered_Questions.darkMode>div {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px !important;
+    color: white;
+    box-shadow: 0px 0px 20px #ff33008f
+}
+
 #Profile_Questions_Filtered_Questions>div>span {
     font-size: 14px;
+    color: black;
+}
+
+#Profile_Questions_Filtered_Questions.darkMode>div>span {
+    font-size: 14px;
+    color: red;
 }
 
 #Profile_Questions_Filtered_Questions>div>a>p {
@@ -149,11 +189,13 @@
     font-size: 12px;
     background-color: rgb(242, 242, 242);
     padding: 3px 6px;
+    /* color: black; */
     border-radius: 5px;
 }
 
 #Profile_Questions_created_category_views>div>span {
     background-color: transparent;
+    /* color: black; */
 }
 
 #Profile_Questions_created_category_views i {

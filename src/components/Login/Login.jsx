@@ -8,27 +8,36 @@ import { login as authLogin } from "../../store/authSlice";
 import QueryFlow from '../../assets/QueryFlow.png'
 import './Login.css'
 import goBack from '../../assets/goBack.png'
+import { useAskContext } from "../../context/AskContext";
 const Login = () => {
+  const [isWaiting, setIsWaiting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { register, handleSubmit } = useForm();
-
+  const { isDarkModeOn, setnotificationPopMsg,
+    setNotificationPopMsgNature } = useAskContext()
   const login = async (data) => {
     setError(null);
     try {
+      setIsWaiting((prev) => true)
       const session = await authService.login(data);
-      console.log(session);
+      // console.log(session);
       if (session) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
         navigate("/");
+        setNotificationPopMsgNature((prev) => true)
+        setnotificationPopMsg((prev) => 'You are Logged In')
       } else {
         setError("Invalid Credential");
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg((prev) => 'Invalid Credential or Check Internet connection')
       }
     } catch (error) {
       setError(error.message);
     }
+    setIsWaiting((prev) => false)
   };
 
   return (
@@ -46,11 +55,11 @@ const Login = () => {
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
           <div className="flex flex-col w-full">
-            <h1 className="font-bold text-3xl mt-3 text-center text-black">
+            <h1 className={`font-bold text-3xl mt-3 text-center text-black ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
               Login
             </h1>
             <div className="mx-auto mt-2">
-              <p>
+              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                 Don't have an Account ?&nbsp;
                 <Link
                   className="font-medium text-primary transition-all duration-200 hover:underline"
@@ -104,12 +113,12 @@ const Login = () => {
                 </p>
               </div>
               <div>
-                <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 bg-slate-800 text-white">
-                  Login
+                <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+                  {`${isWaiting ? 'wait...' : 'Login'}`}
                 </Button>
               </div>
             </form>
-
+            <div className="text-center">Or</div>
             <div className="flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()

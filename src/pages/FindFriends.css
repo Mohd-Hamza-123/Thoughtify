@@ -28,17 +28,21 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.354);
+    border-radius: 20px;
 }
 
 .searchQueryInput {
     width: 100%;
-    height: 2rem;
+    /* height: inherit; */
     background: #ffffff;
     outline: none;
     border: none;
     border-radius: 1.625rem;
     padding: 0 3.5rem 0 1.5rem;
     font-size: 1rem;
+
 }
 
 .searchQuerySubmit {
@@ -79,7 +83,13 @@
     align-items: center;
     border-radius: 5px;
     background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     padding: 10px;
+}
+
+body.darkMode .FindFriendsPage_ListFriends {
+    background-color: rgb(0, 0, 0);
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .FindFriendsPage_ListFriends img {
@@ -103,9 +113,9 @@
 }
 
 .FindFriendsPage_ListFriends_Searched_Person.darkMode {
-    background-color: #131315;
+    background-color: black;
     color: white;
-    box-shadow: rgba(197, 197, 197, 0.509) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .FindFriendsPage_ListFriends_Searched_Person img {

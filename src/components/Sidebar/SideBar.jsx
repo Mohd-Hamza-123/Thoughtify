@@ -8,6 +8,7 @@ import authService from "../../appwrite/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/authSlice";
 import { useState } from "react";
+import conf from "../../conf/conf";
 
 const SideBar = () => {
   const status = useSelector((state) => state.auth.status);
@@ -142,9 +143,10 @@ const SideBar = () => {
           </Link>
 
           <div onClick={() => {
+            navigate(`/profile/${conf.myPrivateUserID}`)
             setIsOpen(false);
             setisOverlayBoolean(false)
-          }} className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center">
+          }} className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center cursor-pointer">
             <div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

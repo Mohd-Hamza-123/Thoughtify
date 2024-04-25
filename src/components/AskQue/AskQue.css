@@ -4,6 +4,7 @@
 #askQue_div {
     width: 100%;
     height: 100%;
+    /* background-color: black; */
 }
 
 .ask_Que_Container {
@@ -14,6 +15,7 @@
     overflow-y: scroll;
     font-family: 'Gabarito', sans-serif;
     scroll-behavior: smooth;
+    /* background-color: black; */
 }
 
 .ask_Que_Container::-webkit-scrollbar {
@@ -153,8 +155,8 @@
 }
 
 #AskQue_PostType.darkMode {
-    background-color: #1A1A1A;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 #AskQue_PostType p {
@@ -182,7 +184,8 @@
 }
 
 #AskQue_SelectCategory.darkMode {
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 #AskQue_SelectCategory p {
@@ -207,11 +210,19 @@
 .AskQue-dropdown-list {
     position: absolute;
     background: #fff;
-    border: 1px solid #aaa;
+    border: 1px dashed #aaa;
+    border-top: none;
     height: 190px;
     width: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+.AskQue-dropdown-list.darkMode {
+    background: black;
+    color: white;
+    border: 1px dashed #ffffffa4;
+    border-top: none;
 }
 
 .dropdown-item {
@@ -220,10 +231,18 @@
     cursor: pointer;
     font-weight: lighter;
     font-size: 15px;
+    transition: background-color 0.3 ease;
 }
 
 .dropdown-item:hover {
     background-color: #aaaaaa5a;
+    transition: background-color 0.3 ease;
+}
+
+body.darkMode .dropdown-item:hover {
+    background-color: #ffffff;
+    transition: background-color 0.3 ease;
+    color: black;
 }
 
 .dropdown-header:hover+.dropdown-list {
@@ -253,4 +272,15 @@
 
 .AskQue_Pole_TextArea.darkMode {
     border: 2px solid white;
+}
+
+.AskQue_AddOption_btn {
+    background-color: white;
+    color: black;
+}
+
+.AskQue_AddOption_btn.darkMode {
+    background-color: rgba(0, 0, 0, 0.84);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.57);
 }

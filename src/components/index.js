@@ -24,7 +24,6 @@ import ProfileSummary from "./Profile/ProfileSummary";
 import Favourite from "./Profile/Favourite";
 import Questions from './Profile/Questions'
 import Opinions from './Profile/Opinions'
-import Notification from "./Notification/Notification";
 import Category from './Category/Category'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
@@ -36,7 +35,6 @@ import Feedback from "./Feedback/Feedback";
 import Spinner from "./Spinner/Spinner";
 import ChatInProfile from "./Profile/ChatInProfile";
 import Loader from "./Loader/Loader";
-import RespondersSection from "./RespondersSection/RespondersSection";
 import NotificationPop from "./Notification/NotificationPop";
 import SecondLoader from "./Loader/SecondLoader";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Notification, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, RespondersSection, NotificationPop, SecondLoader }
+export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, SearchBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, Category, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader }

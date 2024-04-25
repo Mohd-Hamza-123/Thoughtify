@@ -14,10 +14,11 @@
     align-items: center;
     z-index: 3;
     position: relative;
+    transition: background-color 1s ease;
 }
 
-#nav.darkMode {
-    background-color: #202021 !important;
+body.darkMode #nav {
+    background-color: #000000 !important;
     color: white !important;
 }
 
@@ -44,7 +45,6 @@
 
 
 .lower_Nav {
-    /* background-color: rgb(19, 19, 21); */
     justify-content: space-around;
     align-items: center;
     padding: 10px 10px;
@@ -109,6 +109,10 @@
     border: 1px solid white;
 }
 
+.UpperNavigationBar_Notification_DropDown_Section {
+    background-color: rgb(203, 203, 96) !important;
+}
+
 .UpperNavigationBarNotificationUL li {
     width: 100%;
     display: flex;
@@ -130,7 +134,7 @@
     text-align: right;
 }
 
-#UpperNavigationBar_Notification_profilePic {
+.UpperNavigationBar_Notification_profilePic {
     width: 35px;
     height: 35px;
     border-radius: 50%;
@@ -255,12 +259,12 @@
 
 #upperNavbar_svg_div img {
     width: 100%;
-
+    background-color: white;
     height: 100%;
     border-radius: 50%;
 }
 
-#UpperNavigationBar_Buttons {
+.UpperNavigationBar_Buttons {
     margin-left: 15px;
     background-color: var(--secondryBlue);
     border-radius: 100px;
@@ -277,4 +281,9 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+}
+
+body.darkMode .UpperNavigationBar_Buttons {
+    background-color: #FF3500;
+    box-shadow: none;
 }

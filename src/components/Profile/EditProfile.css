@@ -5,6 +5,22 @@
     font-family: 'Nunito', sans-serif;
 }
 
+.EditProfile-FormContainer.darkMode {
+    background-color: black;
+}
+.EditProfile-FormContainer.darkMode .MyProfile_HorizontalLine{
+    display: none;
+}
+.EditProfile-FormContainer.darkMode button {
+    background-color: #FF3500 !important;
+    border: none !important;
+}
+
+.EditProfile-FormContainer.darkMode input {
+    border: 1px solid #FF3500;
+    color: black;
+}
+
 .EditProfile_form {
     width: 87%;
     margin: 0 auto;
@@ -46,8 +62,13 @@
     border-top: 1px solid rgba(128, 128, 128, 0.463);
 }
 
+.EditProfile-FormContainer.darkMode #EditProfile_EditImage_Div {
+    background-color: black;
+    margin-bottom: 20px;
+    box-shadow: rgb(255, 0, 0) 0px 2px 8px 0px;
+}
+
 #EditProfile-Prev-active {
-    /* border: 1px solid purple; */
     width: 100%;
     height: 100%;
     display: flex;
@@ -68,8 +89,9 @@
 #EditProfile-PrevImage img {
     /* max-width: 100%;
     max-height: 100%; */
-    height: 280px;
-    width: 280px;
+    height: 250px;
+    margin-top: 20px;
+    width: 250px;
     border-radius: 50%;
 }
 
@@ -80,6 +102,10 @@
     text-align: center;
     /* border: 2px solid red; */
     color: grey;
+}
+
+#EditProfile-seePreviewBefore.darkMode {
+    color: rgb(255, 255, 255);
 }
 
 #EditProfile-Prev-Inactive {
@@ -164,6 +190,10 @@
     border-radius: 5px;
 }
 
+.EditProfile_ChooseImg.darkMode {
+    background-color: #FF3500;
+}
+
 #myCanvas {
     border: 1px solid rgba(0, 0, 0, 0.376);
     width: 200px;
@@ -174,6 +204,16 @@
 #EditProfile_EditContent {
     background-color: rgb(255, 255, 255);
     padding: 5px 15px;
+}
+
+.EditProfile-FormContainer.darkMode #EditProfile_EditContent {
+    background-color: black;
+    box-shadow: rgb(255, 0, 0) 0px 2px 8px 0px;
+    color: white;
+}
+
+.EditProfile-FormContainer.darkMode #EditProfile_EditContent textarea {
+    color: black;
 }
 
 #EditProfile_EditBio {
@@ -222,6 +262,10 @@
     font-size: 14px;
 }
 
+#EditProfile_EditLinks_3inputs.darkMode .Add-Link_btn {
+    background-color: #FF3500;
+}
+
 #EditProfile_EditLinks_LinksAdded {
     /* border: 2px solid black; */
     width: 60%;
@@ -255,6 +299,11 @@
 .EditProfile_EditLinks_title_url_div::-webkit-scrollbar {
     height: 5px;
     background-color: var(--secondryBlue);
+}
+
+.EditProfile_EditLinks_title_url_div.darkMode::-webkit-scrollbar {
+    height: 5px;
+    background-color: #FF3500;
 }
 
 .EditProfile_EditLinks_title_url_div::-webkit-scrollbar-thumb {
@@ -312,6 +361,10 @@
     font-family: 'Poppins', sans-serif;
 }
 
+.EditProfile_tag_box.darkMode {
+    border: 1px solid rgba(255, 255, 255, 0.563);
+}
+
 .EditProfile_tag_box li {
     background-color: #d8d4d4c6;
     color: black;
@@ -329,6 +382,14 @@
     justify-content: center;
     align-items: center;
     padding: 2px;
+}
+
+.EditProfile_tag_box.darkMode li span:nth-child(2) {
+    background-color: white;
+}
+
+.EditProfile_tag_box.darkMode li {
+    background-color: black;
 }
 
 .EditProfile_tag_box li i {

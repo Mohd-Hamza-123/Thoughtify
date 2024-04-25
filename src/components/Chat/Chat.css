@@ -6,22 +6,41 @@
     margin: 30px 0px;
 }
 
-#Chat_Comment_Div_1 {
+.Chat_Comment_Div_1 {
     /* background-color: rgba(205, 205, 205, 0.685); */
     border-radius: 2px;
     padding: 5px;
 }
 
-#Chat_Comment {
+.Chat_Comment {
     font-size: 20px;
     font-family: 'Poppins', sans-serif;
 }
 
-.Chat_Comment_Name {
-    font-family: 'Poppins', sans-serif;
+body.darkMode .Chat_Comment {
+    color: white !important;
 }
 
-#Chat_Comment_Div_img {
+.Chat_Comment_Div {
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 20px;
+    margin-top: 19px;
+}
+
+body.darkMode .Chat_Comment_Div {
+    background-color: black;
+}
+
+.Chat_Comment_Name {
+    font-family: 'Poppins', sans-serif;
+    color: #FF3500;
+}
+
+body.darkMode .Chat_Comment_Name {
+    color: white;
+}
+
+.Chat_Comment_Div_img {
     height: 27px;
     width: 27px;
     border-radius: 50%;
@@ -32,10 +51,15 @@
     margin-top: 10px;
     outline: none;
     margin-bottom: 10px;
-    border: 1px solid grey;
-    border-radius: 1px;
+    border: 1px dashed grey;
+    border-radius: 5px;
     padding: 5px 10px;
     font-family: 'Gabarito', sans-serif;
+}
+
+body.darkMode .Chat_textArea {
+    background-color: black;
+    color: white;
 }
 
 /* CSS */
@@ -57,6 +81,11 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+}
+
+body.darkMode #Chat_Your_Opinion_Button {
+    background-color: #FF3500;
+    box-shadow: none;
 }
 
 #Chat_Your_Opinion_Button:hover {
@@ -163,7 +192,8 @@
     font-family: 'Rethink Sans', sans-serif;
     font-weight: bold;
 }
-#Chat_See_Replies{
+
+.Chat_See_Replies {
     background-color: black;
     color: white;
     padding: 4px 7px;
@@ -171,4 +201,9 @@
     margin-top: 15px;
     border-radius: 15px;
     font-size: 12px;
+}
+
+body.darkMode .Chat_See_Replies {
+    background-color: white;
+    color: rgb(0, 0, 0);
 }

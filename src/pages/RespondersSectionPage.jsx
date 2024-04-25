@@ -133,7 +133,7 @@ const RespondersSectionPage = () => {
         lastScrollY.current = position
     }
 
-    console.log(isNavbarHidden)
+    // console.log(isNavbarHidden)
     useEffect(() => {
         // console.log(RespondersSectionPageRef.current)
         if (RespondersSectionPageRef.current) {

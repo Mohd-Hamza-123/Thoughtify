@@ -121,7 +121,7 @@ const ViewPost = () => {
           if (post) {
             setPost((prev) => post)
             // console.log(post)
-            setTotalPollVotes((prev) => post.totalPollVotes)
+            setTotalPollVotes((prev) => post?.totalPollVotes)
           }
           dispatch(getAllVisitedQuestionsInViewPost({ questions: post }))
         })
@@ -150,7 +150,7 @@ const ViewPost = () => {
       setTotalPollVotes((prev) => post.totalPollVotes)
       setpollVotersAuthIDsAndVote((prev) => {
         return post.pollVotersID.filter((obj) => {
-          if (JSON.parse(obj).pollVoterID === userData.$id) {
+          if (JSON.parse(obj)?.pollVoterID === userData.$id) {
             setIsPollOpinionVisible(true)
             return obj
           }
@@ -569,7 +569,7 @@ const ViewPost = () => {
       <HorizontalLine />
       <div id="ViewPost_ViewPost_RecentQuestions_Container" className="flex">
         <div id="ViewPost" className="p-3">
-          <div id="ViewPost-Question-Container" className="w-4/6 p-2 bg-white">
+          <div id="ViewPost-Question-Container" className="w-4/6 p-2">
             <div id="ViewPost_Details" className="mb-3 flex justify-between mx-3 mt-1 relative items-center">
 
               <div className="flex">

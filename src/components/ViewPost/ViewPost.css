@@ -17,10 +17,14 @@
 
 
 #ViewPost-Question-Container {
-
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     width: 100%;
+}
+
+body.darkMode #ViewPost-Question-Container {
+    background-color: black;
+    color: white;
 }
 
 .Chat {
@@ -107,6 +111,10 @@
     font-family: 'Poppins', sans-serif;
     line-height: 44px;
     letter-spacing: 1px;
+}
+
+body.darkMode #ViewPost-Title {
+    color: white;
 }
 
 #ViewPost_edit_Delete {
@@ -308,6 +316,16 @@
 .ViewPost_Related_Filter_Comment_Questions.active {
     top: 22vh;
     transition: all 0.3s;
+}
+
+body.darkMode .ViewPost_Related_Filter_Comment_Questions {
+    background-color: black;
+    color: white;
+}
+
+body.darkMode .ViewPost_Related_Filter_Comment_Questions.active {
+    background-color: black;
+    color: white;
 }
 
 #ViewPost_RelatedQuestions {

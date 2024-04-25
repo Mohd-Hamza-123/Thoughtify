@@ -45,6 +45,9 @@ function App() {
   const [notificationPopMsgNature, setNotificationPopMsgNature] = useState(false);
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
+
+  const [mainResponder, setmainResponder] = useState(null);
+
   const indicator = useRef(true);
 
   const [queries, setQueries] = useState([])
@@ -59,15 +62,15 @@ function App() {
   // useState for DarkAndNight Mode
 
   const [isDarkModeOn, setisDarkModeOn] = useState(localStorage.getItem("isDarkModeOn") === 'true');
-  console.log(isDarkModeOn);
+  // console.log(isDarkModeOn);
   useEffect(() => {
     if (body) {
       if (isDarkModeOn) {
-        console.log("hio")
+        // console.log("hio")
         localStorage.setItem("isDarkModeOn", true);
         body[0].classList.add("darkMode")
       } else {
-        console.log("bio")
+        // console.log("bio")
         localStorage.setItem("isDarkModeOn", false)
         body[0].classList.remove("darkMode")
       }
@@ -266,7 +269,8 @@ function App() {
           notifications, setnotifications,
           deleteNotication,
           isUnreadNotificationExist, setIsUnreadNotificationExist,
-          isDarkModeOn, setisDarkModeOn
+          isDarkModeOn, setisDarkModeOn,
+          mainResponder, setmainResponder
         }}
       >
         <NotificationPop notificationPopMsg={notificationPopMsg} notificationPopMsgNature={notificationPopMsgNature} />

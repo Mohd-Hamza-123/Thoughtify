@@ -11,21 +11,24 @@ import { getTotalPostByMe } from '../../store/profileSlice'
 const Questions = ({ visitedProfileUserID }) => {
   const TotalPostByMe = useSelector((state) => state.profileSlice?.totalPostsbyMe)
   const dispatch = useDispatch()
-  console.log(TotalPostByMe)
+  // console.log(TotalPostByMe)
+
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
   const [queries, setQueries] = useState([])
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredQueries, settotalFilteredQueries] = useState(0)
-  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const [isSearching, setIsSearching] = useState(false)
   const { hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions } = useAskContext()
+    sethasMorePostsInProfileFilterQuestions, isDarkModeOn } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
 
   const submit = async (data) => {
+    setIsSearching((prev) => true)
     if (visitedProfileUserID === userData.$id) {
       data.UserID = visitedProfileUserID
 
@@ -55,6 +58,7 @@ const Questions = ({ visitedProfileUserID }) => {
     } else {
       return
     }
+    setIsSearching((prev) => false)
   }
 
   useEffect(() => {
@@ -109,6 +113,7 @@ const Questions = ({ visitedProfileUserID }) => {
       appwriteService
         .getPosts()
         .then((res) => {
+          if (!res) return
           settotalNumberofPosts((prev) => res?.total)
           dispatch(getTotalPostByMe({ totalPostsbyMe: res?.total }))
         })
@@ -120,11 +125,10 @@ const Questions = ({ visitedProfileUserID }) => {
 
     <div id='Profile_Questions_Filter' className='flex'>
 
-      <form id='Profile_Filter_Questions_Form' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
+      <form id='Profile_Filter_Questions_Form' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
 
         <div id='Profile_Questions_Title'>
-
-          <p>Filter by Post Title :</p>
+          <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter by Post Title :</p>
           <div className='flex gap-2'>
             <label htmlFor='Profile_Questions_Title_Filter'>Title : </label>
             <Input {...register("Title", {
@@ -226,13 +230,13 @@ const Questions = ({ visitedProfileUserID }) => {
           </div>
         </div>
 
-        <Button type='Submit' className='Profile_Questions_ApplyFilter'>Apply Filter</Button>
+        <Button type='Submit' className={`Profile_Questions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{isSearching ? 'Searching' : 'Apply Filter'}</Button>
         <input type='reset' onClick={() => {
           reset()
           sethasMorePostsInProfileFilterQuestions(false)
-        }} value={'Reset Filter'} className='Profile_Questions_ResentFilter' />
+        }} value={'Reset Filter'} className={`Profile_Questions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>
-      <div id='Profile_Questions_Filtered_Questions'>
+      <div id='Profile_Questions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
 
         {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
         {queries?.map((querie, index) => {
@@ -240,13 +244,13 @@ const Questions = ({ visitedProfileUserID }) => {
             return
           }
           return <div key={querie?.$id}>
-            <span className={`${querie?.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{querie?.name}</span>
+            <span>{querie?.name}</span>
 
             <Link to={`/post/${querie?.$id}/${null}`}>
               <p>{querie?.title}</p>
               <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
-                <span>{new Date(querie?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                <span>{querie?.category}</span>
+                <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{new Date(querie?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{querie?.category}</span>
                 <div className='flex justify-center items-center'>
                   <span>{querie?.views}</span>
                   <i className=" fa-solid fa-eye" aria-hidden="true"></i>

@@ -3,10 +3,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
 
 #ProfileSummary {
-    border: 2px solid white;
     padding: 8px 10px;
     background-color: white;
+    color: black;
+    border-radius: 5px;
+}
 
+#ProfileSummary.darkMode {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
 }
 
 #ProfileSummary_Bio_Div span,
@@ -44,19 +50,26 @@
 }
 
 #ProfileSummarySecondDiv {
-    /* border: 2px solid red; */
     background-color: rgb(255, 255, 255);
 
 }
-#ProfileSummarySecondDiv p{
+
+#ProfileSummarySecondDiv.darkMode {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
+}
+
+#ProfileSummarySecondDiv p {
     font-weight: 500;
     margin-left: 10px;
     margin-top: 10px;
 }
+
 #ProfileSummarySecondDiv ul {
     padding: 10px 30px;
 }
 
 #ProfileSummarySecondDiv ul li {
-    list-style:disc;
+    list-style: disc;
 }

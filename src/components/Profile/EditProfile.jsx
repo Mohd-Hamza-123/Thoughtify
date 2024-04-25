@@ -31,7 +31,8 @@ const EditProfile = ({
   const { myUserProfile,
     setMyUserProfile,
     setNotificationPopMsgNature,
-    setnotificationPopMsg
+    setnotificationPopMsg,
+    isDarkModeOn
   } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
 
@@ -406,8 +407,8 @@ const EditProfile = ({
   return (
     profileData ?
       <>
-        <div className="EditProfile-FormContainer">
-          <div className="MyProfile_HorizontalLine"></div>
+        <div className={`EditProfile-FormContainer ${isDarkModeOn ? 'darkMode' : ''}`}>
+          <div className={`MyProfile_HorizontalLine ${isDarkModeOn ? 'hidden' : ''}`}></div>
           <form
             className="h-full relative p-3 EditProfile_form"
             onSubmit={handleSubmit(submit)}
@@ -421,11 +422,11 @@ const EditProfile = ({
               {prevFileURL &&
                 <div id="EditProfile-Prev-active">
                   <div className="" id="EditProfile-PrevImage">
-                    <img src={prevFileURL} alt="" className="rounded-full" />
+                    <img src={prevFileURL} className={`rounded-ful bg-white`} />
                   </div>
                   <label
                     htmlFor="editProfileImg"
-                    className="EditProfile_ChooseImg flex gap-2 items-center cursor-pointer mr-3"
+                    className={`EditProfile_ChooseImg flex gap-2 items-center cursor-pointer mr-3 ${isDarkModeOn ? 'darkMode' : ''}`}
                   >
                     <span> Update </span>
                     <i className="fa-solid fa-upload"></i>
@@ -508,7 +509,9 @@ const EditProfile = ({
 
                   <div className={`w-full h-full flex justify-center items-center ${canvasPreview ? '' : 'hidden'}`}>
                     <canvas ref={canvasRef} id="myCanvas"></canvas>
-                    {seePreviewBefore && <span id="EditProfile-seePreviewBefore">{seePreviewBefore}</span>}
+                    {seePreviewBefore && <span id="EditProfile-seePreviewBefore"
+                      className={`${isDarkModeOn ? 'text-white !important' : ''}`}
+                    >{seePreviewBefore}</span>}
                   </div>
 
                 </div>
@@ -543,7 +546,7 @@ const EditProfile = ({
                 <div className="flex h-40" id="">
                   <div
                     id="EditProfile_EditLinks_3inputs"
-                    className="w-full flex flex-col gap-3 items-start"
+                    className={`w-full flex flex-col gap-3 items-start ${isDarkModeOn ? 'darkMode' : ''}`}
                   >
                     <input
                       className="outline-none px-1"
@@ -589,7 +592,7 @@ const EditProfile = ({
                         <span className="p-1 flex justify-center items-center link-circle">
                           <i className="fa-solid fa-link"></i>
                         </span>
-                        <div className="EditProfile_EditLinks_title_url_div w-full">
+                        <div className={`EditProfile_EditLinks_title_url_div w-full ${isDarkModeOn ? 'darkMode' : ''}`}>
                           <div className="flex justify-between w-full">
                             <p>{JSON.parse(link).Title}</p>
                             <span
@@ -614,7 +617,7 @@ const EditProfile = ({
                   </div>
                 </div>
               </div>
-              {/* Highest Level of Eduction div  */}
+
               <div className="EditProfile_Edu_Lvl_div">
                 <p htmlFor="" className="mb-2 block">
                   Highest Level of Education
@@ -695,13 +698,13 @@ const EditProfile = ({
                   <p className="">
                     Enter tag name or you can type like this PYTHON,JAVA,C#
                   </p>
-                  <div className="EditProfile_tag_box p-2 mb-2">
+                  <div className={`EditProfile_tag_box p-2 mb-2 ${isDarkModeOn ? 'darkMode' : ''}`}>
                     <ul className="flex flex-wrap gap-3">
                       {interestedTagArr?.map((Tag, index) => (
                         <li key={Tag} className="flex items-center gap-2">
-                          <span>{Tag}</span>
+                          <span className={`${isDarkModeOn ? 'text-white darkMode' : 'text-black'}`}>{Tag}</span>
                           <span
-                            className="cursor-pointer"
+                            className={`cursor-pointer ${isDarkModeOn ? 'darkMode' : ''}`}
                             onClick={(e) => {
                               setInterestedTagArr((prev) => {
                                 let newArray = [...prev];

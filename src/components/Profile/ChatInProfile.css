@@ -55,7 +55,6 @@
 
 .ChatInProfileNav {
     width: 100%;
-    /* border: 1px solid #d07171; */
 }
 
 .ChatInProfileNav ul {
@@ -63,7 +62,12 @@
     display: flex;
     width: fit-content;
     background-color: white;
-    /* padding: 5px 5px; */
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.ChatInProfileNav.darkMode ul {
+    background-color: black !important;
+    color: white;
 }
 
 .ChatInProfileNav ul li {
@@ -71,11 +75,15 @@
     display: flex;
     justify-content: center;
     padding: 4px 4px;
-  
+
 }
 
 .ChatInProfileNav ul li.active {
     border-bottom: 3px solid #16BEF6;
+}
+
+.ChatInProfileNav.darkMode ul li.active {
+    border-bottom: 3px solid #FF3500;
 }
 
 .ChatInProfile_Search_div {
@@ -107,6 +115,12 @@
     gap: 30px;
 }
 
+body.darkMode .ChatInProfile_Two_Sections section ul li {
+    color: white;
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
 .ChatInProfile_Two_Sections section ul span {
     font-size: 25px;
     width: 80%;
@@ -123,6 +137,11 @@
     background-color: #16BEF6;
     color: white;
     border: 1px solid #16BEF6;
+}
+
+body.darkMode .ChatInProfile_Two_Sections section ul button {
+    background-color: #FF3500;
+    border: 1px solid #FF3500;
 }
 
 .ChatInProfile_Two_Sections section ul button:hover {

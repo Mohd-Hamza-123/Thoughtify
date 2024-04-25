@@ -4,9 +4,11 @@ const AskQuestion = () => {
     return (
         <>
             <Container>
-                <UpperNavigationBar />
-                <HorizontalLine />
-                <LowerNavigationBar />
+                <div>
+                    <UpperNavigationBar />
+                    <HorizontalLine />
+                    <LowerNavigationBar />
+                </div>
                 <AskQue />
             </Container>
         </>

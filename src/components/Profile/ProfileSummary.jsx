@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ProfileSummary.css";
 import { Input } from "../";
 import { occupation_Arr } from "./Profile_arr";
+import { useAskContext } from "../../context/AskContext";
 
 const ProfileSummary = ({ profileData }) => {
   const {
@@ -11,19 +12,19 @@ const ProfileSummary = ({ profileData }) => {
     occupation,
     educationLvl,
   } = profileData;
-
+  const { isDarkModeOn } = useAskContext()
   return (
-    <div className="w-full flex relative gap-3">
-      <div id="ProfileSummary" className="w-2/3">
+    <div className={`w-full flex relative gap-3`}>
+      <div id="ProfileSummary" className={`w-2/3 ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="ProfileSummary_Bio_Div">
           <span className=""> Bio </span>
           <pre id="ProfileSummayPre" className="whitespace-pre-wrap">{bio}</pre>
           <div className="ProfileSummary_Links mt-3">
             <span>Links </span>
-            {links?.map((link,index) => (
+            {links?.map((link, index) => (
               <div key={JSON.parse(link).URL + index} className="flex gap-2 items-center">
                 <i className="fa-solid fa-link"></i>
-                <a href={JSON.parse(link).URL} target="_blank" className="text-blue-600">
+                <a href={JSON.parse(link).URL} target="_blank" className={`${isDarkModeOn ? 'text-red-600' : 'text-blue-600'}`}>
                   {JSON.parse(link).Title}
                 </a>
               </div>
@@ -52,7 +53,7 @@ const ProfileSummary = ({ profileData }) => {
           </div>
         </div>
       </div>
-      <div id="ProfileSummarySecondDiv" className="w-1/3 bg-slate-500 h-full">
+      <div id="ProfileSummarySecondDiv" className={`w-1/3 h-full ${isDarkModeOn ? 'darkMode' : ''}`}>
         {/* <p>Updates By Creater</p> */}
         <ul className="flex flex-col gap-2">
           <li>Welcome, {profileData.name}</li>

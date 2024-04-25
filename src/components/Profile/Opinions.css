@@ -19,12 +19,26 @@
     height: 64vh;
 }
 
+#Profile_Opinions_Filter.darkMode #Profile_Filter_Opinions_Form {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
+}
+
+#Profile_Opinions_Filter.darkMode #Profile_Filter_Opinions_Form input,
+#Profile_Opinions_Filter.darkMode #Profile_Filter_Opinions_Form select {
+    border: 1px solid #FF3500;
+    color: rgb(0, 0, 0);
+}
+
+
 #Profile_Filter_Opinions_Form>div {
     /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
     border-bottom: 2px solid rgba(0, 0, 0, 0.059);
     padding: 4px 4px 10px 4px;
 }
-#Profile_Filter_Opinions_Form>div:nth-child(1){
+
+#Profile_Filter_Opinions_Form>div:nth-child(1) {
     margin-top: 35px;
 }
 
@@ -93,6 +107,10 @@
     transition: transform 0.3s;
 }
 
+.Profile_Opinions_ApplyFilter.darkMode {
+    background-color: #FF3500;
+}
+
 .Profile_Opinions_ApplyFilter:active {
     transform: scale(1.2);
     transition: transform 0.3s;
@@ -109,6 +127,12 @@
     right: 100px;
     transform: scale(1);
     transition: transform 0.3s;
+}
+
+.Profile_Opinions_ResentFilter.darkMode {
+    background-color: #FF3500;
+    border: none;
+    color: white !important;
 }
 
 .Profile_Opinions_ResentFilter:active {
@@ -139,6 +163,13 @@
     font-family: 'Varela Round', sans-serif;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     background-color: white;
+}
+
+#Profile_Opinions_Filtered_Questions.darkMode>div {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    /* box-shadow: 0px 0px 20px #ff33008f; */
+    color: white;
 }
 
 #Profile_Opinions_Filtered_Questions>div>span {

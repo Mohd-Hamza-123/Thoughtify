@@ -14,9 +14,9 @@
     transition: background-color 1s ease;
 }
 
-#PostCard.darkMode {
-    background-color: #131315;
-    box-shadow: rgba(197, 197, 197, 0.509) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+body.darkMode #PostCard {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     color: white;
 }
 
@@ -101,26 +101,11 @@
     margin-top: 3px;
 }
 
-#PostCard_Comments_Icon {
-    /* margin-bottom: 10px; */
-    /* border: 2px solid red; */
-
-}
 
 #PostCard_Comments_Icon i {
     font-size: 30px;
     position: relative;
     font-weight: lighter;
-}
-
-#PostCard_Comments_Icon i:nth-child(1) {
-    color: rgb(3, 3, 160);
-    color: black;
-}
-
-#PostCard_Comments_Icon i:nth-child(2) {
-    color: rgb(201, 0, 175);
-    color: black;
 }
 
 #PostCard_MaleComments {

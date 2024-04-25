@@ -528,7 +528,7 @@ const AskQue = ({ post }) => {
                   <i className="fa-solid fa-caret-down"></i>
                 </div>
 
-                {selectCategoryVisible && <ul className="AskQue-dropdown-list flex flex-col">
+                {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col ${isDarkModeOn ? 'darkMode' : ''}`}>
                   {categoriesArr?.map((object, index) => (
                     <li key={object.category + index} className="dropdown-item" onClick={
                       () => {
@@ -608,7 +608,7 @@ const AskQue = ({ post }) => {
                           setoptions("")
                         }}
 
-                        className="border text-sm p-1">
+                        className={`AskQue_AddOption_btn border text-sm p-1 ${isDarkModeOn ? 'darkMode' : ''}`}>
                         Add options
                       </Button>
                     </div>
@@ -617,7 +617,7 @@ const AskQue = ({ post }) => {
                       // console.log(options)
                       return <div className="w-full flex justify-start items-center" key={options.option}>
 
-                        <span className="w-3/4" >{`${index + 1} ) ${options.option}`}</span>
+                        <span className={`w-3/4 ${isDarkModeOn ? 'text-white' : 'text-black'}`} >{`${index + 1} ) ${options.option}`}</span>
 
                         <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
                           () => {
@@ -629,8 +629,8 @@ const AskQue = ({ post }) => {
                           }}></i></span>
                       </div>
                     })}
-                    <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-                    {!(TotalPollOptions.length >= 2) && <span className={`text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
+                    {!(TotalPollOptions.length >= 2) && <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
                   </div>
 
                   <div className="flex gap-3 h-8 mt-3 items-center">

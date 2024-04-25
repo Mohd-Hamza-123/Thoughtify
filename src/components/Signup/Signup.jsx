@@ -13,7 +13,8 @@ import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
 const Signup = () => {
-  const { myUserProfile, setMyUserProfile } = useAskContext()
+  const { myUserProfile, setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
+  const [isWaiting, setIsWaiting] = useState(false);
   const authRateLimit =
     "AppwriteException: Rate limit for the current endpoint has been exceeded. Please try again after some time.";
   const sameId =
@@ -26,8 +27,9 @@ const Signup = () => {
 
   const create = async (data) => {
     setError(null);
-
+    setIsWaiting((prev) => true);
     const userDataCreated = await authService.createAccount({ ...data });
+    // console.log(userDataCreated)
     if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
       setError("You Have reached Maximum signup limit. Try later sometime");
       return;
@@ -39,9 +41,16 @@ const Signup = () => {
 
     if (userDataCreated) {
       const userData = await authService.getCurrentUser();
-      dispatch(login({ userData }))
+      // console.log(userData)
+      if (!userData) {
+        setIsWaiting((prev) => false);
+        setNotificationPopMsgNature((prev) => false);
+        setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
+        return
+      }
+      dispatch(login({ userData }));
       let profileAvatar = await avatar.profileAvatar(data.name);
-      let response = await fetch(profileAvatar.href)
+      let response = await fetch(profileAvatar?.href);
       let blob = await response.blob();
       const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' })
       const createProfileBucket = await profile.createBucket({ file })
@@ -61,7 +70,10 @@ const Signup = () => {
       }
     } else {
       setError("Please check the credentials");
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
     }
+    setIsWaiting((prev) => false)
   }
 
 
@@ -70,7 +82,7 @@ const Signup = () => {
     <div id="Signup_container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <div onClick={() => navigate("/")} className="GoToHomePageDiv">
         <div><img src={goBack} alt="" /></div>
-        <span>Home</span>
+        <span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Home</span>
       </div>
       <div
         id="Signup"
@@ -152,8 +164,8 @@ const Signup = () => {
                 </div>
               </div>
               <div className="mt-4">
-                <Button type="submit" className="rounded-sm w-20 block px-2 py-1 bg-slate-800 text-white">
-                  SignIn
+                <Button type="submit" className="rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+                  {`${isWaiting ? 'wait...' : 'SignIn'}`}
                 </Button>
               </div>
             </form>

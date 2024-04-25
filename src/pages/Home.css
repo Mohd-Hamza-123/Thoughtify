@@ -2,12 +2,9 @@
     overflow-x: hidden;
     overflow-y: scroll;
     height: 100vh;
-    /* border: 2px solid red; */
+    /* font-family: 'Gabarito', sans-serif !important; */
 }
 
-#Home.darkMode {
-    /* background-color: #131315; */
-}
 
 .Home_Nav_Container {
     height: 115px;
@@ -15,11 +12,10 @@
     top: 0px;
     z-index: 5;
     transition: all 0.3s ease-in-out, background-color 1s ease;
-
 }
 
 .Home_Nav_Container.darkMode {
-    background-color: rgb(29, 28, 28);
+    background-color: #02020A;
 }
 
 .Home_Nav_Container.active {
@@ -145,4 +141,9 @@
     -moz-user-select: none;
     user-select: none;
     touch-action: manipulation;
+}
+
+body.darkMode .Reload_Page_Btn {
+    background-color: #FF3500;
+    box-shadow: none;
 }

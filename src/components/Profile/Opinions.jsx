@@ -11,26 +11,22 @@ import './Opinions.css'
 
 const Opinions = ({ visitedProfileUserID }) => {
 
-  const dispatch = useDispatch()
-
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
   const [comments, setcomments] = useState([])
-  console.log(comments)
+  const [isSearching, setisSearching] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredcomments, settotalFilteredcomments] = useState(0)
   const [isIntersecting, setIsIntersecting] = useState(false)
   const { hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions, increaseViews } = useAskContext()
+    sethasMorePostsInProfileFilterOpinions, increaseViews, isDarkModeOn } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
 
   const submit = async (data) => {
-    // console.log(data)
-
-
+    setisSearching((prev) => true)
     if (visitedProfileUserID === userData.$id) {
       data.UserID = visitedProfileUserID
       // console.log(data)
@@ -60,6 +56,8 @@ const Opinions = ({ visitedProfileUserID }) => {
     } else {
       return
     }
+
+    setisSearching((prev) => false)
   }
 
   useEffect(() => {
@@ -112,7 +110,7 @@ const Opinions = ({ visitedProfileUserID }) => {
   // getting total posts
 
   return (
-    <div id='Profile_Opinions_Filter' className='flex'>
+    <div id='Profile_Opinions_Filter' className={`flex ${isDarkModeOn ? 'darkMode' : ''}`}>
 
       <form id='Profile_Filter_Opinions_Form' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
 
@@ -164,29 +162,30 @@ const Opinions = ({ visitedProfileUserID }) => {
           </div>
         </div>
 
-        <Button type='Submit' className='Profile_Opinions_ApplyFilter'>Apply Filter</Button>
-        <input type='reset' onClick={() => {
-          reset()
-          // sethasMorePostsInProfile_Questionss(false)
-        }} value={'Reset Filter'} className='Profile_Opinions_ResentFilter' />
+        <Button type='Submit' className={`Profile_Opinions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{`${isSearching ? 'Searching' : 'Apply Filter'}`}</Button>
+        <input type='reset'
+          onClick={() => {
+            reset()
+          }}
+          value={'Reset Filter'}
+          className={`Profile_Opinions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>
 
 
-      <div id='Profile_Opinions_Filtered_Questions'>
-
-        {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
+      <div id='Profile_Opinions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : 'placeholder:'}`}>
+        {!isPostAvailable && <p className={`text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Posts Available</p>}
         {comments?.map((comment, index) => {
           if (isPostAvailable !== true) {
             return
           }
-          return <div onClick={() => increaseViews(comment?.postid)} key={comment?.$id}>
-            <span className={`${comment?.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{comment?.name}</span>
+          return <div className={`Profile_Opinions_Comments ${isDarkModeOn ? 'darkMode' : ''}`} onClick={() => increaseViews(comment?.postid)} key={comment?.$id}>
+            <span className={`${isDarkModeOn ? 'text-red-600' : 'first-letter:'}`}>{comment?.name}</span>
 
             <Link to={`/post/${comment?.postid}/${comment?.$id}`}>
               <article>{parse(comment?.commentContent)}</article>
               <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
-                <span>{new Date(comment?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                <span>{comment?.category}</span>
+                <span className={`text-black`}>{new Date(comment?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <span className={`text-black`}>{comment?.category}</span>
 
                 <div>
                   <i className="fa-solid fa-comments"></i>

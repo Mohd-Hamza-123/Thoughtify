@@ -1,13 +1,15 @@
-#TrustedResponderspage_Heading{
+#TrustedResponderspage_Heading {
     font-size: 30px;
     font-weight: 500;
-    font-family: 'Varela Round', sans-serif;
+    font-family: 'Gabarito', sans-serif;
 }
 
+body.darkMode #TrustedResponderspage_Heading {
+    color: white;
+}
 
 #TrustedRespondersPage {
     width: 100%;
-    /* border: 2px solid black; */
 }
 
 .TrustedRespondersPage_container {
@@ -33,6 +35,7 @@
 }
 
 .card {
+    border-radius: 10px;
     height: 70vh;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -40,23 +43,21 @@
     flex-direction: column;
     width: clamp(20rem, calc(20rem + 2vw), 22rem);
     box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);
-    border-radius: 3px;
     background: #ECE9E6;
     background: linear-gradient(to right, #FFFFFF, #ECE9E6);
-
+}
+.card img{
+    background-color: white;
+}
+body.darkMode .card {
+    background: black;
+    color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .card::-webkit-scrollbar {
     display: none;
 }
-
-/* .card::-webkit-scrollbar-thumb{
-    background-color: white;
-}
-.card::-webkit-scrollbar-track {
-    border-radius: 10px;
-    background-color: rgb(22, 190, 246);
-} */
 
 
 .card__body {
@@ -132,13 +133,37 @@
     background: linear-gradient(to right, #FFFFFF, #ECE9E6);
 }
 
+body.darkMode .wrapper {
+    background: black;
+    color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
 
 .wrapper .img-area,
 .social-icons a,
 .TrustedRespondersPage_buttons button {
-    /* background: #ecf0f3; */
     box-shadow: -3px -3px 7px #ffffff,
         3px 3px 5px #ceced1;
+    font-family: 'Poppins', sans-serif;
+}
+
+body.darkMode .wrapper .img-area,
+body.darkMode .social-icons a,
+body.darkMode .TrustedRespondersPage_buttons button {
+    box-shadow: -3px -3px 7px #ff0101,
+        3px 3px 5px #ff0000;
+    color: white;
+    background-color: black !important;
+}
+
+.img-area img {
+    background-color: white;
+}
+
+.TrustedRespondersPage_Bio {
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 18px !important;
     font-family: 'Poppins', sans-serif;
 }
 
@@ -228,7 +253,12 @@
     object-fit: cover;
 }
 
-.wrapper .name {
+body.darkMode .TrustedRespondersPage_name {
+    font-family: 'Gabarito', sans-serif;
+    color: white;
+}
+
+.wrapper .TrustedRespondersPage_name {
     font-size: 23px;
     font-weight: 500;
     color: #31344b;
@@ -268,6 +298,11 @@
     background: #ecf0f3;
     box-shadow: inset -3px -3px 7px #ffffff,
         inset 3px 3px 5px #ceced1;
+}
+
+body.darkMode .TrustedRespondersPage_buttons button:hover:before {
+    background: black;
+    box-shadow: none;
 }
 
 .TrustedRespondersPage_buttons button:hover:before {

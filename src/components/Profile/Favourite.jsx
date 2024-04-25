@@ -1,14 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Favourite.css";
 import appwriteService from "../../appwrite/config";
-import { Input, Button, Spinner } from "../";
+import { Spinner } from "../";
 import { useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { categoriesArr } from "../AskQue/Category";
 import { useAskContext } from "../../context/AskContext";
 import { getFilteredBookmarkPosts } from "../../store/profileSlice";
-import profile from "../../appwrite/profile";
+
 
 const Favourite = ({ visitedProfileUserID }) => {
   const bookMarkPostInRedux = useSelector(
@@ -166,216 +165,6 @@ const Favourite = ({ visitedProfileUserID }) => {
       id="Profile_Bookmark_Filter"
       className={`flex`}
     >
-      {/* <form
-        id="Profile_Filter_Bookmark_Form"
-        className="w-full flex flex-col gap-5 p-3 relative"
-        onSubmit={handleSubmit(submit)}
-      >
-        <div id="Profile_Bookmark_Title">
-          <p>Filter by Post Title :</p>
-          <div className="flex gap-2">
-            <label htmlFor="Profile_Bookmark_Title_Filter">Title : </label>
-            <Input
-              {...register("Title", {
-                required: false,
-              })}
-              id="Profile_Bookmark_Title_Filter"
-              placeholder="Title"
-            />
-          </div>
-        </div>
-
-        <div>
-          <p>Filter By Views :</p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("Viewed")}
-                type="radio"
-                name="Viewed"
-                id="Profile_Bookmark_Most_Viewed"
-                value={"MostViewed"}
-              />
-              <label htmlFor="Profile_Bookmark_Most_Viewed">Most Viewed</label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("Viewed")}
-                type="radio"
-                name="Viewed"
-                id="Profile_Bookmark_Less_Viewed"
-                value={"lessViewed"}
-              />
-              <label htmlFor="Profile_Bookmark_Less_Viewed">Less Viewed</label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p>Filter By Post Age :</p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("PostAge")}
-                id="Profile_Bookmark_PostAge_Recent"
-                type="radio"
-                name="PostAge"
-                value={"Recent"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="Profile_Bookmark_PostAge_Recent"
-              >
-                Recent
-              </label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("PostAge")}
-                id="Profile_Bookmark_PostAge_Oldest"
-                type="radio"
-                name="PostAge"
-                value={"Oldest"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="Profile_Bookmark_PostAge_Oldest"
-              >
-                Oldest
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p>Filter By Comment :</p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("Commented")}
-                id="Profile_Bookmark_Most_Commented"
-                type="radio"
-                name="Commented"
-                value={"Most Commented"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="Profile_Bookmark_Most_Commented"
-              >
-                Most Commented
-              </label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("Commented")}
-                id="Profile_Bookmark_Least_Commented"
-                type="radio"
-                name="Commented"
-                value={"Least Commented"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="Profile_Bookmark_Least_Commented"
-              >
-                Least Commented
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div>
-            <p>Favourite : </p>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("Like_Dislike")}
-              name="Like_Dislike"
-              id="Profile_Bookmark_Liked"
-              value={"Most Liked"}
-            />
-            <label htmlFor="Profile_Bookmark_Liked">Most liked</label>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("Like_Dislike")}
-              name="Like_Dislike"
-              id="Profile_Bookmark_Disliked"
-              value={"Most Disliked"}
-            />
-            <label htmlFor="Profile_Bookmark_Disliked">Most disliked</label>
-          </div>
-        </div>
-
-        <div>
-          <p>Filter By Category : </p>
-          <div id="Profile_Bookmark_Category" className="flex gap-2">
-            <label htmlFor="">Category : </label>
-            <select
-              name="category"
-              {...register("category")}
-              id=""
-              className="outline-none"
-            >
-              <option defaultChecked value={"All Category"}>
-                All Category
-              </option>
-              {categoriesArr?.map((category, index) => (
-                <option key={category.category + index}>
-                  {category.category}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div id="Profile_Bookmark_FilterByDate">
-          <p>Filter By Date : </p>
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-1">
-              <label className="" htmlFor="AfterDate">
-                After Date :
-              </label>
-              <input
-                {...register("AfterDate", {
-                  required: false,
-                })}
-                type="date"
-                name="AfterDate"
-                id="AfterDate"
-              />
-            </div>
-
-            <div className="flex gap-1">
-              <label className="" htmlFor="BeforeDate">
-                Before Date :
-              </label>
-              <input
-                type="date"
-                name="BeforeDate"
-                id="BeforeDate"
-                {...register("BeforeDate")}
-              />
-            </div>
-          </div>
-        </div>
-
-        <Button type="Submit" className="Profile_Bookmark_ApplyFilter">
-          Apply Filter
-        </Button>
-        <input
-          type="reset"
-          onClick={() => {
-            reset();
-            sethasMorePostsInProfileFilterBookmark(false);
-          }}
-          value={"Reset Filter"}
-          className="Profile_Bookmark_ResentFilter"
-        />
-      </form> */}
-
       <div id="Profile_Bookmark_Filtered_Bookmark">
         {!isPostAvailable && <p className="text-center">{`No Posts Available`}</p>}
         {visitedProfileUserID !== userData?.$id && <p className="text-center">{`You can't see Bookmark posts of Others`}</p>}
@@ -384,20 +173,19 @@ const Favourite = ({ visitedProfileUserID }) => {
             return;
           }
           return (
-            <div key={bookmark?.$id}>
+            <div className={`BookMark_Posts`} key={bookmark?.$id}>
               <Link to={`/post/${bookmark?.$id}/${null}`}>
                 <p>{bookmark?.title}</p>
                 <div
-                  id="BrowseBookmark_created_category_views"
-                  className="flex gap-3"
+                  className="BrowseBookmark_created_category_views flex gap-3"
                 >
-                  <span>
+                  <span className="Favourite_CreatedAt">
                     {new Date(bookmark?.$createdAt).toLocaleDateString(
                       "en-US",
                       { day: "numeric", month: "long", year: "numeric" }
                     )}
                   </span>
-                  <span>{bookmark?.category}</span>
+                  <span className="Favourite_Category">{bookmark?.category}</span>
                   <div className="flex justify-center items-center">
                     <span>{bookmark?.views}</span>
                     <i className=" fa-solid fa-eye" aria-hidden="true"></i>
@@ -421,12 +209,13 @@ const Favourite = ({ visitedProfileUserID }) => {
           );
         })}
 
-        {isLoading && hasMorePostsInProfileFilterBookmark && (
-          <section ref={spinnerRef} className="flex justify-center">
-            <Spinner />
-          </section>
-        )}
       </div>
+
+      {isLoading && hasMorePostsInProfileFilterBookmark && (
+        <section ref={spinnerRef} className="flex justify-center">
+          <Spinner />
+        </section>
+      )}
     </div>
   );
 };

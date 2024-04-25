@@ -29,6 +29,11 @@
     transition: transform 0.3s;
 }
 
+body.darkMode #Feedback section {
+    background-color: #121212;
+    color: white;
+}
+
 #Feedback section.active {
     transform: scale(1);
     transition: transform 0.3s;
@@ -55,6 +60,11 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     border-radius: 5px;
     padding: 5px 5px;
+}
+
+body.darkMode #Feedback textarea {
+    background-color: black;
+    color: white;
 }
 
 #Feedback section div button:nth-child(1) {

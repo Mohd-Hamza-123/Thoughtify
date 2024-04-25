@@ -203,7 +203,7 @@ const Home = () => {
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
-          <p className="text-center select-none">Internet Connection Error or May be you are not Logged In</p>
+          <p className={`text-center select-none ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Internet Connection Error or May be you are not Logged In</p>
           <Button onClick={() => {
             location.reload()
           }} className="Reload_Page_Btn">Reload Page</Button>

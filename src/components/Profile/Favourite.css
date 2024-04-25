@@ -2,7 +2,8 @@
     width: 100%;
     margin-bottom: 20px;
     position: relative;
-
+    display: flex;
+    flex-direction: column;
 }
 
 #Profile_Bookmark_Filter.active {
@@ -117,13 +118,19 @@
 }
 
 #Profile_Bookmark_Filtered_Bookmark {
-    width: 70%;
+    width: 100%;
+    display: flex;
     border-radius: 0px;
     padding: 10px 10px;
     background-color: transparent;
     overflow-x: hidden;
-    overflow-y: scroll;
-    height: 66vh;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.BookMark_Posts {
+    width: 45%;
+    height: fit-content;
 }
 
 #Profile_Bookmark_Filtered_Bookmark>p {
@@ -138,12 +145,17 @@
 
 #Profile_Bookmark_Filtered_Bookmark>div {
     border-radius: 5px;
-    padding: 7px;
+    padding: 10px;
     margin-top: 12px;
     margin-bottom: 25px;
     font-family: 'Varela Round', sans-serif;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     background-color: white;
+}
+
+body.darkMode #Profile_Bookmark_Filtered_Bookmark>div {
+    background-color: black;
+    color: white;
 }
 
 #Profile_Bookmark_Filtered_Bookmark>div>span {
@@ -156,17 +168,30 @@
     margin-bottom: 11px;
 }
 
-#Profile_Bookmark_created_category_views span {
+.BrowseBookmark_created_category_views span {
     font-size: 12px;
-    background-color: rgb(242, 242, 242);
-    padding: 3px 6px;
-    border-radius: 5px;
 }
 
-#Profile_Bookmark_created_category_views>div>span {
-    background-color: transparent;
+.Favourite_CreatedAt,
+.Favourite_Category {
+    background-color: rgba(208, 208, 208, 0.723);
+    border-radius: 10px;
+    padding: 3px 5px;
 }
 
-#Profile_Bookmark_created_category_views i {
-    font-size: 12px;
+body.darkMode .Favourite_CreatedAt,
+body.darkMode .Favourite_Category {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+}
+
+.BrowseBookmark_created_category_views>div {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    align-items: center;
+}
+
+.BrowseBookmark_created_category_views i {
+    font-size: 13px;
 }

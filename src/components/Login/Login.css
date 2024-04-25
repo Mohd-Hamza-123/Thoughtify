@@ -1,7 +1,6 @@
 #Login_Container {
     height: 100vh;
     width: 100vw;
-    background-color: rgb(246, 248, 250);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
 }
@@ -11,15 +10,26 @@
     filter: brightness(200%);
 }
 
+body.darkMode #Login_Container>div img {
+    filter: brightness(200%) invert(100%);
+}
+
 #Login_Container>div {
-    padding: 10px;
+    padding: 15px;
     width: 100%;
     border-radius: 10px;
-    height: 70%;
+    height: 80%;
     background-color: #ffffff;
     position: relative;
     box-shadow: 20px 20px 40px #00000041, inset -20px -20px 40px #ffffffbb;
     animation: rotate 1s normal;
+}
+
+body.darkMode #Login_Container>div {
+    background-color: black;
+    box-shadow: none;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
 }
 
 #Login_Container input {
@@ -32,22 +42,26 @@
     font-size: 15px;
 }
 
-/* #Login_Container input:-webkit-autofill {
-    background-color: black;
-} */
-
-
-
 #Login_Container i {
     height: 1px;
     background-color: black;
     transition: 0.6s;
 }
 
+body.darkMode #Login_Container i {
+    background-color: white;
+}
+
 #Login_Container input:focus,
 #Login_Container input:valid {
     background-color: rgb(25, 25, 28);
     color: white;
+}
+
+body.darkMode #Login_Container input:focus,
+body.darkMode #Login_Container input:valid {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
 }
 
 #Login_Container input:not(:valid):not(:placeholder-shown) {

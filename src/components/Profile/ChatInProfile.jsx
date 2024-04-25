@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom'
 const ChatInProfile = ({ profileData }) => {
     // console.log(profileData)
     const navigate = useNavigate()
+
     const [activeNav, setactiveNav] = useState('Following')
-    const { myUserProfile, setMyUserProfile } = useAskContext();
+    const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
     const { handleSubmit, register, control, watch, setValue, getValues } = useForm();
     const [searchValue, setSearchValue] = useState('')
     const unfollow = async (index) => {
@@ -44,11 +45,10 @@ const ChatInProfile = ({ profileData }) => {
     return (
         <div id='ChatInProfile'>
 
-            <nav className='ChatInProfileNav'>
+            <nav className={`ChatInProfileNav ${isDarkModeOn ? 'darkMode' : ''}`}>
                 <ul className='flex'>
                     <li onClick={() => setactiveNav('Following')} className={`${activeNav === 'Following' ? 'active' : ''} cursor-pointer`}>Following</li>
                     <li onClick={() => setactiveNav('Followers')} className={`${activeNav === 'Followers' ? 'active' : ''} cursor-pointer`}>Followers</li>
-                    {/* <li onClick={() => setactiveNav('Others')} className={`${activeNav === 'Others' ? 'active' : ''} cursor-pointer`}>Others</li> */}
                 </ul>
             </nav>
 
@@ -73,9 +73,7 @@ const ChatInProfile = ({ profileData }) => {
 
                 {activeNav === 'Following' && <section>
                     <ul>
-
                         {myUserProfile?.following?.map((profile, index) => {
-
                             if (searchValue !== '') {
                                 let boolean = JSON.parse(profile)?.name.includes(searchValue);
                                 // console.log(boolean)
@@ -84,15 +82,12 @@ const ChatInProfile = ({ profileData }) => {
                                     return
                                 }
                             }
-
-
-                            return <li onClick={() => navigation(JSON.parse(profile).profileID)} key={JSON.parse(profile).profileID}>
-                                <span>{JSON.parse(profile).name}</span>
+                            return <li key={JSON.parse(profile).profileID}>
+                                <span onClick={() => navigation(JSON.parse(profile).profileID)}>{JSON.parse(profile).name}</span>
                                 <button onClick={() => unfollow(index)}>Unfollow</button>
                             </li>
                         })}
-
-
+                        {myUserProfile?.following?.length === 0 && <div className={`${isDarkModeOn ? 'text-white' : 'text-black'} text-center`}>No Followers</div>}
                     </ul>
                 </section>}
 
@@ -113,6 +108,7 @@ const ChatInProfile = ({ profileData }) => {
                                 <button onClick={() => navigation(JSON.parse(profile).profileID)}>Visit</button>
                             </li>
                         })}
+                        {myUserProfile?.followers?.length === 0 && <div className={`${isDarkModeOn ? 'text-white' : 'text-black'} text-center`}>No Followers</div>}
                     </ul>
                 </section>}
 

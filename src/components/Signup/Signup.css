@@ -1,7 +1,7 @@
 #Signup_container {
     width: 100vw;
     height: 100vh;
-    background-color: rgb(246, 248, 250);
+    /* background-color: rgb(246, 248, 250); */
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
 
@@ -24,9 +24,20 @@
     animation: rotate 1s normal;
 }
 
+body.darkMode #Signup>div {
+    background-color: black;
+    box-shadow: none;
+    color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
 #Signup img {
     height: 50px;
     filter: brightness(200%);
+}
+
+body.darkMode #Signup img {
+    filter: brightness(200%) invert(100%);
 }
 
 @keyframes rotate {
@@ -61,6 +72,10 @@
     transition: 0.6s;
 }
 
+body.darkMode .signup_insideForm_div .inputTransition i {
+    background-color: white;
+}
+
 /* Target autofilled input fields */
 .signup_insideForm_div .inputTransition input:-webkit-autofill {
     background-color: black;
@@ -72,10 +87,17 @@
     color: white;
 }
 
+body.darkMode .signup_insideForm_div .inputTransition input:focus,
+body.darkMode .signup_insideForm_div .inputTransition input:valid {
+    background-color: white;
+    color: black;
+}
+
 .signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown) {
     background-color: black;
     color: red;
 }
+
 
 .signup_insideForm_div .inputTransition input:not(:valid):not(:placeholder-shown)~span {
     font-size: 0.85em;
@@ -191,4 +213,14 @@
 
 .github_Fb_login_div>div:nth-child(1) i {
     font-size: 27px;
+}
+
+.login_signIn_Btn {
+    background-color: #16BEF6;
+    color: white;
+}
+
+body.darkMode .login_signIn_Btn {
+    background-color: rgb(255, 0, 0);
+    color: white;
 }

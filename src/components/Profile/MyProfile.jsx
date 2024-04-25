@@ -23,7 +23,7 @@ import notification from "../../appwrite/notification";
 const MyProfile = () => {
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   // console.log(othersUserProfile)
-  const { myUserProfile, setMyUserProfile } = useAskContext()
+  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
 
   const { slug } = useParams();
   // console.log(slug)
@@ -92,7 +92,7 @@ const MyProfile = () => {
 
 
     if (isFollowing.length > 0) {
-   
+
 
       // updating sender profile
       const findDeleteIndex = updateFollowArr.findIndex((profileObj) => profileObj.profileID === slug);
@@ -258,10 +258,10 @@ const MyProfile = () => {
 
 
   return (
-    <div id="MyProfile_Parent" className="">
+    <div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
       <div className="MyProfile_HorizontalLine"></div>
       <div id="MyProfile" className="">
-        <div id="MyProfile_Header" className="w-full flex">
+        <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
           <div className="w-2/3 flex">
             <div
               id="MyProfile_Img_Div"
@@ -346,7 +346,7 @@ const MyProfile = () => {
 
 
         <div id="MyProfile_Data" className="flex mt-3">
-          <section id="MyProfile_Data_section">
+          <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
             <ul className="flex justify-between">
               <li
                 onClick={() => {

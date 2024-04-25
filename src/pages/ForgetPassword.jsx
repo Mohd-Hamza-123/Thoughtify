@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom'
 import { useForm } from "react-hook-form";
 import ResetPassword from './ResetPassword'
 import authService from '../appwrite/auth'
+import { useAskContext } from '../context/AskContext'
 const ForgetPassword = () => {
-
+  const { isDarkModeOn } = useAskContext()
   const { register, handleSubmit } = useForm();
   const submit = async (data) => {
     const recovery = await authService.forgetPassword(data.email);
@@ -22,7 +23,7 @@ const ForgetPassword = () => {
           <img className="Login_signup_Logo" src={QueryFlow} alt="" />
         </div>
         <div className="flex flex-col w-full">
-          <h1 className="font-bold text-2xl mt-3 mb-1 text-center text-black">
+          <h1 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
             Password Recovery
           </h1>
 
@@ -51,7 +52,7 @@ const ForgetPassword = () => {
             </div>
 
             <div>
-              <Button type="submit" className="mt-3 rounded-sm block px-2 py-1 bg-slate-800 text-white">
+              <Button type="submit" className="mt-3 rounded-sm block px-2 py-1 login_signIn_Btn">
                 Reset Password
               </Button>
             </div>

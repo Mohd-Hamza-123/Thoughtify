@@ -6,15 +6,23 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    /* border: 3px solid greenyellow; */
     width: 50vw;
     height: 70vh;
     background-color: #f8f8f8;
-    border-radius: 5px;
-    padding: 15px;
+    border-radius: 10px;
+    padding: 20px;
     z-index: 40;
     transform: scale(0) translate(-50%, -50%);
     transition: opacity 0.3s, transform 0.3s;
+}
+
+.Setting::-webkit-scrollbar {
+    display: none;
+}
+
+body.darkMode .Setting {
+    background-color: #121212;
+    color: white;
 }
 
 .Setting label {
@@ -34,6 +42,10 @@
 .Setting_Div {
     padding: 7px 0px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.192);
+}
+
+body.darkMode .Setting_Div {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.192);
 }
 
 .Setting_Div p {

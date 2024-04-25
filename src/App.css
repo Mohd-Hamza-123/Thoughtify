@@ -12,9 +12,22 @@
     left: 5px;
 }
 
+body.darkMode .GoToHomePageDiv {
+    color: white;
+}
+
 .GoToHomePageDiv>div>img {
     height: 20px;
 }
+
 .GoToHomePageDiv>section>img {
     height: 20px;
+}
+
+body.darkMode .GoToHomePageDiv>div>img {
+    filter: invert(100%);
+}
+
+body.darkMode .GoToHomePageDiv>section>img {
+    filter: invert(100%);
 }

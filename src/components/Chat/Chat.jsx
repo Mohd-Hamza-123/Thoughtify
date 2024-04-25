@@ -319,7 +319,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   return (
     <div id="Chat">
       <form onSubmit={handleSubmit(Submit)}>
-        <div >
+        <div className="">
           <ChatRTE
             control={control}
             name="commentContent"
@@ -350,17 +350,17 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
           }
 
           // console.log(profilePicURL)
-          return <div key={comment?.$id} id="Chat_Comment_Div">
+          return <div key={comment?.$id} className="Chat_Comment_Div">
             <section>
-              <div className="flex justify-between mb-5">
+              <div className="flex justify-between">
 
                 <div className="flex gap-2">
                   <img
-                    id="Chat_Comment_Div_img"
+                    className="Chat_Comment_Div_img"
                     src={`${profilePicURL ? profilePicURL : NoProfile}`}
                     alt=""
                   />
-                  <span className="text-red-700 font-bold Chat_Comment_Name">{comment?.name}</span>
+                  <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
                 </div>
                 <div>
                   {authid === comment?.authid && (
@@ -377,12 +377,10 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
 
               </div>
 
-              <div id="Chat_Comment_Div_1">
-                <div id="Chat_Comment">{comment?.commentContent ? parse(comment?.commentContent) : ''}</div>
+              <div className="Chat_Comment_Div_1">
+                <div className="Chat_Comment">{comment?.commentContent ? parse(comment?.commentContent) : ''}</div>
               </div>
             </section>
-
-
 
             <div id="ReplyDiv" className="flex justify-end mt-3">
               <span
@@ -469,18 +467,19 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
                 </div>
               })}
             </div>
-            <button className={''} id="Chat_See_Replies" onClick={() => {
+            <button className="Chat_See_Replies"
+              onClick={() => {
 
-              setid_For_Five_Mul((prev) => comment?.$id)
-              const currentCommentID = comment?.$id;
-              if (currentCommentID !== id_For_Five_Mul && id_For_Five_Mul !== null) {
-                setloadSubComments_Five_Mul((prev) => fixedReplies + 2)
-              }
-              if (loadSubComments_Five_Mul >= comment?.subComment?.length) return
+                setid_For_Five_Mul((prev) => comment?.$id)
+                const currentCommentID = comment?.$id;
+                if (currentCommentID !== id_For_Five_Mul && id_For_Five_Mul !== null) {
+                  setloadSubComments_Five_Mul((prev) => fixedReplies + 2)
+                }
+                if (loadSubComments_Five_Mul >= comment?.subComment?.length) return
 
-              setloadSubComments_Five_Mul((prev) => prev + 3)
+                setloadSubComments_Five_Mul((prev) => prev + 3)
 
-            }}>{`${(loadSubComments_Five_Mul >= comment?.subComment?.length && comment?.$id === id_For_Five_Mul) || comment?.subComment?.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
+              }}>{`${(loadSubComments_Five_Mul >= comment?.subComment?.length && comment?.$id === id_For_Five_Mul) || comment?.subComment?.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
             <div>
               <small>{new Date(comment?.$createdAt).toLocaleString()}</small>
             </div>

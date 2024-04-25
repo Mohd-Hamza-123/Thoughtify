@@ -17,7 +17,7 @@ const BrowseQuestions = () => {
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
 
   const [isLoading, setIsLoading] = useState(true)
- 
+
 
   let spinnerRef = useRef();
   const [lastPostID, setLastPostID] = useState(null)
@@ -28,9 +28,9 @@ const BrowseQuestions = () => {
 
   // console.log('isIntersecting : ' + isIntersecting)
   const { hasMorePostsInBrowseQuestions,
-    sethasMorePostsInBrowseQuestions, queries, setQueries } = useAskContext();
+    sethasMorePostsInBrowseQuestions, queries, setQueries, isDarkModeOn } = useAskContext();
   const [isPostAvailable, setisPostAvailable] = useState(true)
-  
+
   // isSearching
   const [isSearching, setisSearching] = useState(false)
   const submit = async (data) => {
@@ -129,15 +129,15 @@ const BrowseQuestions = () => {
       <UpperNavigationBar />
       <HorizontalLine />
       <LowerNavigationBar />
-      <strong id='BrowseQuestions_SearchQuestion_Heading' className='flex justify-center'>Filter Questions</strong>
+      <strong id='BrowseQuestions_SearchQuestion_Heading' className={`flex justify-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter Questions</strong>
       <div className='flex gap-2'>
 
-        <form id='BrowseQuestions_Filters' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
+        <form id='BrowseQuestions_Filters' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
 
           <div id='BrowseQuestions_PostTitle'>
-            <p>Filter by Post Title :</p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter by Post Title :</p>
             <div className='flex gap-2'>
-              <label htmlFor='BrowseQuestions_PostTitle_Filter'>Title : </label>
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestions_PostTitle_Filter'>Title : </label>
               <Input {...register("Title", {
                 required: false
               })} id='BrowseQuestions_PostTitle_Filter' placeholder="Title" />
@@ -145,72 +145,68 @@ const BrowseQuestions = () => {
           </div>
 
           <div>
-            <p>Filter By Views :</p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter By Views :</p>
             <div className='flex flex-col gap-1'>
               <div className='flex gap-2'>
                 <input {...register("Viewed")} type="radio" name="Viewed" id="BrowseQuestions_Most_Viewed" value={'MostViewed'} />
-                <label htmlFor='BrowseQuestions_Most_Viewed'>Most Viewed</label>
+                <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestions_Most_Viewed'>Most Viewed</label>
               </div>
               <div className='flex gap-2'>
                 <input {...register("Viewed")} type="radio" name="Viewed" id="BrowseQuestions_Less_Viewed" value={'lessViewed'} />
-                <label htmlFor='BrowseQuestions_Less_Viewed'>Less Viewed</label>
+                <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestions_Less_Viewed'>Less Viewed</label>
               </div>
             </div>
           </div>
 
           <div>
-            <p>Filter By Post Age :</p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter By Post Age :</p>
             <div className='flex flex-col gap-1'>
               <div className='flex gap-2'>
                 <input  {...register("PostAge")} id="BrowseQuestion_PostAge_Recent" type="radio" name="PostAge" value={'Recent'} />
-                <label className="cursor-pointer" htmlFor='BrowseQuestion_PostAge_Recent'>Recent</label>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestion_PostAge_Recent'>Recent</label>
               </div>
               <div className='flex gap-2'>
                 <input {...register("PostAge")} id="BrowseQuestion_PostAge_Oldest" type="radio" name="PostAge" value={'Oldest'} />
-                <label className="cursor-pointer" htmlFor='BrowseQuestion_PostAge_Oldest'>Oldest</label>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestion_PostAge_Oldest'>Oldest</label>
               </div>
             </div>
           </div>
 
 
           <div>
-            <p>Filter By Comment :</p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter By Comment :</p>
             <div className='flex flex-col gap-1'>
               <div className='flex gap-2'>
                 <input  {...register("Commented")} id="BrowseQuestion_Most_Commented" type="radio" name="Commented" value={'Most Commented'} />
-                <label className="cursor-pointer" htmlFor='BrowseQuestion_Most_Commented'>Most Commented</label>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestion_Most_Commented'>Most Commented</label>
               </div>
               <div className='flex gap-2'>
                 <input {...register("Commented")} id="BrowseQuestion_Least_Commented" type="radio" name="Commented" value={'Least Commented'} />
-                <label className="cursor-pointer" htmlFor='BrowseQuestion_Least_Commented'>Least Commented</label>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor='BrowseQuestion_Least_Commented'>Least Commented</label>
               </div>
             </div>
           </div>
 
-
-
-
-
           <div>
             <div>
-              <p>Favourite : </p>
+              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Favourite : </p>
             </div>
             <div className='flex gap-2'>
               <input type="radio" {...register("Like_Dislike")} name="Like_Dislike" id="BrowseQuestion_Liked" value={'Most Liked'} />
-              <label htmlFor="BrowseQuestion_Liked">Most liked</label>
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_Liked">Most liked</label>
             </div>
             <div className='flex gap-2'>
               <input type="radio"  {...register("Like_Dislike")} name="Like_Dislike" id="BrowseQuestion_Disliked" value={'Most Disliked'} />
-              <label htmlFor="BrowseQuestion_Disliked">Most disliked</label>
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_Disliked">Most disliked</label>
             </div>
           </div>
 
           <div>
-            <p>Filter By Category : </p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter By Category : </p>
             <div id='BrowseQuestions_Category' className='flex gap-2'>
-              <label htmlFor="">Category : </label>
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="">Category : </label>
               <select name="category" {...register("category")} id="" className='outline-none'>
-                <option defaultChecked value={'All Category'}>All Category</option>
+                <option className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} defaultChecked value={'All Category'}>All Category</option>
                 {categoriesArr?.map((category, index) => (
                   <option key={category.category + index}>{category.category}</option>
                 ))}
@@ -219,62 +215,65 @@ const BrowseQuestions = () => {
           </div>
 
           <div id='BrowseQuestions_FilterByDate'>
-            <p>Filter By Date : </p>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter By Date : </p>
             <div className='flex flex-col gap-3'>
 
 
               <div className='flex gap-1'>
-                <label className='' htmlFor="AfterDate">After Date :</label>
+                <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="AfterDate">After Date :</label>
                 <input {...register("AfterDate", {
                   required: false
                 })} type="date" name="AfterDate" id="AfterDate" />
               </div>
 
               <div className='flex gap-1'>
-                <label className='' htmlFor="BeforeDate">Before Date :</label>
+                <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BeforeDate">Before Date :</label>
                 <input type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")} />
               </div>
             </div>
           </div>
 
-          <Button type='Submit' className='BrowseQuestions_ApplyFilter'>{isSearching ? 'Searching...' : 'Apply Filter'}</Button>
-          <input type='reset' onClick={() => {
-            reset()
-            sethasMorePostsInBrowseQuestions(false)
-          }} value={'Reset Filter'} className='BrowseQuestions_ResentFilter' />
+          <Button type='Submit' className={`BrowseQuestions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{isSearching ? 'Searching...' : 'Apply Filter'}</Button>
+          <input
+            type='reset'
+            onClick={() => {
+              reset()
+              sethasMorePostsInBrowseQuestions(false)
+            }}
+            value={'Reset Filter'} className={`BrowseQuestions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
         </form>
 
 
-        <div id='BrowseQuestions_Filtered_Questions'>
-          {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
+        <div id='BrowseQuestions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+          {!isPostAvailable && <p className={`text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Posts Available</p>}
           {queries?.map((querie, index) => {
             if (isPostAvailable !== true) {
               return
             }
             return <div key={querie.$id}>
-              <span className={`${querie.gender === 'female' ? 'text-pink-600' : 'text-blue-900'}`}>{querie.name}</span>
+              <span className={`BrowseQuestions_querieName ${isDarkModeOn ? 'darkMode' : ''}`}>{querie.name}</span>
 
               <Link to={`/post/${querie.$id}/${null}`}>
-                <p>{querie.title}</p>
+                <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie.title}</p>
                 <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
-                  <span>{new Date(querie.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                  <span >{new Date(querie.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                   <span>{querie.category}</span>
                   <div className='flex justify-center items-center'>
-                    <span>{querie.views}</span>
-                    <i className=" fa-solid fa-eye" aria-hidden="true"></i>
+                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie.views}</span>
+                    <i className={`fa-solid fa-eye ${isDarkModeOn ? 'text-white' : 'text-black'}`} aria-hidden="true"></i>
                   </div>
                   <div>
-                    <span>{querie.commentCount}</span>
-                    <i className="fa-solid fa-comment"></i>
+                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie.commentCount}</span>
+                    <i className={`fa-solid fa-comment ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
                   </div>
                   <div>
-                    <span>{querie?.like}</span>
-                    <i className="fa-solid fa-thumbs-up"></i>
+                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie?.like}</span>
+                    <i className={`fa-solid fa-thumbs-up ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
                   </div>
 
                   <div>
-                    <span>{querie?.dislike}</span>
-                    <i className="fa-solid fa-thumbs-down"></i>
+                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie?.dislike}</span>
+                    <i className={`fa-solid fa-thumbs-down ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
                   </div>
                 </div>
               </Link>

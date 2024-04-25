@@ -9,10 +9,7 @@ import PersonalChatPage from './PersonalChatPage'
 import ViewPostPage from './ViewPostPage'
 import ForgetPassword from './ForgetPassword'
 import EditAskQuestion from './EditAskQuestion'
-import AllPersonalChatName from './AllPersonalChatName'
 import ResetPassword from './ResetPassword'
-
-
 export {
     EditProfilePage,
     EditAskQuestion,
@@ -25,6 +22,5 @@ export {
     ViewPostPage,
     ForgetPassword,
     SearchPage,
-    AllPersonalChatName,
     ResetPassword
 }

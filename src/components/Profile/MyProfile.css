@@ -1,7 +1,12 @@
 #MyProfile_Parent {
     background-color: rgb(242, 242, 242);
     font-family: 'Gabarito', sans-serif;
+    padding-bottom: 30px;
+    height: 90vh;
+}
 
+#MyProfile_Parent.darkMode {
+    background-color: #02020A;
 }
 
 .MyProfile_HorizontalLine {
@@ -30,8 +35,15 @@
     border-radius: 3px;
 }
 
+#MyProfile_Header.darkMode {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white !important;
+}
+
 #MyProfile_Img_Div img {
     width: 75%;
+    background-color: white;
     border-radius: 50%;
 }
 
@@ -112,14 +124,18 @@
     background-color: white;
 }
 
+#MyProfile_Data_section.darkMode ul {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white !important;
+}
+
 #MyProfile_Data_section ul li {
     list-style: none;
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
-    border-bottom: 3px solid white;
     padding: 5px 10px;
-    color: rgb(0, 0, 0);
 }
 
 #MyProfile_Data_section ul li:hover {
@@ -127,9 +143,18 @@
     border-bottom: 3px solid rgb(7, 225, 7);
 }
 
+#MyProfile_Data_section.darkMode ul li:hover {
+    background-color: rgb(0, 0, 0);
+    border-bottom: 3px solid rgb(102, 255, 102);
+}
+
 #MyProfile_Data_section ul li.active {
     /* background-color: rgb(237, 237, 237); */
     border-bottom: 3px solid var(--secondryBlue);
+}
+
+#MyProfile_Data_section.darkMode ul li.active {
+    border-bottom: 3px solid red;
 }
 
 #MyProfile_Data_div {

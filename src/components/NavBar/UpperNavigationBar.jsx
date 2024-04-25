@@ -100,7 +100,7 @@ const NavigationBar = () => {
     <>
       <nav
         id={"nav"}
-      className={`${isDarkModeOn ? 'darkMode' : ''}`}
+        className={`${isDarkModeOn ? 'darkMode' : ''}`}
       >
         <Container>
           <div className="flex justify-between px-7 py-2">
@@ -149,7 +149,7 @@ const NavigationBar = () => {
               {authStatus && <div id="UpperNavigationBar_Bell_Div">
                 {isUnreadNotificationExist && <span>!</span>}
                 <i onClick={() => setnotificationPopUp((prev) => !prev)} className={`fa-regular fa-bell cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
-                <section className={`${notificationPopUp ? 'active' : ''}`}>
+                <section className={`UpperNavigationBar_Notification_DropDown_Section ${notificationPopUp ? 'active' : ''}`}>
                   {notifications?.length > 0 && <span
                     onClick={() => {
                       deleteNotication();
@@ -166,9 +166,8 @@ const NavigationBar = () => {
                             onClick={
                               () => {
                                 navigate(`profile/${note?.userID}`)
-
                               }}
-                            id="UpperNavigationBar_Notification_profilePic" src={note?.userProfilePic || NoProfile} alt="" />
+                            className="UpperNavigationBar_Notification_profilePic" src={note?.userProfilePic || NoProfile} />
                           <p onClick={() => {
                             setnotificationPopUp((prev) => !prev)
                             updateNotification(note?.$id);
@@ -206,8 +205,7 @@ const NavigationBar = () => {
                   Item.active ? (
                     <li key={Item.name} className="">
                       <button
-                        id='UpperNavigationBar_Buttons'
-                        className="inline-bock px-6 py-2 duration-200 hover:bg-white hover:text-black rounded-full"
+                        className="UpperNavigationBar_Buttons inline-bock px-6 py-2 duration-200 rounded-full"
                         onClick={() => navigate(Item.slug)}
                       >
                         {Item.name}

@@ -1,7 +1,9 @@
 import React from 'react'
 import './Loader.css'
 import QueryFlow from '../../assets/QueryFlow.png'
+import { useAskContext } from '../../context/AskContext'
 const Loader = () => {
+    const { isDarkModeOn } = useAskContext()
     return (
         <div className='LoaderPage'>
             <div>
