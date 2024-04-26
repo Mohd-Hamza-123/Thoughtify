@@ -11,18 +11,22 @@ import { getTotalPostByMe } from '../../store/profileSlice'
 const Questions = ({ visitedProfileUserID }) => {
   const TotalPostByMe = useSelector((state) => state.profileSlice?.totalPostsbyMe)
   const dispatch = useDispatch()
-  // console.log(TotalPostByMe)
+
 
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
-  const [queries, setQueries] = useState([])
+  const [queries, setQueries] = useState([]);
+  // console.log(queries);
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
-  const [totalFilteredQueries, settotalFilteredQueries] = useState(0)
+  const [totalFilteredQueries, settotalFilteredQueries] = useState(0);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [isSearching, setIsSearching] = useState(false)
   const { hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions, isDarkModeOn } = useAskContext()
+    sethasMorePostsInProfileFilterQuestions, isDarkModeOn,
+    savedMyProfilePosts, setSavedMyProfilePosts
+  } = useAskContext()
+  // console.log(savedMyProfilePosts);
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
@@ -62,15 +66,17 @@ const Questions = ({ visitedProfileUserID }) => {
   }
 
   useEffect(() => {
-    if (queries.length >= totalFilteredQueries) {
+    if (queries?.length >= totalFilteredQueries) {
       setIsLoading(false)
       sethasMorePostsInProfileFilterQuestions(false)
       setLastPostID((prev) => null)
     } else {
-      setLastPostID((prev) => queries[queries.length - 1]?.$id)
+      setLastPostID((prev) => queries[queries?.length - 1]?.$id)
       setIsLoading(true)
       sethasMorePostsInProfileFilterQuestions(true)
     }
+
+    if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
   }, [queries, isIntersecting, isLoading])
   useEffect(() => {
     // console.log("bye")
@@ -111,7 +117,7 @@ const Questions = ({ visitedProfileUserID }) => {
   useEffect(() => {
     if (TotalPostByMe == 0) {
       appwriteService
-        .getPosts()
+        .getPosts({ lastPostID: null, TrustedResponders: null })
         .then((res) => {
           if (!res) return
           settotalNumberofPosts((prev) => res?.total)
@@ -120,7 +126,12 @@ const Questions = ({ visitedProfileUserID }) => {
     } else {
       settotalNumberofPosts((prev) => TotalPostByMe)
     }
-  }, [])
+  }, []);
+  useEffect(() => {
+    if (savedMyProfilePosts?.length > 0) {
+      setQueries((prev) => savedMyProfilePosts)
+    }
+  }, []);
   return (
 
     <div id='Profile_Questions_Filter' className='flex'>
@@ -233,6 +244,8 @@ const Questions = ({ visitedProfileUserID }) => {
         <Button type='Submit' className={`Profile_Questions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{isSearching ? 'Searching' : 'Apply Filter'}</Button>
         <input type='reset' onClick={() => {
           reset()
+          setSavedMyProfilePosts((prev) => [])
+          setQueries((prev) => [])
           sethasMorePostsInProfileFilterQuestions(false)
         }} value={'Reset Filter'} className={`Profile_Questions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>

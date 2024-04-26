@@ -11,10 +11,10 @@ const PersonalChatPage = () => {
 
   const { senderSlug, receiverSlug } = useParams()
   const [receiverDetails, setreceiverDetails] = useState([]);
-  console.log(receiverDetails)
+ 
   const senderDetails = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
-  // console.log(othersUserProfile)
+ 
   const [ChatRoomID, setchatRoomID] = useState('');
   const receiverName = useRef(null)
 
@@ -55,12 +55,10 @@ const PersonalChatPage = () => {
       }, participantsDetails)
     }
 
-    // console.log(createdChatRoom)
   }
 
   useEffect(() => {
     if (ChatRoomID) {
-      // console.log(ChatRoomID)
       getParticipantsProfileDetails()
     }
 

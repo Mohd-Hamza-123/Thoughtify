@@ -418,12 +418,11 @@ const ViewPost = () => {
 
               let followersArr = getPostUploaderProfile?.documents[0]?.followers
               followersArr = followersArr?.map((obj) => JSON.parse(obj))
-              // console.log(followersArr)
+
               const isNotificationSend = followersArr?.findIndex((profile) => profile?.profileID === userData?.$id);
 
-              // console.log(isNotificationSend)
               if (isNotificationSend !== -1) {
-                const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId, userProfilePic: myUserProfile?.profileImgURL });
+                const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `/post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId, userProfilePic: myUserProfile?.profileImgURL });
                 console.log(createNotification)
               }
             }
@@ -635,7 +634,6 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-
                         {/* {!isAuther && (
       <li>
         <Button>Report</Button>
@@ -685,24 +683,16 @@ const ViewPost = () => {
                 <p>{post?.pollQuestion}</p>
                 <ul>
                   {post?.pollOptions?.map((option, index) => {
-                    // console.log(option)
-
                     let parsedOption = JSON.parse(option).option
-                    // console.log(parsedOption)
                     let parsedVote = JSON.parse(option).vote
-                    // console.log(parsedVote)
                     let individualPollVote = Math.floor(Number((JSON.parse(option)).vote))
-                    // console.log(individualPollVote)
-                    let VoterIDandVote = pollVotersAuthIDsAndVote.map((obj) => JSON.parse(obj))
-
-
-                    // console.log(selectedOption)
+                    // let VoterIDandVote = pollVotersAuthIDsAndVote.map((obj) => JSON.parse(obj))
                     let percentage = (individualPollVote / totalPollVotes) * 100;
                     percentage = percentage.toFixed(0)
                     if (isNaN(percentage)) {
                       percentage = 0
                     }
-                    // console.log(percentage)
+
 
                     return <li className={`${index === selectedIndex ? "active" : ''} cursor-pointer`} onClick={() => {
 

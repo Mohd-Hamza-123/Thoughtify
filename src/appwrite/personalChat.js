@@ -15,7 +15,7 @@ export class PersonalChat {
     }
 
     async createPersonalChatRoom({ ChatRoomID }, participantsDetails) {
-    
+
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, ChatRoomID, {
                 participantsDetails
@@ -82,12 +82,18 @@ export class PersonalChat {
         }
     }
 
-    async listPersonalMessages({ ChatRoomID }) {
+    async listPersonalMessages({ ChatRoomID, limit }) {
+        let arr = []
+        if (ChatRoomID) {
+            arr.push(Query.equal("chatRoomID", [`${ChatRoomID}`]))
+        }
+        if (limit) {
+            arr.push(Query.orderAsc('$createdAt'));
+        }
+
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId,
-                [
-                    Query.equal("chatRoomID", [`${ChatRoomID}`])
-                ]
+                arr
             )
         } catch (error) {
             console.log("PersonalChat :: listPersonalMessages :: error", error);

@@ -14,8 +14,6 @@
     width: 70%;
 }
 
-
-
 #ViewPost-Question-Container {
     border-radius: 10px;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -29,6 +27,10 @@ body.darkMode #ViewPost-Question-Container {
 
 .Chat {
     width: 100%;
+}
+
+body.darkMode .Home_Nav_Container {
+    background-color: #02020A;
 }
 
 #ViewPost-Category {
@@ -256,16 +258,20 @@ body.darkMode #ViewPost-Title {
 }
 
 #ViewPost_Like_Dislike_BookMark>div {
-    /* border: 1px solid rgba(0, 0, 0, 0.269); */
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     padding: 5px;
     width: 33.33%;
     position: relative;
-    /* background-color: b; */
     border-radius: 3px;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+body.darkMode #ViewPost_Like_Dislike_BookMark>div {
+    background-color: black;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    color: white;
 }
 
 #ViewPost_Like_Dislike_BookMark>div:nth-child(1) i {

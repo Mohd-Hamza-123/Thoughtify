@@ -108,7 +108,7 @@ export class Service {
         }
     }
     // Infinte Scroll
-    async getPosts({ lastPostID, TrustedResponders }) {
+    async getPosts({ lastPostID = null, TrustedResponders }) {
 
         let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
 

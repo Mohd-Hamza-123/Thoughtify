@@ -4,7 +4,7 @@ import { Input } from "../";
 import { occupation_Arr } from "./Profile_arr";
 import { useAskContext } from "../../context/AskContext";
 
-const ProfileSummary = ({ profileData }) => {
+const ProfileSummary = ({ profileData = {} }) => {
   const {
     bio,
     links,

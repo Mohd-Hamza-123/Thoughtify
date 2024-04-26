@@ -1,8 +1,0 @@
- 1) dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL.href })) 
-
- don't forget to dispatch this when user change his profile profilePic
-
-
-2)
-
-

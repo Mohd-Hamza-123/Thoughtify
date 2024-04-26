@@ -5,14 +5,16 @@ import QueryFlow from '../assets/QueryFlow.png'
 import { Button } from "../components";
 import authService from "../appwrite/auth";
 import { useNavigate } from 'react-router-dom'
+import { useAskContext } from "../context/AskContext";
 
 const ResetPassword = () => {
-    
+
     const navigate = useNavigate();
     const urlParams = new URLSearchParams(window.location.search);
     const secret = urlParams.get('secret');
     const userId = urlParams.get('userId');
 
+    const { isDarkModeOn } = useAskContext()
 
     const { register, handleSubmit } = useForm();
     const submit = async (data) => {
@@ -33,9 +35,9 @@ const ResetPassword = () => {
                     <img className="Login_signup_Logo" src={QueryFlow} alt="" />
                 </div>
                 <div className="flex flex-col w-full">
-                    <h1 className="font-bold text-2xl mt-3 mb-1 text-center text-black">
+                    <h2 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                         Reset Your Password
-                    </h1>
+                    </h2>
 
                     <form
                         className="max-w-full flex flex-col justify-center items-center"
@@ -76,7 +78,7 @@ const ResetPassword = () => {
                         <div>
                             <Button
                                 type="submit"
-                                className="mt-3 rounded-sm block px-2 py-1 bg-slate-800 text-white"
+                                className="mt-3 rounded-sm block px-2 py-1 login_signIn_Btn"
                             >
                                 Change Password
                             </Button>

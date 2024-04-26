@@ -31,32 +31,26 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   const fixedReplies = 2;
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
-  const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([])
+  const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([]);
   const [activeTextArea, setactiveTextArea] = useState(null)
 
   const [postCommentCount, setpostCommentCount] = useState(null)
-  // console.log(postCommentCount)
+
   const [postid, setpostid] = useState(post.$id);
   const [commentArr, setcommentArr] = useState([]);
-  // console.clear()
-  // console.log(commentArr)
+
   const [replyComment, setreplyComment] = useState("");
   const { $id: authid, name } = useSelector((state) => state.auth?.userData || {});
   const { control, handleSubmit, getValues } =
     useForm();
-  // intersection observer
+
   const [isLoading, setIsLoading] = useState(false)
   const { hasMoreComments, sethasMoreComments, setnotificationPopMsg, setNotificationPopMsgNature, myUserProfile } = useAskContext()
   const [isIntersecting, setIsIntersecting] = useState(false)
   const [lastPostID, setLastPostID] = useState(null);
-  // console.log(lastPostID)
-
 
 
   let spinnerRef = useRef();
-  // let see = document.querySelector('#tinymce')
-  // console.log(see)
-
 
   useEffect(() => {
     // console.log("hi")
@@ -160,7 +154,6 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
 
   }, [spinnerRef.current, commentArr])
 
-
   const Submit = async (data) => {
 
     clearEditorContent();
@@ -204,11 +197,9 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
           console.log(followersArr)
           const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authid);
 
-          // console.log(isNotificationSend)
           // If He follows you , notification will be sent
           if (isNotificationSend !== -1) {
-            const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authid, postID: post.$id, userIDofReceiver: post?.userId, userProfilePic: myUserProfile?.profileImgURL });
-            console.log(createNotification)
+            const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `/post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authid, postID: post.$id, userIDofReceiver: post?.userId, userProfilePic: myUserProfile?.profileImgURL });
           }
         }
 
@@ -222,18 +213,17 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
             })
             .catch((error) => console.log(error))
         } else {
-          console.log("PostCommentCount B")
+
           appwriteService.updatePostViews(postid, post.views, post.commentCount + 1)
             .then((res) => {
               setpostCommentCount((prev) => post.commentCount + 1)
-              // console.log(res)
-              // dispatch(getAllVisitedQuestionsInViewPost({ questions: res }))
               dispatch(getInitialPost({ initialPosts: [res] }))
             })
             .catch((error) => console.log(error))
         }
       } catch (error) {
-
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg((prev) => 'Comment not Posted')
       }
 
     }

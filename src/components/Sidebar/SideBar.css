@@ -28,16 +28,16 @@ body.darkMode .SideBar {
 
 .SideBar hr {
     height: 1px;
-    background-color: rgba(0, 0, 0, 0.459);
+    background-color: rgba(0, 0, 0, 0.268);
     border: none;
 }
 
-body .SideBar hr {
-    background-color: rgba(255, 255, 255, 0.459);
+body.darkMode .SideBar hr {
+    background-color: rgba(255, 255, 255, 0.488);
 }
 
 #Sidebar_Svg svg {
-    transform: scale(1.3);
+    /* font-size: 30px; */
 }
 
 .SideBarContent svg {
@@ -69,27 +69,38 @@ body.darkMode .SideBarContent svg {
 }
 
 .SideBar_Day_Night_Mode {
-    /* border-top: 1px solid rgba(0, 0, 0, 0.459); */
-    padding-top: 10px;
-    gap: 5px;
+    /* border: 2px solid yellow; */
+    width: 100%;
+    display: flex;
 }
 
-.SideBar_Day_Night_Mode>div {
+.SideBar_Day_Night_Mode i img {
+    width: 82px;
+    height: 85px;
+}
+
+.SideBar_NightDayIcon_Div {
     width: 50%;
     display: flex;
+    /* border: 2px solid red; */
     justify-content: center;
     align-items: center;
     cursor: pointer;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid rgba(0, 0, 0, 0.44);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.SideBar_Day_Night_Mode>div:nth-child(1) {
-    background-color: black;
-    color: white;
+.SideBar_NightDayIcon_Div>div:nth-child(1) {
+    color: rgb(0, 0, 0);
 }
 
-.SideBar_Day_Night_Mode>div>i {
+body.darkMode .SideBar_NightDayIcon_Div>div:nth-child(1) {
+    color: rgb(255, 255, 255);
+}
+
+.SideBar_NightDayIcon_Div i {
     font-size: 25px;
 }

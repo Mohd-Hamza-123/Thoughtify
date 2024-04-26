@@ -15,6 +15,7 @@
     z-index: 3;
     position: relative;
     transition: background-color 1s ease;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 body.darkMode #nav {
@@ -106,11 +107,17 @@ body.darkMode #nav {
 }
 
 #UpperNavigationBar_search_Input.darkMode {
-    border: 1px solid white;
+    border: 2px solid white;
 }
 
 .UpperNavigationBar_Notification_DropDown_Section {
-    background-color: rgb(203, 203, 96) !important;
+    background-color: rgb(255, 255, 255) !important;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+body.darkMode .UpperNavigationBar_Notification_DropDown_Section {
+    background-color: rgb(0, 0, 0) !important;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .UpperNavigationBarNotificationUL li {
@@ -121,12 +128,30 @@ body.darkMode #nav {
     gap: 3px;
 }
 
+
+
 .UpperNavigationBarNotificationUL li:nth-child(1) {
     width: 90%;
 }
 
 .UpperNavigationBarNotificationUL li:nth-child(2) {
     width: 10%;
+}
+
+.UpperNavigationBarNotificationUL span {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    margin: 8px auto;
+}
+
+body.darkMode .UpperNavigationBarNotificationUL span {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    margin: 8px auto;
+}
+
+.UpperNavigationBarNotificationUL span:hover {
+    font-weight: 600;
 }
 
 .UpperNavBar_deleteNotification {
@@ -209,8 +234,17 @@ body.darkMode #nav {
     display: flex;
     width: 100%;
     flex-direction: column;
-    /* gap: 7px; */
     align-items: flex-start;
+}
+
+.UpperNavigationBar_No_Notifications {
+    margin-top: 4px;
+    background-color: white !important;
+}
+
+body.darkMode .UpperNavigationBar_No_Notifications {
+    background-color: rgb(0, 0, 0) !important;
+    color: white;
 }
 
 #UpperNavigationBar_Bell_Div section ul li div {
@@ -220,7 +254,7 @@ body.darkMode #nav {
 
 #UpperNavigationBar_Bell_Div section ul li {
     width: 100%;
-    margin-top: 5px;
+    margin-bottom: 5px;
     list-style-position: inside;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -235,8 +269,17 @@ body.darkMode #nav {
     background-color: white;
 }
 
+body.darkMode #UpperNavigationBar_Bell_Div section ul li.unRead {
+
+    background-color: black;
+}
+
 #UpperNavigationBar_Bell_Div section ul li.Read {
     background-color: rgb(230, 228, 228);
+}
+
+body.darkMode #UpperNavigationBar_Bell_Div section ul li.Read {
+    background-color: rgb(45, 45, 45);
 }
 
 #UpperNavigationBar_Bell_Div section ul li:hover {

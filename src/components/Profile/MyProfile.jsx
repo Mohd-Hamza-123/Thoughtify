@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "./MyProfile.css";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Favourite,
   Opinions,
   Questions,
   ProfileSummary,
   ChatInProfile,
+  SecondLoader,
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
@@ -21,23 +22,28 @@ import notification from "../../appwrite/notification";
 
 
 const MyProfile = () => {
-  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
-  // console.log(othersUserProfile)
-  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
 
   const { slug } = useParams();
-  // console.log(slug)
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   const userData = useSelector((state) => state.auth.userData);
+  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
+
   const realUser = userData ? slug === userData.$id : false;
-  const [profileData, setProfileData] = useState({});
+
+  const [profileData, setProfileData] = useState(null);
+
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
   const [URLimg, setURLimg] = useState('')
+  const [isFollowing, setisFollowing] = useState(false)
+
+  const [isBlocked, setisBlocked] = useState(false);
   const [activeNav, setactiveNav] = useState('Profile Summary')
-  const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData} />)
-  // console.log(activeNavRender)
+  const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
+
 
   useEffect(() => {
     getOtherUserProfile(slug)
@@ -80,11 +86,9 @@ const MyProfile = () => {
       setflag(flagURL.href);
     }
   };
-  // console.log(myUserProfile)
   const follow_Unfollow = async () => {
-
     if (!myUserProfile) return;
-
+    setisFollowing((prev) => !prev);
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
     // console.log(updateFollowArr)
 
@@ -173,7 +177,7 @@ const MyProfile = () => {
   const block_Unblock = async () => {
     // return
     if (!myUserProfile) return;
-
+    setisBlocked((prev) => !prev)
     const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
     let updateBlockedArr = [...myUserProfile.blockedUsers];
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
@@ -222,15 +226,12 @@ const MyProfile = () => {
         break;
       case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
         break;
-      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData} />)
+      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} />)
         break;
-      default: setactiveNavRender(<ProfileSummary profileData={profileData} />)
+      default: setactiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
   }, [activeNav, profileData])
 
-  const [isFollowing, setisFollowing] = useState(false)
-  // console.log(isFollowing)
-  const [isBlocked, setisBlocked] = useState(false);
 
   useEffect(() => {
     // console.log(myUserProfile)
@@ -258,140 +259,146 @@ const MyProfile = () => {
 
 
   return (
-    <div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-      <div className="MyProfile_HorizontalLine"></div>
-      <div id="MyProfile" className="">
-        <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
-          <div className="w-2/3 flex">
-            <div
-              id="MyProfile_Img_Div"
-              className="w-1/4 h-full flex justify-center items-center"
-            >
-              <img src={URLimg ? URLimg : NoProfile} />
-            </div>
-            <div
-              id="MyProfile_Name_Div"
-              className="w-3/4 h-full flex flex-col justify-center gap-3"
-            >
-              <section className="flex flex-col items-left">
-                <h6>{profileData?.name}</h6>
-              </section>
-              <div id="MyProfile_3Buttons" className="flex gap-3">
-                {!realUser && (
-                  <Button onClick={() => {
-                    navigate(`/ChatRoom/${userData?.$id}/${slug}`)
-                  }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
-                )}
-                {!realUser && (
-                  <Button
-                    className="p-2 rounded-sm"
-                    onClick={follow_Unfollow}
-                  >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
-                )}
-                {!realUser && <Button
-                  className="p-2 rounded-sm"
-                  onClick={block_Unblock}
-                >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
-                {realUser && (
-                  <Button
-                    className="p-2 rounded-sm"
-                    onClick={() => {
-                      navigate(`/EditProfile/${slug}`)
-                    }}
-
-                  >
-                    Edit Profile
-                  </Button>
-                )}
+    profileData ?
+      (<div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+        <div className="MyProfile_HorizontalLine"></div>
+        <div id="MyProfile" className="">
+          <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
+            <div className="w-2/3 flex">
+              <div
+                id="MyProfile_Img_Div"
+                className="w-1/4 h-full flex justify-center items-center"
+              >
+                <img src={URLimg ? URLimg : NoProfile} />
               </div>
-            </div>
-          </div>
+              <div
+                id="MyProfile_Name_Div"
+                className="w-3/4 h-full flex flex-col justify-center gap-3"
+              >
+                <section className="flex flex-col items-left">
+                  <h6>{profileData?.name}</h6>
+                </section>
+                <div id="MyProfile_3Buttons" className="flex gap-3">
+                  {!realUser && (
+                    <Button onClick={() => {
+                      navigate(`/ChatRoom/${userData?.$id}/${slug}`)
+                    }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
+                  )}
+                  {!realUser && (
+                    <Button
+                      className="p-2 rounded-sm"
+                      onClick={follow_Unfollow}
+                    >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
+                  )}
+                  {!realUser && <Button
+                    className="p-2 rounded-sm"
+                    onClick={block_Unblock}
+                  >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
+                  {realUser && (
+                    <Button
+                      className="p-2 rounded-sm"
+                      onClick={() => {
+                        navigate(`/EditProfile/${slug}`)
+                      }}
 
-          <div id="MyProfile_VerticalLine" className="h-full flex items-center">
-            <p></p>
-          </div>
-
-          <div
-            id="MyProfile_Header_Right"
-            className="w-1/3 flex flex-col items-start justify-center gap-4 p-5"
-          >
-            <div className="flex w-full">
-              <p className="w-1/2">Country :</p>
-              <div className="flex gap-2">
-                {countryName ? (
-                  <span>{countryName}</span>
-                ) : (
-                  <span>Not Available</span>
-                )}
-                <span className="">{flag && <img src={flag} alt="" />}</span>
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="flex w-full">
-              <p className="w-1/2">Followers :</p>
-              <span>{profileData?.followers?.length}</span>
-            </div>
-            <div className="flex w-full">
-              <p className="w-1/2">Following :</p>
-              <span>{profileData?.following?.length}</span>
-            </div>
-            <div className="flex w-full">
-              <p className="w-1/2">Joined :</p>
-              <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <div id="MyProfile_VerticalLine" className="h-full flex items-center">
+              <p></p>
             </div>
 
+            <div
+              id="MyProfile_Header_Right"
+              className="w-1/3 flex flex-col items-start justify-center gap-4 p-5"
+            >
+              <div className="flex w-full">
+                <p className="w-1/2">Country :</p>
+                <div className="flex gap-2">
+                  {countryName ? (
+                    <span>{countryName}</span>
+                  ) : (
+                    <span>Not Available</span>
+                  )}
+                  <span className="">{flag && <img src={flag} alt="" />}</span>
+                </div>
+              </div>
+
+              <div className="flex w-full">
+                <p className="w-1/2">Followers :</p>
+                <span>{profileData?.followers?.length}</span>
+              </div>
+              <div className="flex w-full">
+                <p className="w-1/2">Following :</p>
+                <span>{profileData?.following?.length}</span>
+              </div>
+              <div className="flex w-full">
+                <p className="w-1/2">Joined :</p>
+                <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+              </div>
+
+            </div>
+          </div>
+          <div className="MyProfile_HorizontalLine"></div>
+
+
+          <div id="MyProfile_Data" className="flex mt-3">
+            <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+              <ul className="flex justify-between">
+                <li
+                  onClick={() => {
+                    setactiveNav('Profile Summary')
+                  }}
+                  className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
+                  Profile Summary
+                </li>
+
+                <li
+                  onClick={() => {
+                    setactiveNav('Questions')
+                  }}
+                  className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
+                  Questions
+                </li>
+
+                <li
+                  onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
+                  Opinions
+                </li>
+                <li
+                  onClick={() => {
+                    setactiveNav('Favourites')
+                  }}
+                  className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
+                  Bookmarks
+                </li>
+
+                <li onClick={() => {
+                  setactiveNav('ProfileChats')
+                }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
+                  Chats
+                </li>
+              </ul>
+            </section>
+          </div>
+
+          <div className="MyProfile_HorizontalLine"></div>
+
+          <div className="w-full">
+            {activeNavRender}
           </div>
         </div>
-        <div className="MyProfile_HorizontalLine"></div>
-
-
-        <div id="MyProfile_Data" className="flex mt-3">
-          <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-            <ul className="flex justify-between">
-              <li
-                onClick={() => {
-                  setactiveNav('Profile Summary')
-                }}
-                className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
-                Profile Summary
-              </li>
-
-              <li
-                onClick={() => {
-                  setactiveNav('Questions')
-                }}
-                className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
-                Questions
-              </li>
-
-              <li
-                onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
-                Opinions
-              </li>
-              <li
-                onClick={() => {
-                  setactiveNav('Favourites')
-                }}
-                className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
-                Bookmarks
-              </li>
-
-              <li onClick={() => {
-                setactiveNav('ProfileChats')
-              }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
-                Chats
-              </li>
-            </ul>
-          </section>
-        </div>
-
-        <div className="MyProfile_HorizontalLine"></div>
-
-        <div className="w-full">
-          {activeNavRender}
-        </div>
-      </div>
-    </div>
+      </div>) : (
+        <div className="w-screen h-screen flex justify-center items-center">
+          <div className="MyProfile_Loader_Div">
+            <SecondLoader />
+          </div>
+        </div>)
   );
 };
 

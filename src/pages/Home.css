@@ -2,7 +2,6 @@
     overflow-x: hidden;
     overflow-y: scroll;
     height: 100vh;
-    /* font-family: 'Gabarito', sans-serif !important; */
 }
 
 
@@ -45,7 +44,6 @@
 }
 
 .Home_Left {
-    /* border: 2px solid red; */
     width: 60%;
 }
 
@@ -55,7 +53,6 @@
     position: sticky;
     right: 0;
     top: 0;
-    /* border: 2px solid red; */
     padding: 5px;
     transition: all 0.3s;
 }

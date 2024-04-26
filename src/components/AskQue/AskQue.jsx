@@ -14,6 +14,7 @@ import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice
 
 const AskQue = ({ post }) => {
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  const UserAuthStatus = useSelector((state) => state.auth.status)
 
   // console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =

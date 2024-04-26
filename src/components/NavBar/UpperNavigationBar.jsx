@@ -7,16 +7,19 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import { Input } from "../index";
 import QueryFlow from "../../assets/QueryFlow.png";
 import '../../index.css'
-
 import { useForm } from "react-hook-form";
 import NoProfile from '../../assets/NoProfile.png'
-
 import notification from '../../appwrite/notification'
 
 const NavigationBar = () => {
-  const { register, handleSubmit, setValue } = useForm()
+  const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
-  const userProfileData = useSelector((state) => state.profileSlice.userProfile)
+
+  // const userProfileData = useSelector((state) => state.profileSlice.userProfile);
+  const { setIsOpen, notificationPopUp,
+    setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow, setisOverlayBoolean, notifications, setnotifications, setNotificationPopMsgNature, setnotificationPopMsg, deleteNotication, isUnreadNotificationExist, setIsUnreadNotificationExist, isDarkModeOn } = useAskContext();
+
+  const { register, handleSubmit, setValue } = useForm()
 
   const BarItems = [
     {
@@ -30,37 +33,15 @@ const NavigationBar = () => {
       slug: "/signup",
     },
   ];
-  const [profileImgURL, setprofileImgURL] = useState('');
 
-  const navigate = useNavigate();
-  const { setIsOpen, notificationPopUp,
-    setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow, setisOverlayBoolean, notifications, setnotifications, setNotificationPopMsgNature, setnotificationPopMsg, deleteNotication, isUnreadNotificationExist, setIsUnreadNotificationExist, isDarkModeOn } = useAskContext();
-  // console.log(isDarkModeOn)
-  const userData = useSelector((state) => state.auth.userData);
 
-  // const getProfileData = async () => {
-  //   if (myUserProfile) {
-  //     setprofileImgURL(myUserProfile?.profileImgURL)
-  //   } else {
-  //     const profileData = await profile.listProfile({ slug: userData?.$id })
-  //     if (profileData?.documents?.length > 0) {
-  //       const profileImgID = profileData.documents[0].profileImgID
-  //       const profileImgURL = await profile.getStoragePreview(profileImgID)
-  //       setprofileImgURL(profileImgURL.href)
-  //     }
-  //   }
-  // }
-
-  useEffect(() => {
-    // getProfileData()
-  }, [userProfileData])
 
   const toggleSideBar = () => {
     setIsOpen(true);
     setisOverlayBoolean(true)
   };
   const submit = async (data) => {
-    // console.log(data)
+
     navigate(`/BrowseQuestion/${null}/${data.searchQuestion}`)
     setValue("searchQuestion", "")
   }
@@ -69,7 +50,6 @@ const NavigationBar = () => {
     notification
       .updateNotification({ notificationID, isRead: true })
       .then((res) => {
-        // console.log(res)
         const newNotificationArr = notifications?.map((note) => {
           if (note.$id !== notificationID) {
             return note
@@ -93,7 +73,6 @@ const NavigationBar = () => {
     } else {
       setIsUnreadNotificationExist(false)
     }
-
 
   }, [notifications])
   return (
@@ -150,14 +129,7 @@ const NavigationBar = () => {
                 {isUnreadNotificationExist && <span>!</span>}
                 <i onClick={() => setnotificationPopUp((prev) => !prev)} className={`fa-regular fa-bell cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
                 <section className={`UpperNavigationBar_Notification_DropDown_Section ${notificationPopUp ? 'active' : ''}`}>
-                  {notifications?.length > 0 && <span
-                    onClick={() => {
-                      deleteNotication();
-                      setnotifications((prev) => [])
-                      setNotificationPopMsgNature(true)
-                      setnotificationPopMsg("Notifications  Deleted")
-                    }}
-                    className="inline-block px-2 cursor-pointer text-right mt-2 rounded-sm bg-black text-white">Delete All Notifications</span>}
+
                   <ul className="UpperNavigationBarNotificationUL">
                     {notificationShow && notificationShow?.map((note, index) => {
                       return <li key={note?.$id} className={`${note.isRead ? 'Read' : 'unRead'} flex gap-1 items-center`}>
@@ -165,14 +137,18 @@ const NavigationBar = () => {
                           <img
                             onClick={
                               () => {
-                                navigate(`profile/${note?.userID}`)
+                                navigate(`/profile/${note?.userID}`)
                               }}
-                            className="UpperNavigationBar_Notification_profilePic" src={note?.userProfilePic || NoProfile} />
-                          <p onClick={() => {
-                            setnotificationPopUp((prev) => !prev)
-                            updateNotification(note?.$id);
-                            navigate(note.slug)
-                          }}> {note?.content}</p>
+                            className="UpperNavigationBar_Notification_profilePic cursor-pointer" src={note?.userProfilePic || NoProfile}
+                            onError={(e) => { e.target.src = NoProfile; }}
+                          />
+                          <p
+                            className="cursor-pointer"
+                            onClick={() => {
+                              setnotificationPopUp((prev) => !prev)
+                              updateNotification(note?.$id);
+                              navigate(note.slug)
+                            }}> {note?.content}</p>
                         </div>
                         <i onClick={() => {
                           notification.deleteNotication({ notificationID: note?.$id })
@@ -188,7 +164,15 @@ const NavigationBar = () => {
                       </li>
 
                     })}
-                    {notifications?.length <= 0 && <li onClick={() => { setnotificationPopUp((prev) => !prev) }}>No Notifications</li>}
+                    {notifications?.length > 0 && <span
+                      onClick={() => {
+                        deleteNotication();
+                        setnotifications((prev) => [])
+                        setNotificationPopMsgNature(true)
+                        setnotificationPopMsg("Notifications  Deleted")
+                      }}
+                      className="inline-block px-2 cursor-pointer text-right mt-2">Delete All Notifications</span>}
+                    {notifications?.length <= 0 && <li className="UpperNavigationBar_No_Notifications" onClick={() => { setnotificationPopUp((prev) => !prev) }}>No Notifications</li>}
                   </ul>
 
                 </section>

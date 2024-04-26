@@ -1,15 +1,14 @@
 import React from "react";
-import { NavLink, useNavigate, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./LowerNavigationBar.css";
 import { useAskContext } from "../../context/AskContext";
-import AskQue from "../AskQue/AskQue";
 import "./LowerNavigationBar.css";
 import { useSelector } from 'react-redux'
+
 const LowerNavigationBar = () => {
-  const UserAuthStatus = useSelector((state) => state.auth.status)
-  // console.log(UserAuthStatus)
-  const { setisAskQueVisible, isAskQueVisible, isOpen, isDarkModeOn } = useAskContext();
-  const navigate = useNavigate();
+
+  
+  const { isOpen, isDarkModeOn } = useAskContext();
 
   const arr = [
     {
@@ -26,7 +25,7 @@ const LowerNavigationBar = () => {
     },
     {
       NavName: "Got a Question",
-      slug: `${UserAuthStatus ? '/AskQuestion' : '/'}`
+      slug: `/AskQuestion`
     },
     {
       NavName: "Browse Question",
@@ -37,15 +36,15 @@ const LowerNavigationBar = () => {
     <>
       <nav
         id="LowerNavigationBar"
-        className={`lower_Nav flex ${isOpen ? "lightdark" : ""} ${isDarkModeOn ? "darkMode" : ""}`}
+        className={`${isOpen ? "lightdark" : ""} ${isDarkModeOn ? "darkMode" : ""}`}
       >
-        <ul className="flex justify-around w-full">
+        <ul>
           {arr?.map((nav) => (
-            <Link key={nav.NavName} to={nav.slug}>
-              <li className="item">
+            <NavLink key={nav.NavName} to={nav.slug} className={({ isActive }) => `${isActive ? 'active' : ''}`}>
+              <li className="LowerNavigationBar_Navlinks">
                 {nav.NavName}
               </li>
-            </Link>
+            </NavLink>
           ))}
         </ul>
       </nav>

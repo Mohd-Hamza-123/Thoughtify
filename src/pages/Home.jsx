@@ -14,57 +14,52 @@ const Home = () => {
 
   const dispatch = useDispatch()
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  // console.log(initialPost)
-  const { increaseViews, hasMorePostsInHome,
-    sethasMorePostsInHome, setnotificationPopMsg,
-    setNotificationPopMsgNature, isDarkModeOn } = useAskContext();
+
+  const {
+    increaseViews,
+    hasMorePostsInHome,
+    sethasMorePostsInHome,
+    isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
-  // console.log(posts)
   const [isLoading, setIsLoading] = useState(false)
-
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
 
-  const [maximumPostsNumber, setmaximumPostsNumber] = useState(null)
-
   let spinnerRef = useRef();
 
-  useEffect(() => {
-    const getAllPosts = async () => {
-      setIsLoading((prev) => true)
-      try {
-        if (initialPost.length === 0) {
-          const posts = await appwriteService.getPosts({ lastPostID })
-          setmaximumPostsNumber((prev) => posts.total);
-          // console.log(posts);
+  const getAllPosts = async () => {
+    setIsLoading((prev) => true)
+    try {
+      if (initialPost.length === 0) {
+        const posts = await appwriteService.getPosts({ lastPostID })
 
-          if (posts === false) {
-            setPosts((prev) => false)
-          }
-
-          if (initialPost.length < posts.total) {
-            sethasMorePostsInHome((prev) => true)
-          } else {
-            sethasMorePostsInHome((prev) => false)
-          }
-          if (posts) {
-            setPosts((prev) => posts.documents)
-            let lastID = posts.documents[posts.documents.length - 1]?.$id
-            setLastPostID((prev) => lastID)
-            dispatch(getInitialPost({ initialPosts: posts.documents }))
-          }
-        } else {
-          // console.log(initialPost)
-          setPosts((prev) => [...initialPost])
+        if (posts === false) {
+          setPosts((prev) => false)
         }
-      } catch (error) {
-        console.log(error)
-        setIsLoading(false)
-      } finally {
-        // setIsLoading((prev) => false)
+
+        if (initialPost.length < posts.total) {
+          sethasMorePostsInHome((prev) => true)
+        } else {
+          sethasMorePostsInHome((prev) => false)
+        }
+        if (posts) {
+          setPosts((prev) => posts.documents)
+          let lastID = posts.documents[posts.documents.length - 1]?.$id
+          setLastPostID((prev) => lastID)
+          dispatch(getInitialPost({ initialPosts: posts.documents }))
+        }
+      } else {
+
+        setPosts((prev) => [...initialPost])
       }
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
     }
+  }
+
+  useEffect(() => {
     getAllPosts();
   }, []);
 
@@ -99,7 +94,7 @@ const Home = () => {
         } else {
           sethasMorePostsInHome((prev) => false)
         }
-        setmaximumPostsNumber((prev) => posts.total)
+
         if (posts.documents.length === 0) {
           setIsLoading((prev) => false)
           return
@@ -123,10 +118,8 @@ const Home = () => {
 
 
   const HomePageRef = useRef()
-
   const lastScrollY = useRef(window.scrollY);
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
-
 
   const handleScroll = (e) => {
     let position = e.target.scrollTop;
@@ -164,7 +157,7 @@ const Home = () => {
       onScroll={handleScroll}
     >
       <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
-        <UpperNavigationBar className='' />
+        <UpperNavigationBar/>
         <HorizontalLine />
         <LowerNavigationBar />
       </nav>

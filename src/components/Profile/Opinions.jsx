@@ -13,17 +13,18 @@ const Opinions = ({ visitedProfileUserID }) => {
 
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
-  const [comments, setcomments] = useState([])
+  const [comments, setcomments] = useState([]);
   const [isSearching, setisSearching] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredcomments, settotalFilteredcomments] = useState(0)
   const [isIntersecting, setIsIntersecting] = useState(false)
   const { hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions, increaseViews, isDarkModeOn } = useAskContext()
+    sethasMorePostsInProfileFilterOpinions, increaseViews, isDarkModeOn, savedMyProfileComments, setsavedMyProfileComments } = useAskContext();
+    console.log(savedMyProfileComments)
   const userData = useSelector((state) => state.auth.userData);
   const { register, handleSubmit, setValue, reset, getValues } = useForm({})
-  const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
+
 
   const submit = async (data) => {
     setisSearching((prev) => true)
@@ -70,6 +71,8 @@ const Opinions = ({ visitedProfileUserID }) => {
       setIsLoading(true)
       sethasMorePostsInProfileFilterOpinions(true)
     }
+
+    if (comments?.length) setsavedMyProfileComments((prev) => comments)
   }, [comments, isIntersecting, isLoading])
 
   useEffect(() => {
@@ -107,7 +110,11 @@ const Opinions = ({ visitedProfileUserID }) => {
     }
 
   }, [spinnerRef.current, comments, lastPostID, totalFilteredcomments])
-  // getting total posts
+  useEffect(() => {
+    if (savedMyProfileComments && savedMyProfileComments?.length > 0) {
+      setcomments((prev) => savedMyProfileComments);
+    }
+  }, [])
 
   return (
     <div id='Profile_Opinions_Filter' className={`flex ${isDarkModeOn ? 'darkMode' : ''}`}>

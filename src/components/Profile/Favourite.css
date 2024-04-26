@@ -120,11 +120,10 @@
 #Profile_Bookmark_Filtered_Bookmark {
     width: 100%;
     display: flex;
-    border-radius: 0px;
     padding: 10px 10px;
     background-color: transparent;
     overflow-x: hidden;
-    flex-wrap: wrap;
+    flex-wrap:wrap;
     justify-content: space-between;
 }
 

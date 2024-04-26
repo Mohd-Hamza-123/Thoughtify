@@ -23,10 +23,39 @@
     background-color: #F2F2F2;
 }
 
+.PersonalChat_Ellipsis_Vertical {
+    position: relative;
+    /* border: 2px solid red; */
+}
+
+.PersonalChat_Ellipsis_Vertical>p {
+    transform: scale(0);
+    position: absolute;
+    width: 109px;
+    text-align: center;
+    padding: 5px 10px;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    top: 61px;
+    right: 6px;
+    transition: transform 0.3s ease;
+}
+
+body.darkMode .PersonalChat_Ellipsis_Vertical>p {
+    background-color: white;
+    color: rgb(3, 3, 3);
+}
+
+.PersonalChat_Ellipsis_Vertical>p.active {
+    transform: scale(1);
+}
+
 #Personalchat {
     width: 100%;
     height: 90%;
-    background-color: #F2F2F2;
     padding: 10px;
     display: flex;
     justify-content: center;
@@ -34,11 +63,8 @@
 }
 
 .room--container {
-    /* padding: 1em; */
     height: 97%;
     width: 90%;
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     display: flex;
     overflow: hidden;
     justify-content: space-between;
@@ -49,20 +75,20 @@
 #PersonalChat_Receiver_div {
     height: 12%;
     border-bottom: 2px solid rgba(172, 171, 171, 0.317);
-    overflow: hidden;
-    color: black !important;
-    /* border-radius: 5px; */
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+body.darkMode #PersonalChat_Receiver_div {
+    color: white;
+    background-color: black;
 }
 
 #PersonalChat_Receiver_div>div:nth-child(1) {
     width: 90%;
-    /* border: 2px solid greenyellow; */
 }
 
 #PersonalChat_Receiver_div>div:nth-child(2) {
     width: 10%;
-    /* border: 2px solid yellow; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -98,31 +124,41 @@
 
 /* Form Input Styling */
 .PeronalChat_Form>div {
-    height: 55px;
+    margin-top: 5px;
+    height: 50px;
     overflow: hidden;
 }
 
 
 
 .PersonalChat_TextArea_btn_div>div:nth-child(1) {
-    width: 90%;
+    width: 95%;
     height: inherit;
 }
 
 .PersonalChat_TextArea_btn_div>div:nth-child(2) {
-    width: 10%;
+    width: 5%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
 }
 
 #PersonalChatTextArea {
     font-weight: 500;
-    padding: 4px 5px;
+    padding: 5px 15px;
     color: rgb(255, 255, 255);
     outline: none;
     font-size: 15px;
     background-color: #3b3b3b;
-    height: inherit;
+    height: 50px;
     text-shadow: none !important;
     width: 100%;
+    border-radius: 30px;
+}
+
+body.darkMode #PersonalChatTextArea {
+    background-color: rgb(255, 255, 255);
+    color: black;
 }
 
 #PersonalChatTextArea::-webkit-scrollbar {
@@ -139,17 +175,30 @@
 
 #PersonalChatSubmit {
     cursor: pointer;
-    background-color: white;
-    color: rgb(0, 0, 0);
-    height: 100%;
-    width: 100%;
+    background-color: #3B3B3B;
+    color: rgb(255, 255, 255);
+    height: 50px;
+    width: 50px;
     transition: all 0.3s;
     font-weight: 600;
+    border-radius: 50%;
 }
-#PersonalChatSubmit:active{
+
+body.darkMode #PersonalChatSubmit {
+    cursor: pointer;
+    background-color: white;
+    color: rgb(0, 0, 0);
+    height: 50px;
+    width: 50px;
+    transition: all 0.3s;
+    font-weight: 600;
+    border-radius: 50%;
+}
+
+#PersonalChatSubmit:active {
     font-size: larger;
     transition: all 0.3s;
-    
+
 }
 
 /* Header Styling */
@@ -182,10 +231,15 @@
     overflow-x: hidden;
     overflow-y: auto;
     height: 80%;
+    margin-top: 7px;
     display: flex;
     flex-direction: column;
     background-color: rgb(246, 246, 246);
-    /* border-bottom: 2px solid rgb(0, 0, 0); */
+    border-radius: 10px;
+}
+
+body.darkMode #PersonalChat_Messages {
+    background-color: #0f0f0f;
 }
 
 #PersonalChat_Messages> :first-child {
@@ -240,11 +294,13 @@
 .PersonalChatYourColor {
     background-color: black;
     max-width: 60%;
-    
+
 }
-.PersonalChatYourColor span{
-    color:#ffffff ;
+
+.PersonalChatYourColor span {
+    color: #ffffff;
 }
+
 .message--body--owner {
     border: 1px solid rgba(219, 26, 90, 1);
     background-color: var(--secondaryBgColor);

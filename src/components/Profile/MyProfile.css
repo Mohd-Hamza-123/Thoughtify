@@ -2,7 +2,7 @@
     background-color: rgb(242, 242, 242);
     font-family: 'Gabarito', sans-serif;
     padding-bottom: 30px;
-    height: 90vh;
+    min-height: 100vh;
 }
 
 #MyProfile_Parent.darkMode {
@@ -162,50 +162,6 @@
     border: 2px solid red;
 }
 
-
-/* Popup css  */
-/* #MyProfile_EditPopup_overlay {
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    position: fixed;
-    z-index: 1;
-    top: -100vh;
-    left: 0;
-    opacity: 1;
-    transition: opacity 0.3s ease 0s;
-} */
-
-/* #MyProfile_EditPopup_overlay.active {
-    opacity: 0.4;
-    top: 0;
-    transition: opacity 0.6s ease 0s;
-} */
-
-/* #MyProfile_EditPopup {
-    bottom: -2%;
-    left: 15.8%;
-    width: 65%;
-    height: 100%;
-  
-    background-color: ghostwhite;
-    position: absolute;
-    border-radius: 5px;
-    transform: scale(0);
-    transition: transform 0.3s ease 0s;
-    z-index: 2;
-} */
-
-/* #MyProfile_EditPopup::-webkit-scrollbar {
-    display: none;
-} */
-
-/* #MyProfile_EditPopup.active {
-    transform: scale(1);
-    transition: transform 0.6s ease 0s;
-    
-} */
-/* 
-#MyProfile_EditPopup {
-   
-} */
+.MyProfile_Loader_Div{
+    margin-bottom: 80px;
+}

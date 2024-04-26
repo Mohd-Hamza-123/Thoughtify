@@ -21,17 +21,16 @@ import notification from "./appwrite/notification";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userData = useSelector((state) => state.auth.userData);
+
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  // console.log(loading)
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
   const [notificationPopUp, setnotificationPopUp] = useState(false);
   const [myUserProfile, setMyUserProfile] = useState(null)
-  const userData = useSelector((state) => state.auth.userData);
-  // console.log(userData);
   const [notificationShow, setNotificationShow] = useState(null)
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true)
   const [hasMoreComments, sethasMoreComments] = useState(true)
@@ -40,17 +39,30 @@ function App() {
   const [hasMorePostsInProfileFilterOpinions, sethasMorePostsInProfileFilterOpinions] = useState(true)
   const [hasMorePostsInProfileFilterBookmark, sethasMorePostsInProfileFilterBookmark] = useState(true)
   const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] = useState(true);
+  const [queries, setQueries] = useState([]);
+
   //For Notification Pop
   const [notificationPopMsg, setnotificationPopMsg] = useState('')
   const [notificationPopMsgNature, setNotificationPopMsgNature] = useState(false);
+
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
+
+  // For personal Chat Messages
+  const [savedPersonalChatMsgs, setsavedPersonalChatMsgs] = useState(null);
+
+  // To my Profile Posts
+  const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
+
+  // To save my Comments
+  const [savedMyProfileComments, setsavedMyProfileComments] = useState(null)
+
 
   const [mainResponder, setmainResponder] = useState(null);
 
   const indicator = useRef(true);
 
-  const [queries, setQueries] = useState([])
+
 
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -58,11 +70,11 @@ function App() {
   const userId = urlParams.get('userId');
 
   const body = document.getElementsByTagName('body');
-  // console.log(body)
-  // useState for DarkAndNight Mode
 
   const [isDarkModeOn, setisDarkModeOn] = useState(localStorage.getItem("isDarkModeOn") === 'true');
-  // console.log(isDarkModeOn);
+
+
+
   useEffect(() => {
     if (body) {
       if (isDarkModeOn) {
@@ -187,17 +199,15 @@ function App() {
       try {
         const res = await notification.getNotification({ userID: userData?.$id });
 
-        // console.log(res);
-
         setnotifications((prev) => res?.documents)
 
         if (res?.total > 25) {
           const totalItemsToDelete = res?.total - 25;
-          console.log(totalItemsToDelete);
+          // console.log(totalItemsToDelete);
 
           const limitToDelete = Math.min(totalItemsToDelete, 50);
           const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id, limit: limitToDelete });
-          console.log(listdocumentstoDelete);
+          // console.log(listdocumentstoDelete);
 
           for (let i = 0; i < limitToDelete; i++) {
             let notificationID = listdocumentstoDelete?.documents[i]?.$id;
@@ -213,7 +223,9 @@ function App() {
 
     }
     getNotification()
-  }, [])
+  }, []);
+
+
   const increaseViews = async (PostId) => {
     try {
       const previesViews = await appwriteService.getPost(PostId)
@@ -270,7 +282,10 @@ function App() {
           deleteNotication,
           isUnreadNotificationExist, setIsUnreadNotificationExist,
           isDarkModeOn, setisDarkModeOn,
-          mainResponder, setmainResponder
+          mainResponder, setmainResponder,
+          savedPersonalChatMsgs, setsavedPersonalChatMsgs,
+          savedMyProfilePosts, setSavedMyProfilePosts,
+          savedMyProfileComments, setsavedMyProfileComments,
         }}
       >
         <NotificationPop notificationPopMsg={notificationPopMsg} notificationPopMsgNature={notificationPopMsgNature} />
