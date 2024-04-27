@@ -33,14 +33,17 @@ body.darkMode .Home_Nav_Container {
     background-color: #02020A;
 }
 
-#ViewPost-Category {
+.ViewPost-Category {
     background-color: rgb(242, 242, 242);
-    display: inline;
-    padding: 4px 7px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 6px;
     color: rgb(68, 68, 68);
     border-radius: 10px;
     font-size: 13px;
     font-family: 'Gabarito', sans-serif;
+    border: 1px solid rgba(38, 37, 37, 0.171);
 }
 
 #ViewPost_fa-ellipsis {
@@ -137,11 +140,11 @@ body.darkMode #ViewPost-Title {
     justify-content: center;
     align-items: center;
     border-bottom: 1px solid white;
-    color: white;
+    color: rgb(0, 0, 0);
     height: 35px;
     width: 35px;
-    /* padding: 4px 10px; */
-    background-color: rgb(0, 0, 0);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    background-color: rgb(255, 255, 255);
     border-radius: 50%;
     margin-top: 5px;
     transition: all 100ms;
@@ -154,8 +157,6 @@ body.darkMode #ViewPost-Title {
 }
 
 .ViewPost-ellipsis-Vertical ul li:hover {
-    color: rgb(255, 255, 255);
-    background-color: rgb(0, 0, 0);
     transform: scale(1.15);
     transition: all 100ms;
 }

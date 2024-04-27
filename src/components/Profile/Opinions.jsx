@@ -19,44 +19,76 @@ const Opinions = ({ visitedProfileUserID }) => {
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredcomments, settotalFilteredcomments] = useState(0)
   const [isIntersecting, setIsIntersecting] = useState(false)
-  const { hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions, increaseViews, isDarkModeOn, savedMyProfileComments, setsavedMyProfileComments } = useAskContext();
-    console.log(savedMyProfileComments)
+  const {
+    hasMorePostsInProfileFilterOpinions,
+    sethasMorePostsInProfileFilterOpinions,
+    increaseViews,
+    isDarkModeOn,
+    savedMyProfileComments,
+    setsavedMyProfileComments,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
+  } = useAskContext();
+  // console.log(savedMyProfileComments)
   const userData = useSelector((state) => state.auth.userData);
-  const { register, handleSubmit, setValue, reset, getValues } = useForm({})
+  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
+  const { register, handleSubmit, reset, getValues } = useForm({})
 
 
   const submit = async (data) => {
-    setisSearching((prev) => true)
-    if (visitedProfileUserID === userData.$id) {
-      data.UserID = visitedProfileUserID
-      // console.log(data)
-      // return
-      sethasMorePostsInProfileFilterOpinions(true)
-      const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
-      // console.log(filteredOpinions)
-      const isArray = Array.isArray(filteredOpinions)
-      if (isArray) {
-        sethasMorePostsInProfileFilterOpinions(false)
-        setIsLoading(false)
-        settotalFilteredcomments(0)
-        setLastPostID(null)
-        setisPostAvailable(false)
-      } else {
-        setIsLoading(true)
-        setisPostAvailable(true)
-        if (filteredOpinions.documents.length > 0) {
-          settotalFilteredcomments(filteredOpinions.total)
-          setcomments((prev) => filteredOpinions.documents)
-        } else {
-          settotalFilteredcomments(0)
-          setcomments((prev) => [])
-          setisPostAvailable(false)
+    setisSearching((prev) => true);
+
+
+    if (visitedProfileUserID !== userData?.$id) {
+      const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
+      // console.log(visitedProfileUserData);
+      if (!visitedProfileUserData) return
+
+      if (visitedProfileUserData?.othersCanFilterYourPosts === "My Following") {
+        const parsingFollowingArr = visitedProfileUserData?.following.map((obj) => JSON.parse(obj));
+
+        const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
+     
+        if (!isHeFollowsYou) {
+          setNotificationPopMsgNature((prev) => false);
+          setnotificationPopMsg((prev) => "You can't filter");
+          return
         }
+      } else if (visitedProfileUserData?.othersCanFilterYourPosts === "None") {
+        setNotificationPopMsgNature((prev) => false);
+        setnotificationPopMsg((prev) => 'No one can filter');
+        return
       }
-    } else {
-      return
+
     }
+
+
+
+    data.UserID = visitedProfileUserID
+
+    sethasMorePostsInProfileFilterOpinions(true)
+    const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
+    // console.log(filteredOpinions)
+    const isArray = Array.isArray(filteredOpinions)
+    if (isArray) {
+      sethasMorePostsInProfileFilterOpinions(false)
+      setIsLoading(false)
+      settotalFilteredcomments(0)
+      setLastPostID(null)
+      setisPostAvailable(false)
+    } else {
+      setIsLoading(true)
+      setisPostAvailable(true)
+      if (filteredOpinions.documents.length > 0) {
+        settotalFilteredcomments(filteredOpinions.total)
+        setcomments((prev) => filteredOpinions.documents)
+      } else {
+        settotalFilteredcomments(0)
+        setcomments((prev) => [])
+        setisPostAvailable(false)
+      }
+    }
+
 
     setisSearching((prev) => false)
   }

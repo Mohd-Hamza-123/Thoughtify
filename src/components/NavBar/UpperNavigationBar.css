@@ -9,6 +9,7 @@
 }
 
 #nav {
+    padding: 7px 20px;
     background-color: white;
     justify-content: space-around;
     align-items: center;
@@ -16,6 +17,23 @@
     position: relative;
     transition: background-color 1s ease;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+@media only screen and (max-width: 400px) {
+    #nav {
+        padding: 5px 10px;
+        background-color: white;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .logo_Name {
+        font-size: 20px !important;
+    }
+
+    .logo {
+        width: 30px !important;
+    }
 }
 
 body.darkMode #nav {

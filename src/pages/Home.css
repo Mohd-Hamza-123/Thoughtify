@@ -9,6 +9,7 @@
     height: 115px;
     position: fixed;
     top: 0px;
+    background-color: white;
     z-index: 5;
     transition: all 0.3s ease-in-out, background-color 1s ease;
 }

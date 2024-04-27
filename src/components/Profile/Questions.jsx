@@ -16,54 +16,83 @@ const Questions = ({ visitedProfileUserID }) => {
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
   const [queries, setQueries] = useState([]);
-  // console.log(queries);
+  
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredQueries, settotalFilteredQueries] = useState(0);
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [isSearching, setIsSearching] = useState(false)
-  const { hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions, isDarkModeOn,
-    savedMyProfilePosts, setSavedMyProfilePosts
+  const {
+    hasMorePostsInProfileFilterQuestions,
+    sethasMorePostsInProfileFilterQuestions,
+    isDarkModeOn,
+    savedMyProfilePosts,
+    setSavedMyProfilePosts,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
   } = useAskContext()
   // console.log(savedMyProfilePosts);
   const userData = useSelector((state) => state.auth.userData);
-  const { register, handleSubmit, setValue, reset, getValues } = useForm({})
+  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
+  const { register, handleSubmit, reset, getValues } = useForm({})
   const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
 
   const submit = async (data) => {
-    setIsSearching((prev) => true)
-    if (visitedProfileUserID === userData.$id) {
-      data.UserID = visitedProfileUserID
 
-      sethasMorePostsInProfileFilterQuestions(true)
-      const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
+    if (visitedProfileUserID !== userData?.$id) {
+      const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
+      // console.log(visitedProfileUserData);
 
-      // console.log(filteredQuestions)
-      const isArray = Array.isArray(filteredQuestions)
-      if (isArray) {
-        sethasMorePostsInProfileFilterQuestions(false)
-        setIsLoading(false)
-        settotalFilteredQueries(0)
-        setLastPostID(null)
-        setisPostAvailable(false)
-      } else {
-        setIsLoading(true)
-        setisPostAvailable(true)
-        if (filteredQuestions.documents.length > 0) {
-          settotalFilteredQueries(filteredQuestions.total)
-          setQueries((prev) => filteredQuestions.documents)
-        } else {
-          settotalFilteredQueries(0)
-          setQueries((prev) => [])
-          setisPostAvailable(false)
+      if (!visitedProfileUserData) return
+
+      if (visitedProfileUserData?.othersCanFilterYourPosts === "My Following") {
+        const parsingFollowingArr = visitedProfileUserData?.following.map((obj) => JSON.parse(obj));
+        console.log(parsingFollowingArr);
+        const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
+        console.log(isHeFollowsYou);
+        if (!isHeFollowsYou) {
+          setNotificationPopMsgNature((prev) => false);
+          setnotificationPopMsg((prev) => "You can't filter");
+          return
         }
+      } else if (visitedProfileUserData?.othersCanFilterYourPosts === "None") {
+        setNotificationPopMsgNature((prev) => false);
+        setnotificationPopMsg((prev) => 'No one can filter');
+        return
       }
-    } else {
-      return
     }
+
+    setIsSearching((prev) => true)
+
+    data.UserID = visitedProfileUserID
+
+    sethasMorePostsInProfileFilterQuestions(true)
+    const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
+
+    const isArray = Array.isArray(filteredQuestions)
+    if (isArray) {
+      sethasMorePostsInProfileFilterQuestions(false)
+      setIsLoading(false)
+      settotalFilteredQueries(0)
+      setLastPostID(null)
+      setisPostAvailable(false)
+    } else {
+      setIsLoading(true)
+      setisPostAvailable(true)
+      if (filteredQuestions.documents.length > 0) {
+        settotalFilteredQueries(filteredQuestions.total)
+        setQueries((prev) => filteredQuestions.documents)
+      } else {
+        settotalFilteredQueries(0)
+        setQueries((prev) => [])
+        setisPostAvailable(false)
+      }
+    }
+
     setIsSearching((prev) => false)
   }
+
+
 
   useEffect(() => {
     if (queries?.length >= totalFilteredQueries) {
@@ -78,6 +107,8 @@ const Questions = ({ visitedProfileUserID }) => {
 
     if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
   }, [queries, isIntersecting, isLoading])
+
+
   useEffect(() => {
     // console.log("bye")
     const getMoreQueries = async () => {

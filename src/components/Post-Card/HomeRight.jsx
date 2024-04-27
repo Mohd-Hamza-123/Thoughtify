@@ -7,17 +7,30 @@ import { useSelector } from 'react-redux'
 import authService from '../../appwrite/auth'
 const HomeRight = () => {
     const userData = useSelector((state) => state.auth.userData)
-    // console.log(userData)
+    
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false
     );
-    const { setfeedbackPopUp, SetSettingPopUp, setisOverlayBoolean, isDarkModeOn } = useAskContext()
+    const {
+        setfeedbackPopUp,
+        SetSettingPopUp,
+        setisOverlayBoolean,
+        isDarkModeOn,
+        setNotificationPopMsgNature,
+        setnotificationPopMsg
+    } = useAskContext()
     const userAuthStatus = useSelector((state) => state.auth.status)
     const navigate = useNavigate();
 
     const verifyEmail = async () => {
-        const getVerificationDetails = await authService.emailVerification();
+        try {
+            const getVerificationDetails = await authService.emailVerification();
+            setNotificationPopMsgNature((prev) => true);
+            setnotificationPopMsg((prev) => `Message sent! Check your G-mail inbox to verify`);
+        } catch (error) {
+            setNotificationPopMsgNature((prev) => false);
+            setnotificationPopMsg((prev) => `Verification Failed. Try again later`);
+        }
 
-        console.log("email verification sent")
     }
 
     return (
@@ -32,13 +45,32 @@ const HomeRight = () => {
             </div>
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
-                {userAuthStatus && <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => setfeedbackPopUp((prev) => !prev)}>Feedback</span>}
+                {userAuthStatus && <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
+                    if (!userAuthStatus) {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => 'You are not Login');
+                        return
+                    }
+                    setfeedbackPopUp((prev) => !prev)
+                }}>Feedback</span>}
                 <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
+                    if (!userAuthStatus) {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => 'You are not Login');
+                        return
+                    }
                     SetSettingPopUp((prev) => !prev)
                     setisOverlayBoolean((prev) => !prev)
                 }
                 }>Setting</span>
-                <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => navigate(`/trustedResponders`)}>Trusted Responders</span>
+                <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
+                    if (!userAuthStatus) {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => 'You are not Login');
+                        return
+                    }
+                    navigate(`/trustedResponders`);
+                }}>Trusted Responders</span>
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail}
                     className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`}>Verify Your Email</span>}
             </div>

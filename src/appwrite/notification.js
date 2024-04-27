@@ -31,14 +31,16 @@ export class Notification {
                 obj
             )
         } catch (error) {
-            console.log("Notification error : " + error)
+            console.error("Notification error : " + error)
         }
     }
-
     async getNotification({ userID, limit = null }) {
         let arr = [Query.orderDesc("$createdAt")];
 
-        if (userID) arr.push(Query.equal("userIDofReceiver", userID));
+        if (userID) {
+            arr.push(Query.equal("userIDofReceiver", userID))
+            arr.push(Query.notEqual("userID", userID));
+        }
 
         if (limit) {
             arr = [
@@ -53,7 +55,7 @@ export class Notification {
             )
             return notifications
         } catch (error) {
-            console.log("Error in Get Notification : " + error)
+            console.error("Error in Get Notification : " + error)
         }
     }
     async deleteNotication({ notificationID }) {
@@ -61,7 +63,7 @@ export class Notification {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwrite_Notification_CollectionID, notificationID)
         } catch (error) {
-            console.log("Error in Deleting Notification : " + error)
+            console.error("Error in Deleting Notification : " + error)
         }
     }
     async updateNotification({ notificationID, isRead }) {
@@ -74,7 +76,7 @@ export class Notification {
                 obj
             )
         } catch (error) {
-            console.log("Notification error : " + error)
+            console.error("Notification error : " + error)
         }
     }
 }

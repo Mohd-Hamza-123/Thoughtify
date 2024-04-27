@@ -203,11 +203,9 @@ function App() {
 
         if (res?.total > 25) {
           const totalItemsToDelete = res?.total - 25;
-          // console.log(totalItemsToDelete);
 
           const limitToDelete = Math.min(totalItemsToDelete, 50);
           const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id, limit: limitToDelete });
-          // console.log(listdocumentstoDelete);
 
           for (let i = 0; i < limitToDelete; i++) {
             let notificationID = listdocumentstoDelete?.documents[i]?.$id;
@@ -217,7 +215,7 @@ function App() {
         }
 
       } catch (error) {
-
+        console.error(error)
       }
 
 

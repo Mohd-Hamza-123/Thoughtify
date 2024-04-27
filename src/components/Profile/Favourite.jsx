@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import "./Favourite.css";
 import appwriteService from "../../appwrite/config";
 import { Spinner } from "../";
-import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
@@ -17,29 +16,26 @@ const Favourite = ({ visitedProfileUserID }) => {
   // console.log(bookMarkPostInRedux)
   const spinnerRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
-  // console.log(isLoading)
 
   const [isPostAvailable, setisPostAvailable] = useState(true);
   const [totalFilteredbookmarks, settotalFilteredbookmarks] = useState(0);
-  // console.log(totalFilteredbookmarks)
+
   const [isIntersecting, setIsIntersecting] = useState(false);
-  // console.log(isIntersecting)
+
   const {
     hasMorePostsInProfileFilterBookmark,
     sethasMorePostsInProfileFilterBookmark,
     myUserProfile,
   } = useAskContext();
+  // console.log(myUserProfile);
   const userData = useSelector((state) => state.auth.userData);
-  const { register, handleSubmit, setValue, reset, getValues } = useForm({});
+
   const bookMarkCounter = useRef(0);
 
-  // console.log(isLoading)
-  // console.log(hasMorePostsInProfileFilterBookmark)
-
   const submit = async () => {
-    if (visitedProfileUserID === userData.$id) {
-      const totalLength = myUserProfile.bookmarks.length;
-      let bookMarkArray = myUserProfile.bookmarks;
+    if (visitedProfileUserID === userData?.$id) {
+      const totalLength = myUserProfile?.bookmarks?.length;
+      let bookMarkArray = myUserProfile?.bookmarks;
 
       if (totalLength === 0) {
         setisPostAvailable(false);
@@ -144,11 +140,15 @@ const Favourite = ({ visitedProfileUserID }) => {
 
   useEffect(() => {
     if (myUserProfile) {
-      settotalFilteredbookmarks(myUserProfile.bookmarks.length);
+      if (myUserProfile?.userIdAuth !== visitedProfileUserID) {
+        setIsLoading((prev) => false)
+      }
+      settotalFilteredbookmarks(myUserProfile?.bookmarks?.length);
     }
   }, [myUserProfile]);
 
   const indicator = useRef(true);
+
   useEffect(() => {
     if (indicator.current && bookMarkPostInRedux.length < 4) {
       submit();
@@ -160,6 +160,8 @@ const Favourite = ({ visitedProfileUserID }) => {
       sethasMorePostsInProfileFilterBookmark(true)
     }
   }, []);
+
+
   return (
     <div
       id="Profile_Bookmark_Filter"
@@ -211,7 +213,7 @@ const Favourite = ({ visitedProfileUserID }) => {
 
       </div>
 
-      {isLoading && hasMorePostsInProfileFilterBookmark && (
+      {(isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
         <section ref={spinnerRef} className="flex justify-center">
           <Spinner />
         </section>

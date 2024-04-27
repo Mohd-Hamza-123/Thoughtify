@@ -2,7 +2,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
 
-#PostCard {
+.PostCard {
     width: 100%;
     height: 210px;
     padding: 5px 14px 5px 5px;
@@ -14,7 +14,15 @@
     transition: background-color 1s ease;
 }
 
-body.darkMode #PostCard {
+.PostCard.trusted {
+    box-shadow: 0 0 10px rgb(4, 201, 255);
+}
+
+body.darkMode .PostCard.trusted {
+    box-shadow: 0 0 7px rgb(255, 4, 4);
+}
+
+body.darkMode .PostCard {
     background-color: black;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     color: white;

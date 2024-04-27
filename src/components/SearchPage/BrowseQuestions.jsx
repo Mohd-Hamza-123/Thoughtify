@@ -18,27 +18,25 @@ const BrowseQuestions = () => {
 
   const [isLoading, setIsLoading] = useState(true)
 
-
   let spinnerRef = useRef();
   const [lastPostID, setLastPostID] = useState(null)
-  // console.log(lastPostID)
-  // const [submitData, setSubmitData] = useState({})
+
   const [isIntersecting, setIsIntersecting] = useState(false)
   const [totalFilteredQueries, settotalFilteredQueries] = useState(0)
 
-  // console.log('isIntersecting : ' + isIntersecting)
   const { hasMorePostsInBrowseQuestions,
     sethasMorePostsInBrowseQuestions, queries, setQueries, isDarkModeOn } = useAskContext();
   const [isPostAvailable, setisPostAvailable] = useState(true)
 
-  // isSearching
-  const [isSearching, setisSearching] = useState(false)
+  const [isSearching, setisSearching] = useState(false);
+
+
   const submit = async (data) => {
-    // console.log(data)
+
     setisSearching((prev) => true)
     sethasMorePostsInBrowseQuestions(true)
     const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data });
-    // console.log(filteredQuestions)
+  
     const isArray = Array.isArray(filteredQuestions)
 
     if (isArray) {
@@ -78,7 +76,7 @@ const BrowseQuestions = () => {
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
-      console.log(filteredQuestions)
+  
       if (filteredQuestions.length !== 0) {
         setQueries((prev) => [...prev, ...filteredQuestions.documents]);
       }
@@ -198,6 +196,31 @@ const BrowseQuestions = () => {
             <div className='flex gap-2'>
               <input type="radio"  {...register("Like_Dislike")} name="Like_Dislike" id="BrowseQuestion_Disliked" value={'Most Disliked'} />
               <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_Disliked">Most disliked</label>
+            </div>
+          </div>
+
+
+          <div>
+            <div>
+              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Posts By : </p>
+            </div>
+            <div className='flex gap-2'>
+              <input
+                defaultChecked={true}
+                type="radio"
+                {...register("PostFrom")}
+                name="PostFrom"
+                id="BrowseQuestion_From_All"
+                value={'All'} />
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_From_All">All</label>
+            </div>
+            <div className='flex gap-2'>
+              <input type="radio"  {...register("PostFrom")} name="PostFrom" id="BrowseQuestion_From_Responders" value={'Responders'} />
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_From_Responders">Responders</label>
+            </div>
+            <div className='flex gap-2'>
+              <input type="radio"  {...register("PostFrom")} name="PostFrom" id="BrowseQuestion_Non-Responders" value={'Non Responders'} />
+              <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseQuestion_Non-Responders">Non-Responders</label>
             </div>
           </div>
 

@@ -37,6 +37,7 @@ export class Profile {
         othersCanFilterYourOpinions = null,
         othersCanFilterYourPosts = null, othersSeeYourFollowers_Following = null,
         whoCanMsgYou = null,
+        trustedResponder = null
     }) {
         let updateObj = {}
         if (following) updateObj.following = following
@@ -47,8 +48,11 @@ export class Profile {
         if (othersCanFilterYourPosts || othersCanFilterYourPosts === false) updateObj.othersCanFilterYourPosts = othersCanFilterYourPosts
         if (othersSeeYourFollowers_Following) updateObj.othersSeeYourFollowers_Following = othersSeeYourFollowers_Following
         if (whoCanMsgYou) updateObj.whoCanMsgYou = whoCanMsgYou
-
+        if (trustedResponder || trustedResponder === false) {
+            updateObj.trustedResponder = trustedResponder
+        }
         console.log(updateObj)
+        // return
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
                 updateObj
@@ -57,6 +61,8 @@ export class Profile {
             console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
         }
     }
+
+
     async updateProfile(id, { bio, educationLvl, occupation,
         profileImgID, profileImgURL
     }, links, interestedIn) {
@@ -172,7 +178,7 @@ export class Profile {
             return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
         }
     }
-    
+
 }
 
 const profile = new Profile()

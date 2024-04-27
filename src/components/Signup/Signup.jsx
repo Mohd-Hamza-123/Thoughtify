@@ -28,6 +28,18 @@ const Signup = () => {
   const create = async (data) => {
     setError(null);
     setIsWaiting((prev) => true);
+
+    // Checking if username already exists 
+    const isProfileNameAlreadyExist = await profile.listProfile({ name: data?.name })
+    if (isProfileNameAlreadyExist?.total > 0) {
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg((prev) => 'Username Already Taken. Try another name')
+      setIsWaiting((prev) => false);
+      return
+    }
+
+
+
     const userDataCreated = await authService.createAccount({ ...data });
     // console.log(userDataCreated)
     if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {

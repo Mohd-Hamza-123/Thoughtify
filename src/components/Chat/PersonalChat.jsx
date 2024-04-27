@@ -18,7 +18,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
   const { savedPersonalChatMsgs, setsavedPersonalChatMsgs } = useAskContext()
-  console.log(savedPersonalChatMsgs)
+  // console.log(savedPersonalChatMsgs)
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([])

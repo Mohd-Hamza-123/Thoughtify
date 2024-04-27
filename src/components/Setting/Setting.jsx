@@ -15,27 +15,14 @@ const Setting = () => {
         setnotificationPopMsg,
         setNotificationPopMsgNature
     } = useAskContext();
-    // console.log(myUserProfile)
+  
     const { register, handleSubmit } = useForm();
     const submit = async (data) => {
-
+        // console.log(data);
+        // return
         SetSettingPopUp((prev) => false)
         setisOverlayBoolean((prev) => false)
-
-
-        if (data.othersCanFilterYourOpinions === 'false') {
-            data.othersCanFilterYourOpinions = false
-        } else {
-            data.othersCanFilterYourOpinions = true
-        }
-
-        if (data.othersCanFilterYourPosts === 'false') {
-            data.othersCanFilterYourPosts = false
-        } else {
-            data.othersCanFilterYourPosts = true
-        }
-
-        // console.log(data)
+       
         try {
             const updateProfile = await profile.updateEveryProfileAttribute({ ...data, profileID: myUserProfile?.$id })
             // console.log(updateProfile);
@@ -50,32 +37,44 @@ const Setting = () => {
     return (
 
         <form onSubmit={handleSubmit(submit)} className={`Setting ${SettingPopUp ? 'active' : ''}`}>
+
             <h4 className='text-center'>Settings</h4>
 
             <div className='Setting_Div'>
-                <p>Others Can Filter Your Posts :</p>
+                <p>Who Can Filter Your Posts :</p>
                 <div>
+
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === true ? true : false}
+                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === 'My Following' ? true : false}
                             {...register("othersCanFilterYourPosts")}
-                            type="radio" name="othersCanFilterYourPosts" id="Setting_FilterPost_Yes"
-                            value={true}
+                            type="radio" name="othersCanFilterYourPosts" id="Setting_FilterPost_MyFollowing"
+                            value={"My Following"}
                         />
-                        <label htmlFor="Setting_FilterPost_Yes">Yes 😁</label>
+                        <label htmlFor="Setting_FilterPost_MyFollowing">My Following 😁</label>
                     </div>
 
+                    <div>
+                        <input
+                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === "Everyone" ? true : false}
+                            {...register("othersCanFilterYourPosts")}
+                            type="radio" name="othersCanFilterYourPosts" id="Setting_FilterPost_Yes"
+                            value={'Everyone'}
+                        />
+                        <label htmlFor="Setting_FilterPost_Yes">EveryOne 😁</label>
+                    </div>
 
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === false ? true : false}
+                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === "None" ? true : false}
                             {...register("othersCanFilterYourPosts")}
                             type="radio"
                             name="othersCanFilterYourPosts" id="Setting_FilterPost_No"
-                            value={false}
+                            value={"None"}
                         />
-                        <label htmlFor="Setting_FilterPost_No">No 😡</label>
+                        <label htmlFor="Setting_FilterPost_No">None 😡</label>
                     </div>
+
                 </div>
 
             </div>
@@ -85,23 +84,34 @@ const Setting = () => {
                 <div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === true ? true : false}
+                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "My Following" ? true : false}
                             type="radio"
-                            value={true}
+                            value={"My Following"}
                             name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_Yes"
                             {...register("othersCanFilterYourOpinions")}
                         />
-                        <label htmlFor="Setting_FilterOpinion_Yes">Yes 😏</label>
+                        <label htmlFor="Setting_FilterOpinion_Yes">My Following 😏</label>
                     </div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === false ? true : false}
+                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "Everyone" ? true : false}
                             type="radio"
-                            value={false}
+                            value={"Everyone"}
                             name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_No"
                             {...register("othersCanFilterYourOpinions")}
                         />
-                        <label htmlFor="Setting_FilterOpinion_No">No 🤪</label>
+                        <label htmlFor="Setting_FilterOpinion_No">Everyone 🤪</label>
+                    </div>
+
+                    <div>
+                        <input
+                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "None" ? true : false}
+                            type="radio"
+                            value={"None"}
+                            name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_None"
+                            {...register("othersCanFilterYourOpinions")}
+                        />
+                        <label htmlFor="Setting_FilterOpinion_None">None 😝</label>
                     </div>
                 </div>
 
@@ -112,23 +122,23 @@ const Setting = () => {
                 <div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'My Followers' ? true : false}
+                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'My Following' ? true : false}
                             type="radio"
-                            value={"My Followers"}
+                            value={"My Following"}
                             name="othersSeeYourFollowers_Following" id="Setting_FilterFollow_MyFollowers"
                             {...register("othersSeeYourFollowers_Following")}
                         />
-                        <label htmlFor="Setting_FilterFollow_MyFollowers">My Followers 🤝</label>
+                        <label htmlFor="Setting_FilterFollow_MyFollowers">My Following 😄</label>
                     </div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'EveryOne' ? true : false}
+                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'Everyone' ? true : false}
                             type="radio"
-                            value={"EveryOne"}
+                            value={"Everyone"}
                             name="othersSeeYourFollowers_Following" id="Setting_FilterPost_EveryOne"
                             {...register("othersSeeYourFollowers_Following")}
                         />
-                        <label htmlFor="Setting_FilterPost_EveryOne">EveryOne 👨🏾‍🤝‍👨🏼👨🏾‍🤝‍👨🏽</label>
+                        <label htmlFor="Setting_FilterPost_EveryOne">Everyone 😊</label>
                     </div>
 
                     <div>
@@ -139,7 +149,7 @@ const Setting = () => {
                             name="othersSeeYourFollowers_Following" id="Setting_FilterFollow_None"
                             {...register("othersSeeYourFollowers_Following")}
                         />
-                        <label htmlFor="Setting_FilterFollow_None">None 💀</label>
+                        <label htmlFor="Setting_FilterFollow_None">None 😤</label>
                     </div>
                 </div>
             </div>
@@ -149,23 +159,23 @@ const Setting = () => {
                 <div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.whoCanMsgYou === 'My Followers' ? true : false}
+                            defaultChecked={myUserProfile?.whoCanMsgYou === 'My Following' ? true : false}
                             type="radio"
                             name="whoCanMsgYou" id="Setting_WhoCanMsg_MyFollowers"
                             {...register("whoCanMsgYou")}
-                            value={"My Followers"}
+                            value={"My Following"}
                         />
-                        <label htmlFor="Setting_WhoCanMsg_MyFollowers">My Followers 🤝</label>
+                        <label htmlFor="Setting_WhoCanMsg_MyFollowers">My Following 😊</label>
                     </div>
                     <div>
                         <input
-                            defaultChecked={myUserProfile?.whoCanMsgYou === 'EveryOne' ? true : false}
+                            defaultChecked={myUserProfile?.whoCanMsgYou === 'Everyone' ? true : false}
                             type="radio"
                             name="whoCanMsgYou" id="Setting_WhoCanMsg_EveryOne"
                             {...register("whoCanMsgYou")}
-                            value={"EveryOne"}
+                            value={"Everyone"}
                         />
-                        <label htmlFor="Setting_WhoCanMsg_EveryOne">EveryOne 👨🏾‍🤝‍👨🏼👨🏾‍🤝‍👨🏽</label>
+                        <label htmlFor="Setting_WhoCanMsg_EveryOne">Everyone 😁</label>
                     </div>
 
                     <div>
@@ -177,7 +187,7 @@ const Setting = () => {
                             id="Setting_WhoCanMsg_None"
                             {...register("whoCanMsgYou")}
                         />
-                        <label htmlFor="Setting_WhoCanMsg_None">None 💀</label>
+                        <label htmlFor="Setting_WhoCanMsg_None">None 😑</label>
                     </div>
                 </div>
             </div>

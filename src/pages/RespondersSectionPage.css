@@ -5,9 +5,11 @@
 }
 
 .RespondersSectionPage_PostCard {
-    box-shadow: 0 0 20px #16bef6a5;
+    box-shadow: 0 0 10px rgb(4, 201, 255);
+    background-color: transparent;
+    overflow: hidden;
+    border-radius: 10px;
 }
-
 .RespondersSectionPage_PostCard.darkMode {
-    box-shadow: 0 0 20px rgba(255, 53, 0, 0.5);
+    box-shadow: 0 0 10px rgb(255, 54, 4);
 }

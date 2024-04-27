@@ -16,7 +16,6 @@ const AskQue = ({ post }) => {
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
-  // console.log(post)
   const { handleSubmit, register, control, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -41,13 +40,13 @@ const AskQue = ({ post }) => {
   // Category State
   const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
   const [categoryValue, setcategoryValue] = useState('');
-  // console.log(categoryValue)
+
   // Poll State
   const [TotalPollOptions, setTotalPollOptions] = useState([]);
-  // console.log(TotalPollOptions)
+
   const [pollQuestion, setPollQuestion] = useState('')
   const [options, setoptions] = useState('')
-  // console.log(options)
+
   const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
   const slugForNotification = useRef(null)
   //
@@ -78,6 +77,11 @@ const AskQue = ({ post }) => {
   }
 
   const submit = async (data) => {
+    if (!UserAuthStatus) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'You are not logged In');
+      return
+    }
 
     const pollOptions = TotalPollOptions.map((obj) => JSON.stringify(obj))
     data.pollQuestion = pollQuestion
@@ -95,7 +99,6 @@ const AskQue = ({ post }) => {
       setnotificationPopMsg((prev) => 'There must be 2 Poll options')
       return
     }
-
 
     if (!categoryValue) {
       setNotificationPopMsgNature((prev) => false)
@@ -215,7 +218,7 @@ const AskQue = ({ post }) => {
     } else {
       const UploaderResponder = await profile.listProfile({ slug: userData?.$id });
 
-      const trustedResponderPost = UploaderResponder.documents[0].trustedResponder;
+      const trustedResponderPost = UploaderResponder?.documents[0].trustedResponder;
 
       if (thumbnailFile) {
         try {
@@ -299,7 +302,6 @@ const AskQue = ({ post }) => {
 
       // const createNotification = await notification.createNotification({ content: `${userData.name} has posted a post`, isRead: false, slug: slugForNotification.current, name: userData?.name, userID: userData.$id });
       // console.log(createNotification);
-
     }
 
     navigate("/")

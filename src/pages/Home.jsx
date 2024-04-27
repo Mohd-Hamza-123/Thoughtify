@@ -31,23 +31,23 @@ const Home = () => {
   const getAllPosts = async () => {
     setIsLoading((prev) => true)
     try {
-      if (initialPost.length === 0) {
+      if (initialPost?.length === 0) {
         const posts = await appwriteService.getPosts({ lastPostID })
 
         if (posts === false) {
           setPosts((prev) => false)
         }
 
-        if (initialPost.length < posts.total) {
+        if (initialPost?.length < posts.total) {
           sethasMorePostsInHome((prev) => true)
         } else {
           sethasMorePostsInHome((prev) => false)
         }
         if (posts) {
-          setPosts((prev) => posts.documents)
-          let lastID = posts.documents[posts.documents.length - 1]?.$id
+          setPosts((prev) => posts?.documents)
+          let lastID = posts?.documents[posts?.documents.length - 1]?.$id
           setLastPostID((prev) => lastID)
-          dispatch(getInitialPost({ initialPosts: posts.documents }))
+          dispatch(getInitialPost({ initialPosts: posts?.documents }))
         }
       } else {
 
@@ -86,22 +86,22 @@ const Home = () => {
     if (isIntersecting && hasMorePostsInHome) {
       const getAllPosts = async () => {
 
-        let LastID = initialPost[initialPost.length - 1].$id;
+        let LastID = initialPost[initialPost?.length - 1]?.$id;
         const posts = await appwriteService.getPosts({ lastPostID: LastID })
 
-        if (initialPost.length < posts.total) {
+        if (initialPost.length < posts?.total) {
           sethasMorePostsInHome((prev) => true)
         } else {
           sethasMorePostsInHome((prev) => false)
         }
 
-        if (posts.documents.length === 0) {
+        if (posts?.documents?.length === 0) {
           setIsLoading((prev) => false)
           return
         }
-        let lastID = posts.documents[posts.documents.length - 1].$id
+        let lastID = posts?.documents[posts?.documents?.length - 1]?.$id
         setLastPostID((prev) => lastID)
-        dispatch(getInitialPost({ initialPosts: posts.documents }))
+        dispatch(getInitialPost({ initialPosts: posts?.documents }))
       }
       getAllPosts()
     }
@@ -109,7 +109,7 @@ const Home = () => {
   }, [isIntersecting, hasMorePostsInHome])
 
   useEffect(() => {
-    if (initialPost.length !== 0) {
+    if (initialPost?.length !== 0) {
       setPosts((prev) => initialPost)
     } else {
       setPosts((prev) => [])
@@ -166,7 +166,7 @@ const Home = () => {
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
         <div className="Home_Left flex flex-col gap-6">
           {posts?.map((post) => (
-            <div key={post?.$id} onClick={() => increaseViews(post.$id)}>
+            <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
               <PostCard {...post} />
             </div>
           ))}

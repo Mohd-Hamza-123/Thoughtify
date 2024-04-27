@@ -34,7 +34,9 @@ export class Service {
                 trustedResponderPost
             })
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error)
+
+            console.log("Appwrite serive :: createPost :: error", error);
+            
         }
     }
     async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage }, category) {
@@ -137,9 +139,10 @@ export class Service {
             return false
         }
     }
-    async getPostsWithQueries({ Title, category,
+    async getPostsWithQueries({
+        Title, category,
         BeforeDate, AfterDate, From, To, PostAge, Viewed,
-        Commented, UserID, Like_Dislike, lastPostID,
+        Commented, UserID, Like_Dislike, lastPostID, PostFrom
     }) {
 
         let QueryArr = [Query.limit(5)]
@@ -177,8 +180,13 @@ export class Service {
         if (UserID) {
             QueryArr.push(Query.equal("userId", [UserID]))
         }
+        if (PostFrom === 'Responders') {
+            QueryArr.push(Query.equal("trustedResponderPost", true))
+        } else if (PostFrom === 'Non Responders') {
+            QueryArr.push(Query.equal("trustedResponderPost", false))
+        }
 
-        console.log(QueryArr)
+        // console.log(QueryArr)
         try {
 
             if (QueryArr.length < 1) return []

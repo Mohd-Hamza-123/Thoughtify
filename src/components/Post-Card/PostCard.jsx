@@ -21,15 +21,16 @@ const PostCard = ({
   commentCount,
   pollQuestion,
   opinionsFrom,
+  trustedResponderPost
 }) => {
-  // console.log(TrustedResponders)
+  // console.log(trustedResponderPost)
 
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
-  // console.log(postProfilesPic)
+
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
   const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
-  // console.log(myUserProfile)
+
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
 
@@ -106,7 +107,7 @@ const PostCard = ({
 
   return (
     <>
-      <div id="PostCard" className={`flex flex-row-reverse w-full ${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div className={`PostCard ${trustedResponderPost ? 'trusted' : ''} flex flex-row-reverse w-full ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="PostCard_left" className="" >
           <Link to={`/post/${$id}`}>
             {queImage ? (
@@ -133,7 +134,7 @@ const PostCard = ({
         >
           <div>
             <div className="flex gap-2">
-              <Link to={`profile/${userId}`}>
+              <Link to={`/profile/${userId}`}>
                 <div className="rounded-full">
                   <img
                     src={`${profileImgURL ? profileImgURL : NoProfile}`}
@@ -142,11 +143,14 @@ const PostCard = ({
                   />
                 </div>
               </Link>
-              <Link to={`profile/${userId}`}>
+              <Link to={`/profile/${userId}`}>
                 <h4 id="PostCard-profile-name" className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>
                   {name}
                 </h4>
               </Link>
+              {trustedResponderPost && <div>
+                <span className="PostCard_category">{'Responder'}</span>
+              </div>}
             </div>
             <Link to={`/post/${$id}/${null}`}>
               <h3

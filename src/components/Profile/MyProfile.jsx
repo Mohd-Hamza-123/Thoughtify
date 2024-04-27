@@ -19,6 +19,7 @@ import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
 import { getOtherUserProfile } from "../../store/usersProfileSlice";
 import notification from "../../appwrite/notification";
+import conf from "../../conf/conf";
 
 
 const MyProfile = () => {
@@ -27,9 +28,16 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
-  const userData = useSelector((state) => state.auth.userData);
-  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
+  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
+
+  const userData = useSelector((state) => state?.auth?.userData);
+  const UserAuthStatus = useSelector((state) => state?.auth?.status)
+  const {
+    myUserProfile,
+    setMyUserProfile,
+    isDarkModeOn,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature, } = useAskContext();
 
   const realUser = userData ? slug === userData.$id : false;
 
@@ -44,10 +52,9 @@ const MyProfile = () => {
   const [activeNav, setactiveNav] = useState('Profile Summary')
   const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
 
-
-  useEffect(() => {
-    getOtherUserProfile(slug)
-  }, [slug]);
+  // useEffect(() => {
+  //   getOtherUserProfile(slug);
+  // }, [slug]);
 
   const getUserProfile = async (slug) => {
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
@@ -87,6 +94,12 @@ const MyProfile = () => {
     }
   };
   const follow_Unfollow = async () => {
+
+    if (!UserAuthStatus) {
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg((prev) => 'You are not Login')
+      return
+    }
     if (!myUserProfile) return;
     setisFollowing((prev) => !prev);
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
@@ -131,9 +144,11 @@ const MyProfile = () => {
 
     } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
       console.log("You have Unblock to follow");
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg((prev) => "You have to Unblock to follow")
       return;
     } else {
-      console.log("fs");
+      // console.log("fs");
       // return
       let receiver = await profile.listProfile({ slug })
       // console.log(receiver)
@@ -175,7 +190,11 @@ const MyProfile = () => {
 
   }
   const block_Unblock = async () => {
-    // return
+    if (!UserAuthStatus) {
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg((prev) => 'You are not Login')
+      return
+    }
     if (!myUserProfile) return;
     setisBlocked((prev) => !prev)
     const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
@@ -202,6 +221,13 @@ const MyProfile = () => {
     });
 
     setMyUserProfile(follow);
+  }
+  const promote_Demote = async () => {
+    console.log(profileData);
+    profile.updateEveryProfileAttribute({ trustedResponder: !profileData?.trustedResponder, profileID: profileData?.$id })
+      .then((res) => {
+        setProfileData((prev) => res)
+      })
   }
 
   useEffect(() => {
@@ -281,6 +307,34 @@ const MyProfile = () => {
                 <div id="MyProfile_3Buttons" className="flex gap-3">
                   {!realUser && (
                     <Button onClick={() => {
+                      if (!UserAuthStatus) {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => 'You are not Login')
+                        return
+                      }
+                      // console.log(profileData);
+                      if (profileData.whoCanMsgYou === "None") {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => "You can't Message");
+                        return
+                      } else if (profileData.whoCanMsgYou === "My Following") {
+                        const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
+
+                        const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
+
+                        if (!isHeFollowsYou) {
+                          setNotificationPopMsgNature((prev) => false);
+                          setnotificationPopMsg((prev) => "You can't Message");
+                          return
+                        }
+                      }
+                      // console.log(profileData)
+                      if (profileData?.blockedUsers?.includes(userData?.$id)) {
+                        setNotificationPopMsgNature((prev) => false);
+                        setnotificationPopMsg((prev) => "You are Blocked");
+                        return
+                      }
+
                       navigate(`/ChatRoom/${userData?.$id}/${slug}`)
                     }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
                   )}
@@ -303,6 +357,14 @@ const MyProfile = () => {
 
                     >
                       Edit Profile
+                    </Button>
+                  )}
+                  {(userData?.$id === conf.myPrivateUserID) && (
+                    <Button
+                      className="p-2 rounded-sm"
+                      onClick={() => promote_Demote()}
+                    >
+                      {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
                     </Button>
                   )}
                 </div>

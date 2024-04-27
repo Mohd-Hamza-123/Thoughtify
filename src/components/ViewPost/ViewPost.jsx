@@ -35,7 +35,8 @@ const ViewPost = () => {
   //Data from Redux
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic)
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments)
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useSelector((state) => state?.auth?.userData);
+  const userAuthStatus = useSelector((state) => state?.auth?.status)
   const initialPost = useSelector((state) => state.postsSlice.initialPosts);
   const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
 
@@ -45,14 +46,11 @@ const ViewPost = () => {
     setNotificationPopMsgNature
   } = useAskContext()
 
-  // console.log(myUserProfile)
   const isAuther = post && userData ? post.userId === userData.$id : false;
-  // console.log(myUserProfile)
+
   const [isBookMarked, setIsBookMarked] = useState(false)
 
   const [profileImgURL, setprofileImgURL] = useState('')
-
-  // console.log(post)
 
   // useState for views,comments,date
   const [postdate, setpostdate] = useState('')
@@ -114,7 +112,7 @@ const ViewPost = () => {
   }, [filterCommentID])
 
   useEffect(() => {
-    if ((initialPost.some(obj => obj.$id === slug)) === false) {
+    if ((initialPost?.some(obj => obj?.$id === slug)) === false) {
       appwriteService
         .getPost(slug)
         .then((post) => {
@@ -145,7 +143,7 @@ const ViewPost = () => {
     }
   }, [post])
   useEffect(() => {
-    // console.log(post);
+
     if (post) {
       setTotalPollVotes((prev) => post.totalPollVotes)
       setpollVotersAuthIDsAndVote((prev) => {
@@ -230,10 +228,10 @@ const ViewPost = () => {
     // console.log("Hi")
     const getRelatedQueries = () => {
       // console.log(initialPost)
-      let relatedArr = initialPost.filter((initialPostObj) => {
+      let relatedArr = initialPost?.filter((initialPostObj) => {
         // console.log(post)
         if (initialPostObj?.category
-          === post?.category && post?.$id !== initialPostObj.$id) {
+          === post?.category && post?.$id !== initialPostObj?.$id) {
           return initialPostObj
         }
       })
@@ -247,7 +245,7 @@ const ViewPost = () => {
 
     }
     const getDate_Views_Comments_Details = () => {
-      let x = initialPost.find((postinRedux) => postinRedux.$id === post?.$id)
+      let x = initialPost?.find((postinRedux) => postinRedux?.$id === post?.$id)
       // console.log(x)
       if (x) {
         setpostCommentCount(x.commentCount)
@@ -259,6 +257,12 @@ const ViewPost = () => {
     if (initialPost.length > 0) getDate_Views_Comments_Details()
   }, [post, initialPost])
   const deletePost = () => {
+    if (!userAuthStatus) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Please Login')
+      return
+    }
+
     appwriteService
       .deletePost(post.$id)
       .then(() => {
@@ -278,23 +282,27 @@ const ViewPost = () => {
     navigate("/");
   };
   const deleteThumbnail = async () => {
-    // console.log(post.queImageID)
+
     if (post.queImageID) {
       let deletedImg = await appwriteService.deleteThumbnail(post.queImageID)
     }
   }
   const updatePoll = async (postId, index, option, vote, pollVoterID) => {
-    // console.log(post)
+    if (!userAuthStatus) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Please Login')
+      return
+    }
     let totalPollVotes = post.totalPollVotes;
     let pollOptions = post.pollOptions.map(obj => JSON.parse(obj));
     let pollVotersID = [...post.pollVotersID].map((obj) => JSON.parse(obj))
-    // console.log(pollVotersID)
+
 
     // checking whether user is first time giving vote or he has already done
     let indexOfVotedOption = pollVotersID.findIndex((obj) => obj.pollVoterID === pollVoterID)
     // if index === -1 voter not exist.
     if (indexOfVotedOption === -1) {
-      console.log('Voter not exist : ' + indexOfVotedOption)
+
       totalPollVotes = post.totalPollVotes + 1;
       pollVotersID = [...pollVotersID, { pollVoterID, optionNum: index }]
       pollOptions[index].vote = pollOptions[index].vote + 1
@@ -303,46 +311,39 @@ const ViewPost = () => {
       // console.log('Voter Alread Exist.Last vote on Index ' + indexOfVotedOption)
       totalPollVotes = post.totalPollVotes
       pollVotersID = [...pollVotersID]
-      // console.log(pollOptions)
-      // console.log(pollVotersID)
-      // console.log(index)
+
       let myPollVoterID = pollVotersID.filter((obj) => obj.pollVoterID === userData.$id)
-      // console.log(myPollVoterID)
+
       if (index === myPollVoterID[0].optionNum) {
-        console.log("Ye to pehle wala selected option tha")
+
         let remainingObject = pollVotersID.filter((obj) => obj.pollVoterID !== userData.$id)
         pollVotersID = remainingObject
-        // console.log(pollOptions[index].vote)
+
         pollOptions[index].vote = pollOptions[index].vote - 1
         totalPollVotes = post.totalPollVotes - 1;
       } else {
-        // return
+
         let previousSelectedOptionIndex = myPollVoterID[0].optionNum;
-        // console.log(previousSelectedOptionIndex)
-        // console.log(pollVotersID)
+
         const desiredIndex = pollVotersID.findIndex((obj) => obj.pollVoterID === userData.$id)
-        // console.log(desiredIndex)
-        // console.log(index)
+
         pollVotersID[desiredIndex].optionNum = index
         pollOptions[index].vote = pollOptions[index].vote + 1
         pollOptions[previousSelectedOptionIndex].vote = pollOptions[previousSelectedOptionIndex].vote - 1
-        // console.log("Ye to koi aur selected option hai")
+
       }
     }
 
-
     for (let i = 0; i < pollOptions.length; i++) {
-      // console.log(pollOptions[i])
       if (pollOptions[i].vote < 0) {
         return
       }
     }
     pollVotersID = pollVotersID.map((obj) => JSON.stringify(obj))
     pollOptions = pollOptions.map(obj => JSON.stringify(obj));
-    // console.log(pollOptions)
-    // return
+
     const update = await appwriteService.updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID })
-    // console.log(update)
+
     setPost((prev) => update)
     dispatch(getAllVisitedQuestionsInViewPost({ questions: update }))
     setTotalPollVotes((prev) => update.totalPollVotes)
@@ -352,6 +353,12 @@ const ViewPost = () => {
     }
   }
   const like_dislike_BookMark = async (flag) => {
+    if (!userAuthStatus) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Please Login')
+      return
+    }
+
     const likedQuestionsInContext = myUserProfile?.likedQuestions
     const dislikedQuestionsInContext = myUserProfile?.dislikedQuestions
     const bookmarksInContext = myUserProfile?.bookmarks
@@ -527,6 +534,11 @@ const ViewPost = () => {
     lastScrollY.current = position
   }
   const deletePostComments = async () => {
+    if (!userAuthStatus) {
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => 'Please Login')
+      return
+    }
     try {
       const listComments = await realTime.listComment(post?.$id);
       console.log(listComments)
@@ -573,7 +585,7 @@ const ViewPost = () => {
 
               <div className="flex">
                 <div>
-                  <span id="ViewPost-Category">{post?.category}</span>
+                  <span className="ViewPost-Category">{post?.category}</span>
                 </div>
                 <div id="ViewPost_Date_Views_comments" className="flex">
                   <div>
@@ -603,7 +615,7 @@ const ViewPost = () => {
                   ViewPost_ellipsis_Vertical.current.classList.toggle("block");
                 }}
               >
-                {isAuther && <div id="ViewPost_edit_Delete" className="relative">
+                {(isAuther || userData?.$id === conf?.myPrivateUserID) && <div id="ViewPost_edit_Delete" className="relative">
 
                   <div>
                     <div
@@ -611,7 +623,7 @@ const ViewPost = () => {
                       ref={ViewPost_ellipsis_Vertical}
                     >
                       <ul>
-                        {isAuther && (
+                        {(isAuther || userData?.$id === conf?.myPrivateUserID) && (
                           <li
                             onClick={() => { navigate(`/EditQuestion/${post?.$id}`) }}
                           >
@@ -621,7 +633,7 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-                        {isAuther && (
+                        {(isAuther || userData?.$id === conf?.myPrivateUserID) && (
                           <li>
                             <Button
                               onClick={() => {
@@ -634,11 +646,25 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-                        {/* {!isAuther && (
-      <li>
-        <Button>Report</Button>
-      </li>
-    )} */}
+                        {true && (
+                          <li>
+                            <Button
+                              onClick={
+                                () => {
+                                  if (!navigator?.clipboard) {
+                                    setNotificationPopMsgNature((prev) => false);
+                                    setnotificationPopMsg((prev) => "Link is not Copied")
+                                    return;
+                                  }
+                                  navigator.clipboard.writeText(window.location.href);
+                                  setNotificationPopMsgNature((prev) => true);
+                                  setnotificationPopMsg((prev) => "Link is Copied")
+                                }
+                              }>
+                              <i className="fa-solid fa-copy"></i>
+                            </Button>
+                          </li>
+                        )}
                       </ul>
                     </div>
                     <Button>
@@ -668,6 +694,9 @@ const ViewPost = () => {
                 <div id='ViewPostName'>
                   <h5>{post?.name}</h5>
                 </div>
+                {post?.trustedResponderPost && <div>
+                  <span className="ViewPost-Category">Responder</span>
+                </div>}
               </div>
 
               <div className="mt-3 mb-2">
@@ -686,7 +715,7 @@ const ViewPost = () => {
                     let parsedOption = JSON.parse(option).option
                     let parsedVote = JSON.parse(option).vote
                     let individualPollVote = Math.floor(Number((JSON.parse(option)).vote))
-                    // let VoterIDandVote = pollVotersAuthIDsAndVote.map((obj) => JSON.parse(obj))
+
                     let percentage = (individualPollVote / totalPollVotes) * 100;
                     percentage = percentage.toFixed(0)
                     if (isNaN(percentage)) {
@@ -729,6 +758,13 @@ const ViewPost = () => {
 
           <section id="ViewPost_Like_Dislike_BookMark">
             <div onClick={() => {
+
+              if (!userAuthStatus) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'Please Login')
+                return
+              }
+
               like_dislike_BookMark('Like')
               setLike_Dislike((prev) => 'liked');
               if (myUserProfile?.likedQuestions?.includes(slug)) {
@@ -755,6 +791,12 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+              if (!userAuthStatus) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'Please Login')
+                return
+              }
+
               like_dislike_BookMark('Dislike')
               setLike_Dislike((prev) => 'disliked');
               if (myUserProfile?.dislikedQuestions?.includes(slug)) {
@@ -781,6 +823,11 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+              if (!userAuthStatus) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'Please Login')
+                return
+              }
               like_dislike_BookMark('BooKMark');
               setIsBookMarked((prev) => !prev)
             }} className="ViewPost_Like_Dislike_BookMark_Div cursor-pointer">
@@ -806,7 +853,7 @@ const ViewPost = () => {
           </div>
 
           {(filterCommentID !== 'null' && filteredComment) && <div className={`ViewPost_Filtered_Comments`}>
-            <p>Your Comment :</p>
+            <p>Comment :</p>
             <div>
               <div className="flex justify-between ViewPost_Filtered_Comments_Name_Delete">
                 <p>{filteredComment?.name}</p>

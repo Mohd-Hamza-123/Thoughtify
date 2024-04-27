@@ -15,7 +15,6 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
 
-  // const userProfileData = useSelector((state) => state.profileSlice.userProfile);
   const { setIsOpen, notificationPopUp,
     setnotificationPopUp, myUserProfile, notificationShow, setNotificationShow, setisOverlayBoolean, notifications, setnotifications, setNotificationPopMsgNature, setnotificationPopMsg, deleteNotication, isUnreadNotificationExist, setIsUnreadNotificationExist, isDarkModeOn } = useAskContext();
 
@@ -33,8 +32,6 @@ const NavigationBar = () => {
       slug: "/signup",
     },
   ];
-
-
 
   const toggleSideBar = () => {
     setIsOpen(true);
@@ -82,10 +79,10 @@ const NavigationBar = () => {
         className={`${isDarkModeOn ? 'darkMode' : ''}`}
       >
         <Container>
-          <div className="flex justify-between px-7 py-2">
+          <div className="flex justify-between">
             <div className={`logo_div flex justify-around`}>
               <div
-                className="cursor-pointer gap-2 flex item-center"
+                className="cursor-pointer gap-2 flex items-center"
                 onClick={() => navigate("/")}
               >
                 <img className={`logo ${isDarkModeOn ? 'darkMode' : ''}`} src={QueryFlow} alt="Logo" />

@@ -12,32 +12,39 @@ import { useAskContext } from '../context/AskContext'
 const FindFriends = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [isSearching, setisSearching] = useState(false)
-  const userData = useSelector((state) => state.auth.userData)
+  const { handleSubmit, reset, register } = useForm();
+
+  
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
-  const { notificationPopMsg, setnotificationPopMsg,
-    notificationPopMsgNature, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
+  const userData = useSelector((state) => state.auth.userData)
+  const {
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
+    isDarkModeOn } = useAskContext()
+
+
+  const [isSearching, setisSearching] = useState(false)
   const [searchedPerson, setsearchedPerson] = useState(null);
 
-  const { handleSubmit, reset, register } = useForm();
+
   const submit = async (data) => {
     setisSearching((prev) => true);
     try {
-      const GettingName = await profile.listProfile({ name: data.searchValue });
+      const GettingName = await profile.listProfile({ name: data?.searchValue });
       console.log(GettingName);
-      if (GettingName?.documents.length === 0) {
+      if (GettingName?.documents?.length === 0) {
         setNotificationPopMsgNature((prev) => false)
         setnotificationPopMsg((prev) => 'No Users Found');
         setisSearching((prev) => false)
         return
       }
       setsearchedPerson(GettingName?.documents[0]);
-      if (GettingName?.documents[0].userIdAuth !== userData.$id) {
+      if (GettingName?.documents[0]?.userIdAuth !== userData?.$id) {
         dispatch(getOtherUserProfile({ userProfileArr: [GettingName?.documents[0]] }))
       }
       reset()
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
     setisSearching((prev) => false)
   }
