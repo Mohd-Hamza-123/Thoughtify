@@ -10,6 +10,13 @@
   justify-content: center;
 }
 
+@media only screen and (max-width: 500px) {
+  .LoaderPage img {
+    margin: 0 auto !important;
+    height: 90px !important;
+  }
+}
+
 body.darkMode .LoaderPage {
   background-color: #02020A;
 }

@@ -6,6 +6,20 @@
     margin: 30px 0px;
 }
 
+@media only screen and (max-width: 500px) {
+
+    .Chat_Comment_Div {
+        padding: 10px !important;
+        margin-top: 19px !important;
+    }
+
+    .Chat-Comment-Reply,
+    #ReplyDiv span {
+        font-size: 13px !important;
+        padding: 0px 10px !important;
+    }
+}
+
 .Chat_Comment_Div_1 {
     /* background-color: rgba(205, 205, 205, 0.685); */
     border-radius: 2px;

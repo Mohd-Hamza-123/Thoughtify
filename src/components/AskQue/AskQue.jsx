@@ -362,7 +362,7 @@ const AskQue = ({ post }) => {
       <div
         className={`ask_Que_Container ${isDarkModeOn ? 'darkMode' : ''}`}
       >
-        <h3 className={`text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
+        <h3 className={`AskQue_Heading text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
 
         <form id="AskQue_Form" onSubmit={handleSubmit(submit)} className="flex">
           <div id="AskQue_InsideFormLeft">
@@ -405,7 +405,7 @@ const AskQue = ({ post }) => {
               <h4 className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                 Whom Opinion are You interested ?
               </h4>
-              <div className="flex justify-between items-center ">
+              <div className="AskQue_Opinions_From_Div flex justify-between items-center ">
                 <div className="w-1/5  text-center text-xl">
                   <span className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Opinions From :</span>
                 </div>

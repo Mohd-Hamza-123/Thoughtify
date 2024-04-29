@@ -18,7 +18,7 @@ export class AuthService {
             console.log()
             const userAccount = await this.account.create(
                 ID.unique(), email, password, name);
-            // console.log(userAccount)
+
             if (userAccount) {
                 return await this.login({ email, password })
             } else { return undefined }
@@ -35,7 +35,7 @@ export class AuthService {
             console.log("Login :: ERROR " + error);
         }
     }
-  
+
     googleAuth() {
         try {
             return this.account.createOAuth2Session(

@@ -14,6 +14,13 @@
     font-family: 'Poppins', sans-serif;
 }
 
+@media only screen and (max-width: 500px) {
+
+    #Feedback section{
+        width: 90% !important;
+    }
+}
+
 #Feedback.active {
     top: 0;
     opacity: 1;

@@ -110,7 +110,7 @@ const Signup = () => {
               Sign-In
             </h1>
 
-            <div className="mx-auto mt-2">
+            <div className="Signup_have_an_Acc mx-auto mt-2">
               <p>
                 Already have an Account ?&nbsp;
                 <Link
@@ -183,7 +183,7 @@ const Signup = () => {
             </form>
             <p className="text-center mt-2">Or</p>
 
-            <div className="flex justify-center">
+            <div className="Signup_SignIn_Google_div flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()
                 // console.log(googleAuthentcation)

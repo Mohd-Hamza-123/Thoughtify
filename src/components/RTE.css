@@ -1,0 +1,13 @@
+/* .tox .tox-menu {
+    top: -600px !important;
+}
+
+@media only screen and (max-width: 500px) {
+    .tox .tox-menu {
+        top: -1400px !important;
+    }
+
+    .tox.tox-tinymce-aux .tox-toolbar__overflow {
+        top: -1400px !important;
+    }
+} */

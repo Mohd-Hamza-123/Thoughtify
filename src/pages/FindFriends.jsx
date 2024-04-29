@@ -14,7 +14,7 @@ const FindFriends = () => {
   const dispatch = useDispatch()
   const { handleSubmit, reset, register } = useForm();
 
-  
+
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
   const userData = useSelector((state) => state.auth.userData)
   const {
@@ -111,11 +111,11 @@ const FindFriends = () => {
                   <b>Occupation :</b>  {searchedPerson?.occupation}
                 </div>
 
-                <div className='my-1'>
+                <div className='my-1 flex'>
                   <b>EducationLvl : </b>    {searchedPerson?.educationLvl}
                 </div>
 
-                <div className='flex gap-1'>
+                <div className='flex gap-1 flex-wrap'>
 
                   <b>Interested In :  </b>
                   <div className='flex gap-3'>

@@ -88,9 +88,12 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         }
 
         if (response.payload.userId === userData?.$id) {
-          if (messagesDiv.current) {
-            messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-          }
+          setTimeout(() => {
+            if (messagesDiv.current) {
+              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+            }
+          }, 1000)
+
         }
 
       } else if ("databases.*.collections.*.documents.*.delete") {

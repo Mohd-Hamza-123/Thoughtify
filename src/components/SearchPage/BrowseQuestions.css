@@ -3,6 +3,50 @@
     height: 100vh;
 }
 
+@media only screen and (max-width: 500px) {
+    #BrowseQuestions_SearchQuestion_Heading {
+        font-size: 22px !important;
+        margin-bottom: 10px !important;
+        margin-top: 0px !important;
+    }
+
+    .BrowseQuestions_Two_Div_Containers {
+        flex-direction: column;
+    }
+
+    #BrowseQuestions_PostTitle {
+        margin-top: 50px !important;
+    }
+
+    #BrowseQuestions_Filters {
+        width: 100% !important;
+        font-size: 15px;
+        height: fit-content !important;
+        padding: 0px 0px 0px 9px !important;
+    }
+
+    #BrowseQuestions_Filtered_Questions {
+        display: none;
+        width: 100% !important;
+        border-radius: 0px;
+        padding: 10px 10px;
+        height: fit-content !important;
+    }
+
+    #BrowseQuestions_Filters.none + #BrowseQuestions_Filtered_Questions {
+        display: block !important;
+    }
+
+
+    #BrowseQuestions_Filtered_Questions>div {
+        padding: 7px;
+        margin-top: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+
+}
+
 #BrowseQuestions_Filters {
     width: 28%;
     font-family: 'Poppins', sans-serif;

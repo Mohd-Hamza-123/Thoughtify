@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import "./ChatRTE.css";
 import { Editor, } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
-const ChatRTE = ({ name, control, clearEditorContent, editorRef }) => {
+const ChatRTE = ({ name, control, editorRef }) => {
 
   return (
     <div id="ChatRTE" className="w-full">
@@ -15,7 +15,6 @@ const ChatRTE = ({ name, control, clearEditorContent, editorRef }) => {
             initialValue=""
             init={{
               height: 200,
-              // autoresize_min_height: 200, // Set minimum height
               autoresize_max_height: 400, //
               menubar: false,
               plugins: ["lists", "image"],

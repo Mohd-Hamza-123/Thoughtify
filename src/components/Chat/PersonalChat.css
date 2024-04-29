@@ -9,7 +9,64 @@
     --themeColorSecondary: #386fd2;
 }
 
+@media only screen and (max-width: 500px) {
+    #Personalchat {
+        margin: 54px 0px 0px 0px !important;
+        width: 100%;
+        height: 100% !important;
+        padding: 5px !important;
+    }
 
+    .room--container {
+        height: 100% !important;
+        justify-content: initial !important;
+    }
+
+    #PersonalChat_Receiver_div {
+        height: 10% !important;
+        display: flex;
+        align-items: center !important;
+    }
+
+    #PersonalChat_Receiver_div img {
+        height: 35px !important;
+        width: 35px !important;
+    }
+
+    #PersonalChat_Messages {
+        height: 56% !important;
+        margin: 0px !important;
+        padding: 5px !important;
+    }
+    .message--wrapper{
+        margin: 5px !important;
+    }
+
+    .message--body {
+        padding: 5px 10px 5px 10px !important;
+        border-radius: 15px !important;
+    }
+
+    .message--body span {
+        font-size: 15px !important;
+    }
+
+    .PersonalChat_TextArea_btn_div>div:nth-child(1) {
+        width: 80% !important;
+    }
+
+    .PersonalChat_TextArea_btn_div>div:nth-child(2) {
+        width: 20% !important;
+    }
+
+    .message-timestamp {
+        font-size: 11px !important;
+    }
+
+    .PersonalChatDeleteBtn {
+        font-size: 11px !important;
+    }
+}
 
 .PersonalChat_container {
     width: 100%;
@@ -294,11 +351,18 @@ body.darkMode #PersonalChat_Messages {
 .PersonalChatYourColor {
     background-color: black;
     max-width: 60%;
+}
 
+body.darkMode .PersonalChatYourColor {
+    background-color: rgb(255, 255, 255);
 }
 
 .PersonalChatYourColor span {
     color: #ffffff;
+}
+
+body.darkMode .PersonalChatYourColor span {
+    color: #000000;
 }
 
 .message--body--owner {

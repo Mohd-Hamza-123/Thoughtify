@@ -13,9 +13,26 @@
     font-family: 'Gabarito', sans-serif;
 }
 
+@media only screen and (max-width: 500px) {
+    #NotificationPop {
+        position: fixed;
+        z-index: 7;
+        right: -100vw;
+        top: 10vh;
+        width: 90vw;
+        height: 50px;
+        max-height: 60px;
+    }
+
+    #NotificationPop>section:nth-child(2)>p {
+        padding: 0px 15px 0px 0px;
+        font-size: 14px !important;
+    }
+}
+
 #NotificationPop.active {
     right: 1vw;
-    top: 17vh;
+    /* top: 17vh; */
 }
 
 #NotificationPop>section:nth-child(1).red {
@@ -60,6 +77,7 @@ body.darkMode #NotificationPop>section:nth-child(2) {
 
 #NotificationPop>section:nth-child(2)>p {
     padding: 0px 15px 0px 0px;
+    font-size: 14px;
 }
 
 #NotificationPop>section:nth-child(2)>i {

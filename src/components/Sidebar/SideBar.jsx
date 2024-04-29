@@ -64,7 +64,7 @@ const SideBar = () => {
 
   return (
     <div id="SideBarContainer">
-      <div className="SideBar p-3" ref={SideBar}>
+      <div className="SideBar" ref={SideBar}>
         <div className="flex justify-between items-center px-1">
           <div
             onClick={() => {
@@ -76,8 +76,8 @@ const SideBar = () => {
             className="SideBarCross flex gap-3 justify-start items-center"
           >
             <UserCircle />
-            <div>
-              <p className="font-bold cursor-pointer">{name}</p>
+            <div className="SideBar_Profile_Name">
+              <p>{name}</p>
             </div>
           </div>
 
@@ -98,7 +98,8 @@ const SideBar = () => {
             </svg>
           </div>
         </div>
-        <div className="SideBarContent mt-7 flex flex-col gap-3">
+
+        <div className="SideBarContent">
 
           <Link to={`/profile/${userData?.$id}`}>
             <div
@@ -162,7 +163,7 @@ const SideBar = () => {
             <p>About Creater</p>
           </div>
 
-          {true && <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={() => {
+          <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={() => {
             setIsOpen(false);
             setisOverlayBoolean(false)
             navigate('/trustedResponders')
@@ -172,7 +173,7 @@ const SideBar = () => {
             </div>
 
             <p>Trusted Responders</p>
-          </div>}
+          </div>
 
 
           <hr />

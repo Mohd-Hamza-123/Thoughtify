@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
-
+import "./RTE.css"
 
 const RTE = ({
   name,
@@ -14,7 +14,7 @@ const RTE = ({
   useEffect(() => {
     handleImageUpload(imgArr);
   }, [imgArr, setimgArr]);
-  // console.log(imgArr);
+
   return (
     <div className="w-full">
       <Controller
@@ -27,30 +27,13 @@ const RTE = ({
             init={{
               initialValue: defaultValue,
               height: 500,
-              menubar: true,
-              plugins: [
-                "image",
-                // "advlist",
-                "autolink",
-                "lists",
-                "link",
-                // "charmap",
-                // "preview",
-                "anchor",
-                "searchreplace",
-                // "visualblocks",
-                // "code",
-                "insertdatetime",
-                "media",
-                "table",
-                // "code",
-                "anchor",
-                // "codesmaple",
-              ],
+              autoresize_max_height: 800,
+              menubar: false,
+              plugins: ["lists", "image"],
               toolbar:
-                "undo redo | blocks | image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat",
+                "image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | code ",
               content_style:
-                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                "body { font-family:Helvetica,Arial,sans-serif; font-size:18px }",
               file_picker_callback: function (callback, value, meta) {
                 if (meta.filetype === "image") {
                   const editor = tinymce.activeEditor;

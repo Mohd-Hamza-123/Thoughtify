@@ -3,7 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap');
 
 .PostCard {
+    display: flex;
+    justify-content: space-between;
     width: 100%;
+    flex-direction: row-reverse;
     height: 210px;
     padding: 5px 14px 5px 5px;
     border-radius: 10px;
@@ -12,6 +15,72 @@
     background-color: rgba(255, 255, 255, 0.842);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 6px 8px rgba(0, 0, 0, 0.1) inset;
     transition: background-color 1s ease;
+}
+
+@media only screen and (max-width: 500px) {
+    .PostCard {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        height: 350px;
+        padding: 0px 0px 5px 0px;
+        border-radius: 10px;
+        text-align: left;
+        overflow: hidden;
+    }
+
+    #PostCard_left {
+        width: 100% !important;
+        height: 50% !important;
+    }
+
+    #PostCard_left a {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    #PostCard_right {
+        width: 100% !important;
+        padding: 10px 10px 0px 10px !important;
+        height: 50% !important;
+        margin-bottom: 0px !important;
+        justify-content: space-between !important;
+    }
+
+    #Post-Card-img {
+        width: 100%;
+        height: inherit !important;
+        border-radius: 5px 5px 0px 0px !important;
+        box-shadow: none !important;
+    }
+
+    #PostCard_title {
+        margin-top: 0px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        padding: 6px 0px 0px 0px !important;
+        height: 58px !important;
+    }
+
+    .PostCard_Details {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        /* justify-content: space-between !important; */
+    }
+
+    .PostCard_category {
+        padding: 3px 7px !important;
+        font-size: 10px !important;
+    }
+
+    .PostCard_Date {
+        font-size: 13px !important;
+    }
+
+    #PostCard_MaleComments {
+        height: 14px !important;
+        margin-top: 0px !important;
+    }
 }
 
 .PostCard.trusted {

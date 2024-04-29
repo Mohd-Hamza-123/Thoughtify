@@ -4,23 +4,50 @@
     transition: background-color 1s ease;
     width: 100vw;
     font-family: 'Gabarito', sans-serif;
+    display: flex;
+    width: 100%;
+}
+
+@media only screen and (max-width: 500px) {
+    #LowerNavigationBar {
+        transition: left 0.3s ease;
+        position: absolute;
+        left: -100vw;
+        z-index: 10;
+        top: 40px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border-radius: 5px;
+    }
+
+    #LowerNavigationBar.active {
+        left: 0vw;
+    }
+
+    .LowerNavigationBar_Three_Bars_Div {
+        display: flex !important;
+        justify-content: flex-end;
+        margin-right: 20px;
+        font-size: 25px;
+        margin-bottom: 10px;
+    }
 }
 
 #LowerNavigationBar.darkMode {
     background-color: #FF3500;
 }
 
-#LowerNavigationBar ul {
-    display: flex;
-    width: 100%;
+.LowerNavigationBar_Three_Bars_Div {
+    display: none;
 }
 
-#LowerNavigationBar ul a {
+#LowerNavigationBar a {
     flex-grow: 1;
     transition: background-color 0.4s ease;
 }
 
-#LowerNavigationBar ul a li {
+#LowerNavigationBar a li {
     padding: 10px 5px;
     cursor: pointer;
     color: white;
@@ -32,11 +59,11 @@
     text-align: center;
 }
 
-body.darkMode #LowerNavigationBar ul li {
+body.darkMode #LowerNavigationBar li {
     border: 1px solid #FF3500;
 }
 
-#LowerNavigationBar ul a.active li {
+#LowerNavigationBar a.active li {
     background-color: rgb(255, 255, 255);
     transition: background-color 0.2s ease;
     color: black;
@@ -45,6 +72,16 @@ body.darkMode #LowerNavigationBar ul li {
     border-style: solid;
 }
 
-body.darkMode #LowerNavigationBar ul a.active li {
+body.darkMode #LowerNavigationBar a.active li {
     border-color: #FF3500;
+}
+
+body.darkMode .LowerNavigationBar_Three_Bars_Div {
+    color: white;
+}
+
+.LowerNavigationBar_Three_Bars_Div button {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    padding: 0px 10px;
+    border-radius: 5px;
 }

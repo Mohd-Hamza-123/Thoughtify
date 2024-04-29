@@ -116,7 +116,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     }
   }, [isIntersecting]);
 
-  // console.log(bookMarkPostInRedux.length);
+  console.log(bookMarkPostInRedux);
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -169,17 +169,20 @@ const Favourite = ({ visitedProfileUserID }) => {
     >
       <div id="Profile_Bookmark_Filtered_Bookmark">
         {!isPostAvailable && <p className="text-center">{`No Posts Available`}</p>}
-        {visitedProfileUserID !== userData?.$id && <p className="text-center">{`You can't see Bookmark posts of Others`}</p>}
+
         {bookMarkPostInRedux?.map((bookmark, index) => {
-          if (isPostAvailable !== true) {
+         
+          if (isPostAvailable !== true || (visitedProfileUserID !== userData?.$id) || !bookmark) {
             return;
           }
+
           return (
-            <div className={`BookMark_Posts`} key={bookmark?.$id}>
+            < div className={`BookMark_Posts`
+            } key={bookmark?.$id}>
               <Link to={`/post/${bookmark?.$id}/${null}`}>
                 <p>{bookmark?.title}</p>
                 <div
-                  className="BrowseBookmark_created_category_views flex gap-3"
+                  className="BrowseBookmark_created_category_views flex gap-3 flex-wrap"
                 >
                   <span className="Favourite_CreatedAt">
                     {new Date(bookmark?.$createdAt).toLocaleDateString(
@@ -213,12 +216,14 @@ const Favourite = ({ visitedProfileUserID }) => {
 
       </div>
 
-      {(isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
-        <section ref={spinnerRef} className="flex justify-center">
-          <Spinner />
-        </section>
-      )}
-    </div>
+      {
+        (isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
+          <section ref={spinnerRef} className="flex justify-center">
+            <Spinner />
+          </section>
+        )
+      }
+    </div >
   );
 };
 

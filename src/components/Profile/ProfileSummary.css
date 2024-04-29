@@ -9,6 +9,21 @@
     border-radius: 5px;
 }
 
+
+@media only screen and (max-width: 500px) {
+    .ProfileSummary {
+        flex-direction: column !important;
+    }
+
+    #ProfileSummary {
+        width: 100% !important;
+    }
+
+    #ProfileSummarySecondDiv {
+        width: 100% !important;
+    }
+}
+
 #ProfileSummary.darkMode {
     background-color: black;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;

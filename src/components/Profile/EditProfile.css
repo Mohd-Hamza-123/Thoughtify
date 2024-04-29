@@ -5,12 +5,113 @@
     font-family: 'Nunito', sans-serif;
 }
 
+@media only screen and (max-width: 500px) {
+
+    #EditProfile_EditContent {
+        padding: 10px 10px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+        margin-bottom: 40px !important;
+        border-radius: 10px !important;
+    }
+
+    .EditProfile_form {
+        width: 100% !important;
+        margin: 0 auto;
+    }
+
+    #EditProfile-PrevImage {
+        width: 100% !important;
+    }
+
+    #EditProfile_submit_btn {
+        font-size: 15px !important;
+        bottom: 8px !important;
+        right: 15px !important;
+        padding: 5px 5px !important;
+    }
+
+    #EditProfile_submit_btn i {
+        font-size: 17px !important;
+    }
+
+    .EditProfile_Links_Div {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    #EditProfile_EditLinks_LinksAdded {
+        width: 100% !important;
+        /* border: 2px solid red !important; */
+    }
+
+    #EditProfile_EditLinks_3inputs {
+        width: 100% !important;
+    }
+
+    #EditProfile_EditLinks_3inputs Input,
+    .EditProfile_Edu_Lvl_div input,
+    .EditProfile_Occupation_div input {
+        width: 100% !important;
+    }
+
+    .EditProfile_Edu_Lvl_div,
+    .EditProfile_Occupation_div {
+        margin-bottom: 0px !important;
+    }
+
+    .EditProfile_Interested_div {
+        width: 100% !important;
+    }
+
+
+    #EditProfile-Prev-Inactive {
+        flex-direction: column !important;
+    }
+
+    #EditProfile-Prev-Inactive>div:nth-child(1) {
+        width: 100% !important;
+        gap: 5px;
+    }
+
+    #EditProfile_EditImage_Div {
+        height: fit-content !important;
+        padding: 5px !important;
+    }
+
+    #EditProfile_label_Div {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+    }
+
+    #EditProfile-Prev-Inactive>div:nth-child(2) {
+        width: 100% !important;
+        margin-top: 20px !important;
+    }
+
+    #EditProfile-seePreviewBefore {
+        width: 60% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        left: 50% !important;
+        bottom: auto !important;
+        font-size: 15px;
+    }
+
+    #ReactCrop-container {
+        max-width: 100% !important;
+    }
+}
+
 .EditProfile-FormContainer.darkMode {
     background-color: black;
 }
-.EditProfile-FormContainer.darkMode .MyProfile_HorizontalLine{
+
+.EditProfile-FormContainer.darkMode .MyProfile_HorizontalLine {
     display: none;
 }
+
 .EditProfile-FormContainer.darkMode button {
     background-color: #FF3500 !important;
     border: none !important;
@@ -236,6 +337,7 @@
     letter-spacing: 0.4px;
     font-weight: 400;
     border-radius: 3px;
+    resize: vertical;
 }
 
 #EditProfile_EditLinks_3inputs {
@@ -269,16 +371,12 @@
 #EditProfile_EditLinks_LinksAdded {
     /* border: 2px solid black; */
     width: 60%;
-    height: inherit;
+    height: 190px;
     word-break: break-all;
     word-wrap: break-word;
     overflow-x: hidden;
     overflow-y: scroll;
     white-space: nowrap;
-}
-
-#EditProfile_EditLinks_LinksAdded section {
-    /* border-bottom: 1px solid greenyellow; */
 }
 
 #EditProfile_EditLinks_LinksAdded .link-circle {
@@ -419,7 +517,6 @@
 
 #EditProfile_submit_btn {
     position: fixed;
-    border: 1px solid rgb(255, 255, 255);
     bottom: 3%;
     right: 10%;
     color: white;

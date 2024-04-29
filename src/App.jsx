@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "./store/authSlice";
+import { login, logout } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
@@ -16,6 +16,7 @@ import { getInitialPost } from "./store/postsSlice";
 import avatar from "./appwrite/avatars";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
+import ResetPassword from "./pages/ResetPassword";
 
 
 function App() {
@@ -63,8 +64,6 @@ function App() {
   const indicator = useRef(true);
 
 
-
-
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get('secret');
   const userId = urlParams.get('userId');
@@ -74,15 +73,73 @@ function App() {
   const [isDarkModeOn, setisDarkModeOn] = useState(localStorage.getItem("isDarkModeOn") === 'true');
 
 
+  const fetchData = async () => {
+    try {
+      const userData = await authService.getCurrentUser();
+
+      if (userData) {
+        dispatch(login({ userData }))
+
+        const userProfile = await profile.listProfile({ slug: userData?.$id });
+
+        if (userProfile.documents.length === 0 || userProfile.total === 0) {
+
+          let profileAvatar = await avatar.profileAvatar(userData?.name);
+          let response = await fetch(profileAvatar.href)
+          let blob = await response.blob();
+          const file = new File([blob], userData.name || 'downloaded_image', { type: 'image/*' });
+          const createProfileBucket = await profile.createBucket({ file })
+          const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
+          const profileImgURL = getProfileURL.href;
+          const userProfile = await profile.createProfile({
+            name: userData?.name,
+            userIdAuth: userData?.$id,
+            profileImgID: createProfileBucket.$id,
+            profileImgURL,
+          })
+          setMyUserProfile((prev) => userProfile)
+
+          dispatch(getUserProfile({ userProfile }))
+          if (userProfile) {
+            navigate("/");
+          } else {
+            setError("Please check the credentials");
+          }
+
+        } else {
+
+          setMyUserProfile(prev => userProfile.documents[0]);
+
+          dispatch(getUserProfile({ userProfile: userProfile.documents[0] }));
+
+          const profileImageID = userProfile.documents[0]?.profileImgID
+          const URL = await profile.getStoragePreview(profileImageID);
+
+          if (URL) {
+            dispatch(getUserProfile({ userProfileImgURL: URL.href }));
+          }
+          navigate("/");
+        }
+
+      } else {
+        throw new Error("User not logged in");
+      }
+    } catch (err) {
+
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (body) {
       if (isDarkModeOn) {
-        // console.log("hio")
+
         localStorage.setItem("isDarkModeOn", true);
         body[0].classList.add("darkMode")
       } else {
-        // console.log("bio")
+
         localStorage.setItem("isDarkModeOn", false)
         body[0].classList.remove("darkMode")
       }
@@ -90,88 +147,29 @@ function App() {
   }, [isDarkModeOn])
 
   useEffect(() => {
+
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret)
         .then((res) => {
-          // console.log(res)
-          console.log("Your email is verified")
-          return authService.getCurrentUser()
+
+          setNotificationPopMsgNature((prev) => true);
+          setnotificationPopMsg((prev) => "You Email is Verified. Please Login Again.");
+          setMyUserProfile((prev) => null)
+          dispatch(logout())
+          navigate("/login");
+          location.reload();
         })
         .then((userData) => {
-          // console.log(userData)
+
           dispatch(login({ userData }));
         })
         .catch((err) => {
-          console.log(err)
+          console.error(err)
         })
     }
 
   }, [])
-
   useEffect(() => {
-
-    const fetchData = async () => {
-
-      try {
-        const userData = await authService.getCurrentUser();
-        // console.log(userData)
-        if (userData) {
-          dispatch(login({ userData }))
-
-          const userProfile = await profile.listProfile({ slug: userData?.$id });
-          // console.log(userProfile)
-          if (userProfile.documents.length === 0 || userProfile.total === 0) {
-            // console.log("HI")
-            let profileAvatar = await avatar.profileAvatar(userData?.name);
-            let response = await fetch(profileAvatar.href)
-            let blob = await response.blob();
-            const file = new File([blob], userData.name || 'downloaded_image', { type: 'image/*' })
-            const createProfileBucket = await profile.createBucket({ file })
-            const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
-            const profileImgURL = getProfileURL.href;
-            const userProfile = await profile.createProfile({
-              name: userData?.name,
-              userIdAuth: userData?.$id,
-              profileImgID: createProfileBucket.$id,
-              profileImgURL,
-            })
-            setMyUserProfile((prev) => userProfile)
-
-            dispatch(getUserProfile({ userProfile }))
-            if (userProfile) {
-              navigate("/");
-            } else {
-              setError("Please check the credentials");
-            }
-
-          } else {
-
-            setMyUserProfile(prev => userProfile.documents[0]);
-
-            dispatch(getUserProfile({ userProfile: userProfile.documents[0] }));
-
-            const profileImageID = userProfile.documents[0]?.profileImgID
-            const URL = await profile.getStoragePreview(profileImageID);
-            // console.log(URL)
-            if (URL) {
-              dispatch(getUserProfile({ userProfileImgURL: URL.href }));
-            }
-            navigate("/");
-          }
-
-        } else {
-          // dispatch(logout());
-          // navigate("/signup");
-          throw new Error("User not logged in");
-        }
-      } catch (err) {
-        // navigate("/signup");
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (indicator.current) {
       fetchData();
       indicator.current = false
@@ -223,7 +221,6 @@ function App() {
     getNotification()
   }, []);
 
-
   const increaseViews = async (PostId) => {
     try {
       const previesViews = await appwriteService.getPost(PostId)
@@ -243,6 +240,10 @@ function App() {
       notification.deleteNotication({ notificationID });
     }
   }
+
+  console.log(myUserProfile);
+  console.log(userData)
+  
 
   return !loading ? (
     <>
@@ -286,6 +287,8 @@ function App() {
           savedMyProfileComments, setsavedMyProfileComments,
         }}
       >
+
+
         <NotificationPop notificationPopMsg={notificationPopMsg} notificationPopMsgNature={notificationPopMsgNature} />
         <Feedback />
         <Setting />

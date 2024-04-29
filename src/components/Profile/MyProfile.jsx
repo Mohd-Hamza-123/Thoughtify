@@ -436,7 +436,7 @@ const MyProfile = () => {
                   onClick={() => {
                     setactiveNav('Favourites')
                   }}
-                  className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
+                  className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null} ${profileData?.userIdAuth !== userData?.$id ? 'none' : 'last-of-type:'}`}>
                   Bookmarks
                 </li>
 

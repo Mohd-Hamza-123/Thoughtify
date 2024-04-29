@@ -19,6 +19,10 @@ const BrowseQuestions = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   let spinnerRef = useRef();
+  const BrowseQuestionLeft = useRef()
+  const BrowseQuestionRight = useRef();
+
+
   const [lastPostID, setLastPostID] = useState(null)
 
   const [isIntersecting, setIsIntersecting] = useState(false)
@@ -36,7 +40,7 @@ const BrowseQuestions = () => {
     setisSearching((prev) => true)
     sethasMorePostsInBrowseQuestions(true)
     const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data });
-  
+
     const isArray = Array.isArray(filteredQuestions)
 
     if (isArray) {
@@ -58,6 +62,11 @@ const BrowseQuestions = () => {
       }
     }
     setisSearching((prev) => false)
+
+    if (BrowseQuestionLeft.current && BrowseQuestionRight.current && window.innerWidth < 500) {
+      BrowseQuestionLeft.current.classList.toggle("none");
+      BrowseQuestionRight.current.classList.toggle("none");
+    }
   }
 
   useEffect(() => {
@@ -76,7 +85,7 @@ const BrowseQuestions = () => {
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
-  
+
       if (filteredQuestions.length !== 0) {
         setQueries((prev) => [...prev, ...filteredQuestions.documents]);
       }
@@ -128,9 +137,27 @@ const BrowseQuestions = () => {
       <HorizontalLine />
       <LowerNavigationBar />
       <strong id='BrowseQuestions_SearchQuestion_Heading' className={`flex justify-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter Questions</strong>
-      <div className='flex gap-2'>
+      <div className='BrowseQuestions_Two_Div_Containers flex gap-2'>
+        <div
+          onClick={() => {
+            if (BrowseQuestionLeft.current && BrowseQuestionRight.current) {
+              BrowseQuestionLeft.current.classList.toggle("none");
+              BrowseQuestionRight.current.classList.toggle("none");
+            }
+          }}
+          className="Home_RIGHT_LEFT_Grid_div">
+          <button
+            className="flex justify-center items-center">
+            <i className='bx bxs-grid-alt'></i>
+          </button>
+        </div>
 
-        <form id='BrowseQuestions_Filters' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
+
+        <form
+          ref={BrowseQuestionLeft}
+          id='BrowseQuestions_Filters'
+          className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`}
+          onSubmit={handleSubmit(submit)}>
 
           <div id='BrowseQuestions_PostTitle'>
             <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter by Post Title :</p>
@@ -267,7 +294,9 @@ const BrowseQuestions = () => {
         </form>
 
 
-        <div id='BrowseQuestions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+        <div
+          ref={BrowseQuestionRight}
+          id='BrowseQuestions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
           {!isPostAvailable && <p className={`text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Posts Available</p>}
           {queries?.map((querie, index) => {
             if (isPostAvailable !== true) {
@@ -278,7 +307,7 @@ const BrowseQuestions = () => {
 
               <Link to={`/post/${querie.$id}/${null}`}>
                 <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{querie.title}</p>
-                <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
+                <div id='BrowseQuestions_created_category_views' className='flex gap-3 flex-wrap'>
                   <span >{new Date(querie.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                   <span>{querie.category}</span>
                   <div className='flex justify-center items-center'>

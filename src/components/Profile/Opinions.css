@@ -2,6 +2,31 @@
     border: 2px solid red;
 }
 
+@media only screen and (max-width: 500px) {
+    #Profile_Opinions_Filter {
+        flex-direction: column !important;
+        margin-bottom: 10px !important;
+    }
+
+    #Profile_Filter_Opinions_Form {
+        margin-top: 10px !important;
+        width: 100% !important;
+        font-size: 15px;
+        height: fit-content !important;
+    }
+
+    #Profile_Opinions_Filtered_Questions {
+        display: none !important;
+        width: 100% !important;
+        padding: 0px !important;
+        height: fit-content !important;
+    }
+
+    #Profile_Filter_Opinions_Form.none+#Profile_Opinions_Filtered_Questions {
+        display: block !important;
+    }
+}
+
 #Profile_Opinions_Filter {
     width: 100%;
     margin-bottom: 20px;

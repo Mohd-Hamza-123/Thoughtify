@@ -4,6 +4,48 @@
     font-family: 'Gabarito', sans-serif;
 }
 
+@media only screen and (max-width: 500px) {
+    .wrapper {
+        width: 90% !important;
+        padding: 0px !important;
+        flex-direction: column !important;
+    }
+
+    .wrapper>div:nth-child(1) {
+        width: 100% !important;
+        padding: 14px 5px !important;
+        align-items: center;
+    }
+
+    .wrapper>div:nth-child(2) {
+        width: 100% !important;
+        padding: 10px;
+        /* border: 2px solid rgb(0, 0, 0); */
+    }
+
+    .TrustedRespondersPage_Bio {
+        text-align: left !important;
+        letter-spacing: 1px;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+    }
+
+    .wrapper .TrustedRespondersPage_name {
+        font-size: 20px !important;
+        margin: 10px 0 5px 0;
+    }
+
+    #TrustedRespondersPage {
+        width: 90% !important;
+        margin: 0 auto !important;
+    }
+
+    .card {
+        border-radius: 10px !important;
+        height: fit-content !important;
+    }
+}
+
 body.darkMode #TrustedResponderspage_Heading {
     color: white;
 }
@@ -46,9 +88,11 @@ body.darkMode #TrustedResponderspage_Heading {
     background: #ECE9E6;
     background: linear-gradient(to right, #FFFFFF, #ECE9E6);
 }
-.card img{
+
+.card img {
     background-color: white;
 }
+
 body.darkMode .card {
     background: black;
     color: white;

@@ -30,6 +30,8 @@ const ViewPost = () => {
   const navigate = useNavigate();
   const ellipsis_Vertical = useRef();
   const ViewPost_ellipsis_Vertical = useRef();
+  const viewPostLeft = useRef()
+  const viewPostRight = useRef()
 
 
   //Data from Redux
@@ -71,7 +73,6 @@ const ViewPost = () => {
 
 
   const navigateToRelatedPost = (postId) => {
-
     navigate(`/post/${postId}/${null}`);
   }
   const deleteComments = async (documentid) => {
@@ -104,7 +105,6 @@ const ViewPost = () => {
       realTime
         .getSingleComment(filterCommentID)
         .then((res) => {
-
           setfilteredComment(res)
         })
         .catch((res) => { console.log("bye") })
@@ -225,7 +225,7 @@ const ViewPost = () => {
   const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
   const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
   useEffect(() => {
-    // console.log("Hi")
+
     const getRelatedQueries = () => {
       // console.log(initialPost)
       let relatedArr = initialPost?.filter((initialPostObj) => {
@@ -579,7 +579,23 @@ const ViewPost = () => {
       </nav>
       <HorizontalLine />
       <div id="ViewPost_ViewPost_RecentQuestions_Container" className="flex">
-        <div id="ViewPost" className="p-3">
+
+        <div
+          onClick={() => {
+            if (viewPostLeft.current && viewPostRight.current) {
+              viewPostLeft.current.classList.toggle("none");
+            }
+          }}
+          className="Home_RIGHT_LEFT_Grid_div">
+          <button
+            className="flex justify-center items-center">
+            <i className='bx bxs-grid-alt'></i>
+          </button>
+        </div>
+        <div
+          ref={viewPostLeft}
+          id="ViewPost"
+          className="p-3">
           <div id="ViewPost-Question-Container" className="w-4/6 p-2">
             <div id="ViewPost_Details" className="mb-3 flex justify-between mx-3 mt-1 relative items-center">
 
@@ -730,8 +746,8 @@ const ViewPost = () => {
                       setselectedIndex((prev) => index)
 
                     }} key={parsedOption}>
-                      <div id="ViewPost_Poll_Option">{parsedOption}</div>
-                      <div id="ViewPost_Overlay_Poll" >
+                      <div className="ViewPost_Poll_Option">{parsedOption}</div>
+                      <div className="ViewPost_Overlay_Poll" >
                         {percentage}%
                       </div>
                       <div style={{
@@ -839,15 +855,25 @@ const ViewPost = () => {
             <Chat post={post} navigateToRelatedPost={navigateToRelatedPost} slug={slug} />
           </div>
         </div>
-        <div className={`ViewPost_Related_Filter_Comment_Questions ${isNavbarHidden ? '' : 'active'}`}>
+        <div
+          ref={viewPostRight}
+          className={`ViewPost_Related_Filter_Comment_Questions ${isNavbarHidden ? '' : 'active'}`}>
           <div id="ViewPost_RelatedQuestions">
             <p>{post?.category} Related :</p>
             {!isRelatedQueriesExist && <span className="">No Related Post is Available of {post?.category}</span>}
 
             {isRelatedQueriesExist && <ul>
               {relatedQueriesArr?.map((QuestionObj, index) => {
-                return <li key={QuestionObj?.$id} onClick={() => navigateToRelatedPost(QuestionObj?.$id)} className="cursor-pointer">{QuestionObj?.title ? QuestionObj?.title : QuestionObj?.pollQuestion
-                }</li>
+                return <li
+                  key={QuestionObj?.$id}
+                  onClick={() => {
+                    navigateToRelatedPost(QuestionObj?.$id);
+                    if (viewPostLeft.current && viewPostRight.current) {
+                      viewPostLeft.current.classList.toggle("none");
+                    }
+                  }}
+                  className="cursor-pointer">{QuestionObj?.title ? QuestionObj?.title : QuestionObj?.pollQuestion
+                  }</li>
               })}
             </ul>}
           </div>

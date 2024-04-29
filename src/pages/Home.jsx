@@ -22,11 +22,14 @@ const Home = () => {
     isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
+  // console.log(posts)
   const [isLoading, setIsLoading] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
 
   let spinnerRef = useRef();
+  const homeRight = useRef();
+  const homeLeft = useRef()
 
   const getAllPosts = async () => {
     setIsLoading((prev) => true)
@@ -157,14 +160,27 @@ const Home = () => {
       onScroll={handleScroll}
     >
       <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
-        <UpperNavigationBar/>
+        <UpperNavigationBar />
         <HorizontalLine />
         <LowerNavigationBar />
       </nav>
 
-
-      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
-        <div className="Home_Left flex flex-col gap-6">
+      <div id="Home_RIGHT_LEFT" className={`relative flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
+        <div
+          onClick={() => {
+            if (homeLeft.current && homeRight.current) {
+              homeLeft.current.classList.toggle("none");
+            }
+          }}
+          className="Home_RIGHT_LEFT_Grid_div">
+          <button
+            className="flex justify-center items-center">
+            <i className='bx bxs-grid-alt'></i>
+          </button>
+        </div>
+        <div
+          ref={homeLeft}
+          className="Home_Left">
           {posts?.map((post) => (
             <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
               <PostCard {...post} />
@@ -176,7 +192,9 @@ const Home = () => {
           </div>}
 
         </div>
-        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+        <div
+          ref={homeRight}
+          className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
           <HomeRight />
         </div>
       </div>
@@ -196,7 +214,7 @@ const Home = () => {
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
-          <p className={`text-center select-none ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Internet Connection Error or May be you are not Logged In</p>
+          <p className={`text-center select-none ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Internet Connection Error</p>
           <Button onClick={() => {
             location.reload()
           }} className="Reload_Page_Btn">Reload Page</Button>

@@ -1,8 +1,30 @@
 #ChatInProfile {
     width: 100%;
-    /* border: 1px solid black; */
 }
 
+@media only screen and (max-width: 500px) {
+    .ChatInProfile_Two_Sections section ul li {
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 7px 5px !important;
+        margin-bottom: 10px !important;
+        border-radius: 5px !important;
+        margin-top: 10px !important;
+        gap: 0px !important;
+    }
+
+    .ChatInProfile_Two_Sections section ul span {
+        font-size: 17px !important;
+        width: 75% !important;
+    }
+
+    .ChatInProfile_Two_Sections section ul button {
+        width: 25% !important;
+        padding: 4px 5px;
+        font-size: 12px !important;
+    }
+
+}
 
 .ChatInProfile_wrapper {
     width: 100%;

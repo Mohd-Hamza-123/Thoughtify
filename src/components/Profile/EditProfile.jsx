@@ -543,7 +543,7 @@ const EditProfile = ({
                 <label htmlFor="" className="mb-2 inline-block">
                   Links
                 </label>
-                <div className="flex h-40" id="">
+                <div className="flex EditProfile_Links_Div w-full" id="">
                   <div
                     id="EditProfile_EditLinks_3inputs"
                     className={`w-full flex flex-col gap-3 items-start ${isDarkModeOn ? 'darkMode' : ''}`}
@@ -583,7 +583,7 @@ const EditProfile = ({
                     )}
                   </div>
 
-                  <div id="EditProfile_EditLinks_LinksAdded" className="inline-block">
+                  <div id="EditProfile_EditLinks_LinksAdded" className="">
                     {linksArr?.map((link, index) => (
                       <section
                         key={JSON.parse(link).URL}
@@ -729,7 +729,7 @@ const EditProfile = ({
                       />
                     </ul>
                   </div>
-                  <div className="flex justify-between items-center EditProfile_Interested_remaining mt-5">
+                  <div className="flex justify-between items-center EditProfile_Interested_remaining mt-5 flex-wrap">
                     <p>
                       <span> {10 - interestedTagArr.length} </span>tags are
                       remaining

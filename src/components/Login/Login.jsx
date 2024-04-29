@@ -22,7 +22,7 @@ const Login = () => {
     try {
       setIsWaiting((prev) => true)
       const session = await authService.login(data);
-      // console.log(session);
+
       if (session) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
@@ -49,16 +49,16 @@ const Login = () => {
           <span>Home</span>
         </section>
         <div
-          className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
+          className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg`}
         >
           <div className="flex justify-center items-center">
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
           <div className="flex flex-col w-full">
-            <h1 className={`font-bold text-3xl mt-3 text-center text-black ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
+            <h1 className={`Login_Login font-bold text-3xl mt-3 text-center text-black ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
               Login
             </h1>
-            <div className="mx-auto mt-2">
+            <div className="Login_dont_have_acc mx-auto mt-2">
               <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                 Don't have an Account ?&nbsp;
                 <Link
@@ -119,7 +119,7 @@ const Login = () => {
               </div>
             </form>
             <div className="text-center">Or</div>
-            <div className="flex justify-center">
+            <div className="Login_Google_Div flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()
                 // console.log(googleAuthentcation)

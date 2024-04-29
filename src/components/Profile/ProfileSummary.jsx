@@ -19,7 +19,7 @@ const ProfileSummary = ({ profileData = {} }) => {
   const userData = useSelector((state) => state?.auth?.userData)
   const { isDarkModeOn } = useAskContext()
   return (
-    <div className={`w-full flex relative gap-3`}>
+    <div className={`ProfileSummary w-full flex relative gap-3`}>
       <div id="ProfileSummary" className={`w-2/3 ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="ProfileSummary_Bio_Div">
           <span className=""> Bio </span>

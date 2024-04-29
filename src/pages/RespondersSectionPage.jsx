@@ -24,6 +24,8 @@ const RespondersSectionPage = () => {
     const [maximumPostsNumber, setmaximumPostsNumber] = useState(null)
 
     let spinnerRef = useRef();
+    const homeRight = useRef();
+    const homeLeft = useRef()
 
     useEffect(() => {
         const getAllPosts = async () => {
@@ -133,7 +135,6 @@ const RespondersSectionPage = () => {
         lastScrollY.current = position
     }
 
-    // console.log(isNavbarHidden)
     useEffect(() => {
         // console.log(RespondersSectionPageRef.current)
         if (RespondersSectionPageRef.current) {
@@ -159,7 +160,22 @@ const RespondersSectionPage = () => {
             </nav>
 
             <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
-                <div className="Home_Left flex flex-col gap-6">
+                <div
+                    onClick={() => {
+                        if (homeLeft.current && homeRight.current) {
+                            homeLeft.current.classList.toggle("none");
+                            // homeRight.current.classList.toggle("none");
+                        }
+                    }}
+                    className="Home_RIGHT_LEFT_Grid_div">
+                    <button
+                        className="flex justify-center items-center">
+                        <i className='bx bxs-grid-alt'></i>
+                    </button>
+                </div>
+                <div
+                    ref={homeLeft}
+                    className="Home_Left flex flex-col gap-6">
                     {posts?.map((post) => {
 
                         return <div className={`RespondersSectionPage_PostCard ${isDarkModeOn ? 'darkMode' : ''}`} key={post?.$id} onClick={() => increaseViews(post.$id)}>
@@ -172,7 +188,9 @@ const RespondersSectionPage = () => {
                     </div>}
 
                 </div>
-                <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+                <div
+                    ref={homeRight}
+                    className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
                     <HomeRight />
                 </div>
             </div>

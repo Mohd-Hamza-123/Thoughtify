@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { NavLink } from "react-router-dom";
 import "./LowerNavigationBar.css";
 import { useAskContext } from "../../context/AskContext";
@@ -6,8 +6,7 @@ import "./LowerNavigationBar.css";
 import { useSelector } from 'react-redux'
 
 const LowerNavigationBar = () => {
-
-  
+  const lowerNavBarRef = useRef()
   const { isOpen, isDarkModeOn } = useAskContext();
 
   const arr = [
@@ -33,22 +32,38 @@ const LowerNavigationBar = () => {
     },
   ]
   return (
-    <>
+    <div className="relative">
       <nav
+        ref={lowerNavBarRef}
         id="LowerNavigationBar"
         className={`${isOpen ? "lightdark" : ""} ${isDarkModeOn ? "darkMode" : ""}`}
       >
-        <ul>
-          {arr?.map((nav) => (
-            <NavLink key={nav.NavName} to={nav.slug} className={({ isActive }) => `${isActive ? 'active' : ''}`}>
-              <li className="LowerNavigationBar_Navlinks">
-                {nav.NavName}
-              </li>
-            </NavLink>
-          ))}
-        </ul>
+        {arr?.map((nav) => (
+          <NavLink
+            onClick={() => {
+              if (lowerNavBarRef.current) {
+                lowerNavBarRef.current.classList.remove('active');
+              }
+            }}
+            key={nav.NavName}
+            to={nav.slug}
+            className={({ isActive }) => `${isActive ? 'active' : ''}`}>
+            <li className="LowerNavigationBar_Navlinks">
+              {nav.NavName}
+            </li>
+          </NavLink>
+        ))}
       </nav>
-    </>
+      <div className="LowerNavigationBar_Three_Bars_Div">
+        <button onClick={() => {
+          if (lowerNavBarRef.current) {
+            lowerNavBarRef.current.classList.toggle('active');
+          }
+        }}>
+          <i className={`fa-solid fa-bars`}></i>
+        </button>
+      </div>
+    </div>
   );
 };
 

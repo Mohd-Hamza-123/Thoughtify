@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import authService from '../../appwrite/auth'
 const HomeRight = () => {
     const userData = useSelector((state) => state.auth.userData)
-    
+
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false
     );
     const {
@@ -24,6 +24,14 @@ const HomeRight = () => {
     const verifyEmail = async () => {
         try {
             const getVerificationDetails = await authService.emailVerification();
+
+            if (getVerificationDetails) {
+                setNotificationPopMsgNature((prev) => true);
+                setnotificationPopMsg((prev) => `Message sent! Check your G-mail inbox to verify`);
+            } else {
+                setNotificationPopMsgNature((prev) => false);
+                setnotificationPopMsg((prev) => `Verification Failed. Try again later`);
+            }
             setNotificationPopMsgNature((prev) => true);
             setnotificationPopMsg((prev) => `Message sent! Check your G-mail inbox to verify`);
         } catch (error) {

@@ -107,7 +107,7 @@ const PostCard = ({
 
   return (
     <>
-      <div className={`PostCard ${trustedResponderPost ? 'trusted' : ''} flex flex-row-reverse w-full ${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div className={`PostCard ${trustedResponderPost ? 'trusted' : ''} ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="PostCard_left" className="" >
           <Link to={`/post/${$id}`}>
             {queImage ? (
@@ -159,7 +159,7 @@ const PostCard = ({
               >{countTitle(title) ? countTitle(title) : pollQuestion}</h3>
             </Link>
           </div>
-          <div className="flex gap-4 items-center my-1">
+          <div className="PostCard_Details flex gap-4 items-center my-1">
             <span className="PostCard_Date">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
             <span className="PostCard_category">{category}</span>
             <span className="PostCard_category">{opinionsFrom}</span>

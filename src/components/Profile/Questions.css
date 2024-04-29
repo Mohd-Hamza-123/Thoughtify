@@ -3,6 +3,36 @@
     margin-bottom: 20px;
 }
 
+@media only screen and (max-width: 500px) {
+    #Profile_Questions_Filter {
+        margin-bottom: 10px !important;
+        flex-direction: column !important;
+    }
+
+    #Profile_Filter_Questions_Form {
+        width: 100% !important;
+        font-size: 15px;
+        margin-top: 10px !important;
+        height: fit-content !important;
+    }
+
+    #Profile_Questions_Filtered_Questions {
+        display: none !important;
+        width: 100% !important;
+        border-radius: 0px;
+        padding: 0px !important;
+        height: fit-content !important;
+    }
+
+    #Profile_Filter_Questions_Form.none+#Profile_Questions_Filtered_Questions {
+        display: block !important;
+    }
+
+    #Profile_Questions_Filtered_Questions>div {
+        margin-bottom: 15px !important;
+    }
+}
+
 #Profile_Filter_Questions_Form {
     width: 30%;
     font-family: 'Poppins', sans-serif;
