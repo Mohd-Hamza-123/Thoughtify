@@ -14,16 +14,16 @@ import conf from "../conf/conf";
 const TrustedRespondersPage = () => {
     const { mainResponder, setmainResponder } = useAskContext();
     const [trustedRespondersArr, setTrustedRespondersArr] = useState([]);
-    // console.log(conf.myPrivateUserID)
+
     const navigate = useNavigate();
     const getResponders = async () => {
         try {
             const responders = await profile.listProfilesWithQueries({
                 listResponders: true,
             });
-            setTrustedRespondersArr(responders.documents);
+            setTrustedRespondersArr(responders?.documents);
         } catch (error) {
-            console.error("Error fetching responders:", error);
+            return null
         }
     };
 
@@ -31,8 +31,8 @@ const TrustedRespondersPage = () => {
         getResponders();
         if (!mainResponder) {
             profile.listProfile({ slug: conf.myPrivateUserID }).then((res) => {
-                console.log(res);
-                setmainResponder((prev) => res.documents[0]);
+
+                setmainResponder((prev) => res?.documents[0]);
             });
         }
     }, []);
@@ -43,18 +43,14 @@ const TrustedRespondersPage = () => {
         const fetchProfileImageURLs = async () => {
             const imageURLs = {};
             for (const responder of trustedRespondersArr) {
-                if (responder.profileImgID) {
+                if (responder?.profileImgID) {
                     try {
                         const imageURL = await profile.getStoragePreview(
-                            responder.profileImgID
+                            responder?.profileImgID
                         );
-                        imageURLs[responder.profileImgID] = imageURL;
+                        imageURLs[responder?.profileImgID] = imageURL;
                     } catch (error) {
-                        console.error(
-                            `Error fetching profile image for responder ${responder.profileImgID}:`,
-                            error
-                        );
-                        imageURLs[responder.profileImgID] = "fallback_image_url";
+                        imageURLs[responder?.profileImgID] = "https://artscimedia.case.edu/wp-content/uploads/sites/79/2016/12/14205134/no-user-image.gif";
                     }
                 }
             }
@@ -65,7 +61,7 @@ const TrustedRespondersPage = () => {
     }, [trustedRespondersArr]);
 
     return (
-        <>
+        <div className="TrustedResponderPage">
             <UpperNavigationBar />
             <HorizontalLine />
             <LowerNavigationBar />
@@ -81,30 +77,53 @@ const TrustedRespondersPage = () => {
                 >
                     <div className="wrapper">
                         <div>
-                            <div className="img-area">
+                            <div
+                                onClick={() =>
+                                    navigate(`/profile/${mainResponder?.userIdAuth}`)
+                                }
+                                className="img-area cursor-pointer"
+                            >
                                 <div className="inner-area">
                                     <img src={mainResponder?.profileImgURL} />
                                 </div>
                             </div>
 
-                            <div className="TrustedRespondersPage_name">
+                            <div
+                                onClick={() =>
+                                    navigate(`/profile/${mainResponder?.userIdAuth}`)
+                                }
+                                className="TrustedRespondersPage_name cursor-pointer"
+                            >
                                 {mainResponder?.name}
                             </div>
 
-                            <div className="TrustedRespondersPage_buttons">
-                                <button>Message</button>
-                                <button>Follow</button>
-                            </div>
                             <div className="social-icons">
-                                <a href="#" className="twitter">
-                                    <i className="fab fa-twitter"></i>
+                                <a
+                                    href="https://github.com/Mohd-Hamza-123"
+                                    target="_blank"
+                                    className="github"
+                                >
+                                    <i className="fab fa-github"></i>
                                 </a>
-                                <a href="#" className="insta">
+                                <a
+                                    href="https://www.instagram.com/bytedeveloper.hamza/"
+                                    target="_blank"
+                                    className="insta"
+                                >
                                     <i className="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://twitter.com/Mohd_Hamza_byte" target="_blank">
+                                    <i className="fa-brands fa-x-twitter"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/in/mohd-hamza-18959427a/" target="_blank">
+                                    <i className="fa-brands fa-linkedin"></i>
                                 </a>
                             </div>
                         </div>
-                        <div>
+                        <div
+                            className="cursor-pointer"
+                            onClick={() => navigate(`/profile/${mainResponder?.userIdAuth}`)}
+                        >
                             <div className="about tag-red">{mainResponder?.occupation}</div>
                             <section className="TrustedRespondersPage_Bio">
                                 {mainResponder?.bio}
@@ -150,61 +169,8 @@ const TrustedRespondersPage = () => {
                     })}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
 export default TrustedRespondersPage;
-
-// const TrustedRespondersPage = () => {
-//     const [trustedRespondersArr, settrustedRespondersArr] = useState([])
-//     // console.log(trustedRespondersArr)
-//     const getResponders = async () => {
-//         const Responders = await profile.listProfilesWithQueries({ listResponders: true })
-//         settrustedRespondersArr((prev) => Responders.documents)
-//         console.log(Responders.documents.profileImgID)
-//     }
-//     const getImgURL = async (ImgID) => {
-//         const URL = await profile.getStoragePreview(ImgID)
-//         // console.log(URL.href)
-//         return URL.href;
-//     }
-//     useEffect(() => {
-//         getResponders();
-
-//     }, [])
-//     return (<>
-//         <UpperNavigationBar />
-//         <HorizontalLine />
-//         <LowerNavigationBar />
-//         <HorizontalLine />
-//         <div id='TrustedRespondersPage'>
-//             <div className="TrustedRespondersPage_container">
-//                 {trustedRespondersArr?.map((respondersObj, index) => {
-
-//                     return <div key={respondersObj.$id} className="card">
-//                         <div className="card__footer">
-//                             <div className="w-full user flex flex-col">
-//                                 <div className='w-full flex justify-center'>
-//                                     <img src={getImgURL(respondersObj.profileImgID)} alt="user__image" className="user__image" />
-//                                 </div>
-//                                 <div className="user__info text-center">
-//                                     <h5>{respondersObj.name}</h5>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                         <div className="card__body">
-//                             <span className="tag tag-red">{respondersObj.occupation}</span>
-//                             <p>{respondersObj.bio}</p>
-//                         </div>
-
-//                     </div>
-//                 })}
-
-//             </div>
-//         </div>
-//     </>
-//     )
-// }
-
-// export default TrustedRespondersPage

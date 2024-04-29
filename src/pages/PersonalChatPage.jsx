@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { PersonalChat } from '../components/index'
+import { PersonalChat, SecondLoader } from '../components/index'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import profile from '../appwrite/profile'
@@ -9,13 +9,15 @@ import './PersonalChatPage.css'
 
 const PersonalChatPage = () => {
 
-  const { senderSlug, receiverSlug } = useParams()
+  const { senderSlug, receiverSlug } = useParams();
+
   const [receiverDetails, setreceiverDetails] = useState([]);
- 
+
   const senderDetails = useSelector((state) => state.auth.userData);
-  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
- 
+  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr);
+
   const [ChatRoomID, setchatRoomID] = useState('');
+
   const receiverName = useRef(null)
 
   const getParticipantsProfileDetails = async () => {
@@ -27,7 +29,7 @@ const PersonalChatPage = () => {
       const Profiles = await profile.listProfile({
         slug: receiverSlug
       });
-      receiverName.current = Profiles.documents[0].name
+      receiverName.current = Profiles.documents[0]?.name
       setreceiverDetails([
         Profiles.documents[0]
       ])
@@ -38,13 +40,12 @@ const PersonalChatPage = () => {
       ])
     }
 
-    let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID)
+    let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID);
 
     if (isChatRoomExists) {
-      // console.log('chat Room exists');
 
     } else {
-      console.log(receiverName)
+
       let participantsDetails = [
         JSON.stringify({ FirstParticipant: senderDetails.name }),
         JSON.stringify({ SecondParticpant: receiverName.current })
@@ -70,11 +71,14 @@ const PersonalChatPage = () => {
         setchatRoomID(res)
       })
   }, [])
+  
   return (
     (receiverDetails?.length > 0 && ChatRoomID) ?
       <div className='PersonalChatPage'>
         <PersonalChat receiverDetails={receiverDetails} ChatRoomID={ChatRoomID} />
-      </div> : '...loading'
+      </div> : <div className='w-full h-full flex justify-center items-center'>
+        <SecondLoader />
+      </div>
   )
 
 }

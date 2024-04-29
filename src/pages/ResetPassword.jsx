@@ -14,13 +14,26 @@ const ResetPassword = () => {
     const secret = urlParams.get('secret');
     const userId = urlParams.get('userId');
 
-    const { isDarkModeOn } = useAskContext()
+    const {
+        isDarkModeOn,
+        setnotificationPopMsg,
+        setNotificationPopMsgNature,
+    } = useAskContext()
 
     const { register, handleSubmit } = useForm();
     const submit = async (data) => {
-        const reset = await authService.resetPassword(userId, secret, data.Password, data.Repeat_Password);
-        console.log(reset);
-        navigate('/login')
+        try {
+            const reset = await authService.resetPassword(userId, secret, data.Password, data.Repeat_Password);
+            setNotificationPopMsgNature((prev) => true);
+            setnotificationPopMsg((prev) => "Password Updated");
+            navigate('/login');
+
+
+        } catch (error) {
+            setNotificationPopMsgNature((prev) => false);
+            setnotificationPopMsg((prev) => "Password not Updated. Try again Later");
+        }
+
     }
 
     return (
@@ -34,7 +47,7 @@ const ResetPassword = () => {
                 <div className="flex justify-center items-center">
                     <img className="Login_signup_Logo" src={QueryFlow} alt="" />
                 </div>
-                <div className="flex flex-col w-full">
+                <div className="ResetPassword_ResetPassword flex flex-col w-full">
                     <h2 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                         Reset Your Password
                     </h2>

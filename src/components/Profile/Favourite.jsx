@@ -6,14 +6,14 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import { getFilteredBookmarkPosts } from "../../store/profileSlice";
-
+import profile from "../../appwrite/profile";
 
 const Favourite = ({ visitedProfileUserID }) => {
   const bookMarkPostInRedux = useSelector(
     (state) => state.profileSlice?.filteredBookmarkPosts
   );
   const dispatch = useDispatch();
-  // console.log(bookMarkPostInRedux)
+
   const spinnerRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,8 +26,9 @@ const Favourite = ({ visitedProfileUserID }) => {
     hasMorePostsInProfileFilterBookmark,
     sethasMorePostsInProfileFilterBookmark,
     myUserProfile,
+    setMyUserProfile
   } = useAskContext();
-  // console.log(myUserProfile);
+
   const userData = useSelector((state) => state.auth.userData);
 
   const bookMarkCounter = useRef(0);
@@ -46,16 +47,17 @@ const Favourite = ({ visitedProfileUserID }) => {
 
       if (totalLength > 5) {
         for (let i = 0; i < 5; i++) {
-          // console.log(bookMarkCounter.current)
           const filteredBookmark = await appwriteService.getPostWithBookmark(
             bookMarkArray[i]
           );
-          // console.log("HI")
-          dispatch(
-            getFilteredBookmarkPosts({
-              filteredBookmarkPosts: [filteredBookmark],
-            })
-          );
+          console.log(filteredBookmark);
+          if (filteredBookmark) {
+            dispatch(
+              getFilteredBookmarkPosts({
+                filteredBookmarkPosts: [filteredBookmark],
+              })
+            );
+          }
         }
         bookMarkCounter.current = bookMarkCounter.current + 5;
       } else {
@@ -63,12 +65,21 @@ const Favourite = ({ visitedProfileUserID }) => {
           const filteredBookmark = await appwriteService.getPostWithBookmark(
             bookMarkArray[i]
           );
-          console.log(filteredBookmark);
-          dispatch(
-            getFilteredBookmarkPosts({
-              filteredBookmarkPosts: [filteredBookmark],
-            })
-          );
+
+          if (filteredBookmark) {
+            dispatch(
+              getFilteredBookmarkPosts({
+                filteredBookmarkPosts: [filteredBookmark],
+              })
+            );
+          } else {
+            // console.log(myUserProfile?.bookmarks);
+            let newArr = myUserProfile?.bookmarks
+            newArr.splice(i, 1);
+            const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, bookmarks: newArr })
+            console.log(updateBookMarkInProfile)
+            setMyUserProfile((prev) => updateBookMarkInProfile)
+          }
         }
       }
       setIsLoading(true);
@@ -116,7 +127,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     }
   }, [isIntersecting]);
 
-  // console.log(bookMarkPostInRedux.length);
+
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -136,7 +147,7 @@ const Favourite = ({ visitedProfileUserID }) => {
       return () => ref && observer.unobserve(ref);
     }
   }, [spinnerRef.current, isLoading, bookMarkPostInRedux]);
-  // getting total posts
+
 
   useEffect(() => {
     if (myUserProfile) {
@@ -145,6 +156,11 @@ const Favourite = ({ visitedProfileUserID }) => {
       }
       settotalFilteredbookmarks(myUserProfile?.bookmarks?.length);
     }
+
+    if (myUserProfile?.bookmarks?.length >= totalFilteredbookmarks) {
+      setIsLoading((prev) => false)
+    }
+
   }, [myUserProfile]);
 
   const indicator = useRef(true);
@@ -168,18 +184,20 @@ const Favourite = ({ visitedProfileUserID }) => {
       className={`flex`}
     >
       <div id="Profile_Bookmark_Filtered_Bookmark">
-        {!isPostAvailable && <p className="text-center">{`No Posts Available`}</p>}
-        {visitedProfileUserID !== userData?.$id && <p className="text-center">{`You can't see Bookmark posts of Others`}</p>}
+
         {bookMarkPostInRedux?.map((bookmark, index) => {
-          if (isPostAvailable !== true) {
+
+          if (isPostAvailable !== true || (visitedProfileUserID !== userData?.$id) || !bookmark) {
             return;
           }
+
           return (
-            <div className={`BookMark_Posts`} key={bookmark?.$id}>
+            < div className={`BookMark_Posts`
+            } key={bookmark?.$id}>
               <Link to={`/post/${bookmark?.$id}/${null}`}>
                 <p>{bookmark?.title}</p>
                 <div
-                  className="BrowseBookmark_created_category_views flex gap-3"
+                  className="BrowseBookmark_created_category_views flex gap-3 flex-wrap"
                 >
                   <span className="Favourite_CreatedAt">
                     {new Date(bookmark?.$createdAt).toLocaleDateString(
@@ -213,12 +231,14 @@ const Favourite = ({ visitedProfileUserID }) => {
 
       </div>
 
-      {(isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
-        <section ref={spinnerRef} className="flex justify-center">
-          <Spinner />
-        </section>
-      )}
-    </div>
+      {
+        (isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
+          <section ref={spinnerRef} className="flex justify-center">
+            <Spinner />
+          </section>
+        )
+      }
+    </div >
   );
 };
 

@@ -8,9 +8,8 @@ import { UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, Post
 const RespondersSectionPage = () => {
 
     const dispatch = useDispatch();
-    const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
-    // console.log(initialTrustedPosts)
-
+    const initialTrustedPosts = useSelector((state) => state?.postsSlice?.initialResponderPosts);
+   
 
     const { increaseViews, hasMorePostInTrustedPost,
         sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();
@@ -24,15 +23,17 @@ const RespondersSectionPage = () => {
     const [maximumPostsNumber, setmaximumPostsNumber] = useState(null)
 
     let spinnerRef = useRef();
+    const homeRight = useRef();
+    const homeLeft = useRef()
 
     useEffect(() => {
         const getAllPosts = async () => {
-            setIsLoading((prev) => true)
+            setIsLoading((prev) => true);
             try {
-                if (initialTrustedPosts.length === 0) {
-                    const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true })
-                    setmaximumPostsNumber((prev) => posts.total)
-                    if (initialTrustedPosts.length < posts.total) {
+                if (initialTrustedPosts?.length === 0) {
+                    const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true });
+                    setmaximumPostsNumber((prev) => posts?.total)
+                    if (initialTrustedPosts?.length < posts?.total) {
                         sethasMorePostInTrustedPost((prev) => true)
                     } else {
                         sethasMorePostInTrustedPost((prev) => false)
@@ -40,18 +41,14 @@ const RespondersSectionPage = () => {
                     if (posts) {
                         setPosts((prev) => posts.documents)
                         let lastID = posts.documents[posts.documents.length - 1]?.$id
-                        setLastPostID((prev) => lastID)
+                        setLastPostID((prev) => lastID);
                         dispatch(getResponderInitialPosts({ initialResponderPosts: posts.documents }))
                     }
                 } else {
-                    // console.log(initialPost)
                     setPosts((prev) => [...initialTrustedPosts])
                 }
             } catch (error) {
-                console.log(error)
                 setIsLoading(false)
-            } finally {
-                // setIsLoading((prev) => false)
             }
         }
         getAllPosts();
@@ -59,7 +56,7 @@ const RespondersSectionPage = () => {
 
     useEffect(() => {
         const ref = spinnerRef.current;
-        // console.log(ref)
+      
         if (ref) {
             const observer = new IntersectionObserver(([entry]) => {
                 setIsIntersecting((prev) => entry.isIntersecting)
@@ -76,14 +73,13 @@ const RespondersSectionPage = () => {
     }, [spinnerRef.current, posts])
 
     useEffect(() => {
-        // console.log(maximumPostsNumber)
+
         if (isIntersecting && hasMorePostInTrustedPost) {
+
             const getAllPosts = async () => {
-                // console.log(initialPost[initialPost.length - 1].$id)
                 let LastID = initialTrustedPosts[initialTrustedPosts.length - 1]?.$id;
                 const posts = await appwriteService.getPosts({ lastPostID: LastID, TrustedResponders: true })
-                // console.log(posts)
-                // setPosts((prev) => [...prev, posts])
+
                 if (initialTrustedPosts.length < posts.total) {
                     sethasMorePostInTrustedPost((prev) => true)
                 } else {
@@ -100,8 +96,8 @@ const RespondersSectionPage = () => {
             }
             getAllPosts()
         }
-        // console.log(initialPost)
-    }, [isIntersecting, hasMorePostInTrustedPost])
+      
+    }, [isIntersecting, hasMorePostInTrustedPost, initialTrustedPosts])
 
     useEffect(() => {
         if (initialTrustedPosts.length !== 0) {
@@ -109,11 +105,12 @@ const RespondersSectionPage = () => {
         } else {
             setPosts((prev) => [])
         }
+
+
     }, [initialTrustedPosts])
 
 
     const RespondersSectionPageRef = useRef()
-
     const lastScrollY = useRef(window.scrollY);
     const [isNavbarHidden, setisNavbarHidden] = useState(false)
 
@@ -123,24 +120,23 @@ const RespondersSectionPage = () => {
 
         sessionStorage.setItem('scrollPosition', position.toString());
         if (lastScrollY.current < position) {
-            // console.log('down')
+            
             setisNavbarHidden(true)
         } else {
-            // console.log('up')
+     
             setisNavbarHidden(false)
         }
-        // setlastScrollY(position)
+  
         lastScrollY.current = position
     }
 
-    // console.log(isNavbarHidden)
     useEffect(() => {
-        // console.log(RespondersSectionPageRef.current)
+       
         if (RespondersSectionPageRef.current) {
-            // console.log("HOme")
+     
             const storedScrollPosition = sessionStorage.getItem('scrollPosition');
             const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-            // console.log(parsedScrollPosition)
+    
             RespondersSectionPageRef.current.scrollTop = parsedScrollPosition
         }
     }, [RespondersSectionPageRef.current, posts]);
@@ -159,7 +155,22 @@ const RespondersSectionPage = () => {
             </nav>
 
             <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
-                <div className="Home_Left flex flex-col gap-6">
+                <div
+                    onClick={() => {
+                        if (homeLeft.current && homeRight.current) {
+                            homeLeft.current.classList.toggle("none");
+                            // homeRight.current.classList.toggle("none");
+                        }
+                    }}
+                    className="Home_RIGHT_LEFT_Grid_div">
+                    <button
+                        className="flex justify-center items-center">
+                        <i className='bx bxs-grid-alt'></i>
+                    </button>
+                </div>
+                <div
+                    ref={homeLeft}
+                    className="Home_Left flex flex-col gap-6">
                     {posts?.map((post) => {
 
                         return <div className={`RespondersSectionPage_PostCard ${isDarkModeOn ? 'darkMode' : ''}`} key={post?.$id} onClick={() => increaseViews(post.$id)}>
@@ -172,7 +183,9 @@ const RespondersSectionPage = () => {
                     </div>}
 
                 </div>
-                <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+                <div
+                    ref={homeRight}
+                    className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
                     <HomeRight />
                 </div>
             </div>

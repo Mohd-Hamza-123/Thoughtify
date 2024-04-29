@@ -1,9 +1,112 @@
 #ViewPost_Scroll_Div {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
 }
+
+@media only screen and (max-width: 500px) {
+    #ViewPost_ViewPost_RecentQuestions_Container {
+        width: 100%;
+        margin-top: 27vh !important;
+        flex-direction: column !important;
+        padding: 0px 10px !important;
+    }
+  
+
+    #ViewPost {
+        width: 100% !important;
+        padding: 10px 0px !important;
+    }
+
+    #ViewPost_Details {
+        margin: 0px 0px 0px 0px !important;
+    }
+
+    #ViewPost_Details>div:nth-child(1) {
+        gap: 10px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .ViewPost-ellipsis-Vertical {
+        top: 107% !important;
+        right: 15px !important;
+    }
+
+    #ViewPost_Date_Views_comments {
+        font-weight: 500 !important;
+        display: flex;
+        gap: 17px !important;
+        flex-wrap: wrap !important;
+        font-size: 13px !important;
+        align-items: center;
+    }
+
+    #ViewPost_Edit_Delete {
+        font-size: 20px;
+        padding: 2px 9px !important;
+    }
+
+    #ViewPost-Question-Container{
+        /* padding: 0px !; */
+    } 
+    #ViewPost-Question {
+        margin: 0 auto;
+        width: 100%;
+        padding: 10px 0px !important;
+    }
+
+    #ViewPostName {
+        font-size: 14px !important;
+        margin-top: 0px !important;
+    }
+
+    .ViewPost-Category {
+        font-size: 11px !important;
+    }
+
+    #ViewPost-Title {
+        font-size: 20px !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        line-height: 27px !important;
+    }
+
+    #ViewPost_Like_Dislike_BookMark>div i {
+        font-size: 20px !important;
+    }
+
+    #ViewPost_Poll_Div {
+        padding: 0px 10px 10px 10px !important;
+        margin-top: 20px !important;
+    }
+
+    #ViewPost_Poll_Div p {
+        font-size: 16px !important;
+        margin: 14px 0px 6px 0px !important;
+    }
+
+    .ViewPost_Poll_Option {
+        font-size: 13px !important;
+    }
+
+    .ViewPost_Related_Filter_Comment_Questions {
+        display: none !important;
+        width: 90% !important;
+        padding: 15px;
+        position: sticky;
+        right: 0;
+        top: 10px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        margin: 0 auto;
+    }
+
+    #ViewPost.none+.ViewPost_Related_Filter_Comment_Questions {
+        display: block !important;
+    }
+}
+
 
 #ViewPost_ViewPost_RecentQuestions_Container {
     width: 100%;
@@ -65,14 +168,12 @@ body.darkMode .Home_Nav_Container {
     font-family: 'Poppins', sans-serif;
 }
 
-/* comment count ,views, data */
 #ViewPost_Details {
     display: flex;
 }
 
 #ViewPost_Details>div:nth-child(1) {
-    /* width: 35%; */
-    /* border: 2px solid red; */
+ 
     display: flex;
     gap: 20px;
     justify-content: space-between;
@@ -99,7 +200,6 @@ body.darkMode .Home_Nav_Container {
     align-items: center;
     padding: 2px 15px;
     cursor: pointer;
-    /* border: 2px solid red !important; */
 }
 
 #ViewPost_Date_Views_Comments {
@@ -122,16 +222,11 @@ body.darkMode #ViewPost-Title {
     color: white;
 }
 
-#ViewPost_edit_Delete {
-    /* border: 2px solid red; */
-}
-
 .ViewPost-ellipsis-Vertical {
     display: none;
     position: absolute;
-    /* border: 2px solid green; */
-    top: 60%;
-    right: 20px;
+    top: 108%;
+    right: 16px;
     border-radius: 5px;
 }
 
@@ -163,6 +258,7 @@ body.darkMode #ViewPost-Title {
 
 #ViewPost-parse {
     margin-top: 40px;
+    font-family: 'Poppins', sans-serif;
 }
 
 #ViewPost_Poll_Div {
@@ -212,7 +308,7 @@ body.darkMode #ViewPost-Title {
     background-color: #33ffff4a;
 }
 
-#ViewPost_Poll_Option {
+.ViewPost_Poll_Option {
 
     padding: 5px 12px;
     font-family: 'Gabarito', sans-serif;
@@ -223,7 +319,7 @@ body.darkMode #ViewPost-Title {
 }
 
 
-#ViewPost_Overlay_Poll {
+.ViewPost_Overlay_Poll {
     text-align: right;
     border: 4px solid red;
     font-family: 'Gabarito', sans-serif;
@@ -237,17 +333,12 @@ body.darkMode #ViewPost-Title {
     border: none;
 }
 
-#ViewPost_Overlay_Poll:hover {
-    /* border: 2px solid rgba(87, 87, 87, 0.682); */
-}
 
-#ViewPost_Overlay_Poll.active {
+.ViewPost_Overlay_Poll.active {
     border: 2px solid cyan;
 }
 
 
-
-/* Like dislike bookmark */
 
 #ViewPost_Like_Dislike_BookMark {
     font-family: 'Poppins', sans-serif;
@@ -304,11 +395,9 @@ body.darkMode #ViewPost_Like_Dislike_BookMark>div {
 
 .ViewPost_Related_Filter_Comment_Questions {
     width: 30%;
-    /* border: 1px dotted var(--secondryBlue); */
     padding: 15px;
     position: sticky;
     right: 0;
-    /* border: 2px solid red; */
     top: 10px;
     font-family: 'Poppins', sans-serif;
     height: fit-content;

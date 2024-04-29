@@ -16,6 +16,28 @@
     transition: opacity 0.3s, transform 0.3s;
 }
 
+@media only screen and (max-width: 500px) {
+    .Setting {
+        width: 90% !important;
+        padding: 8px !important;
+    }
+
+    .Setting h4 {
+        font-size: 19px !important;
+    }
+
+    .Setting_Div p {
+        margin-top: 8px !important;
+        margin-bottom: 5px !important;
+        font-size: 15px !important;
+    }
+
+    .Setting_Div>div label {
+        font-size: 16px !important;
+        font-weight: lighter !important;
+    }
+}
+
 .Setting::-webkit-scrollbar {
     display: none;
 }

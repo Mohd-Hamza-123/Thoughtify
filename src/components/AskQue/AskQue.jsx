@@ -13,7 +13,7 @@ import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice
 
 
 const AskQue = ({ post }) => {
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
   const { handleSubmit, register, control, watch, setValue, getValues } =
@@ -31,11 +31,10 @@ const AskQue = ({ post }) => {
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
   const { setnotificationPopMsg, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
+
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
   const [thumbailURL, setThumbailURL] = useState('')
-
-  const [imgArr, setimgArr] = useState([]);
 
   // Category State
   const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
@@ -52,11 +51,6 @@ const AskQue = ({ post }) => {
   //
   const [isUploading, setIsUploading] = useState(false)
 
-  const handleImageUpload = (arr) => {
-    if (arr.length !== 0) {
-      setimgArr(arr);
-    }
-  };
 
   const selectThumbnail = async (e) => {
 
@@ -117,8 +111,8 @@ const AskQue = ({ post }) => {
 
       if (thumbnailFile) {
         try {
-          const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
-          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+          const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
+          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile });
 
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
@@ -185,7 +179,7 @@ const AskQue = ({ post }) => {
           const ImgArrUnsplash = UnsplashRes.results
 
           const randomIndex = Math.floor(Math.random() * 10);
-          // console.log(ImgArrUnsplash[randomIndex])
+       
           const ImgURL = ImgArrUnsplash[randomIndex].urls.full
           console.log(ImgURL)
           const dbPost = await appwriteService.updatePost(post?.$id, {
@@ -200,7 +194,7 @@ const AskQue = ({ post }) => {
           setNotificationPopMsgNature((prev) => true)
           setnotificationPopMsg((prev) => 'Post Updated')
         } catch (error) {
-          // console.log("hi")
+        
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
             userId: userData.$id,
@@ -299,13 +293,9 @@ const AskQue = ({ post }) => {
         }
         navigate("/");
       }
-
-      // const createNotification = await notification.createNotification({ content: `${userData.name} has posted a post`, isRead: false, slug: slugForNotification.current, name: userData?.name, userID: userData.$id });
-      // console.log(createNotification);
     }
 
     navigate("/")
-    setimgArr((prev) => [])
     setIsUploading((prev) => false)
   }
 
@@ -331,7 +321,7 @@ const AskQue = ({ post }) => {
       }
       const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
       setTotalPollOptions((prev) => pollOptionsArray)
-      // console.log(post)
+      
       if (post.queImageID) {
         appwriteService.getThumbnailPreview(post.queImageID)
           .then((res) => {
@@ -340,8 +330,6 @@ const AskQue = ({ post }) => {
       } else {
         setThumbailURL((prev) => post.queImage)
       }
-
-    } else {
 
     }
   }, [])
@@ -362,7 +350,7 @@ const AskQue = ({ post }) => {
       <div
         className={`ask_Que_Container ${isDarkModeOn ? 'darkMode' : ''}`}
       >
-        <h3 className={`text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
+        <h3 className={`AskQue_Heading text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
 
         <form id="AskQue_Form" onSubmit={handleSubmit(submit)} className="flex">
           <div id="AskQue_InsideFormLeft">
@@ -397,7 +385,7 @@ const AskQue = ({ post }) => {
                   name="content"
                   defaultValue={getValues("content")}
                   control={control}
-                  handleImageUpload={handleImageUpload}
+                  // handleImageUpload={handleImageUpload}
                 />
               </div>
             </div>
@@ -405,7 +393,7 @@ const AskQue = ({ post }) => {
               <h4 className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
                 Whom Opinion are You interested ?
               </h4>
-              <div className="flex justify-between items-center ">
+              <div className="AskQue_Opinions_From_Div flex justify-between items-center ">
                 <div className="w-1/5  text-center text-xl">
                   <span className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Opinions From :</span>
                 </div>

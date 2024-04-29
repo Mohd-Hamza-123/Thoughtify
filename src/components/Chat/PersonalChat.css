@@ -9,12 +9,74 @@
     --themeColorSecondary: #386fd2;
 }
 
+@media only screen and (max-width: 500px) {
+    #Personalchat {
+        margin: 60px 0px 0px 0px !important;
+        width: 100%;
+        height: 80% !important;
+        padding: 0px !important;
+    }
 
+    .room--container {
+        height: 100% !important;
+        justify-content: initial !important;
+    }
+
+    #PersonalChat_Receiver_div {
+        height: 15% !important;
+        display: flex;
+        align-items: center !important;
+    }
+
+    #PersonalChat_Receiver_div img {
+        height: 35px !important;
+        width: 35px !important;
+    }
+
+    #PersonalChat_Messages {
+        height: 65% !important;
+        margin: 0px !important;
+        padding: 5px !important;
+    }
+
+    .message--wrapper {
+        margin: 5px !important;
+    }
+
+    .message--body {
+        padding: 5px 10px 5px 10px !important;
+        border-radius: 15px !important;
+    }
+
+    .message--body span {
+        font-size: 15px !important;
+    }
+
+    .PersonalChat_TextArea_btn_div>div:nth-child(1) {
+        width: 80% !important;
+    }
+
+    .PersonalChat_TextArea_btn_div>div:nth-child(2) {
+        width: 20% !important;
+    }
+
+    .message-timestamp {
+        font-size: 11px !important;
+    }
+
+    .PersonalChatDeleteBtn {
+        font-size: 11px !important;
+    }
+
+    .PersonalChat_container {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}
 
 .PersonalChat_container {
     width: 100%;
     height: 100%;
-    /* border: 2px solid pink; */
     font-family: 'Poppins', sans-serif;
 }
 
@@ -25,7 +87,6 @@
 
 .PersonalChat_Ellipsis_Vertical {
     position: relative;
-    /* border: 2px solid red; */
 }
 
 .PersonalChat_Ellipsis_Vertical>p {
@@ -71,7 +132,7 @@ body.darkMode .PersonalChat_Ellipsis_Vertical>p {
     flex-direction: column;
 }
 
-/* receiver div */
+
 #PersonalChat_Receiver_div {
     height: 12%;
     border-bottom: 2px solid rgba(172, 171, 171, 0.317);
@@ -101,7 +162,6 @@ body.darkMode #PersonalChat_Receiver_div {
     border-radius: 50%;
 }
 
-/* Login & Register Pages */
 
 .auth--container {
     height: 100vh;
@@ -294,11 +354,18 @@ body.darkMode #PersonalChat_Messages {
 .PersonalChatYourColor {
     background-color: black;
     max-width: 60%;
+}
 
+body.darkMode .PersonalChatYourColor {
+    background-color: rgb(255, 255, 255);
 }
 
 .PersonalChatYourColor span {
     color: #ffffff;
+}
+
+body.darkMode .PersonalChatYourColor span {
+    color: #000000;
 }
 
 .message--body--owner {

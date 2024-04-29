@@ -21,13 +21,9 @@ export class FeedbackService {
                 email,
             })
         } catch (error) {
-            console.log(" createFeedBack :: ERROR " + error);
+            return null
         }
-        return null;
     }
-
-
-
 
 }
 

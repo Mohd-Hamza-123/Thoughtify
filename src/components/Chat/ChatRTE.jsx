@@ -1,26 +1,25 @@
-import React, { useRef } from "react";
+import React from "react";
 import "./ChatRTE.css";
 import { Editor, } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
-const ChatRTE = ({ name, control, clearEditorContent, editorRef }) => {
+import conf from "../../conf/conf";
+const ChatRTE = ({ name, control, editorRef }) => {
 
   return (
     <div id="ChatRTE" className="w-full">
       <Controller
+        apiKey={conf.tinyMCEapiKey}
         name={name || "commentContent"}
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="7iij1fvwyx1hpj73fvi2kgneqe5696kdqrlchijnbuenk7s0"
-            initialValue=""
             init={{
               height: 200,
-              // autoresize_min_height: 200, // Set minimum height
               autoresize_max_height: 400, //
               menubar: false,
-              plugins: ["lists", "image"],
+              plugins: ["lists", "image", "wordcount"],
               toolbar:
-                "image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | code ",
+                "undo redo | image | bold italic forecolor backcolor  | alignleft aligncenter alignright alignjustify | outdent indent |removeformat",
               content_style:
                 "body { font-family:Helvetica,Arial,sans-serif; font-size:18px }",
               file_picker_callback: function (callback, value, meta) {

@@ -1,21 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./EditProfile.css";
-import { Button, Input, TextArea } from "../index";
+import { Button, TextArea } from "../index";
 import { educationLevels, occupation_Arr } from "./Profile_arr";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useForm } from "react-hook-form";
 import profile from "../../appwrite/profile";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
-import { getCanvasPreview, getCroppedFile } from "./getCanvasPreview";
+import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
+import NoProfile from '../../assets/NoProfile.png'
+import * as imageConversion from 'image-conversion'
+import { compress, compressAccurately } from 'image-conversion'
 
 
 const MinimumDimension = 50;
 const EditProfile = ({
   profileData,
-  getCroppedImageURL
 }) => {
   const {
     bio,
@@ -49,7 +51,7 @@ const EditProfile = ({
   const [cropSelection, setCropSelection] = useState(null)
   const [interestedTagArr, setInterestedTagArr] = useState([]);
   const [file, setFile] = useState(null);
-  // console.log(file)
+
   const [canvasPreview, setcanvasPreview] = useState(true)
   const [prevFileURL, setprevFileURL] = useState('')
   const [imageURL, setImageURL] = useState("");
@@ -68,33 +70,32 @@ const EditProfile = ({
 
   const [prevProfilePic, setprevProfilePic] = useState('');
 
-  // Updating Profile Indicator
+
   const [isUpdating, setisUpdating] = useState(false)
   useEffect(() => {
 
-
+    console.log(profileImgID);
+    console.log(prevFileURL)
     if (profileImgID) {
 
       if (myUserProfile?.profileImgURL) {
-
         setprevProfilePic(myUserProfile?.profileImgURL)
         setprevFileURL(myUserProfile?.profileImgURL)
-
       } else {
         profile.getStoragePreview(profileImgID)
           .then((res) => {
-            setprevFileURL(res.href);
+            setprevFileURL(res?.href);
           })
 
 
         const get = async (profileImgID) => {
           const prev = await profile.getStoragePreview(profileImgID)
-          setprevProfilePic(prev.href)
+          setprevProfilePic(prev?.href)
         }
         get(profileImgID)
       }
-
-
+    } else {
+      setprevFileURL((prev) => "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg")
     }
   }, [profileImgID])
 
@@ -127,36 +128,56 @@ const EditProfile = ({
       });
     }
   };
-  // console.log(prevFileURL)
+
   const submit = async (data) => {
+
     setisUpdating((prev) => true)
-    // return
+
     if (!prevFileURL && !file) {
       setseePreviewBefore('Make sure to see preview before uploading image')
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg("Make sure to see preview before uploading image")
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg("Make sure to see preview before uploading image");
+      setisUpdating((prev) => false)
       return
     }
     if (seePreviewBefore !== '') {
       setseePreviewBefore('Make sure to see preview before uploading image')
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Make sure to see preview before uploading image")
+      setisUpdating((prev) => false)
       return
     }
 
     if (file) {
-      const deletePic = await profile.deleteStorage(profileImgID)
-      const uploadedPic = await profile.createBucket({ file })
-      // console.log(uploadedPic);
+
+      if (profileImgID) {
+        const deletePic = await profile.deleteStorage(profileImgID)
+      }
+
+      let blob = await imageConversion.compressAccurately(file, 200)
+      console.log(blob)
+      let uploadFile = new File([blob], userData?.name, { type: blob.type });
+      console.log(uploadFile)
+      if (!uploadFile) return
+      let uploadedPic = await profile.createBucket({ file: uploadFile });
+      if (!uploadedPic) {
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg("Profile Updation failed");
+        setisUpdating((prev) => false)
+        return
+      }
+
       const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id)
-      data.profileImgURL = profileImgURL?.href
-      data.profileImgID = `${uploadedPic?.$id}`
+      if (profileImgURL) {
+        data.profileImgURL = profileImgURL?.href
+        data.profileImgID = `${uploadedPic?.$id}`
+      }
+
 
     } else {
       data.profileImgID = profileImgID
     }
 
-    // console.log(data)
     if (data) {
       if (data.educationLvl) {
         if (data.occupation) {
@@ -213,7 +234,7 @@ const EditProfile = ({
   };
 
   const addTags = () => {
-    // console.log(interestedTag);
+
     if (
       interestedTagArr.includes(interestedTag) ||
       interestedTagArr.length === 10 ||
@@ -247,7 +268,6 @@ const EditProfile = ({
 
   const addLinks = async (e) => {
     if (!URL || !Title) return;
-
 
     function isValidURL(URL) {
       // Regular expression for a valid URL
@@ -288,10 +308,13 @@ const EditProfile = ({
     url.current.value = "";
     title.current.value = "";
   };
+
+
   const onSelectFile = async (e) => {
     setprevFileURL('')
     const file = e.currentTarget?.files[0];
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
+    console.log(file.size)
     if (file.size > MAX_FILE_SIZE) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")
@@ -321,7 +344,7 @@ const EditProfile = ({
         setFile(croppedFile)
       }, 'image/png');
     } catch (error) {
-      console.log("canvasRef Blob error")
+
     }
   }
 
@@ -422,7 +445,9 @@ const EditProfile = ({
               {prevFileURL &&
                 <div id="EditProfile-Prev-active">
                   <div className="" id="EditProfile-PrevImage">
-                    <img src={prevFileURL} className={`rounded-ful bg-white`} />
+                    <img src={prevFileURL}
+                      onError={(e) => { e.target.src = NoProfile }}
+                      className={`rounded-ful bg-white`} />
                   </div>
                   <label
                     htmlFor="editProfileImg"
@@ -543,7 +568,7 @@ const EditProfile = ({
                 <label htmlFor="" className="mb-2 inline-block">
                   Links
                 </label>
-                <div className="flex h-40" id="">
+                <div className="flex EditProfile_Links_Div w-full" id="">
                   <div
                     id="EditProfile_EditLinks_3inputs"
                     className={`w-full flex flex-col gap-3 items-start ${isDarkModeOn ? 'darkMode' : ''}`}
@@ -583,7 +608,7 @@ const EditProfile = ({
                     )}
                   </div>
 
-                  <div id="EditProfile_EditLinks_LinksAdded" className="inline-block">
+                  <div id="EditProfile_EditLinks_LinksAdded" className="">
                     {linksArr?.map((link, index) => (
                       <section
                         key={JSON.parse(link).URL}
@@ -729,7 +754,7 @@ const EditProfile = ({
                       />
                     </ul>
                   </div>
-                  <div className="flex justify-between items-center EditProfile_Interested_remaining mt-5">
+                  <div className="flex justify-between items-center EditProfile_Interested_remaining mt-5 flex-wrap">
                     <p>
                       <span> {10 - interestedTagArr.length} </span>tags are
                       remaining

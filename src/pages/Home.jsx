@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { useEffect } from "react"
 import { useState } from "react"
-import { PostCard, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, SecondLoader, Button } from "../components/index";
+import { PostCard, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, SecondLoader, Button, SideBar } from "../components/index";
 import { useSelector, useDispatch } from "react-redux";
 import "./Home.css";
 import appwriteService from "../appwrite/config";
@@ -9,11 +9,10 @@ import { useAskContext } from "../context/AskContext";
 import { getInitialPost } from "../store/postsSlice";
 
 
-
 const Home = () => {
-
+  
   const dispatch = useDispatch()
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  const initialPost = useSelector((state) => state.postsSlice?.initialPosts)
 
   const {
     increaseViews,
@@ -22,18 +21,21 @@ const Home = () => {
     isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
+  // console.log(posts)
   const [isLoading, setIsLoading] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
 
   let spinnerRef = useRef();
+  const homeRight = useRef();
+  const homeLeft = useRef()
 
   const getAllPosts = async () => {
     setIsLoading((prev) => true)
     try {
       if (initialPost?.length === 0) {
         const posts = await appwriteService.getPosts({ lastPostID })
-
+        // console.log(posts)
         if (posts === false) {
           setPosts((prev) => false)
         }
@@ -54,7 +56,7 @@ const Home = () => {
         setPosts((prev) => [...initialPost])
       }
     } catch (error) {
-      console.log(error)
+     
       setIsLoading(false)
     }
   }
@@ -65,7 +67,7 @@ const Home = () => {
 
   useEffect(() => {
     const ref = spinnerRef.current;
-    // console.log(ref)
+
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
         setIsIntersecting((prev) => entry.isIntersecting)
@@ -153,33 +155,52 @@ const Home = () => {
     return <div
       id="Home"
       ref={HomePageRef}
-      className={`w-full relative ${isDarkModeOn ? "darkMode" : ''}`}
+      className={`${isDarkModeOn ? "darkMode" : ''}`}
       onScroll={handleScroll}
     >
-      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
-        <UpperNavigationBar/>
-        <HorizontalLine />
-        <LowerNavigationBar />
-      </nav>
+      <section>
+        <nav
+          className={`Home_Nav_Container ${isNavbarHidden ? 'active' : ''} ${isDarkModeOn ? "darkMode" : ''}`}>
+          <UpperNavigationBar />
+          <HorizontalLine />
+          <LowerNavigationBar />
+        </nav>
 
+        <div id="Home_RIGHT_LEFT" className={`relative flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
+          <div
+            onClick={() => {
+              if (homeLeft.current && homeRight.current) {
+                homeLeft.current.classList.toggle("none");
+              }
+            }}
+            className="Home_RIGHT_LEFT_Grid_div">
+            <button
+              className="flex justify-center items-center">
+              <i className='bx bxs-grid-alt'></i>
+            </button>
+          </div>
+          <div
+            ref={homeLeft}
+            className="Home_Left">
+            {posts?.map((post) => (
+              <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
+                <PostCard {...post} />
+              </div>
+            ))}
 
-      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full ${isDarkModeOn ? "darkMode" : ''}`}>
-        <div className="Home_Left flex flex-col gap-6">
-          {posts?.map((post) => (
-            <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
-              <PostCard {...post} />
-            </div>
-          ))}
+            {(isLoading && hasMorePostsInHome) && <div ref={spinnerRef} className="flex justify-center">
+              <span className="Home_loader"></span>
+            </div>}
 
-          {(isLoading && hasMorePostsInHome) && <div ref={spinnerRef} className="flex justify-center">
-            <span className="Home_loader"></span>
-          </div>}
-
+          </div>
+          <div
+            ref={homeRight}
+            className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+            <HomeRight />
+          </div>
         </div>
-        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
-          <HomeRight />
-        </div>
-      </div>
+      </section>
+
     </div>
   } else if (posts === false) {
     return <div
@@ -188,23 +209,26 @@ const Home = () => {
       className="w-full relative"
       onScroll={handleScroll}
     >
-      <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
-        <UpperNavigationBar className='' />
-        <HorizontalLine />
-        <LowerNavigationBar />
-      </nav>
 
-      <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
-        <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
-          <p className={`text-center select-none ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Internet Connection Error or May be you are not Logged In</p>
-          <Button onClick={() => {
-            location.reload()
-          }} className="Reload_Page_Btn">Reload Page</Button>
+      <section>
+        <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
+          <UpperNavigationBar className='' />
+          <HorizontalLine />
+          <LowerNavigationBar />
+        </nav>
+
+        <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
+          <div className="Home_Left flex flex-col gap-6 justify-center items-center font-semibold">
+            <p className={`text-center select-none ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Internet Connection Error</p>
+            <Button onClick={() => {
+              location.reload()
+            }} className="Reload_Page_Btn">Reload Page</Button>
+          </div>
+          <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
+            <HomeRight />
+          </div>
         </div>
-        <div className={`Home_Right ${isNavbarHidden ? '' : 'active'}`}>
-          <HomeRight />
-        </div>
-      </div>
+      </section>
 
     </div>
   } else {

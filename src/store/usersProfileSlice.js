@@ -11,8 +11,7 @@ const userProfileSlice = createSlice({
     reducers: {
         getOtherUserProfile: (state, action) => {
             let arr = []
-            arr = [...state.userProfileArr, ...action.payload.userProfileArr]
-            // console.log(arr);
+            arr = [...action.payload.userProfileArr, ...state.userProfileArr]
             let uniqueArray = Array.from(new Map(arr.map(obj => [obj?.$id, obj])).values());
             state.userProfileArr = uniqueArray
         },

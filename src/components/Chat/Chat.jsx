@@ -1,25 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import "./Chat.css";
 import NoProfile from '../../assets/NoProfile.png'
-import { ChatRTE, Button, TextArea, Spinner } from "../index";
+import { ChatRTE, Button, Spinner } from "../index";
 import { useForm } from "react-hook-form";
 import realTime from "../../appwrite/realTime";
 import parse from "html-react-parser";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import appwriteService from "../../appwrite/config";
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAskContext } from "../../context/AskContext";
 import { getCommentsInRedux } from "../../store/commentsSlice";
 import profile from "../../appwrite/profile";
 import { getInitialPost, getpostUploaderProfilePic } from "../../store/postsSlice";
-import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
 
-const Chat = ({ post, navigateToRelatedPost, slug }) => {
+const Chat = ({ post, slug }) => {
 
-  console.log(post)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state?.commentsSlice?.comments);
@@ -31,12 +29,12 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   const fixedReplies = 2;
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
-  const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([]);
+
   const [activeTextArea, setactiveTextArea] = useState(null)
 
   const [postCommentCount, setpostCommentCount] = useState(null)
 
-  const [postid, setpostid] = useState(post.$id);
+  const [postid, setpostid] = useState(post?.$id);
   const [commentArr, setcommentArr] = useState([]);
 
   const [replyComment, setreplyComment] = useState("");
@@ -57,62 +55,59 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
     const getProfilePics = async () => {
 
       let array = commentArr;
-      let uniqueArray = Array.from(new Map(array.map(obj => [obj.authid
+      let uniqueArray = Array.from(new Map(array?.map(obj => [obj?.authid
         , obj])).values());
 
       let wantProfileIds = uniqueArray.filter((objofUniqueArr) => {
-        return !postUploaderPics.some((objOfRedux) => objOfRedux.userId === objofUniqueArr.authid)
+        return !postUploaderPics.some((objOfRedux) => objOfRedux?.userId === objofUniqueArr?.authid)
       })
-      // console.log(wantProfileIds)
+
       if (wantProfileIds.length > 0) {
         for (let i = 0; i < wantProfileIds.length; i++) {
           let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
 
-          let userId = listedProfile.documents[0].userIdAuth
-          let profilePic = listedProfile.documents[0].profileImgURL
+          let userId = listedProfile?.documents[0]?.userIdAuth
+          let profilePic = listedProfile?.documents[0]?.profileImgURL
           dispatch(getpostUploaderProfilePic({ userId, profilePic }))
         }
       }
     }
-    if (commentArr.length > 0) {
-      getProfilePics()
+    if (commentArr?.length > 0) {
+      getProfilePics();
     }
-  }, [])
+  }, [commentArr])
 
   const getComments = async (lastid = null) => {
     try {
       setIsLoading(true)
       const comments = await realTime.listComment(post?.$id, lastid);
-      // console.log(comments)
 
-      if (commentArr.length < comments.total) {
+      if (commentArr?.length < comments?.total) {
         sethasMoreComments(true)
       } else {
         sethasMoreComments(false)
       }
-      dispatch(getCommentsInRedux({ comments: comments.documents, isMerge: true }))
+      dispatch(getCommentsInRedux({ comments: comments?.documents, isMerge: true }))
     } catch (error) {
       setcommentArr((prev) => {
-        const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
-        // console.log(arr)
-        if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
-        // console.log(arr[arr.length - 1].$id)
-        if (arr.length !== 0) {
+        const arr = commentsInRedux?.filter((comment) => comment?.postid === post?.$id)
+
+        if (arr?.length !== 0) setLastPostID(arr[arr?.length - 1]?.$id)
+
+        if (arr?.length !== 0) {
           return arr
         } else {
           return []
         }
       })
       setIsLoading(false)
-    } finally {
-      // setIsLoading(false)
     }
   };
 
   useEffect(() => {
     setcommentArr((prev) => {
-      const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
-      if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
+      const arr = commentsInRedux?.filter((comment) => comment?.postid === post?.$id)
+      if (arr?.length !== 0) setLastPostID(arr[arr?.length - 1]?.$id)
       return arr
     })
 
@@ -121,7 +116,6 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
   useEffect(() => {
 
     if (isIntersecting) {
-      // console.log(lastPostID)
       getComments(lastPostID)
     }
   }, [isIntersecting])
@@ -133,7 +127,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
 
   useEffect(() => {
     const ref = spinnerRef.current;
-    // console.log(ref)
+
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
         setIsIntersecting((prev) => entry.isIntersecting)
@@ -186,16 +180,25 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
         dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
 
         setNotificationPopMsgNature((prev) => true)
-        setnotificationPopMsg((prev) => 'Comment Posted')
+        setnotificationPopMsg((prev) => 'Comment Posted');
+
+        setTimeout(() => {
+          let newComment = document.getElementById(`Comment${dbCommnet?.$id}`)
+          console.log(newComment)
+          if (newComment) {
+            newComment.focus()
+          }
+        }, 1000);
+
 
         if (authid !== post?.userId) {
           // Getting Post Uploader profile to know whether he follows you or not.
           const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
 
-          console.log(getPostUploaderProfile);
-          let followersArr = getPostUploaderProfile.documents[0].followers
+       
+          let followersArr = getPostUploaderProfile?.documents[0]?.followers
           followersArr = followersArr?.map((obj) => JSON.parse(obj))
-          console.log(followersArr)
+    
           const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authid);
 
           // If He follows you , notification will be sent
@@ -270,7 +273,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
       .then(() => {
 
         let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
-        // console.log("dispatched")
+
         dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
         setNotificationPopMsgNature((prev) => true)
         setnotificationPopMsg((prev) => 'Comment Deleted')
@@ -299,15 +302,6 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
     }
   }
 
-  useEffect(() => {
-    if (commentArr) {
-      if (commentArr.length !== 0) {
-        for (let i = 0; i < commentArr.length; i++) {
-          setarr_For_Five_Mul((prev) => [...prev, { subCommentID: commentArr[i]?.$id, five_Multiple: 1 }])
-        }
-      }
-    }
-  }, [commentArr])
 
   const editorRef = useRef(null)
   const clearEditorContent = () => {
@@ -349,19 +343,23 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
             profilePicURL = postUploaderPics[profilePicIndex].profilePic
           }
 
-          // console.log(profilePicURL)
           return <div key={comment?.$id} className="Chat_Comment_Div">
             <section>
               <div className="flex justify-between">
 
-                <div onClick={()=>navigate(`/profile/${comment?.authid}`)} className="flex gap-2 cursor-pointer">
-                  <img
-                    className="Chat_Comment_Div_img"
-                    src={`${profilePicURL ? profilePicURL : NoProfile}`}
-                    alt=""
-                  />
-                  <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
-                </div>
+                <Link
+                  to={`/profile/${comment?.authid}`}
+                  id={`Comment${comment?.$id}`}
+                >
+                  <div className="flex gap-2 cursor-pointer">
+                    <img
+                      className="Chat_Comment_Div_img"
+                      src={`${profilePicURL ? profilePicURL : NoProfile}`}
+                      alt=""
+                    />
+                    <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
+                  </div>
+                </Link>
                 <div>
                   {(authid === comment?.authid || userData?.$id === conf.myPrivateUserID || userData?.$id === post?.userId) && (
                     <span
@@ -435,7 +433,7 @@ const Chat = ({ post, navigateToRelatedPost, slug }) => {
             <div className={``}>
               {comment?.subComment?.map((sub, index) => {
 
-                // console.log(id_For_Five_Mul)
+
                 if (comment?.$id != id_For_Five_Mul) {
                   if (index >= fixedReplies) return
                 } else {

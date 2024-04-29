@@ -14,8 +14,8 @@ const FindFriends = () => {
   const dispatch = useDispatch()
   const { handleSubmit, reset, register } = useForm();
 
-  
-  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
+
+  const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr);
   const userData = useSelector((state) => state.auth.userData)
   const {
     setnotificationPopMsg,
@@ -23,7 +23,7 @@ const FindFriends = () => {
     isDarkModeOn } = useAskContext()
 
 
-  const [isSearching, setisSearching] = useState(false)
+  const [isSearching, setisSearching] = useState(false);
   const [searchedPerson, setsearchedPerson] = useState(null);
 
 
@@ -38,18 +38,22 @@ const FindFriends = () => {
         setisSearching((prev) => false)
         return
       }
-      setsearchedPerson(GettingName?.documents[0]);
-      if (GettingName?.documents[0]?.userIdAuth !== userData?.$id) {
-        dispatch(getOtherUserProfile({ userProfileArr: [GettingName?.documents[0]] }))
+
+      setsearchedPerson((prev) => [...GettingName.documents]);
+      for (let i = 0; i < GettingName.total; i++) {
+        if (GettingName?.documents[i]?.userIdAuth !== userData?.$id) {
+          dispatch(getOtherUserProfile({ userProfileArr: [GettingName?.documents[i]] }))
+        }
       }
+
       reset()
     } catch (error) {
-      console.error(error)
+      return null
     }
     setisSearching((prev) => false)
   }
   const nav = (slug) => {
-    console.log(slug)
+
     navigate(slug);
   }
 
@@ -95,40 +99,45 @@ const FindFriends = () => {
 
           <div>
             {isSearching && <div className={`flex justify-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Searching...</div>}
-            {(searchedPerson && !isSearching) && <div className={`cursor-pointer FindFriends_Profile_Details ${isDarkModeOn ? 'darkMode' : ''}`} onClick={() => nav(`/profile/${searchedPerson?.userIdAuth}`)}>
 
-              <div className={`FindFriendsPage_ListFriends_Searched_Person ${isDarkModeOn ? 'darkMode' : ''}`}>
-                <div className='flex gap-3 items-center'>
-                  <div><img src={searchedPerson?.profileImgURL || NoProfile} /></div>
-                  <p>{searchedPerson?.name}</p>
-                </div>
+            {searchedPerson?.map((persons, index) => (
 
-                <div>
-                  {searchedPerson?.bio}
-                </div>
+              <div key={persons?.userIdAuth} className={`cursor-pointer FindFriends_Profile_Details ${isDarkModeOn ? 'darkMode' : ''}`} onClick={() => nav(`/profile/${persons?.userIdAuth}`)}>
 
-                <div>
-                  <b>Occupation :</b>  {searchedPerson?.occupation}
-                </div>
-
-                <div className='my-1'>
-                  <b>EducationLvl : </b>    {searchedPerson?.educationLvl}
-                </div>
-
-                <div className='flex gap-1'>
-
-                  <b>Interested In :  </b>
-                  <div className='flex gap-3'>
-                    {searchedPerson?.interestedIn.map((interest) => (
-                      <span key={interest}>{interest}</span>
-                    ))
-                    }
+                <div className={`FindFriendsPage_ListFriends_Searched_Person ${isDarkModeOn ? 'darkMode' : ''}`}>
+                  <div className='flex gap-3 items-center'>
+                    <div><img src={persons?.profileImgURL || NoProfile} /></div>
+                    <p>{persons?.name}</p>
                   </div>
 
+                  <div>
+                    {persons?.bio}
+                  </div>
 
+                  <div>
+                    <b>Occupation :</b>  {persons?.occupation}
+                  </div>
+
+                  <div className='my-1 flex'>
+                    <b>EducationLvl : </b>    {persons?.educationLvl}
+                  </div>
+
+                  <div className='flex gap-1 flex-wrap'>
+
+                    <b>Interested In :  </b>
+                    <div className='flex gap-3'>
+                      {persons?.interestedIn.map((interest) => (
+                        <span key={interest}>{interest}</span>
+                      ))
+                      }
+                    </div>
+
+
+                  </div>
                 </div>
               </div>
-            </div>}
+
+            ))}
 
           </div>
         </section>

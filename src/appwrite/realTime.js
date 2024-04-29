@@ -30,11 +30,11 @@ export class RealTime {
                 }
             )
         } catch (error) {
-            console.log("createComment error in realtime.js")
+            return null
         }
     }
 
-    async updateComment({ messageid, postid, commentContent, textAreaVisible, authid }, subComment) {
+    async updateComment({ messageid, postid, commentContent, authid }, subComment) {
         try {
             return await this.database.updateDocument(
                 conf.appwriteDatabaseId,
@@ -47,7 +47,7 @@ export class RealTime {
                     authid
                 })
         } catch (error) {
-            console.log("updateComment error in realtime.js")
+            return null
         }
     }
 
@@ -55,7 +55,7 @@ export class RealTime {
         try {
             return await this.database.deleteDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            console.log("DeleteComment error in realtime.js")
+            return null
         }
     }
 
@@ -63,27 +63,21 @@ export class RealTime {
         try {
             return await this.database.getDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            console.log("DeleteComment error in realtime.js")
+            return null
         }
     }
-    async listComment(postid, lastid, IgnoredCommentsIDs) {
+    async listComment(postid, lastid) {
         let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
         if (lastid) {
             QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
         }
-        // return
-        try {
-            try {
-                return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
-                    QueryArr
-                )
-            } catch (error) {
-                console.log("Appwrite serive :: getPosts :: error", error);
-                return false
-            }
 
+        try {
+            return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
+                QueryArr
+            )
         } catch (error) {
-            console.log("listCommnets error in realtime.js")
+            return false
         }
     }
 
@@ -95,14 +89,14 @@ export class RealTime {
                 queryArr
             )
         } catch (error) {
-            console.log("customProfileFilter error in realtime.js")
+            return null
         }
     }
 
     async getCommentsWithQueries({ Title, category,
         BeforeDate, AfterDate, PostAge, UserID, lastPostID
     }) {
-        // console.log(lastPostID)
+    
         let QueryArr = [Query.limit(5)];
         if (lastPostID) {
             QueryArr.push(Query.cursorAfter(lastPostID))
@@ -131,7 +125,6 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPostsWithQueries :: error", error);
             return null
         }
     }

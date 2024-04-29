@@ -16,7 +16,7 @@ const Questions = ({ visitedProfileUserID }) => {
   const spinnerRef = useRef()
   const [isLoading, setIsLoading] = useState(false)
   const [queries, setQueries] = useState([]);
-  
+
   const [lastPostID, setLastPostID] = useState(null)
   const [isPostAvailable, setisPostAvailable] = useState(true)
   const [totalFilteredQueries, settotalFilteredQueries] = useState(0);
@@ -31,7 +31,10 @@ const Questions = ({ visitedProfileUserID }) => {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext()
-  // console.log(savedMyProfilePosts);
+
+  const QuestionsLeft = useRef()
+  const QuestionRight = useRef()
+
   const userData = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
   const { register, handleSubmit, reset, getValues } = useForm({})
@@ -41,7 +44,7 @@ const Questions = ({ visitedProfileUserID }) => {
 
     if (visitedProfileUserID !== userData?.$id) {
       const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
-      // console.log(visitedProfileUserData);
+    
 
       if (!visitedProfileUserData) return
 
@@ -90,9 +93,10 @@ const Questions = ({ visitedProfileUserID }) => {
     }
 
     setIsSearching((prev) => false)
+    if (QuestionsLeft.current && QuestionRight.current && window.innerWidth < 500) {
+      QuestionsLeft.current.classList.toggle("none");
+    }
   }
-
-
 
   useEffect(() => {
     if (queries?.length >= totalFilteredQueries) {
@@ -107,10 +111,8 @@ const Questions = ({ visitedProfileUserID }) => {
 
     if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
   }, [queries, isIntersecting, isLoading])
-
-
   useEffect(() => {
-    // console.log("bye")
+    
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
@@ -144,7 +146,7 @@ const Questions = ({ visitedProfileUserID }) => {
     }
 
   }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
-  // getting total posts
+  
   useEffect(() => {
     if (TotalPostByMe == 0) {
       appwriteService
@@ -163,11 +165,26 @@ const Questions = ({ visitedProfileUserID }) => {
       setQueries((prev) => savedMyProfilePosts)
     }
   }, []);
+
+
   return (
 
     <div id='Profile_Questions_Filter' className='flex'>
-
-      <form id='Profile_Filter_Questions_Form' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
+      <div
+        onClick={() => {
+          if (QuestionsLeft.current && QuestionRight.current) {
+            QuestionsLeft.current.classList.toggle("none");
+          }
+        }}
+        className="Home_RIGHT_LEFT_Grid_div">
+        <button
+          className="flex justify-center items-center">
+          <i className='bx bxs-grid-alt'></i>
+        </button>
+      </div>
+      <form
+        ref={QuestionsLeft}
+        id='Profile_Filter_Questions_Form' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
 
         <div id='Profile_Questions_Title'>
           <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter by Post Title :</p>
@@ -280,7 +297,9 @@ const Questions = ({ visitedProfileUserID }) => {
           sethasMorePostsInProfileFilterQuestions(false)
         }} value={'Reset Filter'} className={`Profile_Questions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>
-      <div id='Profile_Questions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div
+        ref={QuestionRight}
+        id='Profile_Questions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
 
         {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
         {queries?.map((querie, index) => {
@@ -292,7 +311,7 @@ const Questions = ({ visitedProfileUserID }) => {
 
             <Link to={`/post/${querie?.$id}/${null}`}>
               <p>{querie?.title}</p>
-              <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
+              <div id='BrowseQuestions_created_category_views' className='flex gap-3 flex-wrap'>
                 <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{new Date(querie?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{querie?.category}</span>
                 <div className='flex justify-center items-center'>

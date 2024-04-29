@@ -21,18 +21,7 @@ export class PersonalChat {
                 participantsDetails
             })
         } catch (error) {
-            console.log("PersonalChat :: createChatRoom:: error", error)
             return false
-        }
-    }
-
-    async updatePersonalChatRoom() {
-        try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, {
-                // chatRoomID : 
-            })
-        } catch (error) {
-            console.log("Appwrite serive :: updatePost :: error", error);
         }
     }
 
@@ -41,7 +30,6 @@ export class PersonalChat {
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, slug)
         } catch (error) {
-            // console.log("Appwrite serive :: getPost :: error", error);
             return null
         }
     }
@@ -50,45 +38,53 @@ export class PersonalChat {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId, messageid)
         } catch (error) {
-            console.log("Personal Chat :: delete Message :: error", error);
+
             return false
         }
     }
 
-
-
     async getPersonalChatRooms(chatRoomID) {
+        if (!chatRoomID) return false
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, [
                 Query.equal("ChatRoomID", [`${chatRoomID}`])
             ])
         } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
+
             return false
         }
     }
 
-    // personal Chat
-    async sendPersonalMessage({ text, chatRoomID, username, userId }) {
+    async sendPersonalMessage({ text, chatRoomID, username, userId, participantsIDs }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId, ID.unique(), {
                 text,
                 chatRoomID,
                 username,
-                userId
+                userId,
+                participantsIDs,
             })
         } catch (error) {
-            console.log("PersonalChat :: sendPersonalMessage :: error", error);
+            return null
         }
     }
 
-    async listPersonalMessages({ ChatRoomID, limit }) {
+    async listPersonalMessages({ ChatRoomID, limit, notEqualArr }) {
+
+        if (!ChatRoomID) return null
+
         let arr = []
+
         if (ChatRoomID) {
             arr.push(Query.equal("chatRoomID", [`${ChatRoomID}`]))
         }
         if (limit) {
             arr.push(Query.orderAsc('$createdAt'));
+        }
+        if (notEqualArr?.length > 0) {
+            for (let i = 0; i < notEqualArr?.length; i++) {
+                arr.push(Query.notEqual("$id", [`${notEqualArr[i]}`]))
+            }
         }
 
         try {
@@ -96,21 +92,9 @@ export class PersonalChat {
                 arr
             )
         } catch (error) {
-            console.log("PersonalChat :: listPersonalMessages :: error", error);
+            return null
         }
     }
-
-    subscribeChannel() {
-        try {
-            let unsubscribe = this.client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (res) => {
-                console.log(res)
-            })
-            unsubscribe()
-        } catch (error) {
-            console.log("RealTime error in personalChat.js")
-        }
-    }
-
 
 }
 

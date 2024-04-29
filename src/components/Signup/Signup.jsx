@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { Logo, Input, Button, UpperNavigationBar } from "../";
+import { Button } from "../";
 import { getUserProfile } from "../../store/profileSlice";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
@@ -9,11 +9,12 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
-import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
+
+
 const Signup = () => {
-  const { myUserProfile, setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
+  const { setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
   const [isWaiting, setIsWaiting] = useState(false);
   const authRateLimit =
     "AppwriteException: Rate limit for the current endpoint has been exceeded. Please try again after some time.";
@@ -38,10 +39,8 @@ const Signup = () => {
       return
     }
 
-
-
     const userDataCreated = await authService.createAccount({ ...data });
-    // console.log(userDataCreated)
+
     if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
       setError("You Have reached Maximum signup limit. Try later sometime");
       return;
@@ -53,7 +52,7 @@ const Signup = () => {
 
     if (userDataCreated) {
       const userData = await authService.getCurrentUser();
-      // console.log(userData)
+
       if (!userData) {
         setIsWaiting((prev) => false);
         setNotificationPopMsgNature((prev) => false);
@@ -61,19 +60,14 @@ const Signup = () => {
         return
       }
       dispatch(login({ userData }));
-      let profileAvatar = await avatar.profileAvatar(data.name);
-      let response = await fetch(profileAvatar?.href);
-      let blob = await response.blob();
-      const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' })
-      const createProfileBucket = await profile.createBucket({ file })
-      const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
-      const profileImgURL = getProfileURL.href
+
       const userProfile = await profile.createProfile({
-        name: data.name,
+        name: userData?.name,
         userIdAuth: userData?.$id,
-        profileImgID: createProfileBucket.$id,
-        profileImgURL,
-      })
+        profileImgID: null,
+        profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+      });
+
       console.log(userProfile)
       setMyUserProfile((prev) => userProfile)
       dispatch(getUserProfile({ userProfile }))
@@ -105,12 +99,12 @@ const Signup = () => {
             {/* <Logo /> */}
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
-          <div className="flex flex-col w-full">
+          <div className="Signup_Signup_div flex flex-col w-full">
             <h1 className="font-bold text-2xl mt-2 text-center">
               Sign-In
             </h1>
 
-            <div className="mx-auto mt-2">
+            <div className="Signup_have_an_Acc mx-auto mt-2">
               <p>
                 Already have an Account ?&nbsp;
                 <Link
@@ -181,12 +175,11 @@ const Signup = () => {
                 </Button>
               </div>
             </form>
-            <p className="text-center mt-2">Or</p>
+            <p className="text-center mt-1">Or</p>
 
-            <div className="flex justify-center">
+            <div className="Signup_SignIn_Google_div flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()
-                // console.log(googleAuthentcation)
               }} type="button" className="login-with-google-btn" >
                 Sign in with Google
               </button>

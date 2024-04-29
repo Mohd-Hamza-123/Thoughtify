@@ -15,15 +15,15 @@ export class AuthService {
     async createAccount({ email, password, name, gender = null }) {
 
         try {
-            console.log()
+
             const userAccount = await this.account.create(
                 ID.unique(), email, password, name);
-            // console.log(userAccount)
+
             if (userAccount) {
                 return await this.login({ email, password })
             } else { return undefined }
         } catch (error) {
-            console.log("Create Account :: ERROR " + error);
+
             return `${error}`
         }
     }
@@ -32,28 +32,28 @@ export class AuthService {
         try {
             return await this.account.createEmailSession(email, password);
         } catch (error) {
-            console.log("Login :: ERROR " + error);
+            return null
         }
     }
-  
+
     googleAuth() {
         try {
             return this.account.createOAuth2Session(
                 'google',
-                'http://localhost:5173/',
-                'http://localhost:5173/login'
+                'https://thoughtify.vercel.app/',
+                'https://thoughtify.vercel.app/login'
             )
         } catch (error) {
-            console.log("Login_Google :: ERROR " + error);
+            return null
         }
     }
 
     async emailVerification() {
         try {
-            return await this.account.createVerification(`http://localhost:5173/`);
+            return await this.account.createVerification(`https://thoughtify.vercel.app/`);
 
         } catch (error) {
-            console.log("Login_Google :: ERROR " + error);
+            return null
         }
     }
 
@@ -62,17 +62,17 @@ export class AuthService {
             return await this.account.updateVerification(id, secret)
 
         } catch (error) {
-            console.log("update Verification:: ERROR " + error);
+            return null
         }
     }
 
     async forgetPassword(email) {
         try {
-            const promise = this.account.createRecovery(email, 'http://localhost:5173/reset-password');
+            const promise = this.account.createRecovery(email, 'https://thoughtify.vercel.app/reset-password');
 
             return promise
         } catch (error) {
-            console.log("Forget Password :: ERROR " + error);
+            return null
         }
     }
 
@@ -82,7 +82,6 @@ export class AuthService {
 
             return promise
         } catch (error) {
-            console.log("Reset Password :: ERROR " + error);
             return false
         }
     }
@@ -92,16 +91,16 @@ export class AuthService {
         try {
             return await this.account.get()
         } catch (error) {
-            console.log(" GetCurrentUser :: ERROR " + error);
+            return null
         }
-        return null;
+
     }
 
     async logout() {
         try {
             return await this.account.deleteSessions();
         } catch (error) {
-            console.log("LogOut :: ERROR " + error);
+            return null
         }
     }
 
@@ -109,10 +108,9 @@ export class AuthService {
         try {
             return await this.account.listIdentities()
         } catch (error) {
-            console.log("ListUsers :: ERROR" + error)
+            return null
         }
     }
-
 
 }
 

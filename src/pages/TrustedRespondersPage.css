@@ -1,7 +1,57 @@
+.TrustedResponderPage {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+
 #TrustedResponderspage_Heading {
     font-size: 30px;
     font-weight: 500;
     font-family: 'Gabarito', sans-serif;
+}
+
+@media only screen and (max-width: 500px) {
+    .wrapper {
+        width: 90% !important;
+        padding: 0px !important;
+        flex-direction: column !important;
+    }
+
+    .wrapper>div:nth-child(1) {
+        width: 100% !important;
+        padding: 14px 5px !important;
+        align-items: center;
+    }
+
+    .wrapper>div:nth-child(2) {
+        width: 100% !important;
+        padding: 10px;
+      
+    }
+
+    .TrustedRespondersPage_Bio {
+        text-align: left !important;
+        letter-spacing: 1px;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+    }
+
+    .wrapper .TrustedRespondersPage_name {
+        font-size: 20px !important;
+        margin: 10px 0 5px 0;
+    }
+
+    #TrustedRespondersPage {
+        width: 90% !important;
+        margin: 0 auto !important;
+    }
+
+    .card {
+        border-radius: 10px !important;
+        height: fit-content !important;
+    }
 }
 
 body.darkMode #TrustedResponderspage_Heading {
@@ -46,9 +96,11 @@ body.darkMode #TrustedResponderspage_Heading {
     background: #ECE9E6;
     background: linear-gradient(to right, #FFFFFF, #ECE9E6);
 }
-.card img{
+
+.card img {
     background-color: white;
 }
+
 body.darkMode .card {
     background: black;
     color: white;
@@ -186,7 +238,7 @@ body.darkMode .TrustedRespondersPage_buttons button {
 .wrapper>div:nth-child(2) {
     width: 65%;
     padding: 10px;
-    /* border: 2px solid rgb(0, 0, 0); */
+ 
 }
 
 .wrapper>div:nth-child(2)>div {
@@ -295,10 +347,12 @@ body.darkMode .TrustedRespondersPage_name {
     bottom: 0;
     right: 0;
     border-radius: 50%;
-    background: #ecf0f3;
+    background: #ecf0f36c;
     box-shadow: inset -3px -3px 7px #ffffff,
         inset 3px 3px 5px #ceced1;
 }
+
+
 
 body.darkMode .TrustedRespondersPage_buttons button:hover:before {
     background: black;
@@ -323,8 +377,12 @@ body.darkMode .TrustedRespondersPage_buttons button:hover:before {
     color: #4267B2;
 }
 
-.social-icons a.twitter i {
-    color: #1DA1F2;
+.social-icons a.github i {
+    color: #000000;
+}
+
+body.darkMode .social-icons a.github i {
+    color: #fdfdfd;
 }
 
 .social-icons a.insta i {

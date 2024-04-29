@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 import realTime from '../../appwrite/realTime.js'
-import { Input, Button, Spinner } from '../'
+import { Button, Spinner } from '../'
 import { useForm } from 'react-hook-form'
-import { Link, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { categoriesArr } from '../AskQue/Category'
 import { useAskContext } from '../../context/AskContext'
 import parse from "html-react-parser";
@@ -29,11 +29,13 @@ const Opinions = ({ visitedProfileUserID }) => {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext();
-  // console.log(savedMyProfileComments)
+
   const userData = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
   const { register, handleSubmit, reset, getValues } = useForm({})
 
+  const opinionsLeft = useRef()
+  const opinionsRight = useRef()
 
   const submit = async (data) => {
     setisSearching((prev) => true);
@@ -41,14 +43,14 @@ const Opinions = ({ visitedProfileUserID }) => {
 
     if (visitedProfileUserID !== userData?.$id) {
       const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
-      // console.log(visitedProfileUserData);
+
       if (!visitedProfileUserData) return
 
       if (visitedProfileUserData?.othersCanFilterYourPosts === "My Following") {
         const parsingFollowingArr = visitedProfileUserData?.following.map((obj) => JSON.parse(obj));
 
         const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-     
+
         if (!isHeFollowsYou) {
           setNotificationPopMsgNature((prev) => false);
           setnotificationPopMsg((prev) => "You can't filter");
@@ -62,13 +64,11 @@ const Opinions = ({ visitedProfileUserID }) => {
 
     }
 
-
-
     data.UserID = visitedProfileUserID
 
     sethasMorePostsInProfileFilterOpinions(true)
     const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
-    // console.log(filteredOpinions)
+    
     const isArray = Array.isArray(filteredOpinions)
     if (isArray) {
       sethasMorePostsInProfileFilterOpinions(false)
@@ -91,6 +91,11 @@ const Opinions = ({ visitedProfileUserID }) => {
 
 
     setisSearching((prev) => false)
+
+    if (opinionsLeft.current && opinionsRight.current && window.innerWidth <= 500) {
+      opinionsLeft.current.classList.toggle("none");
+
+    }
   }
 
   useEffect(() => {
@@ -108,7 +113,7 @@ const Opinions = ({ visitedProfileUserID }) => {
   }, [comments, isIntersecting, isLoading])
 
   useEffect(() => {
-    // console.log("bye")
+    
     const getMorecomments = async () => {
       const data = getValues()
       const filteredOpinions = await realTime.getCommentsWithQueries({ ...data, lastPostID })
@@ -150,8 +155,21 @@ const Opinions = ({ visitedProfileUserID }) => {
 
   return (
     <div id='Profile_Opinions_Filter' className={`flex ${isDarkModeOn ? 'darkMode' : ''}`}>
-
-      <form id='Profile_Filter_Opinions_Form' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
+      <div
+        onClick={() => {
+          if (opinionsLeft.current && opinionsRight.current) {
+            opinionsLeft.current.classList.toggle("none");
+          }
+        }}
+        className="Home_RIGHT_LEFT_Grid_div">
+        <button
+          className="flex justify-center items-center">
+          <i className='bx bxs-grid-alt'></i>
+        </button>
+      </div>
+      <form
+        ref={opinionsLeft}
+        id='Profile_Filter_Opinions_Form' className='w-full flex flex-col gap-5 p-3 relative' onSubmit={handleSubmit(submit)}>
 
         <div>
           <p>Filter By Post Age :</p>
@@ -211,7 +229,9 @@ const Opinions = ({ visitedProfileUserID }) => {
       </form>
 
 
-      <div id='Profile_Opinions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : 'placeholder:'}`}>
+      <div
+        ref={opinionsRight}
+        id='Profile_Opinions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : 'placeholder:'}`}>
         {!isPostAvailable && <p className={`text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Posts Available</p>}
         {comments?.map((comment, index) => {
           if (isPostAvailable !== true) {
@@ -222,7 +242,7 @@ const Opinions = ({ visitedProfileUserID }) => {
 
             <Link to={`/post/${comment?.postid}/${comment?.$id}`}>
               <article>{parse(comment?.commentContent)}</article>
-              <div id='BrowseQuestions_created_category_views' className='flex gap-3'>
+              <div id='BrowseQuestions_created_category_views' className='flex gap-3 flex-wrap'>
                 <span className={`text-black`}>{new Date(comment?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 <span className={`text-black`}>{comment?.category}</span>
 

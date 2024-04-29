@@ -18,14 +18,13 @@ const Setting = () => {
   
     const { register, handleSubmit } = useForm();
     const submit = async (data) => {
-        // console.log(data);
-        // return
+ 
         SetSettingPopUp((prev) => false)
         setisOverlayBoolean((prev) => false)
        
         try {
             const updateProfile = await profile.updateEveryProfileAttribute({ ...data, profileID: myUserProfile?.$id })
-            // console.log(updateProfile);
+        
             setMyUserProfile((prev) => updateProfile)
             setNotificationPopMsgNature((prev) => true)
             setnotificationPopMsg((prev) => "Setting Changed")

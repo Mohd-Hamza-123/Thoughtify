@@ -1,26 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import './ChatInProfile.css'
 import { useAskContext } from '../../context/AskContext'
 import profile from '../../appwrite/profile'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-const ChatInProfile = ({ profileData }) => {
+
+
+const ChatInProfile = ({ profileData, setProfileData }) => {
+    console.log(profileData)
     const userData = useSelector((state) => state?.auth.userData)
     const navigate = useNavigate();
 
     const [canYouSeeFollowers_Following, setcanYouSeeFollowers_Following] = useState(true);
     const [activeNav, setactiveNav] = useState('Following')
     const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
-    const { handleSubmit, register, control, watch, setValue, getValues } = useForm();
+    const { handleSubmit, register, watch } = useForm();
     const [searchValue, setSearchValue] = useState('')
     const unfollow = async (index) => {
         let followingArr = myUserProfile?.following;
-        followingArr.splice(index, 1)
-
+        followingArr.splice(index, 1);
         const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile?.$id, following: followingArr });
-        console.log(updateProfile)
         setMyUserProfile((prev) => updateProfile)
+        setProfileData((prev) => updateProfile)
     }
 
     const watchedValue = watch('searchValue');
@@ -42,9 +44,9 @@ const ChatInProfile = ({ profileData }) => {
                 setcanYouSeeFollowers_Following((prev) => false)
             } else if (profileData?.othersSeeYourFollowers_Following === 'My Following') {
                 const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-                // console.log(parsingFollowingArr);
+
                 const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-                // console.log(isHeFollowsYou);
+
                 if (!isHeFollowsYou) {
                     setcanYouSeeFollowers_Following((prev) => false);
                     return
@@ -56,7 +58,7 @@ const ChatInProfile = ({ profileData }) => {
     }, [profileData])
 
     const submit = async (data) => {
-        console.log(data)
+
         setSearchValue((prev) => data.searchValue)
     }
     const navigation = (profileID) => {
@@ -102,7 +104,10 @@ const ChatInProfile = ({ profileData }) => {
                                     }
                                 }
                                 return <li key={JSON.parse(profile).profileID}>
-                                    <span onClick={() => navigation(JSON.parse(profile).profileID)}>{JSON.parse(profile).name}</span>
+                                    <span
+                                        onClick={() => navigation(JSON.parse(profile).profileID)}>
+                                        {JSON.parse(profile).name}
+                                    </span>
                                     {myUserProfile?.userIdAuth === profileData?.userIdAuth && <button onClick={() => unfollow(index)}>Unfollow</button>}
                                     {myUserProfile?.userIdAuth !== profileData?.userIdAuth && <button onClick={() => navigation(JSON.parse(profile).profileID)}>visit</button>}
                                 </li>
@@ -116,7 +121,7 @@ const ChatInProfile = ({ profileData }) => {
                             {profileData?.followers?.map((profile, index) => {
                                 if (searchValue !== '') {
                                     let boolean = JSON.parse(profile)?.name.includes(searchValue);
-                                    console.log(boolean)
+
                                     if (boolean && searchValue !== '') {
                                     } else {
                                         return

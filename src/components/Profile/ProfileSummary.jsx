@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./ProfileSummary.css";
-import { Input } from "../";
-import { occupation_Arr } from "./Profile_arr";
 import { useAskContext } from "../../context/AskContext";
 import { useSelector } from "react-redux";
 
@@ -14,12 +12,12 @@ const ProfileSummary = ({ profileData = {} }) => {
     educationLvl,
     userIdAuth
   } = profileData;
-  // console.log(userIdAuth);
+
   const userAuthStatus = useSelector((state) => state?.auth?.status);
   const userData = useSelector((state) => state?.auth?.userData)
   const { isDarkModeOn } = useAskContext()
   return (
-    <div className={`w-full flex relative gap-3`}>
+    <div className={`ProfileSummary w-full flex relative gap-3`}>
       <div id="ProfileSummary" className={`w-2/3 ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="ProfileSummary_Bio_Div">
           <span className=""> Bio </span>
@@ -59,7 +57,7 @@ const ProfileSummary = ({ profileData = {} }) => {
         </div>
       </div>
       {(userAuthStatus && userIdAuth === userData?.$id) && <div id="ProfileSummarySecondDiv" className={`w-1/3 h-full ${isDarkModeOn ? 'darkMode' : ''}`}>
-        {/* <p>Updates By Creater</p> */}
+  
         <ul className="flex flex-col gap-2">
           <li>Welcome, {profileData?.name}</li>
           <li>This is your one-stop shop for getting answers and connecting with others.</li>

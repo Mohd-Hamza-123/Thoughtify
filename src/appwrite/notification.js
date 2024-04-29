@@ -31,7 +31,7 @@ export class Notification {
                 obj
             )
         } catch (error) {
-            console.error("Notification error : " + error)
+           return null
         }
     }
     async getNotification({ userID, limit = null }) {
@@ -55,7 +55,7 @@ export class Notification {
             )
             return notifications
         } catch (error) {
-            console.error("Error in Get Notification : " + error)
+            return null
         }
     }
     async deleteNotication({ notificationID }) {
@@ -63,7 +63,7 @@ export class Notification {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwrite_Notification_CollectionID, notificationID)
         } catch (error) {
-            console.error("Error in Deleting Notification : " + error)
+           return null
         }
     }
     async updateNotification({ notificationID, isRead }) {
@@ -76,7 +76,7 @@ export class Notification {
                 obj
             )
         } catch (error) {
-            console.error("Notification error : " + error)
+           return null
         }
     }
 }

@@ -2,11 +2,84 @@
     background-color: rgb(242, 242, 242);
     font-family: 'Gabarito', sans-serif;
     padding-bottom: 30px;
-    min-height: 100vh;
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+
+
+@media only screen and (max-width: 500px) {
+
+    #MyProfile_Parent {
+        padding-bottom: 10px !important;
+    }
+
+    .Profile::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    body::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .MyProfile_HorizontalLine {
+        margin-bottom: 7px !important;
+    }
+
+    #MyProfile {
+        width: 90% !important;
+        margin: 20px auto 0 auto !important;
+    }
+
+    #MyProfile_Header {
+        padding: 15px 5px 5px 5px;
+        flex-direction: column !important;
+        height: fit-content !important;
+    }
+
+    #MyProfile_Header>div {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    #MyProfile_Name_Div h6 {
+        text-align: center !important;
+        margin-top: 10px !important;
+    }
+
+    #MyProfile_3Buttons {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    #MyProfile_3Buttons Button:nth-child(odd) {
+        font-size: 13px !important;
+        padding: 7px 7px 7px 7px !important;
+    }
+
+    #MyProfile_3Buttons Button:nth-child(even) {
+        font-size: 13px !important;
+        padding: 7px 7px 7px 7px !important;
+    }
+
+    #MyProfile_Data_section ul {
+        flex-direction: column !important;
+        text-align: center;
+    }
+
+    #MyProfile_Data_section ul li {
+        border-bottom: 3px solid rgba(174, 174, 174, 0.507);
+    }
+
+    #MyProfile_Name_Div>section p {
+        text-align: center !important;
+    }
 }
 
 #MyProfile_Parent.darkMode {
-    background-color: #02020A;
+    background-color: #0D0D0D;
 }
 
 .MyProfile_HorizontalLine {
@@ -73,6 +146,11 @@
     font-weight: 600;
 }
 
+#MyProfile_Name_Div>section p {
+    font-size: 12px;
+    letter-spacing: 0.4px;
+}
+
 #MyProfile_Name_Div section div span {
     font-size: 14px;
     letter-spacing: 0.4px;
@@ -117,7 +195,6 @@
 
 #MyProfile_Data_section {
     width: 100%;
-    /* border: 1px solid rgb(7, 225, 7); */
 }
 
 #MyProfile_Data_section ul {
@@ -149,7 +226,6 @@
 }
 
 #MyProfile_Data_section ul li.active {
-    /* background-color: rgb(237, 237, 237); */
     border-bottom: 3px solid var(--secondryBlue);
 }
 
@@ -162,6 +238,6 @@
     border: 2px solid red;
 }
 
-.MyProfile_Loader_Div{
+.MyProfile_Loader_Div {
     margin-bottom: 80px;
 }

@@ -4,10 +4,12 @@ import "./PostCard.css";
 import profile from "../../appwrite/profile";
 import appwriteService from "../../appwrite/config";
 import NoProfile from '../../assets/NoProfile.png'
+import NoImage from '../../assets/NoImage.jpg'
 import { useSelector, useDispatch } from 'react-redux'
-import { Query } from 'appwrite'
 import { getpostUploaderProfilePic } from "../../store/postsSlice";
 import { useAskContext } from "../../context/AskContext";
+
+
 const PostCard = ({
   $id,
   title = "Title",
@@ -23,20 +25,18 @@ const PostCard = ({
   opinionsFrom,
   trustedResponderPost
 }) => {
-  // console.log(trustedResponderPost)
 
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
 
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
-  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
+  const { myUserProfile, isDarkModeOn } = useAskContext()
 
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
 
 
   const getPostData = async () => {
-    // console.log(queImageID)
+
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
         setthumbnailURL(res.href)
@@ -45,17 +45,17 @@ const PostCard = ({
 
   const profileData = async () => {
 
-    const isProfilePicAlreadyInReduxIndex = postProfilesPic.findIndex((profile) => profile.userId === userId)
-    // console.log(isProfilePicAlreadyInReduxIndex)
+    const isProfilePicAlreadyInReduxIndex = postProfilesPic?.findIndex((profile) => profile?.userId === userId)
+
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-      // console.log(gettinProfiles)
-      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
+
+      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles?.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 
       if (postProfilesPic.length !== 0) {
-        for (let i = 0; i < postProfilesPic.length; i++) {
+        for (let i = 0; i < postProfilesPic?.length; i++) {
           if (postProfilesPic[i].profilePic !== gettingProfileImgURL?.href) {
             dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL?.href }))
           }
@@ -107,9 +107,9 @@ const PostCard = ({
 
   return (
     <>
-      <div className={`PostCard ${trustedResponderPost ? 'trusted' : ''} flex flex-row-reverse w-full ${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div className={`PostCard ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="PostCard_left" className="" >
-          <Link to={`/post/${$id}`}>
+          <Link to={`/post/${$id}/${null}`}>
             {queImage ? (
               <img
                 id="Post-Card-img"
@@ -121,7 +121,7 @@ const PostCard = ({
               <img
                 id="Post-Card-img"
                 src={`${thumbnailURL ? thumbnailURL : `https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg`}`}
-                alt="Image"
+                onError={(e) => { e.target.src = NoImage }}
                 className="w-full"
               />
             )}
@@ -159,7 +159,7 @@ const PostCard = ({
               >{countTitle(title) ? countTitle(title) : pollQuestion}</h3>
             </Link>
           </div>
-          <div className="flex gap-4 items-center my-1">
+          <div className="PostCard_Details flex gap-4 items-center my-1">
             <span className="PostCard_Date">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
             <span className="PostCard_category">{category}</span>
             <span className="PostCard_category">{opinionsFrom}</span>

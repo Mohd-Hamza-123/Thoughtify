@@ -1,12 +1,10 @@
 
 
-import React from 'react'
-
 const getCanvasPreview = (image, canvas, crop) => {
 
 
     const ctx = canvas.getContext('2d')
-    // console.log(ctx)
+
     if (!ctx) {
         throw new Error("No 2d Context")
     }

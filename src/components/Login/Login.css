@@ -1,8 +1,63 @@
 #Login_Container {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
+}
+
+@media only screen and (max-width: 500px) {
+
+    .Login_Login {
+        font-size: 20px !important;
+        margin-top: 0px !important;
+    }
+
+
+    #Login_Container>div img {
+        height: 40px !important;
+    }
+
+    #Login_Container>div {
+        padding: 0px !important;
+        width: 95% !important;
+        border-radius: 5px !important;
+        height: 70% !important;
+        box-shadow: none !important;
+    }
+
+    body.darkMode #Login_Container>div {
+        box-shadow: none !important;
+        background-color: transparent !important;
+    }
+
+    .Login_dont_have_acc {
+        margin: 0 auto !important;
+        font-size: 14px !important;
+    }
+
+    #Login_Container form {
+        margin-top: 10px !important;
+        margin-bottom: 5px !important;
+    }
+
+    #Login_Container input {
+        width: 100% !important;
+    }
+
+    #Login>div {
+        width: 80% !important;
+    }
+
+    #Login {
+        margin: 10px 0px 10px 0px !important;
+    }
+
+    .Login_Google_Div {
+        margin: 0 auto !important;
+        width: 90% !important;
+    }
+
+
 }
 
 #Login_Container>div img {

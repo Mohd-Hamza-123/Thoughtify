@@ -1,8 +1,42 @@
 #FindFriendsPage {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+@media only screen and (max-width: 500px) {
+    .FindFirendsPage_Heading {
+        margin-top: 12px !important;
+        font-size: 17px !important;
+    }
+
+    .FindFriendsPage_Main {
+        flex-direction: column-reverse !important;
+        padding: 0px 5px 0px 5px !important;
+    }
+
+    .FindFriendsPage_Main section:nth-child(1) {
+        width: 100% !important;
+        height: fit-content !important;
+    }
+
+    .FindFriendsPage_Main section:nth-child(2) {
+        width: 100% !important;
+        padding: 0px 5px !important;
+    }
+
+    .FindFriendsPage_ListFriends_Searched_Person {
+
+        padding: 10px 13px 10px 13px !important;
+        border-radius: 10px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .FindFriendsPage_ListFriends p{
+        font-size: 20px !important;
+    }
 }
 
 .FindFirendsPage_Heading {
@@ -82,6 +116,7 @@
     gap: 15px;
     align-items: center;
     border-radius: 5px;
+    font-family: 'Poppins', sans-serif;
     background-color: white;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     padding: 10px;

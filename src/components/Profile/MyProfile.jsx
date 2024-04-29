@@ -12,8 +12,6 @@ import {
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
-import location from "../../appwrite/location";
-import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
@@ -42,6 +40,7 @@ const MyProfile = () => {
   const realUser = userData ? slug === userData.$id : false;
 
   const [profileData, setProfileData] = useState(null);
+  
 
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
@@ -52,26 +51,31 @@ const MyProfile = () => {
   const [activeNav, setactiveNav] = useState('Profile Summary')
   const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
 
-  // useEffect(() => {
-  //   getOtherUserProfile(slug);
-  // }, [slug]);
 
   const getUserProfile = async (slug) => {
-    const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
+
+    const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user?.userIdAuth === slug
     )
 
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
-      // console.log("no")
+
       const listprofileData = await profile.listProfile({ slug });
-      // console.log(listprofileData)
+      console.log(listprofileData);
+      if (listprofileData?.total === 0) {
+        setProfileData((prev) => null)
+        setnotificationPopMsg((prev) => false)
+        setnotificationPopMsg((prev) => "User not exist")
+        navigate("/")
+        return
+      }
       if (listprofileData) {
         setProfileData({ ...listprofileData.documents[0] });
         dispatch(getOtherUserProfile({ userProfileArr: [listprofileData?.documents[0]] }))
       }
       getUserProfileImg(listprofileData?.documents[0]?.profileImgID);
     } else {
-      // console.log("yes")
+
       setProfileData((prev) => othersUserProfile[index]);
       setURLimg((prev) => othersUserProfile[index].profileImgURL)
     }
@@ -81,18 +85,9 @@ const MyProfile = () => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
       setURLimg(Preview.href)
-      // console.log(Preview)
     }
 
   }
-  const flagFunc = async () => {
-    let locations = await location.GetLocation();
-    setcountryName(locations?.country);
-    if (locations) {
-      let flagURL = await avatar.getFlag(locations.countryCode, 20, 20);
-      setflag(flagURL.href);
-    }
-  };
   const follow_Unfollow = async () => {
 
     if (!UserAuthStatus) {
@@ -103,7 +98,7 @@ const MyProfile = () => {
     if (!myUserProfile) return;
     setisFollowing((prev) => !prev);
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-    // console.log(updateFollowArr)
+
 
     const isFollowing = updateFollowArr?.filter((profileObj) => profileObj.profileID === slug);
 
@@ -116,8 +111,7 @@ const MyProfile = () => {
       console.log(updateFollowArr[findDeleteIndex])
 
       updateFollowArr.splice(findDeleteIndex, 1);
-      // console.log(updateFollowArr)
-      // return
+
       const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
 
       const follow = await profile.updateEveryProfileAttribute({
@@ -129,29 +123,28 @@ const MyProfile = () => {
       // updating receiver profile
       let receiver = await profile.listProfile({ slug });
       let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj));
-      // console.log(receiverDetails);
+
       if (receiverDetails.length === 0) return
       receiverDetails = receiverDetails.filter((profile) => profile.profileID !== userData?.$id);
-      // receiverDetails.push({ profileID: userData.$id, name: userData.name })
+
       receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
 
       const updateReceiver = await profile.updateEveryProfileAttribute({
         profileID: receiver.documents[0].$id,
         followers: receiverDetails,
       })
-      // console.log(updateReceiver)
+
 
 
     } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
-      console.log("You have Unblock to follow");
+
       setNotificationPopMsgNature((prev) => false);
       setnotificationPopMsg((prev) => "You have to Unblock to follow")
       return;
     } else {
-      // console.log("fs");
-      // return
+
       let receiver = await profile.listProfile({ slug })
-      // console.log(receiver)
+
       updateFollowArr.push({ profileID: slug, name: receiver.documents[0].name });
       const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
 
@@ -161,14 +154,11 @@ const MyProfile = () => {
       });
       setMyUserProfile(follow);
 
-
-      // creating notification 
-
       try {
         const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug, userProfilePic: myUserProfile?.profileImgURL });
         console.log(createNotification)
       } catch (error) {
-        console.log(error)
+
       }
 
 
@@ -183,7 +173,7 @@ const MyProfile = () => {
         profileID: receiver.documents[0].$id,
         followers: receiverDetails,
       })
-      console.log(updateReceiver)
+
     }
 
 
@@ -196,22 +186,26 @@ const MyProfile = () => {
       return
     }
     if (!myUserProfile) return;
-    setisBlocked((prev) => !prev)
+
+
+
     const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
     let updateBlockedArr = [...myUserProfile.blockedUsers];
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-    // console.log(updateFollowArr)
+
     let isFollowing = false;
     isFollowing = updateFollowArr.some((profile) => profile.profileID === slug)
-    // console.log(isFollowing)
-    // return
+
     if (isBlocked) {
       updateBlockedArr.splice(updateBlockedArr.indexOf(slug), 1);
       console.log("unBlock");
+      setisBlocked((prev) => !prev)
     } else if (isFollowing) {
-      console.log("You have to unfollow to Block");
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "You have to unfollow to Block")
       return;
     } else {
+      setisBlocked((prev) => !prev)
       updateBlockedArr.push(slug);
     }
 
@@ -240,11 +234,11 @@ const MyProfile = () => {
     } else {
       getUserProfile(slug);
     }
-    flagFunc();
+  
   }, [slug]);
 
   useEffect(() => {
-    // console.log(activeNav)
+
     switch (activeNav) {
       case 'Opinions': setactiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
@@ -252,7 +246,7 @@ const MyProfile = () => {
         break;
       case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
         break;
-      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} />)
+      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} setProfileData={setProfileData} />)
         break;
       default: setactiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
@@ -260,7 +254,7 @@ const MyProfile = () => {
 
 
   useEffect(() => {
-    // console.log(myUserProfile)
+
     if (!myUserProfile) {
       profile
         .listProfile({ slug })
@@ -284,184 +278,179 @@ const MyProfile = () => {
   }, [myUserProfile, slug])
 
 
-  return (
-    profileData ?
-      (<div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-        <div className="MyProfile_HorizontalLine"></div>
-        <div id="MyProfile" className="">
-          <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
-            <div className="w-2/3 flex">
-              <div
-                id="MyProfile_Img_Div"
-                className="w-1/4 h-full flex justify-center items-center"
-              >
-                <img src={URLimg ? URLimg : NoProfile} />
-              </div>
-              <div
-                id="MyProfile_Name_Div"
-                className="w-3/4 h-full flex flex-col justify-center gap-3"
-              >
-                <section className="flex flex-col items-left">
-                  <h6>{profileData?.name}</h6>
-                </section>
-                <div id="MyProfile_3Buttons" className="flex gap-3">
-                  {!realUser && (
-                    <Button onClick={() => {
-                      if (!UserAuthStatus) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => 'You are not Login')
-                        return
-                      }
-                      // console.log(profileData);
-                      if (profileData.whoCanMsgYou === "None") {
+  if (profileData) {
+    return (<div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div className="MyProfile_HorizontalLine"></div>
+      <div id="MyProfile" className="">
+        <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
+          <div className="w-2/3 flex">
+            <div
+              id="MyProfile_Img_Div"
+              className="w-1/4 h-full flex justify-center items-center"
+            >
+              <img src={URLimg ? URLimg : NoProfile} />
+            </div>
+            <div
+              id="MyProfile_Name_Div"
+              className="w-3/4 h-full flex flex-col justify-center gap-3"
+            >
+              <section className="flex flex-col items-left">
+                <h6>{profileData?.name}</h6>
+              </section>
+              <div id="MyProfile_3Buttons" className="flex gap-3">
+                {!realUser && (
+                  <Button onClick={() => {
+                    if (!UserAuthStatus) {
+                      setNotificationPopMsgNature((prev) => false);
+                      setnotificationPopMsg((prev) => 'You are not Login')
+                      return
+                    }
+
+                    if (profileData.whoCanMsgYou === "None") {
+                      setNotificationPopMsgNature((prev) => false);
+                      setnotificationPopMsg((prev) => "You can't Message");
+                      return
+                    } else if (profileData.whoCanMsgYou === "My Following") {
+                      const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
+
+                      const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
+
+                      if (!isHeFollowsYou) {
                         setNotificationPopMsgNature((prev) => false);
                         setnotificationPopMsg((prev) => "You can't Message");
                         return
-                      } else if (profileData.whoCanMsgYou === "My Following") {
-                        const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-
-                        const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-
-                        if (!isHeFollowsYou) {
-                          setNotificationPopMsgNature((prev) => false);
-                          setnotificationPopMsg((prev) => "You can't Message");
-                          return
-                        }
                       }
-                      // console.log(profileData)
-                      if (profileData?.blockedUsers?.includes(userData?.$id)) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => "You are Blocked");
-                        return
-                      }
+                    }
 
-                      navigate(`/ChatRoom/${userData?.$id}/${slug}`)
-                    }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
-                  )}
-                  {!realUser && (
-                    <Button
-                      className="p-2 rounded-sm"
-                      onClick={follow_Unfollow}
-                    >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
-                  )}
-                  {!realUser && <Button
+                    if (profileData?.blockedUsers?.includes(userData?.$id)) {
+                      setNotificationPopMsgNature((prev) => false);
+                      setnotificationPopMsg((prev) => "You are Blocked");
+                      return
+                    }
+
+                    navigate(`/ChatRoom/${userData?.$id}/${slug}`)
+                  }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
+                )}
+                {!realUser && (
+                  <Button
                     className="p-2 rounded-sm"
-                    onClick={block_Unblock}
-                  >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
-                  {realUser && (
-                    <Button
-                      className="p-2 rounded-sm"
-                      onClick={() => {
-                        navigate(`/EditProfile/${slug}`)
-                      }}
+                    onClick={follow_Unfollow}
+                  >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
+                )}
+                {!realUser && <Button
+                  className="p-2 rounded-sm"
+                  onClick={block_Unblock}
+                >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
+                {realUser && (
+                  <Button
+                    className="p-2 rounded-sm"
+                    onClick={() => {
+                      navigate(`/EditProfile/${slug}`)
+                    }}
 
-                    >
-                      Edit Profile
-                    </Button>
-                  )}
-                  {(userData?.$id === conf.myPrivateUserID) && (
-                    <Button
-                      className="p-2 rounded-sm"
-                      onClick={() => promote_Demote()}
-                    >
-                      {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
-                    </Button>
-                  )}
-                </div>
+                  >
+                    Edit Profile
+                  </Button>
+                )}
+                {(userData?.$id === conf.myPrivateUserID) && (
+                  <Button
+                    className="p-2 rounded-sm"
+                    onClick={() => promote_Demote()}
+                  >
+                    {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
+                  </Button>
+                )}
               </div>
-            </div>
-
-            <div id="MyProfile_VerticalLine" className="h-full flex items-center">
-              <p></p>
-            </div>
-
-            <div
-              id="MyProfile_Header_Right"
-              className="w-1/3 flex flex-col items-start justify-center gap-4 p-5"
-            >
-              <div className="flex w-full">
-                <p className="w-1/2">Country :</p>
-                <div className="flex gap-2">
-                  {countryName ? (
-                    <span>{countryName}</span>
-                  ) : (
-                    <span>Not Available</span>
-                  )}
-                  <span className="">{flag && <img src={flag} alt="" />}</span>
-                </div>
-              </div>
-
-              <div className="flex w-full">
-                <p className="w-1/2">Followers :</p>
-                <span>{profileData?.followers?.length}</span>
-              </div>
-              <div className="flex w-full">
-                <p className="w-1/2">Following :</p>
-                <span>{profileData?.following?.length}</span>
-              </div>
-              <div className="flex w-full">
-                <p className="w-1/2">Joined :</p>
-                <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-              </div>
-
             </div>
           </div>
-          <div className="MyProfile_HorizontalLine"></div>
 
-
-          <div id="MyProfile_Data" className="flex mt-3">
-            <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-              <ul className="flex justify-between">
-                <li
-                  onClick={() => {
-                    setactiveNav('Profile Summary')
-                  }}
-                  className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
-                  Profile Summary
-                </li>
-
-                <li
-                  onClick={() => {
-                    setactiveNav('Questions')
-                  }}
-                  className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
-                  Questions
-                </li>
-
-                <li
-                  onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
-                  Opinions
-                </li>
-                <li
-                  onClick={() => {
-                    setactiveNav('Favourites')
-                  }}
-                  className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null}`}>
-                  Bookmarks
-                </li>
-
-                <li onClick={() => {
-                  setactiveNav('ProfileChats')
-                }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
-                  Chats
-                </li>
-              </ul>
-            </section>
+          <div id="MyProfile_VerticalLine" className="h-full flex items-center">
+            <p></p>
           </div>
 
-          <div className="MyProfile_HorizontalLine"></div>
+          <div
+            id="MyProfile_Header_Right"
+            className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
+          >
+        
 
-          <div className="w-full">
-            {activeNavRender}
+            <div className="flex w-full">
+              <p className="w-1/2">Followers :</p>
+              <span>{profileData?.followers?.length}</span>
+            </div>
+            <div className="flex w-full">
+              <p className="w-1/2">Following :</p>
+              <span>{profileData?.following?.length}</span>
+            </div>
+            <div className="flex w-full">
+              <p className="w-1/2">Joined :</p>
+              <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            </div>
+            {(profileData?.userIdAuth === userData?.$id) && <div className="flex w-full">
+              <p className="w-1/2">Verified : </p>
+              <span>{userData?.emailVerification ? "Yes" : "No"}</span>
+            </div>}
+
           </div>
         </div>
-      </div>) : (
-        <div className="w-screen h-screen flex justify-center items-center">
-          <div className="MyProfile_Loader_Div">
-            <SecondLoader />
-          </div>
-        </div>)
-  );
+        <div className="MyProfile_HorizontalLine"></div>
+
+
+        <div id="MyProfile_Data" className="flex mt-3">
+          <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+            <ul className="flex justify-between">
+              <li
+                onClick={() => {
+                  setactiveNav('Profile Summary')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
+                Profile Summary
+              </li>
+
+              <li
+                onClick={() => {
+                  setactiveNav('Questions')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
+                Questions
+              </li>
+
+              <li
+                onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
+                Opinions
+              </li>
+              <li
+                onClick={() => {
+                  setactiveNav('Favourites')
+                }}
+                className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null} ${profileData?.userIdAuth !== userData?.$id ? 'none' : 'last-of-type:'}`}>
+                Bookmarks
+              </li>
+
+              <li onClick={() => {
+                setactiveNav('ProfileChats')
+              }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
+                Chats
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <div className="MyProfile_HorizontalLine"></div>
+
+        <div className="w-full">
+          {activeNavRender}
+        </div>
+      </div>
+    </div>)
+  } else {
+    return <div className="w-screen h-screen flex justify-center items-center">
+      <div className="MyProfile_Loader_Div">
+        <SecondLoader />
+      </div>
+    </div>
+  }
+
 };
 
 export default MyProfile;
