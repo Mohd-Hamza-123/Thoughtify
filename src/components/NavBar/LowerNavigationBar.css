@@ -26,9 +26,11 @@
     }
 
     .LowerNavigationBar_Three_Bars_Div {
+        width: 100vw !important;
         display: flex !important;
         justify-content: flex-end;
         margin-right: 20px;
+        padding: 0px 8px 0px 0px !important;
         font-size: 25px;
         margin-bottom: 10px;
     }
