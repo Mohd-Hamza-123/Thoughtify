@@ -12,7 +12,7 @@
     #LowerNavigationBar {
         transition: left 0.3s ease;
         position: absolute;
-        left: -100vw;
+        left: -200vw;
         z-index: 10;
         top: 40px;
         display: flex;
