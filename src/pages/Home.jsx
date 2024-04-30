@@ -202,8 +202,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* <SideBar /> */}
-
     </div>
   } else if (posts === false) {
     return <div
@@ -232,8 +230,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      <SideBar />
 
     </div>
   } else {
