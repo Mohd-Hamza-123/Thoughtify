@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { EditProfile, Loader, SecondLoader, UpperNavigationBar } from '../components/index'
+import { EditProfile, SecondLoader, UpperNavigationBar } from '../components/index'
 import profile from '../appwrite/profile'
 import { useParams } from 'react-router-dom'
 import { useAskContext } from '../context/AskContext'
@@ -30,7 +30,7 @@ const EditProfilePage = () => {
 
     useEffect(() => {
         getUserProfile();
-    }, [])
+    }, []);
     return (
         profileData ? (
             <div className='EditProfilePage'>
