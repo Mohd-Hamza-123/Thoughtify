@@ -201,9 +201,8 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section>
-        <SideBar />
-      </section>
+
+      <SideBar />
 
     </div>
   } else if (posts === false) {
@@ -234,9 +233,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section>
-        <SideBar />
-      </section>
+      <SideBar />
 
     </div>
   } else {

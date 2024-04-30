@@ -6,6 +6,10 @@
     position: relative;
 }
 
+#Home::-webkit-scrollbar {
+    display: none;
+}
+
 @media only screen and (max-width: 500px) {
 
     .Home_Nav_Container.active {

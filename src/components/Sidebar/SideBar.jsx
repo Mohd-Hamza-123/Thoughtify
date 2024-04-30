@@ -63,7 +63,7 @@ const SideBar = () => {
   };
 
   return (
-    <div id="SideBarContainer">
+   
       <div className="SideBar" ref={SideBar}>
         <div className="flex justify-between items-center px-1">
           <div
@@ -236,7 +236,6 @@ const SideBar = () => {
           </div>
         </div>
       </div>
-    </div >
   );
 };
 
