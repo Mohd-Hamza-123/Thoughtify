@@ -4,8 +4,9 @@
     padding-bottom: 30px;
     height: 100%;
     width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
-
 
 @media only screen and (max-width: 500px) {
 

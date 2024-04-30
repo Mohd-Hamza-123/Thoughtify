@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { EditProfile, UpperNavigationBar } from '../components/index'
+import { EditProfile, Loader, SecondLoader, UpperNavigationBar } from '../components/index'
 import profile from '../appwrite/profile'
 import { useParams } from 'react-router-dom'
 import { useAskContext } from '../context/AskContext'
 import { useSelector } from 'react-redux'
-
+import "./EditProfilePage.css"
 
 const EditProfilePage = () => {
     const { editProfileSlug: slug } = useParams();
@@ -33,12 +33,14 @@ const EditProfilePage = () => {
     }, [])
     return (
         profileData ? (
-            <>
+            <div className='EditProfilePage'>
                 <UpperNavigationBar />
                 <EditProfile
                     profileData={profileData}
                 />
-            </>) : '...loading'
+            </div>) : <div className='EditProfilePage flex justify-center items-center'>
+            <SecondLoader />
+        </div>
     )
 }
 
