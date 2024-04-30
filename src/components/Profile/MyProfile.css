@@ -2,7 +2,8 @@
     background-color: rgb(242, 242, 242);
     font-family: 'Gabarito', sans-serif;
     padding-bottom: 30px;
-    min-height: 100vh;
+    height: 100%;
+    width: 100%;
 }
 
 
