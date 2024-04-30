@@ -286,7 +286,7 @@ function App() {
         <Feedback />
         <Setting />
         <Outlet />
-        {/* <SideBar /> */}
+        <SideBar />
         <Overlay />
 
       </AskProvider>

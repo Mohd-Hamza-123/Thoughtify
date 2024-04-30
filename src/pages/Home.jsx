@@ -202,7 +202,7 @@ const Home = () => {
         </div>
       </section>
 
-      <SideBar />
+      {/* <SideBar /> */}
 
     </div>
   } else if (posts === false) {
