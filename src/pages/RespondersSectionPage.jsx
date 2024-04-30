@@ -9,7 +9,7 @@ const RespondersSectionPage = () => {
 
     const dispatch = useDispatch();
     const initialTrustedPosts = useSelector((state) => state?.postsSlice?.initialResponderPosts);
-    console.log(initialTrustedPosts)
+    // console.log(initialTrustedPosts)
 
     const { increaseViews, hasMorePostInTrustedPost,
         sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();

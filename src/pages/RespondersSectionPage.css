@@ -1,7 +1,8 @@
 #ResponderSectionPage {
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 100vh;
+    height: 100%;
+    width: 100%;
 }
 
 .RespondersSectionPage_PostCard {
@@ -10,6 +11,7 @@
     overflow: hidden;
     border-radius: 10px;
 }
+
 .RespondersSectionPage_PostCard.darkMode {
     box-shadow: 0 0 10px rgb(255, 54, 4);
 }
