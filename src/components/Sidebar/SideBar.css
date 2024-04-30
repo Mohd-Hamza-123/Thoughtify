@@ -1,7 +1,5 @@
 .SideBar {
     padding: 15px 10px;
-    overflow-x: hidden;
-    overflow-y: hidden;
     position: fixed;
     top: 0;
     right: 0;
@@ -24,7 +22,9 @@
 
     .SideBar {
         width: 80% !important;
-        padding: 17px 9px;
+        padding: 15px 9px !important;
+        border-bottom-left-radius: 10px !important;
+        border-top-left-radius: 10px !important;
     }
 
     .SideBar.Active {
