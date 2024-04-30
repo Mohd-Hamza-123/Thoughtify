@@ -11,6 +11,7 @@ import conf from "../conf/conf";
 
 
 const Home = () => {
+  console.log("Appwrite " + conf.appwriteDatabaseId)
   console.log("TinyMCE key : " + conf.tinyMCEapiKey)
   const dispatch = useDispatch()
   const initialPost = useSelector((state) => state.postsSlice.initialPosts)
