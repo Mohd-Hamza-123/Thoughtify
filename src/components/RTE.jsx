@@ -11,7 +11,7 @@ const RTE = ({
   handleImageUpload,
 }) => {
   const [imgArr, setimgArr] = useState([]);
-
+  console.log(conf.tinyMCEapiKey)
   useEffect(() => {
     handleImageUpload(imgArr);
   }, [imgArr, setimgArr]);
