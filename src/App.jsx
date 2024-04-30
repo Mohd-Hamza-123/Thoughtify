@@ -235,8 +235,6 @@ function App() {
     }
   }
 
-  console.log(myUserProfile);
-  console.log(userData);
 
 
   return !loading ? (

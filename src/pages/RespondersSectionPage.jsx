@@ -8,9 +8,8 @@ import { UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, Post
 const RespondersSectionPage = () => {
 
     const dispatch = useDispatch();
-    const initialTrustedPosts = useSelector((state) => state.postsSlice.initialResponderPosts)
-    // console.log(initialTrustedPosts)
-
+    const initialTrustedPosts = useSelector((state) => state?.postsSlice?.initialResponderPosts);
+    console.log(initialTrustedPosts)
 
     const { increaseViews, hasMorePostInTrustedPost,
         sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();
@@ -29,12 +28,12 @@ const RespondersSectionPage = () => {
 
     useEffect(() => {
         const getAllPosts = async () => {
-            setIsLoading((prev) => true)
+            setIsLoading((prev) => true);
             try {
-                if (initialTrustedPosts.length === 0) {
-                    const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true })
-                    setmaximumPostsNumber((prev) => posts.total)
-                    if (initialTrustedPosts.length < posts.total) {
+                if (initialTrustedPosts?.length === 0) {
+                    const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true });
+                    setmaximumPostsNumber((prev) => posts?.total)
+                    if (initialTrustedPosts?.length < posts?.total) {
                         sethasMorePostInTrustedPost((prev) => true)
                     } else {
                         sethasMorePostInTrustedPost((prev) => false)
@@ -42,18 +41,15 @@ const RespondersSectionPage = () => {
                     if (posts) {
                         setPosts((prev) => posts.documents)
                         let lastID = posts.documents[posts.documents.length - 1]?.$id
-                        setLastPostID((prev) => lastID)
+                        setLastPostID((prev) => lastID);
                         dispatch(getResponderInitialPosts({ initialResponderPosts: posts.documents }))
                     }
                 } else {
-                    // console.log(initialPost)
                     setPosts((prev) => [...initialTrustedPosts])
                 }
             } catch (error) {
                 console.log(error)
                 setIsLoading(false)
-            } finally {
-                // setIsLoading((prev) => false)
             }
         }
         getAllPosts();
@@ -78,14 +74,13 @@ const RespondersSectionPage = () => {
     }, [spinnerRef.current, posts])
 
     useEffect(() => {
-        // console.log(maximumPostsNumber)
+
         if (isIntersecting && hasMorePostInTrustedPost) {
+
             const getAllPosts = async () => {
-                // console.log(initialPost[initialPost.length - 1].$id)
                 let LastID = initialTrustedPosts[initialTrustedPosts.length - 1]?.$id;
                 const posts = await appwriteService.getPosts({ lastPostID: LastID, TrustedResponders: true })
-                // console.log(posts)
-                // setPosts((prev) => [...prev, posts])
+
                 if (initialTrustedPosts.length < posts.total) {
                     sethasMorePostInTrustedPost((prev) => true)
                 } else {
@@ -103,7 +98,7 @@ const RespondersSectionPage = () => {
             getAllPosts()
         }
         // console.log(initialPost)
-    }, [isIntersecting, hasMorePostInTrustedPost])
+    }, [isIntersecting, hasMorePostInTrustedPost, initialTrustedPosts])
 
     useEffect(() => {
         if (initialTrustedPosts.length !== 0) {
@@ -111,11 +106,12 @@ const RespondersSectionPage = () => {
         } else {
             setPosts((prev) => [])
         }
+
+
     }, [initialTrustedPosts])
 
 
     const RespondersSectionPageRef = useRef()
-
     const lastScrollY = useRef(window.scrollY);
     const [isNavbarHidden, setisNavbarHidden] = useState(false)
 
