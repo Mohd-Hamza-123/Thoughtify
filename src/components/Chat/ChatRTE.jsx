@@ -12,7 +12,7 @@ const ChatRTE = ({ name, control, editorRef }) => {
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey={conf.tinyMCEapiKey}
+            apiKey="7iij1fvwyx1hpj73fvi2kgneqe5696kdqrlchijnbuenk7s0"
             init={{
               height: 200,
               autoresize_max_height: 400, //
