@@ -321,7 +321,7 @@ const EditProfile = ({
         setFile(croppedFile)
       }, 'image/png');
     } catch (error) {
-      console.log("canvasRef Blob error")
+      console.error("canvasRef Blob error")
     }
   }
 

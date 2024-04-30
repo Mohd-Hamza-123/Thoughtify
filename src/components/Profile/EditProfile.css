@@ -102,6 +102,16 @@
     #ReactCrop-container {
         max-width: 100% !important;
     }
+
+    .EditProfile_Edu_Lvl_div>div,
+    .EditProfile_Occupation_div>div {
+        flex-direction: column !important;
+    }
+
+    .EditProfile_Edu_Lvl_div select,
+    .EditProfile_Occupation_div select {
+        width: 100% !important;
+    }
 }
 
 .EditProfile-FormContainer.darkMode {
