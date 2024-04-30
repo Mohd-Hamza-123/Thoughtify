@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import "./ChatRTE.css";
 import { Editor, } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
+import conf from "../../conf/conf";
 const ChatRTE = ({ name, control, editorRef }) => {
 
   return (
@@ -11,8 +12,7 @@ const ChatRTE = ({ name, control, editorRef }) => {
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="7iij1fvwyx1hpj73fvi2kgneqe5696kdqrlchijnbuenk7s0"
-            initialValue=""
+            apiKey={conf.tinyMCEapiKey}
             init={{
               height: 200,
               autoresize_max_height: 400, //

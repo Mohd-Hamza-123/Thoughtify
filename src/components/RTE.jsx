@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 import "./RTE.css"
+import conf from "../conf/conf";
 
 const RTE = ({
   name,
@@ -22,7 +23,7 @@ const RTE = ({
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="7iij1fvwyx1hpj73fvi2kgneqe5696kdqrlchijnbuenk7s0"
+            apiKey={conf.tinyMCEapiKey}
             initialValue={defaultValue}
             init={{
               initialValue: defaultValue,
