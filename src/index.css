@@ -30,7 +30,7 @@ body::-webkit-scrollbar {
 }
 
 body.darkMode {
-    background-color: #02020A !important;
+    background-color: #000000f2 !important;
 }
 
 h1 {
