@@ -7,7 +7,7 @@
     right: 0;
     transform: translateX(100%);
     width: 23%;
-    height: 100vh;
+    height: 100%;
     color: rgb(0, 0, 0);
     background-color: ghostwhite;
     transition: transform 200ms ease-in-out, right 200ms ease;

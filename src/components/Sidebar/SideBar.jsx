@@ -8,8 +8,6 @@ import authService from "../../appwrite/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/authSlice";
 import { useState } from "react";
-import darkMode from '../../assets/darkMode.png'
-import dayMode from '../../assets/dayMode.png'
 import conf from "../../conf/conf";
 
 const SideBar = () => {
