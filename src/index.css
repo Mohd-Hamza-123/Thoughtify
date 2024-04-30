@@ -33,6 +33,10 @@ body.darkMode {
     background-color: #02020A !important;
 }
 
+h1 {
+    font-size: 2rem;
+}
+
 .block {
     display: block !important;
 }

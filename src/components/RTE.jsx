@@ -30,9 +30,9 @@ const RTE = ({
               height: 500,
               autoresize_max_height: 800,
               menubar: false,
-              plugins: ["lists", "image"],
+              plugins: ["lists", "image", "wordcount"],
               toolbar:
-                "image | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |removeformat | code ",
+                "undo redo | image | bold italic forecolor backcolor  | alignleft aligncenter alignright alignjustify | outdent indent |removeformat",
               content_style:
                 "body { font-family:Helvetica,Arial,sans-serif; font-size:18px }",
               file_picker_callback: function (callback, value, meta) {

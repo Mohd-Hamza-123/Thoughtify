@@ -721,7 +721,9 @@ const ViewPost = () => {
                 </h2>
               </div>
 
-              <div id="ViewPost-parse">{parse(post?.content)}</div>
+              <div id="ViewPost-parse">
+                {parse(post?.content)}
+              </div>
 
               {post?.pollQuestion && <div id="ViewPost_Poll_Div">
                 <h5>Poll </h5>
