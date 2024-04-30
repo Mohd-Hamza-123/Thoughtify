@@ -12,6 +12,7 @@
 
     .BrowseQuestions_Two_Div_Containers {
         flex-direction: column;
+        padding: 0px 10px !important;
     }
 
     #BrowseQuestions_PostTitle {
@@ -22,7 +23,7 @@
         width: 100% !important;
         font-size: 15px;
         height: fit-content !important;
-        padding: 0px 0px 0px 9px !important;
+        padding: 0px 0px 0px 0px !important;
     }
 
     #BrowseQuestions_Filtered_Questions {
