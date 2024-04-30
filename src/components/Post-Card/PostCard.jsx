@@ -4,10 +4,13 @@ import "./PostCard.css";
 import profile from "../../appwrite/profile";
 import appwriteService from "../../appwrite/config";
 import NoProfile from '../../assets/NoProfile.png'
+import NoImage from '../../assets/NoImage.jpg'
 import { useSelector, useDispatch } from 'react-redux'
 import { Query } from 'appwrite'
 import { getpostUploaderProfilePic } from "../../store/postsSlice";
 import { useAskContext } from "../../context/AskContext";
+
+
 const PostCard = ({
   $id,
   title = "Title",
@@ -23,12 +26,11 @@ const PostCard = ({
   opinionsFrom,
   trustedResponderPost
 }) => {
-  // console.log(trustedResponderPost)
 
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
 
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  const initialPost = useSelector((state) => state.postsSlice.initialPosts);
   const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
 
   const [profileImgURL, setprofileImgURL] = useState('')
@@ -36,7 +38,7 @@ const PostCard = ({
 
 
   const getPostData = async () => {
-    // console.log(queImageID)
+  
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
         setthumbnailURL(res.href)
@@ -46,11 +48,11 @@ const PostCard = ({
   const profileData = async () => {
 
     const isProfilePicAlreadyInReduxIndex = postProfilesPic.findIndex((profile) => profile.userId === userId)
-    // console.log(isProfilePicAlreadyInReduxIndex)
+  
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-      // console.log(gettinProfiles)
+   
       const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 
@@ -107,7 +109,7 @@ const PostCard = ({
 
   return (
     <>
-      <div className={`PostCard ${trustedResponderPost ? 'trusted' : ''} ${isDarkModeOn ? 'darkMode' : ''}`}>
+      <div className={`PostCard ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="PostCard_left" className="" >
           <Link to={`/post/${$id}`}>
             {queImage ? (
@@ -121,7 +123,7 @@ const PostCard = ({
               <img
                 id="Post-Card-img"
                 src={`${thumbnailURL ? thumbnailURL : `https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg`}`}
-                alt="Image"
+                onError={(e) => { e.target.src = NoImage }}
                 className="w-full"
               />
             )}

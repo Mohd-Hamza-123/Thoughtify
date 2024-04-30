@@ -21,6 +21,13 @@ const HomeRight = () => {
     const userAuthStatus = useSelector((state) => state.auth.status)
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (userData) {
+            setisEmailVerified((prev) => userData?.emailVerification || false)
+        }
+    }, [userData])
+
+
     const verifyEmail = async () => {
         try {
             const getVerificationDetails = await authService.emailVerification();

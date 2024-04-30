@@ -1,17 +1,18 @@
 .SideBar {
+    /* display: none; */
     padding: 15px 10px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: hidden;
     position: absolute;
     top: 0;
     right: 0;
     transform: translateX(100%);
     width: 21%;
-    height: 100vh;
+    height: 100%;
     color: rgb(0, 0, 0);
     background-color: ghostwhite;
     transition: transform 200ms ease-in-out;
-    z-index: 100;
+    z-index: 30;
     border-bottom-left-radius: 20px;
     border-top-left-radius: 20px;
 }
@@ -77,7 +78,6 @@ body.darkMode .SideBar hr {
     margin-top: 10px;
     flex-direction: column;
     justify-content: space-around;
-    /* border: 2px solid red; */
     height: 80%;
 }
 
@@ -100,7 +100,6 @@ body.darkMode .SideBarContent svg {
     height: 100vh;
     color: rgb(0, 0, 0);
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-
     background-color: whitesmoke;
     transition: transform 200ms ease-in-out;
 }

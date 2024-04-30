@@ -176,7 +176,7 @@ const NavigationBar = () => {
           </div>}
           {(authStatus && myUserProfile) && (
             <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-              <img src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile} alt="" />
+              <img src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile} alt="fsd" />
             </div>
           )}
           {(!authStatus || !myUserProfile) && <ul className="flex items-center UpperNavigationBar_Buttons_ul">

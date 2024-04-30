@@ -151,17 +151,11 @@ function App() {
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret)
         .then((res) => {
-
-          setNotificationPopMsgNature((prev) => true);
-          setnotificationPopMsg((prev) => "You Email is Verified. Please Login Again.");
-          setMyUserProfile((prev) => null)
-          dispatch(logout())
-          navigate("/login");
-          location.reload();
-        })
-        .then((userData) => {
-
-          dispatch(login({ userData }));
+          console.log(res);
+          if (res) {
+            setNotificationPopMsgNature((prev) => true);
+            setnotificationPopMsg((prev) => "You Email is Verified");
+          }
         })
         .catch((err) => {
           console.error(err)
@@ -242,8 +236,8 @@ function App() {
   }
 
   console.log(myUserProfile);
-  console.log(userData)
-  
+  console.log(userData);
+
 
   return !loading ? (
     <>
@@ -288,12 +282,11 @@ function App() {
         }}
       >
 
-
         <NotificationPop notificationPopMsg={notificationPopMsg} notificationPopMsgNature={notificationPopMsgNature} />
         <Feedback />
         <Setting />
         <Outlet />
-        <SideBar />
+        {/* <SideBar /> */}
         <Overlay />
 
       </AskProvider>

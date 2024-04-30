@@ -377,7 +377,7 @@ const MyProfile = () => {
 
             <div
               id="MyProfile_Header_Right"
-              className="w-1/3 flex flex-col items-start justify-center gap-4 p-5"
+              className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
             >
               <div className="flex w-full">
                 <p className="w-1/2">Country :</p>
@@ -403,6 +403,10 @@ const MyProfile = () => {
                 <p className="w-1/2">Joined :</p>
                 <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
               </div>
+              {(profileData?.userIdAuth === userData?.$id) && <div className="flex w-full">
+                <p className="w-1/2">Verified : </p>
+                <span>{userData?.emailVerification ? "Yes" : "No"}</span>
+              </div>}
 
             </div>
           </div>
