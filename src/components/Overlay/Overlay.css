@@ -1,6 +1,6 @@
 #Overlay {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     position: absolute;
     top: -100vh;
     opacity: 1;
@@ -14,7 +14,5 @@
 #Overlay.active {
     top: 0;
     opacity: 0.4;
-    /* transition: opacity 0.35s ease; */
     transition: top 0ms;
-    /* z-index:5; */
 }
