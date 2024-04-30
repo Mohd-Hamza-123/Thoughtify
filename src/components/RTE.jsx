@@ -23,7 +23,7 @@ const RTE = ({
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey={conf.tinyMCEapiKey}
+            // apiKey={conf.tinyMCEapiKey}
             initialValue={defaultValue}
             init={{
               initialValue: defaultValue,
