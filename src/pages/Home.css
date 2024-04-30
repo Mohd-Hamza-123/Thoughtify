@@ -1,15 +1,14 @@
 #Home {
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     position: relative;
 }
 
 #Home::-webkit-scrollbar {
     display: none;
 }
-
 @media only screen and (max-width: 500px) {
 
     .Home_Nav_Container.active {
