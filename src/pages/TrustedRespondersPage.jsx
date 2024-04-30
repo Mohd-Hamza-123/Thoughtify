@@ -65,7 +65,7 @@ const TrustedRespondersPage = () => {
     }, [trustedRespondersArr]);
 
     return (
-        <>
+        <div className="TrustedResponderPage">
             <UpperNavigationBar />
             <HorizontalLine />
             <LowerNavigationBar />
@@ -150,61 +150,9 @@ const TrustedRespondersPage = () => {
                     })}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
 export default TrustedRespondersPage;
 
-// const TrustedRespondersPage = () => {
-//     const [trustedRespondersArr, settrustedRespondersArr] = useState([])
-//     // console.log(trustedRespondersArr)
-//     const getResponders = async () => {
-//         const Responders = await profile.listProfilesWithQueries({ listResponders: true })
-//         settrustedRespondersArr((prev) => Responders.documents)
-//         console.log(Responders.documents.profileImgID)
-//     }
-//     const getImgURL = async (ImgID) => {
-//         const URL = await profile.getStoragePreview(ImgID)
-//         // console.log(URL.href)
-//         return URL.href;
-//     }
-//     useEffect(() => {
-//         getResponders();
-
-//     }, [])
-//     return (<>
-//         <UpperNavigationBar />
-//         <HorizontalLine />
-//         <LowerNavigationBar />
-//         <HorizontalLine />
-//         <div id='TrustedRespondersPage'>
-//             <div className="TrustedRespondersPage_container">
-//                 {trustedRespondersArr?.map((respondersObj, index) => {
-
-//                     return <div key={respondersObj.$id} className="card">
-//                         <div className="card__footer">
-//                             <div className="w-full user flex flex-col">
-//                                 <div className='w-full flex justify-center'>
-//                                     <img src={getImgURL(respondersObj.profileImgID)} alt="user__image" className="user__image" />
-//                                 </div>
-//                                 <div className="user__info text-center">
-//                                     <h5>{respondersObj.name}</h5>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                         <div className="card__body">
-//                             <span className="tag tag-red">{respondersObj.occupation}</span>
-//                             <p>{respondersObj.bio}</p>
-//                         </div>
-
-//                     </div>
-//                 })}
-
-//             </div>
-//         </div>
-//     </>
-//     )
-// }
-
-// export default TrustedRespondersPage

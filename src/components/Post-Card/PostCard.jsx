@@ -38,7 +38,7 @@ const PostCard = ({
 
 
   const getPostData = async () => {
-  
+
     appwriteService.getThumbnailPreview(queImageID)
       .then((res) => {
         setthumbnailURL(res.href)
@@ -48,11 +48,11 @@ const PostCard = ({
   const profileData = async () => {
 
     const isProfilePicAlreadyInReduxIndex = postProfilesPic.findIndex((profile) => profile.userId === userId)
-  
+
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
-   
+
       const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 
@@ -111,7 +111,7 @@ const PostCard = ({
     <>
       <div className={`PostCard ${isDarkModeOn ? 'darkMode' : ''}`}>
         <div id="PostCard_left" className="" >
-          <Link to={`/post/${$id}`}>
+          <Link to={`/post/${$id}/${null}`}>
             {queImage ? (
               <img
                 id="Post-Card-img"
