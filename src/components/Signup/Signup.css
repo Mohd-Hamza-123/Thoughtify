@@ -18,6 +18,8 @@
     }
 
     #Signup>div {
+        background-color: transparent !important;
+        box-shadow: none !important;
         display: flex !important;
         padding: 0px !important;
         width: 100% !important;
@@ -25,6 +27,11 @@
         height: 95% !important;
         flex-direction: column !important;
         justify-content: center !important;
+    }
+
+    body.darkMode #Signup>div {
+        background-color: transparent !important;
+        box-shadow: none !important;
     }
 
     .Signup_have_an_Acc {
@@ -36,7 +43,7 @@
     }
 
     .signup_insideForm_div>div>div {
-        width: 90% !important;
+        width: 80% !important;
     }
 
     .inputTransition input {

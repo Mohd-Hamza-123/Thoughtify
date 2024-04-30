@@ -22,7 +22,12 @@
         width: 95% !important;
         border-radius: 5px !important;
         height: 70% !important;
-        overflow: hidden;
+        box-shadow: none !important;
+    }
+
+    body.darkMode #Login_Container>div {
+        box-shadow: none !important;
+        background-color: transparent !important;
     }
 
     .Login_dont_have_acc {
@@ -40,7 +45,7 @@
     }
 
     #Login>div {
-        width: 90%;
+        width: 80% !important;
     }
 
     #Login {
@@ -51,6 +56,8 @@
         margin: 0 auto !important;
         width: 90% !important;
     }
+
+
 }
 
 #Login_Container>div img {
