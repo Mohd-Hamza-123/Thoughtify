@@ -12,7 +12,7 @@ const ChatRTE = ({ name, control, editorRef }) => {
         control={control}
         render={({ field: { onChange } }) => (
           <Editor
-            apiKey="7iij1fvwyx1hpj73fvi2kgneqe5696kdqrlchijnbuenk7s0"
+            apiKey="snd1y9hkbh3obygauc2isqtjx7pcylfzfqpl2zi28mjrtbik"
             init={{
               height: 200,
               autoresize_max_height: 400, //
