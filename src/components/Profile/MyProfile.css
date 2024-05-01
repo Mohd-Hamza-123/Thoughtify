@@ -73,6 +73,10 @@
     #MyProfile_Data_section ul li {
         border-bottom: 3px solid rgba(174, 174, 174, 0.507);
     }
+
+    #MyProfile_Name_Div>section p {
+        text-align: center !important;
+    }
 }
 
 #MyProfile_Parent.darkMode {
@@ -141,6 +145,11 @@
 #MyProfile_Name_Div section h6 {
     font-size: 23px;
     font-weight: 600;
+}
+
+#MyProfile_Name_Div>section p {
+    font-size: 12px;
+    letter-spacing: 0.4px;
 }
 
 #MyProfile_Name_Div section div span {

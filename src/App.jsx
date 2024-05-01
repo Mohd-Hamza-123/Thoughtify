@@ -16,7 +16,7 @@ import { getInitialPost } from "./store/postsSlice";
 import avatar from "./appwrite/avatars";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
-import ResetPassword from "./pages/ResetPassword";
+
 
 
 function App() {
@@ -273,6 +273,7 @@ function App() {
     }
   }
 
+  console.log(userData)
 
   return !loading ? (
     <>

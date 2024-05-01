@@ -209,7 +209,7 @@ const MyProfile = () => {
       setisBlocked((prev) => !prev)
       updateBlockedArr.push(slug);
     }
-   
+
     const follow = await profile.updateEveryProfileAttribute({
       profileID: myUserProfile.$id,
       blockedUsers: updateBlockedArr
@@ -239,7 +239,7 @@ const MyProfile = () => {
   }, [slug]);
 
   useEffect(() => {
-   
+
     switch (activeNav) {
       case 'Opinions': setactiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
@@ -255,7 +255,7 @@ const MyProfile = () => {
 
 
   useEffect(() => {
-  
+
     if (!myUserProfile) {
       profile
         .listProfile({ slug })
@@ -298,6 +298,7 @@ const MyProfile = () => {
               >
                 <section className="flex flex-col items-left">
                   <h6>{profileData?.name}</h6>
+                  {(userData?.$id === profileData?.userIdAuth) && <p className="">{userData?.email || ''}</p>}
                 </section>
                 <div id="MyProfile_3Buttons" className="flex gap-3">
                   {!realUser && (
