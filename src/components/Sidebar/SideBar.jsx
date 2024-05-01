@@ -16,7 +16,7 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const SideBar = useRef();
   const [name, setname] = useState("Name");
-  const { isOpen, setIsOpen, SetSettingPopUp, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
+  const { isOpen, setIsOpen, onInstallApp, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -177,6 +177,7 @@ const SideBar = () => {
         <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={() => {
           setIsOpen(false);
           setisOverlayBoolean(false)
+          onInstallApp()
         }}>
           <div>
             <i className="fa-solid fa-download"></i>

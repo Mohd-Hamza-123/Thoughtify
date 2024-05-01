@@ -234,12 +234,12 @@ function App() {
     }
   }
 
-  const [prompt, setPrompt] = useState(null);
-  console.log(prompt)
+  const [appInstallPrompt, setAppInstallPrompt] = useState(null);
+  console.log(appInstallPrompt);
   useEffect(() => {
     const installApp = (e) => {
       e.preventDefault();
-      setPrompt(e); // Assuming setPrompt is a function to store the event for later use
+      setAppInstallPrompt((prev) => e)
 
       // Optionally, you can check if the app is already installed as standalone
       if (!window.matchMedia("(display-mode: standalone)").matches) {
@@ -255,11 +255,19 @@ function App() {
     };
   }, []);
 
+  const onInstallApp = async () => {
+    if (appInstallPrompt) {
+      console.log(appInstallPrompt)
+      appInstallPrompt.prompt();
+    }
+  }
+
 
   return !loading ? (
     <>
       <AskProvider
         value={{
+          onInstallApp,
           queries, setQueries,
           hasMorePostsInProfileFilterBookmark,
           sethasMorePostsInProfileFilterBookmark,
