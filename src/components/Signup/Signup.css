@@ -58,6 +58,14 @@
     .login-with-google-btn {
         width: 90% !important;
     }
+
+    .Signup_Signup_div {
+        margin: 0px !important;
+    }
+
+    .Signup_Signup_div h1 {
+        font-size: 20px !important;
+    }
 }
 
 #Signup {

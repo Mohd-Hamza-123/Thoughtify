@@ -122,11 +122,10 @@ function App() {
         }
 
       } else {
-        throw new Error("User not logged in");
+        console.error("User not logged in");
       }
     } catch (err) {
-
-      console.log(err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -235,6 +234,26 @@ function App() {
     }
   }
 
+  const [prompt, setPrompt] = useState(null);
+  console.log(prompt)
+  useEffect(() => {
+    const installApp = (e) => {
+      e.preventDefault();
+      setPrompt(e); // Assuming setPrompt is a function to store the event for later use
+
+      // Optionally, you can check if the app is already installed as standalone
+      if (!window.matchMedia("(display-mode: standalone)").matches) {
+        console.log("App is not installed as standalone");
+        // Optionally, you can show your custom installation UI here
+      }
+    };
+
+    window.addEventListener("beforeinstallprompt", installApp);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", installApp);
+    };
+  }, []);
 
 
   return !loading ? (

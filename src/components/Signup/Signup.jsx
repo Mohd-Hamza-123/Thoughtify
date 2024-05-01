@@ -105,7 +105,7 @@ const Signup = () => {
             {/* <Logo /> */}
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
           </div>
-          <div className="flex flex-col w-full">
+          <div className="Signup_Signup_div flex flex-col w-full">
             <h1 className="font-bold text-2xl mt-2 text-center">
               Sign-In
             </h1>
@@ -181,12 +181,11 @@ const Signup = () => {
                 </Button>
               </div>
             </form>
-            <p className="text-center mt-2">Or</p>
+            <p className="text-center mt-1">Or</p>
 
             <div className="Signup_SignIn_Google_div flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()
-                // console.log(googleAuthentcation)
               }} type="button" className="login-with-google-btn" >
                 Sign in with Google
               </button>
