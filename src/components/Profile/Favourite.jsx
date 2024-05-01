@@ -27,7 +27,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     sethasMorePostsInProfileFilterBookmark,
     myUserProfile,
   } = useAskContext();
-  // console.log(myUserProfile);
+
   const userData = useSelector((state) => state.auth.userData);
 
   const bookMarkCounter = useRef(0);
@@ -46,11 +46,10 @@ const Favourite = ({ visitedProfileUserID }) => {
 
       if (totalLength > 5) {
         for (let i = 0; i < 5; i++) {
-          // console.log(bookMarkCounter.current)
           const filteredBookmark = await appwriteService.getPostWithBookmark(
             bookMarkArray[i]
           );
-          // console.log("HI")
+
           dispatch(
             getFilteredBookmarkPosts({
               filteredBookmarkPosts: [filteredBookmark],
@@ -116,7 +115,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     }
   }, [isIntersecting]);
 
-  console.log(bookMarkPostInRedux);
+
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -168,10 +167,9 @@ const Favourite = ({ visitedProfileUserID }) => {
       className={`flex`}
     >
       <div id="Profile_Bookmark_Filtered_Bookmark">
-        {!isPostAvailable && <p className="text-center">{`No Posts Available`}</p>}
 
         {bookMarkPostInRedux?.map((bookmark, index) => {
-         
+
           if (isPostAvailable !== true || (visitedProfileUserID !== userData?.$id) || !bookmark) {
             return;
           }
