@@ -25,8 +25,8 @@ const Login = () => {
     setError(null);
     try {
       setIsWaiting((prev) => true)
-      const session = await authService.login(data);
-
+      const session = await authService.login({ ...data });
+      
       if (session) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
