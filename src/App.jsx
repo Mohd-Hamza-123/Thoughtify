@@ -235,16 +235,18 @@ function App() {
   }
 
   const [appInstallPrompt, setAppInstallPrompt] = useState(null);
-  console.log(appInstallPrompt);
+  const [isAppInstalled, setisAppInstalled] = useState(true);
+  // console.log(appInstallPrompt);
   useEffect(() => {
     const installApp = (e) => {
       e.preventDefault();
       setAppInstallPrompt((prev) => e)
 
       // Optionally, you can check if the app is already installed as standalone
-      if (!window.matchMedia("(display-mode: standalone)").matches) {
-        console.log("App is not installed as standalone");
-        // Optionally, you can show your custom installation UI here
+      if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true) {
+        setisAppInstalled((prev) => true)
+      } else {
+        setisAppInstalled((prev) => false)
       }
     };
 
@@ -274,6 +276,7 @@ function App() {
     <>
       <AskProvider
         value={{
+          isAppInstalled,
           onInstallApp,
           queries, setQueries,
           hasMorePostsInProfileFilterBookmark,

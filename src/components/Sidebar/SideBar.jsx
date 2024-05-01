@@ -16,7 +16,7 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const SideBar = useRef();
   const [name, setname] = useState("Name");
-  const { isOpen, setIsOpen, onInstallApp, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
+  const { isOpen, setIsOpen, onInstallApp, isAppInstalled, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -174,10 +174,10 @@ const SideBar = () => {
         </div>
 
 
-        <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={(e) => {
+        {isAppInstalled && <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={(e) => {
           setIsOpen(false);
           setisOverlayBoolean(false)
-          
+
           onInstallApp()
         }}>
           <div>
@@ -185,7 +185,7 @@ const SideBar = () => {
           </div>
 
           <p>Download App</p>
-        </div>
+        </div>}
 
 
         <hr />
