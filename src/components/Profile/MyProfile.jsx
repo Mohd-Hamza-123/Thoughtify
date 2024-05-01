@@ -298,7 +298,6 @@ const MyProfile = () => {
               >
                 <section className="flex flex-col items-left">
                   <h6>{profileData?.name}</h6>
-                  {(userData?.$id === profileData?.userIdAuth) && <p className="">{userData?.email || ''}</p>}
                 </section>
                 <div id="MyProfile_3Buttons" className="flex gap-3">
                   {!realUser && (
