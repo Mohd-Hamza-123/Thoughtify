@@ -29,7 +29,7 @@ const Chat = ({ post, slug }) => {
   const fixedReplies = 2;
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
-  // const [arr_For_Five_Mul, setarr_For_Five_Mul] = useState([]);
+
   const [activeTextArea, setactiveTextArea] = useState(null)
 
   const [postCommentCount, setpostCommentCount] = useState(null)
@@ -293,15 +293,6 @@ const Chat = ({ post, slug }) => {
     }
   }
 
-  // useEffect(() => {
-  //   if (commentArr) {
-  //     if (commentArr.length !== 0) {
-  //       for (let i = 0; i < commentArr.length; i++) {
-  //         setarr_For_Five_Mul((prev) => [...prev, { subCommentID: commentArr[i]?.$id, five_Multiple: 1 }])
-  //       }
-  //     }
-  //   }
-  // }, [commentArr])
 
   const editorRef = useRef(null)
   const clearEditorContent = () => {
@@ -343,7 +334,6 @@ const Chat = ({ post, slug }) => {
             profilePicURL = postUploaderPics[profilePicIndex].profilePic
           }
 
-          // console.log(profilePicURL)
           return <div key={comment?.$id} className="Chat_Comment_Div">
             <section>
               <div className="flex justify-between">
@@ -429,7 +419,7 @@ const Chat = ({ post, slug }) => {
             <div className={``}>
               {comment?.subComment?.map((sub, index) => {
 
-                // console.log(id_For_Five_Mul)
+            
                 if (comment?.$id != id_For_Five_Mul) {
                   if (index >= fixedReplies) return
                 } else {
