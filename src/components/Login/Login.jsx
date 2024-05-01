@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Input, Button, Logo, UpperNavigationBar } from "../";
+import { Button } from "../";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
@@ -15,8 +15,12 @@ const Login = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const { register, handleSubmit } = useForm();
-  const { isDarkModeOn, setnotificationPopMsg,
+  const {
+    isDarkModeOn,
+    setnotificationPopMsg,
     setNotificationPopMsgNature } = useAskContext()
+
+
   const login = async (data) => {
     setError(null);
     try {
@@ -42,7 +46,6 @@ const Login = () => {
 
   return (
     <>
-
       <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <section onClick={() => navigate("/")} className="GoToHomePageDiv">
           <div><img src={goBack} alt="" /></div>
@@ -122,13 +125,10 @@ const Login = () => {
             <div className="Login_Google_Div flex justify-center">
               <button onClick={() => {
                 const googleAuthentcation = authService.googleAuth()
-                // console.log(googleAuthentcation)
               }} type="button" className="login-with-google-btn" >
                 Sign in with Google
               </button>
             </div>
-
-
           </div>
         </div>
       </div>

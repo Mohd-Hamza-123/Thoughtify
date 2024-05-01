@@ -15,7 +15,7 @@ export class Location {
         try {
             return await this.locale.get()
         } catch (error) {
-            console.log("GetLocation :: Error in location.js")
+            return null
         }
     }
 

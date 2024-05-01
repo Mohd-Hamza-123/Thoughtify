@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import "./ChatRTE.css";
 import { Editor, } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
@@ -8,6 +8,7 @@ const ChatRTE = ({ name, control, editorRef }) => {
   return (
     <div id="ChatRTE" className="w-full">
       <Controller
+        apiKey={conf.tinyMCEapiKey}
         name={name || "commentContent"}
         control={control}
         render={({ field: { onChange } }) => (

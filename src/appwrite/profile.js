@@ -1,11 +1,10 @@
 import conf from '../conf/conf'
-import { Account, Query, ID, Storage, Client, Databases } from 'appwrite'
+import { Query, ID, Storage, Client, Databases } from 'appwrite'
 
 export class Profile {
     client = new Client()
     databases;
     storage
-
 
     constructor() {
         this.client
@@ -15,7 +14,7 @@ export class Profile {
         this.storage = new Storage(this.client)
     }
 
-    async createProfile({ bio, links, educationLvl, interestedIn, occupation, userIdAuth, gender, featuredImgId, name, profileImgID, profileImgURL }) {
+    async createProfile({ userIdAuth, gender, name, profileImgID, profileImgURL }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
                 userIdAuth,
@@ -25,7 +24,7 @@ export class Profile {
                 profileImgURL
             })
         } catch (error) {
-            console.log("Appwrite serive :: createProfile :: profile.js :: error", error)
+            return null
         }
     }
 
@@ -51,14 +50,13 @@ export class Profile {
         if (trustedResponder || trustedResponder === false) {
             updateObj.trustedResponder = trustedResponder
         }
-        console.log(updateObj)
-        // return
+
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
                 updateObj
             )
         } catch (error) {
-            console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
+            return null
         }
     }
 
@@ -66,7 +64,7 @@ export class Profile {
     async updateProfile(id, { bio, educationLvl, occupation,
         profileImgID, profileImgURL
     }, links, interestedIn) {
-        // console.log(profileImgID)
+
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, id, {
                 bio,
@@ -78,7 +76,7 @@ export class Profile {
                 profileImgURL
             })
         } catch (error) {
-            console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
+            return null
         }
     }
     async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
@@ -89,11 +87,11 @@ export class Profile {
                 bookmarks,
             })
         } catch (error) {
-            console.log("Appwrite serive :: updateProfile :: profile.js :: error", error);
+            return null
         }
     }
     async listProfile({ slug, name }) {
-        // console.log(name)
+     
         let QueryArr = []
         if (slug) {
             QueryArr.push(Query.equal("userIdAuth", [`${slug}`]))
@@ -101,13 +99,13 @@ export class Profile {
         if (name) {
             QueryArr.push(Query.equal("name", [`${name}`]))
         }
-        // console.log(QueryArr)
+  
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
+            return null
         }
     }
 
@@ -117,19 +115,19 @@ export class Profile {
                 [Query.equal("userIdAuth", [senderSlug, receiverSlug])]
             )
         } catch (error) {
-            console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
+           return null
         }
     }
     async listProfilesWithQueries({ listResponders }) {
         let QueryArr = []
         if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
-        // console.log(QueryArr)
+    
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: listProfilesWithQueries :: profile.js :: error", error);
+           return null
         }
     }
     async listSingleProfile(slug) {
@@ -140,7 +138,7 @@ export class Profile {
                 slug
             )
         } catch (error) {
-            console.log("Appwrite serive :: listProfile :: profile.js :: error", error);
+            return null
         }
     }
 
@@ -150,7 +148,6 @@ export class Profile {
         try {
             return await this.storage.createFile(conf.appwriteBucketId, ID.unique(), file)
         } catch (error) {
-            console.log("Appwrite serive :: createBucket :: config.js :: error", error);
             return false
         }
     }
@@ -159,7 +156,7 @@ export class Profile {
         try {
             return await this.storage.updateFile(conf.appwriteBucketId, fileid, file)
         } catch (error) {
-            console.log("Appwrite serive :: updateBucket :: config.js :: error", error);
+ 
             return false
         }
     }
@@ -168,12 +165,11 @@ export class Profile {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketId, fileid)
         } catch (error) {
-
+            return null
         }
     }
 
     async getStoragePreview(fileid) {
-        // console.log(fileid)
         if (fileid) {
             return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
         }

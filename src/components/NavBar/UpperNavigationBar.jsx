@@ -176,13 +176,13 @@ const NavigationBar = () => {
           </div>}
           {(authStatus && myUserProfile) && (
             <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-              <img src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile} alt="fsd" />
+              <img src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile} />
             </div>
           )}
           {(!authStatus || !myUserProfile) && <ul className="flex items-center UpperNavigationBar_Buttons_ul">
             {BarItems.map((Item) =>
               Item.active ? (
-                <li key={Item.name} className="">
+                <li key={Item.name}>
                   <button
                     className="UpperNavigationBar_Buttons inline-bock px-6 py-2 duration-200 rounded-full"
                     onClick={() => navigate(Item.slug)}

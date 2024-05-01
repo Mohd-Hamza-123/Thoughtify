@@ -1,5 +1,5 @@
 import React from 'react'
-import { Signup, UpperNavigationBar, LowerNavigationBar } from '../components'
+import { Signup } from '../components'
 const SignupPage = () => {
   return (
     <>

@@ -21,7 +21,6 @@
 }
 
 .Chat_Comment_Div_1 {
-    /* background-color: rgba(205, 205, 205, 0.685); */
     border-radius: 2px;
     padding: 5px;
 }
@@ -76,7 +75,7 @@ body.darkMode .Chat_textArea {
     color: white;
 }
 
-/* CSS */
+
 #Chat_Your_Opinion_Button {
     background-color: var(--secondryBlue);
     border-radius: 100px;
@@ -108,10 +107,6 @@ body.darkMode #Chat_Your_Opinion_Button {
 }
 
 
-
-/* <button class="button-27" role="button">Button 27</button> */
-
-/* CSS */
 .Chat-Comment-Reply,
 #ReplyDiv span {
     display: flex;
@@ -167,19 +162,11 @@ body.darkMode #Chat_Your_Opinion_Button {
     border-radius: 5px;
 }
 
-/* CSS */
-
-/* CSS */
-
-
-/* CSS */
 .Chat_SubComments_Div button {
     position: absolute;
     right: 10px;
-    /* background-color: black; */
     color: rgb(0, 0, 0);
     padding: 6px;
-    /* border-radius: 15px; */
 
 }
 

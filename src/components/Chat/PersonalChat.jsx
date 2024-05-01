@@ -11,7 +11,7 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-  // console.log(receiverDetails)
+ 
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)

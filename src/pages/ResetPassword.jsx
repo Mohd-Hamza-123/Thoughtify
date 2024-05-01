@@ -24,11 +24,10 @@ const ResetPassword = () => {
     const submit = async (data) => {
         try {
             const reset = await authService.resetPassword(userId, secret, data.Password, data.Repeat_Password);
-            console.log(reset);
             setNotificationPopMsgNature((prev) => true);
             setnotificationPopMsg((prev) => "Password Updated");
             navigate('/login');
-           
+
 
         } catch (error) {
             setNotificationPopMsgNature((prev) => false);

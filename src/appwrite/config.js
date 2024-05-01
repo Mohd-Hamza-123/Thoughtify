@@ -34,9 +34,7 @@ export class Service {
                 trustedResponderPost
             })
         } catch (error) {
-
-            console.log("Appwrite serive :: createPost :: error", error);
-            
+            return null
         }
     }
     async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage }, category) {
@@ -54,7 +52,7 @@ export class Service {
                 queImage
             })
         } catch (error) {
-            console.log("Appwrite serive :: updatePost :: error", error);
+            return null
         }
     }
     async updatePostViews(postId, views, commentCount) {
@@ -64,11 +62,11 @@ export class Service {
                 commentCount
             })
         } catch (error) {
-            console.log(error)
+            return null
         }
     }
     async updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID }) {
-        console.log(pollOptions)
+
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
                 pollOptions,
@@ -76,11 +74,11 @@ export class Service {
                 pollVotersID
             })
         } catch (error) {
-            console.log(error)
+            return null
         }
     }
     async updatePost_Like_DisLike({ postId, like, dislike }) {
-        // console.log(like)
+
         if (like === -1) return
         if (dislike === -1) return
         try {
@@ -89,14 +87,14 @@ export class Service {
                 dislike,
             })
         } catch (error) {
-            console.log("UpdatePost_like_dislike_bookmark" + error)
+            return null
         }
     }
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-            console.log("Appwrite serive :: deletePost :: error", error);
+           
             return false
         }
     }
@@ -135,7 +133,7 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
+        
             return false
         }
     }
@@ -186,7 +184,6 @@ export class Service {
             QueryArr.push(Query.equal("trustedResponderPost", false))
         }
 
-        // console.log(QueryArr)
         try {
 
             if (QueryArr.length < 1) return []
@@ -211,7 +208,7 @@ export class Service {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
         } catch (error) {
-            console.log("Appwrite serive :: createBucket :: config.js :: error", error);
+
             return false
         }
     }
@@ -219,7 +216,7 @@ export class Service {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
         } catch (error) {
-            console.log("Appwrite serive :: updateBucket :: config.js :: error", error);
+   
             return false
         }
     }
@@ -228,22 +225,12 @@ export class Service {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-            console.log("Appwrite serive :: deleteBucket :: config.js :: error", error);
+
             return false
         }
     }
     async getThumbnailPreview(fileid) {
         return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
-    }
-
-    // update post in realtime
-
-    async postRealTime() {
-        let res = null
-        const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteProfileCollectionId}.documents.${slug}`, (response) => {
-            console.log(response)
-        })
-
     }
 }
 

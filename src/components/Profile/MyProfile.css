@@ -8,6 +8,8 @@
     overflow-x: hidden;
 }
 
+
+
 @media only screen and (max-width: 500px) {
 
     #MyProfile_Parent {
@@ -74,7 +76,7 @@
 }
 
 #MyProfile_Parent.darkMode {
-    background-color: #02020A;
+    background-color: #0D0D0D;
 }
 
 .MyProfile_HorizontalLine {

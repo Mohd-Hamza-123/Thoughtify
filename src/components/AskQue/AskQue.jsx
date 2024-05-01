@@ -13,7 +13,7 @@ import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice
 
 
 const AskQue = ({ post }) => {
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
   const { handleSubmit, register, control, watch, setValue, getValues } =
@@ -31,11 +31,10 @@ const AskQue = ({ post }) => {
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
   const { setnotificationPopMsg, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
+
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
   const [thumbailURL, setThumbailURL] = useState('')
-
-  const [imgArr, setimgArr] = useState([]);
 
   // Category State
   const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
@@ -52,11 +51,6 @@ const AskQue = ({ post }) => {
   //
   const [isUploading, setIsUploading] = useState(false)
 
-  const handleImageUpload = (arr) => {
-    if (arr.length !== 0) {
-      setimgArr(arr);
-    }
-  };
 
   const selectThumbnail = async (e) => {
 
@@ -185,7 +179,7 @@ const AskQue = ({ post }) => {
           const ImgArrUnsplash = UnsplashRes.results
 
           const randomIndex = Math.floor(Math.random() * 10);
-          // console.log(ImgArrUnsplash[randomIndex])
+       
           const ImgURL = ImgArrUnsplash[randomIndex].urls.full
           console.log(ImgURL)
           const dbPost = await appwriteService.updatePost(post?.$id, {
@@ -200,7 +194,7 @@ const AskQue = ({ post }) => {
           setNotificationPopMsgNature((prev) => true)
           setnotificationPopMsg((prev) => 'Post Updated')
         } catch (error) {
-          // console.log("hi")
+        
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
             userId: userData.$id,
@@ -299,13 +293,9 @@ const AskQue = ({ post }) => {
         }
         navigate("/");
       }
-
-      // const createNotification = await notification.createNotification({ content: `${userData.name} has posted a post`, isRead: false, slug: slugForNotification.current, name: userData?.name, userID: userData.$id });
-      // console.log(createNotification);
     }
 
     navigate("/")
-    setimgArr((prev) => [])
     setIsUploading((prev) => false)
   }
 
@@ -331,7 +321,7 @@ const AskQue = ({ post }) => {
       }
       const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
       setTotalPollOptions((prev) => pollOptionsArray)
-      // console.log(post)
+      
       if (post.queImageID) {
         appwriteService.getThumbnailPreview(post.queImageID)
           .then((res) => {
@@ -340,8 +330,6 @@ const AskQue = ({ post }) => {
       } else {
         setThumbailURL((prev) => post.queImage)
       }
-
-    } else {
 
     }
   }, [])
