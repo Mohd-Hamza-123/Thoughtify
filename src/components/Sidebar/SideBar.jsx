@@ -174,9 +174,10 @@ const SideBar = () => {
         </div>
 
 
-        <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={() => {
+        <div className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center" onClick={(e) => {
           setIsOpen(false);
           setisOverlayBoolean(false)
+          
           onInstallApp()
         }}>
           <div>

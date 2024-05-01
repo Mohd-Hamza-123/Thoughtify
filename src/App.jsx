@@ -258,7 +258,14 @@ function App() {
   const onInstallApp = async () => {
     if (appInstallPrompt) {
       console.log(appInstallPrompt)
-      appInstallPrompt.prompt();
+      appInstallPrompt.prompt()
+      appInstallPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+      });
     }
   }
 
