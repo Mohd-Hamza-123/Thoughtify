@@ -8,22 +8,27 @@ import { useSelector } from 'react-redux'
 
 const Feedback = () => {
   const { register, handleSubmit, setValue } = useForm()
-  const { feedbackPopUp, setfeedbackPopUp } = useAskContext()
+  const {
+    feedbackPopUp,
+    setfeedbackPopUp,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
+
+  } = useAskContext()
   const userData = useSelector((state) => state.auth.userData);
   const userAuthStatus = useSelector((state) => state.auth.status)
   const submit = async (data) => {
 
     if (!userAuthStatus) return
-
-    console.log(data);
     try {
       const feedBack = await feedbackService.createFeedBack({ feedback: data.Feedback, userID: userData?.$id, username: userData?.name, email: userData?.email });
-      // console.log(feedBack)
-      console.log("feedback submitted succesfully")
+      setNotificationPopMsgNature((prev) => true)
+      setnotificationPopMsg((prev) => "feedback submitted succesfully")
     } catch (error) {
       console.log("Feedback not submitted")
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "feedback not submitted")
     }
-
     setValue("Feedback", '')
   }
   return (

@@ -77,7 +77,6 @@
 .PersonalChat_container {
     width: 100%;
     height: 100%;
-    /* border: 2px solid pink; */
     font-family: 'Poppins', sans-serif;
 }
 
@@ -88,7 +87,6 @@
 
 .PersonalChat_Ellipsis_Vertical {
     position: relative;
-    /* border: 2px solid red; */
 }
 
 .PersonalChat_Ellipsis_Vertical>p {
@@ -134,7 +132,7 @@ body.darkMode .PersonalChat_Ellipsis_Vertical>p {
     flex-direction: column;
 }
 
-/* receiver div */
+
 #PersonalChat_Receiver_div {
     height: 12%;
     border-bottom: 2px solid rgba(172, 171, 171, 0.317);
@@ -164,7 +162,6 @@ body.darkMode #PersonalChat_Receiver_div {
     border-radius: 50%;
 }
 
-/* Login & Register Pages */
 
 .auth--container {
     height: 100vh;

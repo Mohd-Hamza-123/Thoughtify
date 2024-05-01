@@ -106,7 +106,6 @@ body.darkMode #nav {
 }
 
 .UpperNavigationBar_Nav_Right_Items {
-    /* border: 1px solid rgb(0, 0, 0); */
     display: flex;
     align-items: center;
     gap: 25px;
@@ -181,7 +180,6 @@ body.darkMode #nav {
 
 #search_icon {
     fill: rgb(0, 0, 0);
-    /* font-size: 20px; */
 }
 
 #UpperNavigationBar_Search_Bar {

@@ -120,9 +120,6 @@ body.darkMode #Feedback textarea {
 }
 
 
-
-
-/* CSS */
 #Feedback section div button:nth-child(2) {
     background: #fff;
     backface-visibility: hidden;

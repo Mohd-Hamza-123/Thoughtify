@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import "./UpperNavigationBar.css";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
-import { Container, SideBar } from "../index";
 import { useSelector } from "react-redux/es/hooks/useSelector";
-import { Input } from "../index";
 import QueryFlow from "../../assets/QueryFlow.png";
 import '../../index.css'
 import { useForm } from "react-hook-form";
@@ -56,14 +54,13 @@ const NavigationBar = () => {
         })
         setnotifications((prev) => newNotificationArr)
       })
-      .catch((err) => console.log(err))
   }
 
 
   useEffect(() => {
 
     setNotificationShow((prev) => notifications)
-    const notificationBoolean = notifications?.some((note) => note.isRead === false)
+    const notificationBoolean = notifications?.some((note) => note?.isRead === false)
 
     if (notificationBoolean) {
       setIsUnreadNotificationExist(true)

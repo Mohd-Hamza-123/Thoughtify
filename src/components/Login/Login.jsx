@@ -36,7 +36,7 @@ const Login = () => {
       } else {
         setError("Invalid Credential");
         setNotificationPopMsgNature((prev) => false)
-        setnotificationPopMsg((prev) => 'Invalid Credential or Check Internet connection')
+        setnotificationPopMsg((prev) => 'Invalid Credential')
       }
     } catch (error) {
       setError(error.message);

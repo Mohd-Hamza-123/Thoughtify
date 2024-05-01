@@ -65,7 +65,6 @@
     .PostCard_Details {
         flex-wrap: wrap !important;
         gap: 6px !important;
-        /* justify-content: space-between !important; */
     }
 
     .PostCard_category {
@@ -103,13 +102,11 @@ body.darkMode .PostCard {
     align-items: center;
     width: 30%;
     height: 100%;
-    /* border: 2px solid black; */
 }
 
 #PostCard_right {
     width: 70%;
     height: 100%;
-    /* border: 2px solid red; */
 }
 
 #PostCard_title {
@@ -196,15 +193,7 @@ body.darkMode .PostCard {
     font-size: 14px;
 }
 
-/* #PostCard_FemaleComments {
-    fill: rgb(212, 1, 245);
-    height: 20px;
-}
 
-#PostCard_FemaleComments_p {
-    color: rgb(212, 1, 245);
-    font-weight: 500;
-} */
 
 #PostCard_Comments_Icon i p {
     position: absolute;

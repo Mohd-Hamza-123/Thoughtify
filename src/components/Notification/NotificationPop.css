@@ -32,7 +32,6 @@
 
 #NotificationPop.active {
     right: 1vw;
-    /* top: 17vh; */
 }
 
 #NotificationPop>section:nth-child(1).red {

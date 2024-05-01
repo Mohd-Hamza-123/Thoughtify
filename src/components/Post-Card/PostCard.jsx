@@ -6,7 +6,6 @@ import appwriteService from "../../appwrite/config";
 import NoProfile from '../../assets/NoProfile.png'
 import NoImage from '../../assets/NoImage.jpg'
 import { useSelector, useDispatch } from 'react-redux'
-import { Query } from 'appwrite'
 import { getpostUploaderProfilePic } from "../../store/postsSlice";
 import { useAskContext } from "../../context/AskContext";
 
@@ -30,8 +29,7 @@ const PostCard = ({
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
 
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts);
-  const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext()
+  const { myUserProfile, isDarkModeOn } = useAskContext()
 
   const [profileImgURL, setprofileImgURL] = useState('')
   const [thumbnailURL, setthumbnailURL] = useState('')
@@ -47,17 +45,17 @@ const PostCard = ({
 
   const profileData = async () => {
 
-    const isProfilePicAlreadyInReduxIndex = postProfilesPic.findIndex((profile) => profile.userId === userId)
+    const isProfilePicAlreadyInReduxIndex = postProfilesPic?.findIndex((profile) => profile?.userId === userId)
 
     if (isProfilePicAlreadyInReduxIndex === -1) {
 
       const gettinProfiles = await profile.listProfile({ slug: userId })
 
-      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles.documents[0]?.profileImgID)
+      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles?.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 
       if (postProfilesPic.length !== 0) {
-        for (let i = 0; i < postProfilesPic.length; i++) {
+        for (let i = 0; i < postProfilesPic?.length; i++) {
           if (postProfilesPic[i].profilePic !== gettingProfileImgURL?.href) {
             dispatch(getpostUploaderProfilePic({ userId, profilePic: gettingProfileImgURL?.href }))
           }

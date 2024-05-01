@@ -11,14 +11,19 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
- 
+
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
-  const { savedPersonalChatMsgs, setsavedPersonalChatMsgs } = useAskContext()
-  // console.log(savedPersonalChatMsgs)
+  const {
+    savedPersonalChatMsgs,
+    setsavedPersonalChatMsgs,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
+  } = useAskContext()
+
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([])
@@ -47,7 +52,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
       let totalMessagesToDelete = listMesssages?.total;
       while (totalMessagesToDelete > 0) {
-        // console.log("Delete")
+
         const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
         totalMessagesToDelete = listMesssages?.total;
         for (let i = 0; i < listMesssages?.documents?.length; i++) {
@@ -57,7 +62,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID !== ChatRoomID);
       setsavedPersonalChatMsgs((prev) => deletingThisChatRoomMsgs);
     } catch (error) {
-      console.log("Comments Can't be deleted")
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "comments not deleted")
     }
 
   }
@@ -111,7 +117,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
   useEffect(() => {
     const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID);
-    // console.log(filterThisChatRoomMsgs)
+
     if (!filterThisChatRoomMsgs) {
       getMessages(ChatRoomID);
     } else {

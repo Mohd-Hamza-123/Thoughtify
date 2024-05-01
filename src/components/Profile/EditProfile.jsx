@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./EditProfile.css";
-import { Button, Input, TextArea } from "../index";
+import { Button, TextArea } from "../index";
 import { educationLevels, occupation_Arr } from "./Profile_arr";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useForm } from "react-hook-form";
 import profile from "../../appwrite/profile";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
-import { getCanvasPreview, getCroppedFile } from "./getCanvasPreview";
+import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
 
 
 const MinimumDimension = 50;
 const EditProfile = ({
   profileData,
-  getCroppedImageURL
 }) => {
   const {
     bio,
@@ -49,7 +48,7 @@ const EditProfile = ({
   const [cropSelection, setCropSelection] = useState(null)
   const [interestedTagArr, setInterestedTagArr] = useState([]);
   const [file, setFile] = useState(null);
-  // console.log(file)
+
   const [canvasPreview, setcanvasPreview] = useState(true)
   const [prevFileURL, setprevFileURL] = useState('')
   const [imageURL, setImageURL] = useState("");
@@ -68,7 +67,7 @@ const EditProfile = ({
 
   const [prevProfilePic, setprevProfilePic] = useState('');
 
-  // Updating Profile Indicator
+  
   const [isUpdating, setisUpdating] = useState(false)
   useEffect(() => {
 
@@ -83,13 +82,13 @@ const EditProfile = ({
       } else {
         profile.getStoragePreview(profileImgID)
           .then((res) => {
-            setprevFileURL(res.href);
+            setprevFileURL(res?.href);
           })
 
 
         const get = async (profileImgID) => {
           const prev = await profile.getStoragePreview(profileImgID)
-          setprevProfilePic(prev.href)
+          setprevProfilePic(prev?.href)
         }
         get(profileImgID)
       }
@@ -127,10 +126,10 @@ const EditProfile = ({
       });
     }
   };
-  // console.log(prevFileURL)
+  
   const submit = async (data) => {
     setisUpdating((prev) => true)
-    // return
+   
     if (!prevFileURL && !file) {
       setseePreviewBefore('Make sure to see preview before uploading image')
       setNotificationPopMsgNature((prev) => false)
@@ -147,7 +146,7 @@ const EditProfile = ({
     if (file) {
       const deletePic = await profile.deleteStorage(profileImgID)
       const uploadedPic = await profile.createBucket({ file })
-      // console.log(uploadedPic);
+      
       const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id)
       data.profileImgURL = profileImgURL?.href
       data.profileImgID = `${uploadedPic?.$id}`
@@ -156,7 +155,6 @@ const EditProfile = ({
       data.profileImgID = profileImgID
     }
 
-    // console.log(data)
     if (data) {
       if (data.educationLvl) {
         if (data.occupation) {
@@ -213,7 +211,7 @@ const EditProfile = ({
   };
 
   const addTags = () => {
-    // console.log(interestedTag);
+   
     if (
       interestedTagArr.includes(interestedTag) ||
       interestedTagArr.length === 10 ||

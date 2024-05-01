@@ -42,9 +42,9 @@ const ChatInProfile = ({ profileData }) => {
                 setcanYouSeeFollowers_Following((prev) => false)
             } else if (profileData?.othersSeeYourFollowers_Following === 'My Following') {
                 const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-                // console.log(parsingFollowingArr);
+             
                 const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-                // console.log(isHeFollowsYou);
+              
                 if (!isHeFollowsYou) {
                     setcanYouSeeFollowers_Following((prev) => false);
                     return
@@ -56,7 +56,7 @@ const ChatInProfile = ({ profileData }) => {
     }, [profileData])
 
     const submit = async (data) => {
-        console.log(data)
+       
         setSearchValue((prev) => data.searchValue)
     }
     const navigation = (profileID) => {
@@ -116,7 +116,7 @@ const ChatInProfile = ({ profileData }) => {
                             {profileData?.followers?.map((profile, index) => {
                                 if (searchValue !== '') {
                                     let boolean = JSON.parse(profile)?.name.includes(searchValue);
-                                    console.log(boolean)
+                                
                                     if (boolean && searchValue !== '') {
                                     } else {
                                         return

@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import "./LowerNavigationBar.css";
 import { useAskContext } from "../../context/AskContext";
 import "./LowerNavigationBar.css";
-import { useSelector } from 'react-redux'
+
 
 const LowerNavigationBar = () => {
   const lowerNavBarRef = useRef()
