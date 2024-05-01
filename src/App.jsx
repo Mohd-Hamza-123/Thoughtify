@@ -263,9 +263,11 @@ function App() {
       appInstallPrompt.prompt()
       appInstallPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
+          // User accepted the install prompt
+          setisAppInstalled((prev) => true)
         } else {
-          console.log('User dismissed the install prompt');
+          // User dismissed the install prompt
+          setisAppInstalled((prev) => false)
         }
       });
     }

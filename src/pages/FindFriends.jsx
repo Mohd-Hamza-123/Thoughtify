@@ -44,12 +44,12 @@ const FindFriends = () => {
       }
       reset()
     } catch (error) {
-      console.error(error)
+      return null
     }
     setisSearching((prev) => false)
   }
   const nav = (slug) => {
-    console.log(slug)
+
     navigate(slug);
   }
 

@@ -187,7 +187,6 @@
 
 #MyProfile_Data_section {
     width: 100%;
-    /* border: 1px solid rgb(7, 225, 7); */
 }
 
 #MyProfile_Data_section ul {
@@ -219,7 +218,6 @@
 }
 
 #MyProfile_Data_section ul li.active {
-    /* background-color: rgb(237, 237, 237); */
     border-bottom: 3px solid var(--secondryBlue);
 }
 

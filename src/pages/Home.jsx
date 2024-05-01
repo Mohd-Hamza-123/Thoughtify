@@ -7,13 +7,12 @@ import "./Home.css";
 import appwriteService from "../appwrite/config";
 import { useAskContext } from "../context/AskContext";
 import { getInitialPost } from "../store/postsSlice";
-import conf from "../conf/conf";
 
 
 const Home = () => {
   
   const dispatch = useDispatch()
-  const initialPost = useSelector((state) => state.postsSlice.initialPosts)
+  const initialPost = useSelector((state) => state.postsSlice?.initialPosts)
 
   const {
     increaseViews,
@@ -57,7 +56,7 @@ const Home = () => {
         setPosts((prev) => [...initialPost])
       }
     } catch (error) {
-      console.log(error)
+     
       setIsLoading(false)
     }
   }
@@ -68,7 +67,7 @@ const Home = () => {
 
   useEffect(() => {
     const ref = spinnerRef.current;
-    // console.log(ref)
+
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
         setIsIntersecting((prev) => entry.isIntersecting)

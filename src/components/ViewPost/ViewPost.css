@@ -162,14 +162,12 @@ body.darkMode .Home_Nav_Container {
     font-family: 'Poppins', sans-serif;
 }
 
-/* comment count ,views, data */
 #ViewPost_Details {
     display: flex;
 }
 
 #ViewPost_Details>div:nth-child(1) {
-    /* width: 35%; */
-    /* border: 2px solid red; */
+ 
     display: flex;
     gap: 20px;
     justify-content: space-between;
@@ -196,7 +194,6 @@ body.darkMode .Home_Nav_Container {
     align-items: center;
     padding: 2px 15px;
     cursor: pointer;
-    /* border: 2px solid red !important; */
 }
 
 #ViewPost_Date_Views_Comments {
@@ -217,10 +214,6 @@ body.darkMode .Home_Nav_Container {
 
 body.darkMode #ViewPost-Title {
     color: white;
-}
-
-#ViewPost_edit_Delete {
-    /* border: 2px solid red; */
 }
 
 .ViewPost-ellipsis-Vertical {
@@ -341,8 +334,6 @@ body.darkMode #ViewPost-Title {
 
 
 
-/* Like dislike bookmark */
-
 #ViewPost_Like_Dislike_BookMark {
     font-family: 'Poppins', sans-serif;
     display: flex;
@@ -398,11 +389,9 @@ body.darkMode #ViewPost_Like_Dislike_BookMark>div {
 
 .ViewPost_Related_Filter_Comment_Questions {
     width: 30%;
-    /* border: 1px dotted var(--secondryBlue); */
     padding: 15px;
     position: sticky;
     right: 0;
-    /* border: 2px solid red; */
     top: 10px;
     font-family: 'Poppins', sans-serif;
     height: fit-content;

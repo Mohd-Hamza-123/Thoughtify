@@ -64,7 +64,7 @@
 }
 
 #Profile_Filter_Questions_Form>div {
-    /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
+   
     border-bottom: 2px solid rgba(0, 0, 0, 0.059);
 
     padding: 4px 4px 10px 4px;
@@ -219,13 +219,13 @@
     font-size: 12px;
     background-color: rgb(242, 242, 242);
     padding: 3px 6px;
-    /* color: black; */
+
     border-radius: 5px;
 }
 
 #Profile_Questions_created_category_views>div>span {
     background-color: transparent;
-    /* color: black; */
+ 
 }
 
 #Profile_Questions_created_category_views i {

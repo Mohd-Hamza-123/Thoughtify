@@ -58,7 +58,7 @@
 
 
 #Profile_Filter_Opinions_Form>div {
-    /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
+  
     border-bottom: 2px solid rgba(0, 0, 0, 0.059);
     padding: 4px 4px 10px 4px;
 }
@@ -193,7 +193,6 @@
 #Profile_Opinions_Filtered_Questions.darkMode>div {
     background-color: black;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    /* box-shadow: 0px 0px 20px #ff33008f; */
     color: white;
 }
 

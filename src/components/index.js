@@ -8,9 +8,7 @@ import Button from "./Button"
 import Container from "./Container";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
-import Logo from "./Logo";
 import UserCircle from "./UserCircle";
-import LogoutBtn from "./LogoutBtn";
 import AuthLayout from "./AuthLayout";
 import RTE from "./RTE";
 import PostCard from "./Post-Card/PostCard";
@@ -35,4 +33,4 @@ import ChatInProfile from "./Profile/ChatInProfile";
 import Loader from "./Loader/Loader";
 import NotificationPop from "./Notification/NotificationPop";
 import SecondLoader from "./Loader/SecondLoader";
-export { LogoutBtn, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, Logo, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader }
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader }

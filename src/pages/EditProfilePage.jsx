@@ -9,19 +9,19 @@ import "./EditProfilePage.css"
 const EditProfilePage = () => {
     const { editProfileSlug: slug } = useParams();
     const [profileData, setProfileData] = useState(null);
-    const { myUserProfile, setMyUserProfile } = useAskContext();
+    const { myUserProfile } = useAskContext();
     const userData = useSelector((state) => state.auth.userData)
 
 
     const getUserProfile = async () => {
         if (slug !== userData.$id) return
 
-        if (myUserProfile.userIdAuth === slug) {
+        if (myUserProfile?.userIdAuth === slug) {
             setProfileData(myUserProfile);
         } else {
             const listprofileData = await profile.listProfile({ slug });
             if (listprofileData) {
-                setProfileData({ ...listprofileData.documents[0] });
+                setProfileData({ ...listprofileData?.documents[0] });
             }
         }
 

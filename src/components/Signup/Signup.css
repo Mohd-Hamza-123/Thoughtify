@@ -259,7 +259,7 @@ body.darkMode .signup_insideForm_div .inputTransition input:valid {
 }
 
 .github_Fb_login_div {
-    /* border: 2px solid red; */
+   
     margin-top: 15px;
     display: flex;
     justify-content: center;

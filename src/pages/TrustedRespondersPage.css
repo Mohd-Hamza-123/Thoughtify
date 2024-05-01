@@ -28,7 +28,7 @@
     .wrapper>div:nth-child(2) {
         width: 100% !important;
         padding: 10px;
-        /* border: 2px solid rgb(0, 0, 0); */
+      
     }
 
     .TrustedRespondersPage_Bio {
@@ -238,7 +238,7 @@ body.darkMode .TrustedRespondersPage_buttons button {
 .wrapper>div:nth-child(2) {
     width: 65%;
     padding: 10px;
-    /* border: 2px solid rgb(0, 0, 0); */
+ 
 }
 
 .wrapper>div:nth-child(2)>div {

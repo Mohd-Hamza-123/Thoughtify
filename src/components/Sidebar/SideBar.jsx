@@ -20,7 +20,7 @@ const SideBar = () => {
 
   const userData = useSelector((state) => state.auth.userData);
 
-  // console.log(userData)
+
   useEffect(() => {
     if (status) {
       authService
@@ -54,9 +54,9 @@ const SideBar = () => {
           setIsOpen(false);
           navigate("/");
         })
-        .catch((err) => console.log(err.message));
+        .catch((err) => '');
     } catch (error) {
-      console.log(error.message);
+      
     }
   };
 

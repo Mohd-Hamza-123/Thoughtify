@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import appwriteService from "../../appwrite/config";
 import { Button, Chat, HorizontalLine, UpperNavigationBar, LowerNavigationBar } from "../index";
 import parse from "html-react-parser";
@@ -24,7 +24,7 @@ const ViewPost = () => {
 
 
   const [post, setPost] = useState(null);
-  // console.log(post)
+
   const dispatch = useDispatch()
   const { slug, filterCommentID } = useParams();
   const navigate = useNavigate();
@@ -107,7 +107,7 @@ const ViewPost = () => {
         .then((res) => {
           setfilteredComment(res)
         })
-        .catch((res) => { console.log("bye") })
+        .catch((res) => null)
     }
   }, [filterCommentID])
 
@@ -118,13 +118,13 @@ const ViewPost = () => {
         .then((post) => {
           if (post) {
             setPost((prev) => post)
-            // console.log(post)
+
             setTotalPollVotes((prev) => post?.totalPollVotes)
           }
           dispatch(getAllVisitedQuestionsInViewPost({ questions: post }))
         })
         .catch(() => {
-          console.log("ViewPost Component Error");
+          return null
         });
     } else {
       let postObject = initialPost.find(obj => obj.$id === slug)
@@ -136,8 +136,8 @@ const ViewPost = () => {
   useEffect(() => {
 
     if (post) {
-      const ProfileURLIndex = postProfilesPic.findIndex((obj) => (
-        obj.userId === post.userId
+      const ProfileURLIndex = postProfilesPic?.findIndex((obj) => (
+        obj?.userId === post?.userId
       ))
       setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic)
     }
@@ -145,10 +145,10 @@ const ViewPost = () => {
   useEffect(() => {
 
     if (post) {
-      setTotalPollVotes((prev) => post.totalPollVotes)
+      setTotalPollVotes((prev) => post?.totalPollVotes)
       setpollVotersAuthIDsAndVote((prev) => {
-        return post.pollVotersID.filter((obj) => {
-          if (JSON.parse(obj)?.pollVoterID === userData.$id) {
+        return post?.pollVotersID?.filter((obj) => {
+          if (JSON.parse(obj)?.pollVoterID === userData?.$id) {
             setIsPollOpinionVisible(true)
             return obj
           }
@@ -198,9 +198,9 @@ const ViewPost = () => {
     }
 
     if (myUserProfile) {
-      if (myUserProfile?.likedQuestions.includes(slug)) {
+      if (myUserProfile?.likedQuestions?.includes(slug)) {
         setLike_Dislike((prev) => "liked")
-      } else if (myUserProfile?.dislikedQuestions.includes(slug)) {
+      } else if (myUserProfile?.dislikedQuestions?.includes(slug)) {
         setLike_Dislike((prev) => 'disliked')
       }
       else {
@@ -212,9 +212,9 @@ const ViewPost = () => {
   // Update Post in RealTime
   useEffect(() => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwriteCollectionId}.documents.${slug}`, (response) => {
-      // console.log(response)
+
       if (response.events.includes("databases.*.collections.*.documents.*.update")) {
-        // console.log("Document updated");
+
         setPost((prev) => response?.payload)
       }
     })
@@ -246,7 +246,7 @@ const ViewPost = () => {
     }
     const getDate_Views_Comments_Details = () => {
       let x = initialPost?.find((postinRedux) => postinRedux?.$id === post?.$id)
-      // console.log(x)
+
       if (x) {
         setpostCommentCount(x.commentCount)
         setpostViews(x.views)
@@ -308,7 +308,7 @@ const ViewPost = () => {
       pollOptions[index].vote = pollOptions[index].vote + 1
 
     } else {
-      // console.log('Voter Alread Exist.Last vote on Index ' + indexOfVotedOption)
+
       totalPollVotes = post.totalPollVotes
       pollVotersID = [...pollVotersID]
 
@@ -378,14 +378,14 @@ const ViewPost = () => {
 
           //Update In Profile
           let likedQuestions = likedQuestionsInContext.filter((likedPostIDs) => likedPostIDs !== post?.$id)
-          // console.log(likedQuestions)
+
           const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions: dislikedQuestionsInContext, bookmarks: bookmarksInContext })
-          // console.log(updateLikeArr_In_MyProfile)
+
           setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
 
         } else {
 
-          // return
+
           if (dislikedQuestionsInContext.includes(post?.$id)) {
             // Update in Query
             const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike + 1, dislike: previousDislike - 1 })
@@ -398,22 +398,22 @@ const ViewPost = () => {
 
             let dislikedQuestions = dislikedQuestionsInContext.filter((dislikedPostIDs) => dislikedPostIDs !== post?.$id)
             const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions, bookmarks: bookmarksInContext })
-            // console.log(updateLikeArr_In_MyProfile)
+
             setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
           } else {
 
             // Update in Query
             const increaseLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike + 1, dislike: previousDislike })
-            // console.log(increaseLike)
+
             dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseLike }))
             setPost((prev) => increaseLike)
 
             //Update In Profile
             let likedQuestions = [...likedQuestionsInContext]
             likedQuestions.push(post?.$id)
-            // console.log(likedQuestions)
+
             const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions: dislikedQuestionsInContext, bookmarks: bookmarksInContext })
-            // console.log(updateLikeArr_In_MyProfile)
+
             setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
           }
 
@@ -430,16 +430,16 @@ const ViewPost = () => {
 
               if (isNotificationSend !== -1) {
                 const createNotification = await notification.createNotification({ content: `${userData.name} has liked your post`, isRead: false, slug: `/post/${slug}/null`, name: userData?.name, userID: userData.$id, userIDofReceiver: post.userId, userProfilePic: myUserProfile?.profileImgURL });
-                console.log(createNotification)
+
               }
             }
           } catch (error) {
-            console.log(error)
+            return null
           }
 
         }
       } catch (error) {
-        console.log('Post is not Liked ! error')
+        return null
       }
     } else if (flag === 'Dislike') {
       try {
@@ -451,13 +451,13 @@ const ViewPost = () => {
 
           //Update In Profile
           let dislikedQuestions = dislikedQuestionsInContext.filter((dislikedPostIDs) => dislikedPostIDs !== post?.$id)
-          // console.log(likedQuestions)
+
           const updateDislikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestionsInContext, dislikedQuestions: dislikedQuestions, bookmarks: bookmarksInContext })
-          // console.log(updateLikeArr_In_MyProfile)
+
           setMyUserProfile((prev) => updateDislikeArr_In_MyProfile)
         } else {
 
-          if (likedQuestionsInContext.includes(post?.$id)) {
+          if (likedQuestionsInContext?.includes(post?.$id)) {
             // Update in Query
             const increaseDislike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike - 1, dislike: previousDislike + 1 })
             dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseDislike }))
@@ -467,44 +467,44 @@ const ViewPost = () => {
 
             //Update In Profile
             let dislikedQuestions = [...dislikedQuestionsInContext]
-            dislikedQuestions.push(post?.$id)
+            dislikedQuestions?.push(post?.$id)
 
-            let likedQuestions = likedQuestionsInContext.filter((likedPostIDs) => likedPostIDs !== post?.$id)
+            let likedQuestions = likedQuestionsInContext?.filter((likedPostIDs) => likedPostIDs !== post?.$id)
             const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestions, dislikedQuestions, bookmarks: bookmarksInContext })
-            // console.log(updateLikeArr_In_MyProfile)
+
             setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
           } else {
 
             const increaseDisLike = await appwriteService.updatePost_Like_DisLike({ postId: post?.$id, like: previousLike, dislike: previousDislike + 1 })
-            // console.log(increaseLike)
+
             dispatch(getAllVisitedQuestionsInViewPost({ questions: increaseDisLike }))
             setPost((prev) => increaseDisLike)
 
             //Update In Profile
             let dislikedQuestions = [...dislikedQuestionsInContext]
             dislikedQuestions.push(post?.$id)
-            // console.log(likedQuestions)
+
             const updateLikeArr_In_MyProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, likedQuestionsInContext, dislikedQuestions: dislikedQuestions, bookmarks: bookmarksInContext })
-            // console.log(updateLikeArr_In_MyProfile)
+
             setMyUserProfile((prev) => updateLikeArr_In_MyProfile)
           }
         }
       } catch (error) {
-        console.log("Error in Dislike")
+        return null
       }
 
     } else {
 
-      if (bookmarksInContext.includes(post?.$id)) {
-        const removeBookmark = bookmarksInContext.filter((bookmarkPostID) => bookmarkPostID !== post?.$id)
+      if (bookmarksInContext?.includes(post?.$id)) {
+        const removeBookmark = bookmarksInContext?.filter((bookmarkPostID) => bookmarkPostID !== post?.$id)
 
         const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myProfileID_In_Context, likedQuestions: likedQuestionsInContext, dislikedQuestions: dislikedQuestionsInContext, bookmarks: removeBookmark })
         setMyUserProfile((prev) => updateBookMarkInProfile)
-        // console.log(newBookMarkArr)
+
       } else {
         let addBookmark = [...bookmarksInContext]
-        addBookmark.push(post?.$id)
-        // console.log(addBookmark)
+        addBookmark?.push(post?.$id)
+
 
         const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myProfileID_In_Context, likedQuestions: likedQuestionsInContext, dislikedQuestions: dislikedQuestionsInContext, bookmarks: addBookmark })
         setMyUserProfile((prev) => updateBookMarkInProfile)
@@ -518,19 +518,18 @@ const ViewPost = () => {
   const [isNavbarHidden, setisNavbarHidden] = useState(false)
 
   const handleScroll = (e) => {
-    // console.log('Hi')
+
     let position = e.target.scrollTop;
-    // console.log('lastScrollY ' + lastScrollY.current)
-    // console.log('position ' + position)
+
     sessionStorage.setItem('scrollPositionofViewPost', position.toString());
     if (lastScrollY.current < position) {
-      // console.log('down')
+
       setisNavbarHidden(true)
     } else {
-      // console.log('up')
+
       setisNavbarHidden(false)
     }
-    // setlastScrollY(position)
+
     lastScrollY.current = position
   }
   const deletePostComments = async () => {
@@ -551,17 +550,17 @@ const ViewPost = () => {
         }
       }
     } catch (error) {
-      console.log("Comments Can't be deleted")
+      return null
     }
   }
 
   useEffect(() => {
-    //  console.log("Hi")
+   
     if (ViewPostRef.current) {
-      // console.log("HOme")
+  
       const storedScrollPosition = sessionStorage.getItem('scrollPositionofViewPost');
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-      // console.log(parsedScrollPosition)
+   
       ViewPostRef.current.scrollTop = parsedScrollPosition
     }
   }, [ViewPostRef.current]);

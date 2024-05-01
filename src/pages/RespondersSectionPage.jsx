@@ -9,7 +9,7 @@ const RespondersSectionPage = () => {
 
     const dispatch = useDispatch();
     const initialTrustedPosts = useSelector((state) => state?.postsSlice?.initialResponderPosts);
-    // console.log(initialTrustedPosts)
+   
 
     const { increaseViews, hasMorePostInTrustedPost,
         sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();
@@ -48,7 +48,6 @@ const RespondersSectionPage = () => {
                     setPosts((prev) => [...initialTrustedPosts])
                 }
             } catch (error) {
-                console.log(error)
                 setIsLoading(false)
             }
         }
@@ -57,7 +56,7 @@ const RespondersSectionPage = () => {
 
     useEffect(() => {
         const ref = spinnerRef.current;
-        // console.log(ref)
+      
         if (ref) {
             const observer = new IntersectionObserver(([entry]) => {
                 setIsIntersecting((prev) => entry.isIntersecting)
@@ -97,7 +96,7 @@ const RespondersSectionPage = () => {
             }
             getAllPosts()
         }
-        // console.log(initialPost)
+      
     }, [isIntersecting, hasMorePostInTrustedPost, initialTrustedPosts])
 
     useEffect(() => {
@@ -121,23 +120,23 @@ const RespondersSectionPage = () => {
 
         sessionStorage.setItem('scrollPosition', position.toString());
         if (lastScrollY.current < position) {
-            // console.log('down')
+            
             setisNavbarHidden(true)
         } else {
-            // console.log('up')
+     
             setisNavbarHidden(false)
         }
-        // setlastScrollY(position)
+  
         lastScrollY.current = position
     }
 
     useEffect(() => {
-        // console.log(RespondersSectionPageRef.current)
+       
         if (RespondersSectionPageRef.current) {
-            // console.log("HOme")
+     
             const storedScrollPosition = sessionStorage.getItem('scrollPosition');
             const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-            // console.log(parsedScrollPosition)
+    
             RespondersSectionPageRef.current.scrollTop = parsedScrollPosition
         }
     }, [RespondersSectionPageRef.current, posts]);

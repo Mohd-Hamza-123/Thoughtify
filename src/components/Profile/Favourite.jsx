@@ -13,7 +13,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     (state) => state.profileSlice?.filteredBookmarkPosts
   );
   const dispatch = useDispatch();
-  // console.log(bookMarkPostInRedux)
+  
   const spinnerRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -135,7 +135,7 @@ const Favourite = ({ visitedProfileUserID }) => {
       return () => ref && observer.unobserve(ref);
     }
   }, [spinnerRef.current, isLoading, bookMarkPostInRedux]);
-  // getting total posts
+  
 
   useEffect(() => {
     if (myUserProfile) {

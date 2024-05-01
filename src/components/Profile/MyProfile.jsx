@@ -52,9 +52,6 @@ const MyProfile = () => {
   const [activeNav, setactiveNav] = useState('Profile Summary')
   const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
 
-  // useEffect(() => {
-  //   getOtherUserProfile(slug);
-  // }, [slug]);
 
   const getUserProfile = async (slug) => {
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user.userIdAuth === slug
@@ -62,16 +59,16 @@ const MyProfile = () => {
 
     const index = isUserAlreadyInReduxState;
     if (isUserAlreadyInReduxState === -1) {
-      // console.log("no")
+
       const listprofileData = await profile.listProfile({ slug });
-      // console.log(listprofileData)
+
       if (listprofileData) {
         setProfileData({ ...listprofileData.documents[0] });
         dispatch(getOtherUserProfile({ userProfileArr: [listprofileData?.documents[0]] }))
       }
       getUserProfileImg(listprofileData?.documents[0]?.profileImgID);
     } else {
-      // console.log("yes")
+
       setProfileData((prev) => othersUserProfile[index]);
       setURLimg((prev) => othersUserProfile[index].profileImgURL)
     }
@@ -81,7 +78,6 @@ const MyProfile = () => {
     if (imgID) {
       const Preview = await profile.getStoragePreview(imgID)
       setURLimg(Preview.href)
-      // console.log(Preview)
     }
 
   }
@@ -103,7 +99,7 @@ const MyProfile = () => {
     if (!myUserProfile) return;
     setisFollowing((prev) => !prev);
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-    // console.log(updateFollowArr)
+
 
     const isFollowing = updateFollowArr?.filter((profileObj) => profileObj.profileID === slug);
 
@@ -116,8 +112,7 @@ const MyProfile = () => {
       console.log(updateFollowArr[findDeleteIndex])
 
       updateFollowArr.splice(findDeleteIndex, 1);
-      // console.log(updateFollowArr)
-      // return
+
       const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
 
       const follow = await profile.updateEveryProfileAttribute({
@@ -129,29 +124,28 @@ const MyProfile = () => {
       // updating receiver profile
       let receiver = await profile.listProfile({ slug });
       let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj));
-      // console.log(receiverDetails);
+
       if (receiverDetails.length === 0) return
       receiverDetails = receiverDetails.filter((profile) => profile.profileID !== userData?.$id);
-      // receiverDetails.push({ profileID: userData.$id, name: userData.name })
+
       receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
 
       const updateReceiver = await profile.updateEveryProfileAttribute({
         profileID: receiver.documents[0].$id,
         followers: receiverDetails,
       })
-      // console.log(updateReceiver)
+
 
 
     } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
-      console.log("You have Unblock to follow");
+
       setNotificationPopMsgNature((prev) => false);
       setnotificationPopMsg((prev) => "You have to Unblock to follow")
       return;
     } else {
-      // console.log("fs");
-      // return
+
       let receiver = await profile.listProfile({ slug })
-      // console.log(receiver)
+
       updateFollowArr.push({ profileID: slug, name: receiver.documents[0].name });
       const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
 
@@ -161,14 +155,11 @@ const MyProfile = () => {
       });
       setMyUserProfile(follow);
 
-
-      // creating notification 
-
       try {
         const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug, userProfilePic: myUserProfile?.profileImgURL });
         console.log(createNotification)
       } catch (error) {
-        console.log(error)
+
       }
 
 
@@ -183,7 +174,7 @@ const MyProfile = () => {
         profileID: receiver.documents[0].$id,
         followers: receiverDetails,
       })
-      console.log(updateReceiver)
+
     }
 
 
@@ -196,25 +187,29 @@ const MyProfile = () => {
       return
     }
     if (!myUserProfile) return;
-    setisBlocked((prev) => !prev)
+
+
+
     const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
     let updateBlockedArr = [...myUserProfile.blockedUsers];
     let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-    // console.log(updateFollowArr)
+
     let isFollowing = false;
     isFollowing = updateFollowArr.some((profile) => profile.profileID === slug)
-    // console.log(isFollowing)
-    // return
+
     if (isBlocked) {
       updateBlockedArr.splice(updateBlockedArr.indexOf(slug), 1);
       console.log("unBlock");
+      setisBlocked((prev) => !prev)
     } else if (isFollowing) {
-      console.log("You have to unfollow to Block");
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "You have to unfollow to Block")
       return;
     } else {
+      setisBlocked((prev) => !prev)
       updateBlockedArr.push(slug);
     }
-
+   
     const follow = await profile.updateEveryProfileAttribute({
       profileID: myUserProfile.$id,
       blockedUsers: updateBlockedArr
@@ -244,7 +239,7 @@ const MyProfile = () => {
   }, [slug]);
 
   useEffect(() => {
-    // console.log(activeNav)
+   
     switch (activeNav) {
       case 'Opinions': setactiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
@@ -260,7 +255,7 @@ const MyProfile = () => {
 
 
   useEffect(() => {
-    // console.log(myUserProfile)
+  
     if (!myUserProfile) {
       profile
         .listProfile({ slug })
@@ -312,7 +307,7 @@ const MyProfile = () => {
                         setnotificationPopMsg((prev) => 'You are not Login')
                         return
                       }
-                      // console.log(profileData);
+
                       if (profileData.whoCanMsgYou === "None") {
                         setNotificationPopMsgNature((prev) => false);
                         setnotificationPopMsg((prev) => "You can't Message");
@@ -328,7 +323,7 @@ const MyProfile = () => {
                           return
                         }
                       }
-                      // console.log(profileData)
+
                       if (profileData?.blockedUsers?.includes(userData?.$id)) {
                         setNotificationPopMsgNature((prev) => false);
                         setnotificationPopMsg((prev) => "You are Blocked");

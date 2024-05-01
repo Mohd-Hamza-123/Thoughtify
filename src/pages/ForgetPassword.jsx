@@ -72,7 +72,7 @@ const ForgetPassword = () => {
         </div>
       </div>
     </div>
-    // <ResetPassword />
+  
   )
 }
 

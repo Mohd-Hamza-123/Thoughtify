@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'
 import realTime from '../../appwrite/realTime.js'
-import { Input, Button, Spinner } from '../'
+import { Button, Spinner } from '../'
 import { useForm } from 'react-hook-form'
-import { Link, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { categoriesArr } from '../AskQue/Category'
 import { useAskContext } from '../../context/AskContext'
 import parse from "html-react-parser";
@@ -68,7 +68,7 @@ const Opinions = ({ visitedProfileUserID }) => {
 
     sethasMorePostsInProfileFilterOpinions(true)
     const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
-    // console.log(filteredOpinions)
+    
     const isArray = Array.isArray(filteredOpinions)
     if (isArray) {
       sethasMorePostsInProfileFilterOpinions(false)
@@ -94,7 +94,7 @@ const Opinions = ({ visitedProfileUserID }) => {
 
     if (opinionsLeft.current && opinionsRight.current && window.innerWidth <= 500) {
       opinionsLeft.current.classList.toggle("none");
-  
+
     }
   }
 
@@ -113,7 +113,7 @@ const Opinions = ({ visitedProfileUserID }) => {
   }, [comments, isIntersecting, isLoading])
 
   useEffect(() => {
-    // console.log("bye")
+    
     const getMorecomments = async () => {
       const data = getValues()
       const filteredOpinions = await realTime.getCommentsWithQueries({ ...data, lastPostID })
@@ -159,7 +159,6 @@ const Opinions = ({ visitedProfileUserID }) => {
         onClick={() => {
           if (opinionsLeft.current && opinionsRight.current) {
             opinionsLeft.current.classList.toggle("none");
-            // homeRight.current.classList.toggle("none");
           }
         }}
         className="Home_RIGHT_LEFT_Grid_div">

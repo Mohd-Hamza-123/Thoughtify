@@ -14,7 +14,7 @@ import conf from "../conf/conf";
 const TrustedRespondersPage = () => {
     const { mainResponder, setmainResponder } = useAskContext();
     const [trustedRespondersArr, setTrustedRespondersArr] = useState([]);
-    // console.log(conf.myPrivateUserID)
+
     const navigate = useNavigate();
     const getResponders = async () => {
         try {
@@ -23,7 +23,7 @@ const TrustedRespondersPage = () => {
             });
             setTrustedRespondersArr(responders?.documents);
         } catch (error) {
-            console.error("Error fetching responders:", error);
+            return null
         }
     };
 
@@ -31,7 +31,7 @@ const TrustedRespondersPage = () => {
         getResponders();
         if (!mainResponder) {
             profile.listProfile({ slug: conf.myPrivateUserID }).then((res) => {
-                console.log(res);
+
                 setmainResponder((prev) => res?.documents[0]);
             });
         }
@@ -50,11 +50,7 @@ const TrustedRespondersPage = () => {
                         );
                         imageURLs[responder?.profileImgID] = imageURL;
                     } catch (error) {
-                        console.error(
-                            `Error fetching profile image for responder ${responder?.profileImgID}:`,
-                            error
-                        );
-                        imageURLs[responder?.profileImgID] = "fallback_image_url";
+                        imageURLs[responder?.profileImgID] = "https://artscimedia.case.edu/wp-content/uploads/sites/79/2016/12/14205134/no-user-image.gif";
                     }
                 }
             }

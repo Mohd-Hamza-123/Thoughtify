@@ -44,7 +44,7 @@ const Questions = ({ visitedProfileUserID }) => {
 
     if (visitedProfileUserID !== userData?.$id) {
       const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
-      // console.log(visitedProfileUserData);
+    
 
       if (!visitedProfileUserData) return
 
@@ -112,7 +112,7 @@ const Questions = ({ visitedProfileUserID }) => {
     if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
   }, [queries, isIntersecting, isLoading])
   useEffect(() => {
-    // console.log("bye")
+    
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
@@ -146,7 +146,7 @@ const Questions = ({ visitedProfileUserID }) => {
     }
 
   }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
-  // getting total posts
+  
   useEffect(() => {
     if (TotalPostByMe == 0) {
       appwriteService
@@ -174,7 +174,6 @@ const Questions = ({ visitedProfileUserID }) => {
         onClick={() => {
           if (QuestionsLeft.current && QuestionRight.current) {
             QuestionsLeft.current.classList.toggle("none");
-            // homeRight.current.classList.toggle("none");
           }
         }}
         className="Home_RIGHT_LEFT_Grid_div">

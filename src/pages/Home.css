@@ -19,14 +19,14 @@
     #Home_RIGHT_LEFT {
         display: flex;
         margin-top: 160px !important;
-        /* margin-top: 0px !important; */
+  
         padding: 0px 10px 10px 10px !important;
         flex-direction: column;
         gap: 9px;
     }
 
     .Home_RIGHT_LEFT_Grid_div {
-        /* position: absolute; */
+
         display: flex !important;
         justify-content: center;
         align-items: center;
@@ -99,10 +99,6 @@
 #Home_RIGHT_LEFT {
     margin-top: 120px;
     transition: background-color 0.2s ease;
-}
-
-#Home_RIGHT_LEFT.darkMode {
-    /* background-color: #202021; */
 }
 
 #MainHome_loader {

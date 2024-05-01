@@ -246,7 +246,6 @@ const EditProfile = ({
   const addLinks = async (e) => {
     if (!URL || !Title) return;
 
-
     function isValidURL(URL) {
       // Regular expression for a valid URL
       const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
@@ -319,7 +318,7 @@ const EditProfile = ({
         setFile(croppedFile)
       }, 'image/png');
     } catch (error) {
-      console.error("canvasRef Blob error")
+    
     }
   }
 

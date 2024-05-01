@@ -101,7 +101,7 @@ body.darkMode .SideBarContent svg {
 }
 
 .SideBar_Day_Night_Mode {
-    /* border: 2px solid yellow; */
+    
     width: 100%;
     display: flex;
 }
@@ -114,7 +114,6 @@ body.darkMode .SideBarContent svg {
 .SideBar_NightDayIcon_Div {
     width: 50%;
     display: flex;
-    /* border: 2px solid red; */
     justify-content: center;
     align-items: center;
     cursor: pointer;

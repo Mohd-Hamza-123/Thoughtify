@@ -385,7 +385,7 @@ const AskQue = ({ post }) => {
                   name="content"
                   defaultValue={getValues("content")}
                   control={control}
-                  handleImageUpload={handleImageUpload}
+                  // handleImageUpload={handleImageUpload}
                 />
               </div>
             </div>

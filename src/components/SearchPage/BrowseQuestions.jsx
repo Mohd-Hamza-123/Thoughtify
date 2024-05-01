@@ -3,8 +3,6 @@ import "./BrowseQuestions.css"
 import { UpperNavigationBar, HorizontalLine, Input, Button, LowerNavigationBar, Spinner } from '../index'
 import { categoriesArr } from '../AskQue/Category'
 import appwriteService from '../../appwrite/config'
-import { useDispatch, useSelector } from 'react-redux'
-import { getQueriesInRedux } from '../../store/queries'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
@@ -122,12 +120,12 @@ const BrowseQuestions = () => {
 
       setValue("category", category);
       const data = getValues()
-      // console.log(data)
+      
       submit(data)
     } else if (searchInput !== 'null') {
       setValue("Title", searchInput);
       const data = getValues()
-      // console.log(data)
+  
       submit(data)
     }
   }, [searchInput]);

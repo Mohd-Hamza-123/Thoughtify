@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { Logo, Input, Button, UpperNavigationBar } from "../";
+import { Button } from "../";
 import { getUserProfile } from "../../store/profileSlice";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
@@ -13,7 +13,7 @@ import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
 const Signup = () => {
-  const { myUserProfile, setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
+  const { setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
   const [isWaiting, setIsWaiting] = useState(false);
   const authRateLimit =
     "AppwriteException: Rate limit for the current endpoint has been exceeded. Please try again after some time.";
@@ -41,7 +41,7 @@ const Signup = () => {
 
 
     const userDataCreated = await authService.createAccount({ ...data });
-    // console.log(userDataCreated)
+    
     if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
       setError("You Have reached Maximum signup limit. Try later sometime");
       return;
@@ -53,7 +53,7 @@ const Signup = () => {
 
     if (userDataCreated) {
       const userData = await authService.getCurrentUser();
-      // console.log(userData)
+ 
       if (!userData) {
         setIsWaiting((prev) => false);
         setNotificationPopMsgNature((prev) => false);

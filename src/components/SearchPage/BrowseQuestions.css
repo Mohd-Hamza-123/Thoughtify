@@ -56,7 +56,6 @@
     font-size: 15px;
     border: 1px solid #0000001f, 1px solid rgba(0, 0, 0, 0.122) inset;
     border-radius: 6px;
-    /* background-color: white; */
     overflow-x: hidden;
     overflow-y: scroll;
     height: 64vh;
@@ -68,7 +67,6 @@
 }
 
 #BrowseQuestions_Filters>div {
-    /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1); */
     border-bottom: 2px solid rgba(0, 0, 0, 0.059);
     padding: 4px 4px 10px 4px;
 }
@@ -182,7 +180,6 @@
 
 .BrowseQuestions_querieName.darkMode {
     color: #FF3500;
-    /* color: white; */
     font-weight: 600;
 }
 

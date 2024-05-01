@@ -53,7 +53,6 @@ const educationLevels = [
     "Specialized Training/Certification",
     "Non-Degree Seeking",
     "Other",
-    // Add more options as needed
 ];
 
 export { educationLevels, occupation_Arr }

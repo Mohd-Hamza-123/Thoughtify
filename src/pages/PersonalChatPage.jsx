@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { PersonalChat } from '../components/index'
+import { PersonalChat, SecondLoader } from '../components/index'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import profile from '../appwrite/profile'
@@ -11,10 +11,10 @@ const PersonalChatPage = () => {
 
   const { senderSlug, receiverSlug } = useParams()
   const [receiverDetails, setreceiverDetails] = useState([]);
- 
+
   const senderDetails = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr)
- 
+
   const [ChatRoomID, setchatRoomID] = useState('');
   const receiverName = useRef(null)
 
@@ -38,13 +38,12 @@ const PersonalChatPage = () => {
       ])
     }
 
-    let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID)
+    let isChatRoomExists = await personalChat.getPersonalChatRoom(ChatRoomID);
 
     if (isChatRoomExists) {
-      // console.log('chat Room exists');
 
     } else {
-      console.log(receiverName)
+
       let participantsDetails = [
         JSON.stringify({ FirstParticipant: senderDetails.name }),
         JSON.stringify({ SecondParticpant: receiverName.current })
@@ -74,7 +73,9 @@ const PersonalChatPage = () => {
     (receiverDetails?.length > 0 && ChatRoomID) ?
       <div className='PersonalChatPage'>
         <PersonalChat receiverDetails={receiverDetails} ChatRoomID={ChatRoomID} />
-      </div> : '...loading'
+      </div> : <div className='w-full h-full flex justify-center items-center'>
+        <SecondLoader />
+      </div>
   )
 
 }
