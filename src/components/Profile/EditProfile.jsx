@@ -128,6 +128,7 @@ const EditProfile = ({
   };
 
   const submit = async (data) => {
+
     setisUpdating((prev) => true)
 
     if (!prevFileURL && !file) {
@@ -144,15 +145,23 @@ const EditProfile = ({
     }
 
     if (file) {
-      console.log(file)
-      const deletePic = await profile.deleteStorage(profileImgID);
-      console.log(deletePic)
+
+      if (profileImgID) {
+        const deletePic = await profile.deleteStorage(profileImgID)
+      }
       const uploadedPic = await profile.createBucket({ file })
-      console.log(uploadedPic)
+      if (!uploadedPic) {
+        setNotificationPopMsgNature((prev) => false)
+        setnotificationPopMsg("Profile Updation failed");
+        return
+      }
 
       const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id)
-      data.profileImgURL = profileImgURL?.href
-      data.profileImgID = `${uploadedPic?.$id}`
+      if (profileImgURL) {
+        data.profileImgURL = profileImgURL?.href
+        data.profileImgID = `${uploadedPic?.$id}`
+      }
+
 
     } else {
       data.profileImgID = profileImgID
