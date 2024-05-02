@@ -37,6 +37,10 @@
     #PostCard_left a {
         width: 100% !important;
         height: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden !important;
     }
 
     #PostCard_right {
@@ -48,8 +52,9 @@
     }
 
     #Post-Card-img {
-        width: 100%;
-        height: inherit !important;
+        width: auto !important; /* Let the browser calculate the width */
+        height: 100% !important; /* Ensure the image fills the container vertically */
+        object-fit: cover !important;
         border-radius: 5px 5px 0px 0px !important;
         box-shadow: none !important;
     }

@@ -77,12 +77,9 @@ function App() {
     try {
       const userData = await authService.getCurrentUser();
       console.log(userData)
-
       if (userData) {
         dispatch(login({ userData }))
-
         const userProfile = await profile.listProfile({ slug: userData?.$id });
-
         if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
           console.log("create profile");
           const userProfile = await profile.createProfile({
