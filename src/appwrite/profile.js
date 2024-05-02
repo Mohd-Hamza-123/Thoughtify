@@ -148,6 +148,7 @@ export class Profile {
         try {
             return await this.storage.createFile(conf.appwriteBucketId, ID.unique(), file)
         } catch (error) {
+            console.log(error)
             return false
         }
     }

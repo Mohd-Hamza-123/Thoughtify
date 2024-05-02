@@ -91,7 +91,17 @@ function App() {
           let response = await fetch(profileAvatar?.href);
           let blob = await response?.blob();
           const file = new File([blob], userData?.name || 'downloaded_image', { type: 'image/*' });
-          const createProfileBucket = await profile.createBucket({ file });
+          console.log(file)
+
+          let createProfileBucket = await profile.createBucket({ file });
+          console.log(createProfileBucket);
+          if (!createProfileBucket) {
+            let response = await fetch("https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg");
+            let blob = await response?.blob();
+            const file = new File([blob], userData?.name || 'downloaded_image', { type: 'image/*' });
+            createProfileBucket = await profile.createBucket({ file });
+          }
+          console.log(createProfileBucket);
           const getProfileURL = await profile.getStoragePreview(createProfileBucket?.$id);
           const profileImgURL = getProfileURL?.href;
           const userProfile = await profile.createProfile({
@@ -275,8 +285,8 @@ function App() {
     }
   }
 
-  console.log(userData);
-  console.log(myUserProfile)
+  // console.log(userData);
+  // console.log(myUserProfile)
 
   return !loading ? (
     <>

@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
+import NoProfile from '../../assets/NoProfile.png'
 
 
 const MinimumDimension = 50;
@@ -67,18 +68,17 @@ const EditProfile = ({
 
   const [prevProfilePic, setprevProfilePic] = useState('');
 
-  
+
   const [isUpdating, setisUpdating] = useState(false)
   useEffect(() => {
 
-
+    console.log(profileImgID);
+    console.log(prevFileURL)
     if (profileImgID) {
 
       if (myUserProfile?.profileImgURL) {
-
         setprevProfilePic(myUserProfile?.profileImgURL)
         setprevFileURL(myUserProfile?.profileImgURL)
-
       } else {
         profile.getStoragePreview(profileImgID)
           .then((res) => {
@@ -92,8 +92,8 @@ const EditProfile = ({
         }
         get(profileImgID)
       }
-
-
+    } else {
+      setprevFileURL((prev) => "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg")
     }
   }, [profileImgID])
 
@@ -126,10 +126,10 @@ const EditProfile = ({
       });
     }
   };
-  
+
   const submit = async (data) => {
     setisUpdating((prev) => true)
-   
+
     if (!prevFileURL && !file) {
       setseePreviewBefore('Make sure to see preview before uploading image')
       setNotificationPopMsgNature((prev) => false)
@@ -144,9 +144,12 @@ const EditProfile = ({
     }
 
     if (file) {
-      const deletePic = await profile.deleteStorage(profileImgID)
+      console.log(file)
+      const deletePic = await profile.deleteStorage(profileImgID);
+      console.log(deletePic)
       const uploadedPic = await profile.createBucket({ file })
-      
+      console.log(uploadedPic)
+
       const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id)
       data.profileImgURL = profileImgURL?.href
       data.profileImgID = `${uploadedPic?.$id}`
@@ -211,7 +214,7 @@ const EditProfile = ({
   };
 
   const addTags = () => {
-   
+
     if (
       interestedTagArr.includes(interestedTag) ||
       interestedTagArr.length === 10 ||
@@ -318,7 +321,7 @@ const EditProfile = ({
         setFile(croppedFile)
       }, 'image/png');
     } catch (error) {
-    
+
     }
   }
 
@@ -419,7 +422,9 @@ const EditProfile = ({
               {prevFileURL &&
                 <div id="EditProfile-Prev-active">
                   <div className="" id="EditProfile-PrevImage">
-                    <img src={prevFileURL} className={`rounded-ful bg-white`} />
+                    <img src={prevFileURL}
+                      onError={(e) => { e.target.src = NoProfile }}
+                      className={`rounded-ful bg-white`} />
                   </div>
                   <label
                     htmlFor="editProfileImg"
