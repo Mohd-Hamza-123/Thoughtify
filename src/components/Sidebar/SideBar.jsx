@@ -16,7 +16,7 @@ const SideBar = () => {
   const dispatch = useDispatch();
   const SideBar = useRef();
   const [name, setname] = useState("Name");
-  const { isOpen, setIsOpen, onInstallApp, isAppInstalled, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn } = useAskContext();
+  const { isOpen, setIsOpen, onInstallApp, isAppInstalled, setMyUserProfile, setisOverlayBoolean, isDarkModeOn, setisDarkModeOn, setnotifications } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -50,13 +50,14 @@ const SideBar = () => {
         .logout()
         .then(() => {
           dispatch(logout());
-          setMyUserProfile(null)
+          setMyUserProfile(null);
+          setnotifications((prev) => null)
           setIsOpen(false);
           navigate("/");
         })
         .catch((err) => '');
     } catch (error) {
-      
+
     }
   };
 

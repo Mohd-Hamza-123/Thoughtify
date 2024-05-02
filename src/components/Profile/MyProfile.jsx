@@ -247,7 +247,7 @@ const MyProfile = () => {
         break;
       case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
         break;
-      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} />)
+      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} setProfileData={setProfileData} />)
         break;
       default: setactiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }

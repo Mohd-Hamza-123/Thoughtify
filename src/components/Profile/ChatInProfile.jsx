@@ -5,7 +5,8 @@ import profile from '../../appwrite/profile'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-const ChatInProfile = ({ profileData }) => {
+const ChatInProfile = ({ profileData, setProfileData }) => {
+    console.log(profileData)
     const userData = useSelector((state) => state?.auth.userData)
     const navigate = useNavigate();
 
@@ -16,11 +17,10 @@ const ChatInProfile = ({ profileData }) => {
     const [searchValue, setSearchValue] = useState('')
     const unfollow = async (index) => {
         let followingArr = myUserProfile?.following;
-        followingArr.splice(index, 1)
-
+        followingArr.splice(index, 1);
         const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile?.$id, following: followingArr });
-        console.log(updateProfile)
         setMyUserProfile((prev) => updateProfile)
+        setProfileData((prev) => updateProfile)
     }
 
     const watchedValue = watch('searchValue');
@@ -42,9 +42,9 @@ const ChatInProfile = ({ profileData }) => {
                 setcanYouSeeFollowers_Following((prev) => false)
             } else if (profileData?.othersSeeYourFollowers_Following === 'My Following') {
                 const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-             
+
                 const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-              
+
                 if (!isHeFollowsYou) {
                     setcanYouSeeFollowers_Following((prev) => false);
                     return
@@ -56,7 +56,7 @@ const ChatInProfile = ({ profileData }) => {
     }, [profileData])
 
     const submit = async (data) => {
-       
+
         setSearchValue((prev) => data.searchValue)
     }
     const navigation = (profileID) => {
@@ -102,7 +102,10 @@ const ChatInProfile = ({ profileData }) => {
                                     }
                                 }
                                 return <li key={JSON.parse(profile).profileID}>
-                                    <span onClick={() => navigation(JSON.parse(profile).profileID)}>{JSON.parse(profile).name}</span>
+                                    <span
+                                        onClick={() => navigation(JSON.parse(profile).profileID)}>
+                                        {JSON.parse(profile).name}
+                                    </span>
                                     {myUserProfile?.userIdAuth === profileData?.userIdAuth && <button onClick={() => unfollow(index)}>Unfollow</button>}
                                     {myUserProfile?.userIdAuth !== profileData?.userIdAuth && <button onClick={() => navigation(JSON.parse(profile).profileID)}>visit</button>}
                                 </li>
@@ -116,7 +119,7 @@ const ChatInProfile = ({ profileData }) => {
                             {profileData?.followers?.map((profile, index) => {
                                 if (searchValue !== '') {
                                     let boolean = JSON.parse(profile)?.name.includes(searchValue);
-                                
+
                                     if (boolean && searchValue !== '') {
                                     } else {
                                         return

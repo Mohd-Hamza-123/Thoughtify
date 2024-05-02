@@ -35,6 +35,7 @@
     }
 
     #PostCard_left a {
+        padding-top: 10px !important;
         width: 100% !important;
         height: 100% !important;
         display: flex !important;
@@ -52,8 +53,10 @@
     }
 
     #Post-Card-img {
-        width: auto !important; /* Let the browser calculate the width */
-        height: 100% !important; /* Ensure the image fills the container vertically */
+        width: auto !important;
+        /* Let the browser calculate the width */
+        height: 100% !important;
+        /* Ensuring the image fills the container vertically */
         object-fit: cover !important;
         border-radius: 5px 5px 0px 0px !important;
         box-shadow: none !important;

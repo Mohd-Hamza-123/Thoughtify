@@ -55,46 +55,46 @@ const Chat = ({ post, slug }) => {
     const getProfilePics = async () => {
 
       let array = commentArr;
-      let uniqueArray = Array.from(new Map(array.map(obj => [obj.authid
+      let uniqueArray = Array.from(new Map(array?.map(obj => [obj?.authid
         , obj])).values());
 
       let wantProfileIds = uniqueArray.filter((objofUniqueArr) => {
-        return !postUploaderPics.some((objOfRedux) => objOfRedux.userId === objofUniqueArr.authid)
+        return !postUploaderPics.some((objOfRedux) => objOfRedux?.userId === objofUniqueArr?.authid)
       })
-
+      
       if (wantProfileIds.length > 0) {
         for (let i = 0; i < wantProfileIds.length; i++) {
           let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
 
-          let userId = listedProfile.documents[0].userIdAuth
-          let profilePic = listedProfile.documents[0].profileImgURL
+          let userId = listedProfile?.documents[0].userIdAuth
+          let profilePic = listedProfile?.documents[0].profileImgURL
           dispatch(getpostUploaderProfilePic({ userId, profilePic }))
         }
       }
     }
-    if (commentArr.length > 0) {
-      getProfilePics()
+    if (commentArr?.length > 0) {
+      getProfilePics();
     }
-  }, [])
+  }, [commentArr])
 
   const getComments = async (lastid = null) => {
     try {
       setIsLoading(true)
       const comments = await realTime.listComment(post?.$id, lastid);
 
-      if (commentArr.length < comments.total) {
+      if (commentArr?.length < comments?.total) {
         sethasMoreComments(true)
       } else {
         sethasMoreComments(false)
       }
-      dispatch(getCommentsInRedux({ comments: comments.documents, isMerge: true }))
+      dispatch(getCommentsInRedux({ comments: comments?.documents, isMerge: true }))
     } catch (error) {
       setcommentArr((prev) => {
-        const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
+        const arr = commentsInRedux?.filter((comment) => comment?.postid === post?.$id)
 
-        if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
+        if (arr?.length !== 0) setLastPostID(arr[arr?.length - 1]?.$id)
 
-        if (arr.length !== 0) {
+        if (arr?.length !== 0) {
           return arr
         } else {
           return []
@@ -106,8 +106,8 @@ const Chat = ({ post, slug }) => {
 
   useEffect(() => {
     setcommentArr((prev) => {
-      const arr = commentsInRedux.filter((comment) => comment.postid === post.$id)
-      if (arr.length !== 0) setLastPostID(arr[arr.length - 1].$id)
+      const arr = commentsInRedux?.filter((comment) => comment?.postid === post?.$id)
+      if (arr?.length !== 0) setLastPostID(arr[arr?.length - 1]?.$id)
       return arr
     })
 
