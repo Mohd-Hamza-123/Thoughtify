@@ -76,47 +76,49 @@ function App() {
   const fetchData = async () => {
     try {
       const userData = await authService.getCurrentUser();
+      console.log(userData)
 
       if (userData) {
         dispatch(login({ userData }))
 
         const userProfile = await profile.listProfile({ slug: userData?.$id });
 
-        if (userProfile.documents.length === 0 || userProfile.total === 0) {
+        if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
+          console.log("create profile");
 
           let profileAvatar = await avatar.profileAvatar(userData?.name);
-          let response = await fetch(profileAvatar.href)
-          let blob = await response.blob();
-          const file = new File([blob], userData.name || 'downloaded_image', { type: 'image/*' });
-          const createProfileBucket = await profile.createBucket({ file })
-          const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
-          const profileImgURL = getProfileURL.href;
+          console.log(profileAvatar);
+          let response = await fetch(profileAvatar?.href);
+          let blob = await response?.blob();
+          const file = new File([blob], userData?.name || 'downloaded_image', { type: 'image/*' });
+          const createProfileBucket = await profile.createBucket({ file });
+          const getProfileURL = await profile.getStoragePreview(createProfileBucket?.$id);
+          const profileImgURL = getProfileURL?.href;
           const userProfile = await profile.createProfile({
             name: userData?.name,
             userIdAuth: userData?.$id,
-            profileImgID: createProfileBucket.$id,
-            profileImgURL,
-          })
-          setMyUserProfile((prev) => userProfile)
-
-          dispatch(getUserProfile({ userProfile }))
+            profileImgID: createProfileBucket?.$id || null,
+            profileImgURL: profileImgURL || "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+          });
+          setMyUserProfile((prev) => userProfile);
+          dispatch(getUserProfile({ userProfile }));
           if (userProfile) {
             navigate("/");
           } else {
-            setError("Please check the credentials");
+            navigate("/signup");
           }
 
+
         } else {
+          console.log(" profile already created")
+          setMyUserProfile(prev => userProfile?.documents[0]);
+          dispatch(getUserProfile({ userProfile: userProfile?.documents[0] }));
 
-          setMyUserProfile(prev => userProfile.documents[0]);
-
-          dispatch(getUserProfile({ userProfile: userProfile.documents[0] }));
-
-          const profileImageID = userProfile.documents[0]?.profileImgID
+          const profileImageID = userProfile?.documents[0]?.profileImgID
           const URL = await profile.getStoragePreview(profileImageID);
 
           if (URL) {
-            dispatch(getUserProfile({ userProfileImgURL: URL.href }));
+            dispatch(getUserProfile({ userProfileImgURL: URL?.href }));
           }
           navigate("/");
         }
@@ -273,7 +275,8 @@ function App() {
     }
   }
 
-  console.log(userData)
+  console.log(userData);
+  console.log(myUserProfile)
 
   return !loading ? (
     <>
