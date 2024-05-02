@@ -114,9 +114,6 @@ function App() {
           navigate("/");
         }
 
-      } else {
-        setnotificationPopMsg((prev) => false)
-        setnotificationPopMsg((prev) => "SignIn Failed")
       }
     } catch (err) {
       console.error(err);
