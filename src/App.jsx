@@ -85,34 +85,12 @@ function App() {
 
         if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
           console.log("create profile");
-
-          // let profileAvatar = await avatar.profileAvatar(userData?.name);
-          // console.log(profileAvatar);
-             // let response = await fetch(profileAvatar?.href);
-          let response = await fetch("https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg");
-
-          let blob = await response?.blob();
-          const file = new File([blob], userData?.name || 'downloaded_image', { type: 'image/*' });
-          console.log(file)
-          let createProfileBucket = await profile.createBucket({ file });
-          console.log(createProfileBucket);
-          // if (!createProfileBucket) {
-          //   let response = await fetch("https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg");
-          //   let blob = await response?.blob();
-          //   const file = new File([blob], userData?.name || 'downloaded_image', { type: 'image/*' });
-          //   createProfileBucket = await profile.createBucket({ file });
-          // }
-          
-          const getProfileURL = await profile.getStoragePreview(createProfileBucket?.$id);
-          const profileImgURL = getProfileURL?.href;
-
           const userProfile = await profile.createProfile({
             name: userData?.name,
             userIdAuth: userData?.$id,
-            profileImgID: createProfileBucket?.$id || null,
-            profileImgURL: profileImgURL || "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+            profileImgID: null,
+            profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
           });
-          console.log(userProfile)
           setMyUserProfile((prev) => userProfile);
           dispatch(getUserProfile({ userProfile }));
           if (userProfile) {
