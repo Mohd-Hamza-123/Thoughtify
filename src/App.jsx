@@ -120,7 +120,7 @@ function App() {
 
 
         } else {
-          console.log(" profile already created")
+          console.log("profile already created")
           setMyUserProfile(prev => userProfile?.documents[0]);
           dispatch(getUserProfile({ userProfile: userProfile?.documents[0] }));
 
@@ -134,10 +134,13 @@ function App() {
         }
 
       } else {
-        console.error("User not logged in");
+        setnotificationPopMsg((prev) => false)
+        setnotificationPopMsg((prev) => "SignIn Failed")
       }
     } catch (err) {
       console.error(err);
+      setnotificationPopMsg((prev) => false)
+      setnotificationPopMsg((prev) => "Oops ! Error")
     } finally {
       setLoading(false);
     }
