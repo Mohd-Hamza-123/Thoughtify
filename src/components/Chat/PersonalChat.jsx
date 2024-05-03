@@ -139,7 +139,14 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     profile.getStoragePreview(receiverDetails[0]?.profileImgID)
       .then((res) => setreceiverImage(res.href))
 
-    deleteMsgsAutomatically()
+    deleteMsgsAutomatically();
+    getMessages()
+
+    setTimeout(() => {
+      if (messagesDiv.current) {
+        messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+      }
+    }, 1000)
   }, [])
 
   const sendText = async (data) => {
