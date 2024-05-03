@@ -12,7 +12,6 @@ import {
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
-import location from "../../appwrite/location";
 import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
@@ -382,17 +381,7 @@ const MyProfile = () => {
             id="MyProfile_Header_Right"
             className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
           >
-            <div className="flex w-full">
-              <p className="w-1/2">Country :</p>
-              <div className="flex gap-2">
-                {countryName ? (
-                  <span>{countryName}</span>
-                ) : (
-                  <span>Not Available</span>
-                )}
-                <span className="">{flag && <img src={flag} alt="" />}</span>
-              </div>
-            </div>
+        
 
             <div className="flex w-full">
               <p className="w-1/2">Followers :</p>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "./store/authSlice";
+import { login } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";

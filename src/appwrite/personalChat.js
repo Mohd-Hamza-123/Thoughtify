@@ -44,12 +44,13 @@ export class PersonalChat {
     }
 
     async getPersonalChatRooms(chatRoomID) {
+        if (!chatRoomID) return false
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwritePersonalChatParticipantsCollectionId, [
                 Query.equal("ChatRoomID", [`${chatRoomID}`])
             ])
         } catch (error) {
-           
+
             return false
         }
     }
@@ -68,7 +69,11 @@ export class PersonalChat {
     }
 
     async listPersonalMessages({ ChatRoomID, limit }) {
+
+        if (!ChatRoomID) return null
+
         let arr = []
+
         if (ChatRoomID) {
             arr.push(Query.equal("chatRoomID", [`${ChatRoomID}`]))
         }
@@ -81,7 +86,7 @@ export class PersonalChat {
                 arr
             )
         } catch (error) {
-           return null
+            return null
         }
     }
 

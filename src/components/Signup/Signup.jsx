@@ -41,7 +41,7 @@ const Signup = () => {
 
 
     const userDataCreated = await authService.createAccount({ ...data });
-    
+
     if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
       setError("You Have reached Maximum signup limit. Try later sometime");
       return;
@@ -53,7 +53,7 @@ const Signup = () => {
 
     if (userDataCreated) {
       const userData = await authService.getCurrentUser();
- 
+
       if (!userData) {
         setIsWaiting((prev) => false);
         setNotificationPopMsgNature((prev) => false);
@@ -61,19 +61,14 @@ const Signup = () => {
         return
       }
       dispatch(login({ userData }));
-      let profileAvatar = await avatar.profileAvatar(data.name);
-      let response = await fetch(profileAvatar?.href);
-      let blob = await response.blob();
-      const file = new File([blob], data.name || 'downloaded_image', { type: 'image/*' })
-      const createProfileBucket = await profile.createBucket({ file })
-      const getProfileURL = await profile.getStoragePreview(createProfileBucket.$id)
-      const profileImgURL = getProfileURL.href
+
       const userProfile = await profile.createProfile({
-        name: data.name,
+        name: userData?.name,
         userIdAuth: userData?.$id,
-        profileImgID: createProfileBucket.$id,
-        profileImgURL,
-      })
+        profileImgID: null,
+        profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+      });
+      
       console.log(userProfile)
       setMyUserProfile((prev) => userProfile)
       dispatch(getUserProfile({ userProfile }))
