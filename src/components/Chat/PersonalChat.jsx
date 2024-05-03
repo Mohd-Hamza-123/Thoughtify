@@ -90,18 +90,20 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
 
-
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
         ) {
 
           setmessages((prev) => [...prev, response.payload]);
-          setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
+          setsavedPersonalChatMsgs((prev) => [...prev, response.payload]);
+         
           setTimeout(() => {
             if (messagesDiv.current) {
               messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
             }
           }, 1000)
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
         }
 
         if (response.payload.userId === userData?.$id) {
