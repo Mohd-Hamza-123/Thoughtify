@@ -18,7 +18,7 @@ const Setting = () => {
   
     const { register, handleSubmit } = useForm();
     const submit = async (data) => {
- n
+ 
         SetSettingPopUp((prev) => false)
         setisOverlayBoolean((prev) => false)
        
