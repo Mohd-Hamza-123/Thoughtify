@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom'
 import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
 import NoProfile from '../../assets/NoProfile.png'
+import * as imageConversion from 'image-conversion'
+import { compress, compressAccurately } from 'image-conversion'
 
 
 const MinimumDimension = 50;
@@ -149,8 +151,13 @@ const EditProfile = ({
       if (profileImgID) {
         const deletePic = await profile.deleteStorage(profileImgID)
       }
-      const uploadedPic = await profile.createBucket({ file });
-      
+
+      let blob = await imageConversion.compressAccurately(file, 200)
+      console.log(blob)
+      let uploadFile = new File([blob], userData?.name, { type: blob.type });
+      console.log(uploadFile)
+      if (!uploadFile) return
+      let uploadedPic = await profile.createBucket({ file: uploadFile });
       if (!uploadedPic) {
         setNotificationPopMsgNature((prev) => false)
         setnotificationPopMsg("Profile Updation failed");
@@ -298,10 +305,13 @@ const EditProfile = ({
     url.current.value = "";
     title.current.value = "";
   };
+
+
   const onSelectFile = async (e) => {
     setprevFileURL('')
     const file = e.currentTarget?.files[0];
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
+    console.log(file.size)
     if (file.size > MAX_FILE_SIZE) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")
