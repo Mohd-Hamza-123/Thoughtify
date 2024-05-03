@@ -11,7 +11,7 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-
+  console.log(receiverDetails)
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)
@@ -36,6 +36,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     setmessages((prev) => [...messagesData.documents]);
     setsavedPersonalChatMsgs((prev) => [...messagesData.documents])
     if (messagesDiv.current) {
+
       messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight
     }
   }
@@ -87,11 +88,20 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response)
+        console.log(response);
 
-        if (response.payload.chatRoomID === ChatRoomID) {
+
+        if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
+          userIdAuth === response.payload.userId
+        ) {
+
           setmessages((prev) => [...prev, response.payload]);
           setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
+          setTimeout(() => {
+            if (messagesDiv.current) {
+              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+            }
+          }, 1000)
         }
 
         if (response.payload.userId === userData?.$id) {
@@ -100,7 +110,6 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
               messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
             }
           }, 1000)
-
         }
 
       } else if ("databases.*.collections.*.documents.*.delete") {
@@ -144,6 +153,12 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         }
       );
 
+      setmessages((prev) => [...prev, createMessage]);
+      setTimeout(() => {
+        if (messagesDiv.current) {
+          messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+        }
+      }, 1000)
     } catch (error) {
       setmessages((prev) => [...prev]);
     }

@@ -27,7 +27,7 @@ const PersonalChatPage = () => {
       const Profiles = await profile.listProfile({
         slug: receiverSlug
       });
-      receiverName.current = Profiles.documents[0].name
+      receiverName.current = Profiles.documents[0]?.name
       setreceiverDetails([
         Profiles.documents[0]
       ])

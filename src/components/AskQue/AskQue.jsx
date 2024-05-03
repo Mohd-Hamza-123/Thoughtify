@@ -112,7 +112,7 @@ const AskQue = ({ post }) => {
       if (thumbnailFile) {
         try {
           const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
-          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
+          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile });
 
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
