@@ -12,7 +12,6 @@ import {
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
 import { Button } from "../index";
-import avatar from "../../appwrite/avatars";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
@@ -89,14 +88,6 @@ const MyProfile = () => {
     }
 
   }
-  const flagFunc = async () => {
-    let locations = await location.GetLocation();
-    setcountryName(locations?.country);
-    if (locations) {
-      let flagURL = await avatar.getFlag(locations.countryCode, 20, 20);
-      setflag(flagURL.href);
-    }
-  };
   const follow_Unfollow = async () => {
 
     if (!UserAuthStatus) {
@@ -243,7 +234,7 @@ const MyProfile = () => {
     } else {
       getUserProfile(slug);
     }
-    flagFunc();
+  
   }, [slug]);
 
   useEffect(() => {

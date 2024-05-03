@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import './ChatInProfile.css'
 import { useAskContext } from '../../context/AskContext'
 import profile from '../../appwrite/profile'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+
+
 const ChatInProfile = ({ profileData, setProfileData }) => {
     console.log(profileData)
     const userData = useSelector((state) => state?.auth.userData)
@@ -13,7 +15,7 @@ const ChatInProfile = ({ profileData, setProfileData }) => {
     const [canYouSeeFollowers_Following, setcanYouSeeFollowers_Following] = useState(true);
     const [activeNav, setactiveNav] = useState('Following')
     const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
-    const { handleSubmit, register, control, watch, setValue, getValues } = useForm();
+    const { handleSubmit, register, watch } = useForm();
     const [searchValue, setSearchValue] = useState('')
     const unfollow = async (index) => {
         let followingArr = myUserProfile?.following;

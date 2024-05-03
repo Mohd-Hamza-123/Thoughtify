@@ -9,9 +9,10 @@ import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
 import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
-import avatar from "../../appwrite/avatars";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
+
+
 const Signup = () => {
   const { setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
   const [isWaiting, setIsWaiting] = useState(false);
@@ -37,8 +38,6 @@ const Signup = () => {
       setIsWaiting((prev) => false);
       return
     }
-
-
 
     const userDataCreated = await authService.createAccount({ ...data });
 
@@ -68,7 +67,7 @@ const Signup = () => {
         profileImgID: null,
         profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
       });
-      
+
       console.log(userProfile)
       setMyUserProfile((prev) => userProfile)
       dispatch(getUserProfile({ userProfile }))

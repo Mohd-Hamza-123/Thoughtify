@@ -13,7 +13,6 @@ import { getUserProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
 import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
-import avatar from "./appwrite/avatars";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
 

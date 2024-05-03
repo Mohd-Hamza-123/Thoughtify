@@ -149,7 +149,8 @@ const EditProfile = ({
       if (profileImgID) {
         const deletePic = await profile.deleteStorage(profileImgID)
       }
-      const uploadedPic = await profile.createBucket({ file })
+      const uploadedPic = await profile.createBucket({ file });
+      
       if (!uploadedPic) {
         setNotificationPopMsgNature((prev) => false)
         setnotificationPopMsg("Profile Updation failed");
