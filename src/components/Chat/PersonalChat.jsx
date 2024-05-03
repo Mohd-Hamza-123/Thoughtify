@@ -32,6 +32,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
   const getMessages = async (ChatRoomID) => {
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID });
+    console.log(messagesData)
     setmessages((prev) => [...messagesData.documents]);
     setsavedPersonalChatMsgs((prev) => [...messagesData.documents])
     if (messagesDiv.current) {
