@@ -22,17 +22,28 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext()
-  console.log(savedPersonalChatMsgs)
+
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([])
 
   const { register, handleSubmit, setValue } = useForm();
 
-  const getMessages = async (ChatRoomID) => {
-    const messagesData = await personalChat.listPersonalMessages({ ChatRoomID });
-    setmessages((prev) => [...messagesData.documents]);
-    setsavedPersonalChatMsgs((prev) => [...messagesData.documents])
+  const getMessages = async (ChatRoomID, notEqualArr) => {
+    // console.log(notEqualArr);
+    const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
+    console.log(messagesData);
+    setsavedPersonalChatMsgs((prev) => {
+      let arr = [...prev, ...messagesData.documents]
+      let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
+        , obj])).values());
+      let thisChatRoomMessages = uniqueArray?.filter((obj) => obj.chatRoomID === ChatRoomID)
+      setmessages((prev) => thisChatRoomMessages);
+      return uniqueArray
+    });
+
+
+
     if (messagesDiv.current) {
       messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight
     }
@@ -80,58 +91,62 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       }
     }
   }
+  // useEffect(() => {
+  //   const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
+
+  //     if (response.events.includes("databases.*.collections.*.documents.*.create")) {
+  //       console.log(response)
+
+  //       if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
+  //         userIdAuth === response.payload.userId
+  //       ) {
+
+  //         setmessages((prev) => [...prev, response.payload]);
+  //         setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
+
+  //         setTimeout(() => {
+  //           if (messagesDiv.current) {
+  //             messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+  //           }
+  //         }, 1000)
+  //         setNotificationPopMsgNature((prev) => true)
+  //         setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
+  //       }
+
+  //       if (response.payload.userId === userData?.$id) {
+  //         setTimeout(() => {
+  //           if (messagesDiv.current) {
+  //             messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+  //           }
+  //         }, 1000)
+
+  //       }
+
+  //     } else if ("databases.*.collections.*.documents.*.delete") {
+
+  //       setmessages((prev) => prev.filter((message) => {
+  //         if (response.payload.chatRoomID === ChatRoomID) {
+  //           return message.$id !== response.payload.$id
+  //         }
+  //       }))
+  //     }
+  //   })
+
+  //   return () => realtime()
+  // }, [])
+
   useEffect(() => {
-    const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
+    let notEqualArr = []
+    const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => {
+      if (obj.chatRoomID === ChatRoomID) notEqualArr.push(obj.$id);
+      return obj.chatRoomID === ChatRoomID
+    });
+    
+    // let uniqueArray = Array.from(new Map(filterThisChatRoomMsgs?.map(obj => [obj.$id
+    //   , obj])).values());
 
-      if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response)
+    getMessages(ChatRoomID, notEqualArr);
 
-        if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
-          userIdAuth === response.payload.userId
-        ) {
-
-          setmessages((prev) => [...prev, response.payload]);
-          setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
-
-          setTimeout(() => {
-            if (messagesDiv.current) {
-              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-            }
-          }, 1000)
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
-        }
-
-        if (response.payload.userId === userData?.$id) {
-          setTimeout(() => {
-            if (messagesDiv.current) {
-              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-            }
-          }, 1000)
-
-        }
-
-      } else if ("databases.*.collections.*.documents.*.delete") {
-
-        setmessages((prev) => prev.filter((message) => {
-          if (response.payload.chatRoomID === ChatRoomID) {
-            return message.$id !== response.payload.$id
-          }
-        }))
-      }
-    })
-
-    return () => realtime()
-  }, [])
-
-  useEffect(() => {
-    const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID);
-
-    if (!filterThisChatRoomMsgs) {
-      getMessages(ChatRoomID);
-    } else {
-      setmessages((prev) => filterThisChatRoomMsgs);
-    }
 
     profile.getStoragePreview(receiverDetails[0]?.profileImgID)
       .then((res) => setreceiverImage(res?.href))
@@ -195,8 +210,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
           </div>
           <div ref={messagesDiv} id='PersonalChat_Messages' onClick={() => setisDeleteAllMsgActive((prev) => false)}>
-            {messages?.map((message, index) => (
-              <div key={message.$id} className={"message--wrapper"}>
+            {messages?.map((message, index) => {
+              return <div key={message.$id} className={"message--wrapper"}>
 
                 <div className="message--header">
                   <button
@@ -215,7 +230,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
                 </div>
 
               </div>
-            ))}
+            })}
           </div>
 
 

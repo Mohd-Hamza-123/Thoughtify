@@ -135,14 +135,16 @@ const EditProfile = ({
 
     if (!prevFileURL && !file) {
       setseePreviewBefore('Make sure to see preview before uploading image')
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg("Make sure to see preview before uploading image")
+      setNotificationPopMsgNature((prev) => false);
+      setnotificationPopMsg("Make sure to see preview before uploading image");
+      setisUpdating((prev) => false)
       return
     }
     if (seePreviewBefore !== '') {
       setseePreviewBefore('Make sure to see preview before uploading image')
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Make sure to see preview before uploading image")
+      setisUpdating((prev) => false)
       return
     }
 
@@ -161,6 +163,7 @@ const EditProfile = ({
       if (!uploadedPic) {
         setNotificationPopMsgNature((prev) => false)
         setnotificationPopMsg("Profile Updation failed");
+        setisUpdating((prev) => false)
         return
       }
 

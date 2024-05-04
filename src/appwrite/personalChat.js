@@ -68,7 +68,7 @@ export class PersonalChat {
         }
     }
 
-    async listPersonalMessages({ ChatRoomID, limit }) {
+    async listPersonalMessages({ ChatRoomID, limit, notEqualArr }) {
 
         if (!ChatRoomID) return null
 
@@ -79,6 +79,11 @@ export class PersonalChat {
         }
         if (limit) {
             arr.push(Query.orderAsc('$createdAt'));
+        }
+        if (notEqualArr?.length > 0) {
+            for (let i = 0; i < notEqualArr?.length; i++) {
+                arr.push(Query.notEqual("$id", [`${notEqualArr[i]}`]))
+            }
         }
 
         try {
