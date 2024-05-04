@@ -172,8 +172,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         }
       );
 
-      setmessages((prev) => [...prev, createMessage]);
-      setsavedPersonalChatMsgs((prev) => [...prev, createMessage])
+      // setmessages((prev) => [...prev, createMessage]);
+      // setsavedPersonalChatMsgs((prev) => [...prev, createMessage])
       setTimeout(() => {
         if (messagesDiv.current) {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
