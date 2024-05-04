@@ -6,14 +6,14 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import { getFilteredBookmarkPosts } from "../../store/profileSlice";
-
+import profile from "../../appwrite/profile";
 
 const Favourite = ({ visitedProfileUserID }) => {
   const bookMarkPostInRedux = useSelector(
     (state) => state.profileSlice?.filteredBookmarkPosts
   );
   const dispatch = useDispatch();
-  
+
   const spinnerRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,6 +26,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     hasMorePostsInProfileFilterBookmark,
     sethasMorePostsInProfileFilterBookmark,
     myUserProfile,
+    setMyUserProfile
   } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
@@ -49,12 +50,14 @@ const Favourite = ({ visitedProfileUserID }) => {
           const filteredBookmark = await appwriteService.getPostWithBookmark(
             bookMarkArray[i]
           );
-
-          dispatch(
-            getFilteredBookmarkPosts({
-              filteredBookmarkPosts: [filteredBookmark],
-            })
-          );
+          console.log(filteredBookmark);
+          if (filteredBookmark) {
+            dispatch(
+              getFilteredBookmarkPosts({
+                filteredBookmarkPosts: [filteredBookmark],
+              })
+            );
+          }
         }
         bookMarkCounter.current = bookMarkCounter.current + 5;
       } else {
@@ -62,12 +65,21 @@ const Favourite = ({ visitedProfileUserID }) => {
           const filteredBookmark = await appwriteService.getPostWithBookmark(
             bookMarkArray[i]
           );
-          console.log(filteredBookmark);
-          dispatch(
-            getFilteredBookmarkPosts({
-              filteredBookmarkPosts: [filteredBookmark],
-            })
-          );
+
+          if (filteredBookmark) {
+            dispatch(
+              getFilteredBookmarkPosts({
+                filteredBookmarkPosts: [filteredBookmark],
+              })
+            );
+          } else {
+            // console.log(myUserProfile?.bookmarks);
+            let newArr = myUserProfile?.bookmarks
+            newArr.splice(i, 1);
+            const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, bookmarks: newArr })
+            console.log(updateBookMarkInProfile)
+            setMyUserProfile((prev) => updateBookMarkInProfile)
+          }
         }
       }
       setIsLoading(true);
@@ -135,7 +147,7 @@ const Favourite = ({ visitedProfileUserID }) => {
       return () => ref && observer.unobserve(ref);
     }
   }, [spinnerRef.current, isLoading, bookMarkPostInRedux]);
-  
+
 
   useEffect(() => {
     if (myUserProfile) {
@@ -144,6 +156,11 @@ const Favourite = ({ visitedProfileUserID }) => {
       }
       settotalFilteredbookmarks(myUserProfile?.bookmarks?.length);
     }
+
+    if (myUserProfile?.bookmarks?.length >= totalFilteredbookmarks) {
+      setIsLoading((prev) => false)
+    }
+
   }, [myUserProfile]);
 
   const indicator = useRef(true);

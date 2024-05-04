@@ -80,7 +80,10 @@ const NavigationBar = () => {
             className="cursor-pointer gap-2 flex items-center"
             onClick={() => navigate("/")}
           >
-            <img className={`logo ${isDarkModeOn ? 'darkMode' : ''}`} src={QueryFlow} alt="Logo" />
+            <img
+              className={`logo ${isDarkModeOn ? 'darkMode' : ''}`}
+              src={QueryFlow}
+              alt="Logo" />
             <h1 className={`logo_Name ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Thoughtify</h1>
           </div>
 

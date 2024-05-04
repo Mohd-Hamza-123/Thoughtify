@@ -496,7 +496,7 @@ const ViewPost = () => {
     } else {
 
       if (bookmarksInContext?.includes(post?.$id)) {
-        const removeBookmark = bookmarksInContext?.filter((bookmarkPostID) => bookmarkPostID !== post?.$id)
+        const removeBookmark = bookmarksInContext?.filter((bookmarkPostID) => bookmarkPostID !== post?.$id);
 
         const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myProfileID_In_Context, likedQuestions: likedQuestionsInContext, dislikedQuestions: dislikedQuestionsInContext, bookmarks: removeBookmark })
         setMyUserProfile((prev) => updateBookMarkInProfile)

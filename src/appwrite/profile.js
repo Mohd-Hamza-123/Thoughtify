@@ -34,7 +34,8 @@ export class Profile {
         blockedUsers = null,
         followers = null,
         othersCanFilterYourOpinions = null,
-        othersCanFilterYourPosts = null, othersSeeYourFollowers_Following = null,
+        othersCanFilterYourPosts = null,
+        othersSeeYourFollowers_Following = null,
         whoCanMsgYou = null,
         trustedResponder = null
     }) {
@@ -80,18 +81,21 @@ export class Profile {
         }
     }
     async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
+        let obj = {}
+        if (likedQuestions) obj.likedQuestions = likedQuestions
+        if (dislikedQuestions) obj.dislikedQuestions = dislikedQuestions
+        if (bookmarks) obj.bookmarks = bookmarks
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID, {
-                likedQuestions,
-                dislikedQuestions,
-                bookmarks,
-            })
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID, 
+                obj
+            )
         } catch (error) {
+            console.log(error)
             return null
         }
     }
     async listProfile({ slug, name }) {
-     
+
         let QueryArr = []
         if (slug) {
             QueryArr.push(Query.equal("userIdAuth", [`${slug}`]))
@@ -99,7 +103,7 @@ export class Profile {
         if (name) {
             QueryArr.push(Query.equal("name", [`${name}`]))
         }
-  
+
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
@@ -115,19 +119,19 @@ export class Profile {
                 [Query.equal("userIdAuth", [senderSlug, receiverSlug])]
             )
         } catch (error) {
-           return null
+            return null
         }
     }
     async listProfilesWithQueries({ listResponders }) {
         let QueryArr = []
         if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
-    
+
         try {
             return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
             )
         } catch (error) {
-           return null
+            return null
         }
     }
     async listSingleProfile(slug) {
@@ -157,7 +161,7 @@ export class Profile {
         try {
             return await this.storage.updateFile(conf.appwriteBucketId, fileid, file)
         } catch (error) {
- 
+
             return false
         }
     }
