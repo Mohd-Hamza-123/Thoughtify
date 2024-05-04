@@ -21,7 +21,7 @@ const Home = () => {
     isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
-
+  // console.log(posts)
   const [isLoading, setIsLoading] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
@@ -35,7 +35,7 @@ const Home = () => {
     try {
       if (initialPost?.length === 0) {
         const posts = await appwriteService.getPosts({ lastPostID })
-
+        console.log(posts)
         if (posts === false) {
           setPosts((prev) => false)
         }
