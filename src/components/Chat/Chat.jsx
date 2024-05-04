@@ -66,8 +66,8 @@ const Chat = ({ post, slug }) => {
         for (let i = 0; i < wantProfileIds.length; i++) {
           let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
 
-          let userId = listedProfile?.documents[0].userIdAuth
-          let profilePic = listedProfile?.documents[0].profileImgURL
+          let userId = listedProfile?.documents[0]?.userIdAuth
+          let profilePic = listedProfile?.documents[0]?.profileImgURL
           dispatch(getpostUploaderProfilePic({ userId, profilePic }))
         }
       }
@@ -195,10 +195,10 @@ const Chat = ({ post, slug }) => {
           // Getting Post Uploader profile to know whether he follows you or not.
           const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
 
-          console.log(getPostUploaderProfile);
-          let followersArr = getPostUploaderProfile.documents[0].followers
+       
+          let followersArr = getPostUploaderProfile?.documents[0]?.followers
           followersArr = followersArr?.map((obj) => JSON.parse(obj))
-          console.log(followersArr)
+    
           const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authid);
 
           // If He follows you , notification will be sent

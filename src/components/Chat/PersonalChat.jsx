@@ -33,8 +33,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const getMessages = async (ChatRoomID) => {
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID });
     console.log(messagesData)
-    setmessages((prev) => [...messagesData.documents]);
-    setsavedPersonalChatMsgs((prev) => [...messagesData.documents])
+    setmessages((prev) => [...messagesData?.documents]);
+    setsavedPersonalChatMsgs((prev) => [...messagesData?.documents])
     if (messagesDiv.current) {
 
       messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight
@@ -58,7 +58,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
         totalMessagesToDelete = listMesssages?.total;
         for (let i = 0; i < listMesssages?.documents?.length; i++) {
-          personalChat.deleteMessage(listMesssages.documents[i].$id)
+          personalChat.deleteMessage(listMesssages?.documents[i]?.$id)
         }
       }
       const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID !== ChatRoomID);
