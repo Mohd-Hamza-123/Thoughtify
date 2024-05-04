@@ -25,23 +25,21 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
-  const [messages, setmessages] = useState([])
+  const [messages, setmessages] = useState([]);
+  console.log(messages)
 
   const { register, handleSubmit, setValue } = useForm();
 
   const getMessages = async (ChatRoomID, notEqualArr) => {
-    // console.log(notEqualArr);
+   
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
-    console.log(messagesData);
+   
     setsavedPersonalChatMsgs((prev) => {
       let arr = [...prev, ...messagesData.documents]
       let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
         , obj])).values());
-      let thisChatRoomMessages = uniqueArray?.filter((obj) => obj.chatRoomID === ChatRoomID)
-      setmessages((prev) => thisChatRoomMessages);
       return uniqueArray
     });
-
 
 
     if (messagesDiv.current) {
@@ -141,7 +139,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       if (obj.chatRoomID === ChatRoomID) notEqualArr.push(obj.$id);
       return obj.chatRoomID === ChatRoomID
     });
-    
+
     // let uniqueArray = Array.from(new Map(filterThisChatRoomMsgs?.map(obj => [obj.$id
     //   , obj])).values());
 
@@ -152,7 +150,14 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       .then((res) => setreceiverImage(res?.href))
 
     deleteMsgsAutomatically()
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    setmessages((prev) => {
+      let arr = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID)
+      return arr
+    })
+  }, [savedPersonalChatMsgs])
 
   const sendText = async (data) => {
     setValue('text', '');

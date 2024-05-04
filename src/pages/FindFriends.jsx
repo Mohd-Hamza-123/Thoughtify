@@ -25,7 +25,7 @@ const FindFriends = () => {
 
   const [isSearching, setisSearching] = useState(false);
   const [searchedPerson, setsearchedPerson] = useState(null);
-  console.log(searchedPerson)
+
 
   const submit = async (data) => {
     setisSearching((prev) => true);

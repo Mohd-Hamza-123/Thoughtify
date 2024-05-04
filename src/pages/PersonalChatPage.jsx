@@ -10,14 +10,14 @@ import './PersonalChatPage.css'
 const PersonalChatPage = () => {
 
   const { senderSlug, receiverSlug } = useParams();
-  console.log(senderSlug)
+
   const [receiverDetails, setreceiverDetails] = useState([]);
 
   const senderDetails = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state.usersProfileSlice?.userProfileArr);
 
   const [ChatRoomID, setchatRoomID] = useState('');
-  console.log(ChatRoomID)
+
   const receiverName = useRef(null)
 
   const getParticipantsProfileDetails = async () => {

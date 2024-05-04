@@ -229,8 +229,8 @@ function App() {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
-        console.log(savedPersonalChatMsgs)
-        const x = savedPersonalChatMsgs?.find((obj) => obj.chatRoomID === response.payload.chatRoomID);
+      
+        // const x = savedPersonalChatMsgs?.find((obj) => obj.chatRoomID === response.payload.chatRoomID);
         // console.log(savedPersonalChatMsgs.length);
         // for (let i = 0; i < savedPersonalChatMsgs?.length; i++) {
         //   console.log(`${savedPersonalChatMsgs[i].chatRoomID} === ${response.payload.chatRoomID}`);

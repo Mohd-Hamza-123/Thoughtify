@@ -40,7 +40,7 @@ const MyProfile = () => {
   const realUser = userData ? slug === userData.$id : false;
 
   const [profileData, setProfileData] = useState(null);
-  console.log(profileData)
+  
 
   const [countryName, setcountryName] = useState(null);
   const [flag, setflag] = useState(null);
@@ -53,7 +53,7 @@ const MyProfile = () => {
 
 
   const getUserProfile = async (slug) => {
-    console.log("hi")
+
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user?.userIdAuth === slug
     )
 
