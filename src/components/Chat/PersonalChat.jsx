@@ -31,9 +31,9 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const { register, handleSubmit, setValue } = useForm();
 
   const getMessages = async (ChatRoomID, notEqualArr) => {
-   
+
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
-   
+
     setsavedPersonalChatMsgs((prev) => {
       let arr = [...prev, ...messagesData.documents]
       let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
@@ -89,6 +89,31 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       }
     }
   }
+
+  useEffect(() => {
+    const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
+
+      if (response.events.includes("databases.*.collections.*.documents.*.create")) {
+        console.log(response);
+
+        if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
+          userIdAuth === response.payload.userId
+        ) {
+
+          setTimeout(() => {
+            if (messagesDiv.current) {
+              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+            }
+          }, 1000)
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
+        }
+      }
+    })
+
+    return () => realtime()
+  }, [])
+
   // useEffect(() => {
   //   const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
@@ -132,7 +157,6 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
   //   return () => realtime()
   // }, [])
-
   useEffect(() => {
     let notEqualArr = []
     const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => {
@@ -172,8 +196,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         }
       );
 
-      // setmessages((prev) => [...prev, createMessage]);
-      // setsavedPersonalChatMsgs((prev) => [...prev, createMessage])
+
       setTimeout(() => {
         if (messagesDiv.current) {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
