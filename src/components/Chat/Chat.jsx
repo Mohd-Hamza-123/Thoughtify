@@ -8,7 +8,7 @@ import parse from "html-react-parser";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import appwriteService from "../../appwrite/config";
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAskContext } from "../../context/AskContext";
 import { getCommentsInRedux } from "../../store/commentsSlice";
 import profile from "../../appwrite/profile";
@@ -61,7 +61,7 @@ const Chat = ({ post, slug }) => {
       let wantProfileIds = uniqueArray.filter((objofUniqueArr) => {
         return !postUploaderPics.some((objOfRedux) => objOfRedux?.userId === objofUniqueArr?.authid)
       })
-      
+
       if (wantProfileIds.length > 0) {
         for (let i = 0; i < wantProfileIds.length; i++) {
           let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authid })
@@ -127,7 +127,7 @@ const Chat = ({ post, slug }) => {
 
   useEffect(() => {
     const ref = spinnerRef.current;
-  
+
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
         setIsIntersecting((prev) => entry.isIntersecting)
@@ -180,7 +180,16 @@ const Chat = ({ post, slug }) => {
         dispatch(getCommentsInRedux({ comments: [dbCommnet], isMerge: null }))
 
         setNotificationPopMsgNature((prev) => true)
-        setnotificationPopMsg((prev) => 'Comment Posted')
+        setnotificationPopMsg((prev) => 'Comment Posted');
+
+        setTimeout(() => {
+          let newComment = document.getElementById(`Comment${dbCommnet?.$id}`)
+          console.log(newComment)
+          if (newComment) {
+            newComment.focus()
+          }
+        }, 1000);
+
 
         if (authid !== post?.userId) {
           // Getting Post Uploader profile to know whether he follows you or not.
@@ -264,7 +273,7 @@ const Chat = ({ post, slug }) => {
       .then(() => {
 
         let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
-        
+
         dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
         setNotificationPopMsgNature((prev) => true)
         setnotificationPopMsg((prev) => 'Comment Deleted')
@@ -338,14 +347,19 @@ const Chat = ({ post, slug }) => {
             <section>
               <div className="flex justify-between">
 
-                <div onClick={() => navigate(`/profile/${comment?.authid}`)} className="flex gap-2 cursor-pointer">
-                  <img
-                    className="Chat_Comment_Div_img"
-                    src={`${profilePicURL ? profilePicURL : NoProfile}`}
-                    alt=""
-                  />
-                  <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
-                </div>
+                <Link
+                  to={`/profile/${comment?.authid}`}
+                  id={`Comment${comment?.$id}`}
+                >
+                  <div className="flex gap-2 cursor-pointer">
+                    <img
+                      className="Chat_Comment_Div_img"
+                      src={`${profilePicURL ? profilePicURL : NoProfile}`}
+                      alt=""
+                    />
+                    <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
+                  </div>
+                </Link>
                 <div>
                   {(authid === comment?.authid || userData?.$id === conf.myPrivateUserID || userData?.$id === post?.userId) && (
                     <span
@@ -419,7 +433,7 @@ const Chat = ({ post, slug }) => {
             <div className={``}>
               {comment?.subComment?.map((sub, index) => {
 
-            
+
                 if (comment?.$id != id_For_Five_Mul) {
                   if (index >= fixedReplies) return
                 } else {
