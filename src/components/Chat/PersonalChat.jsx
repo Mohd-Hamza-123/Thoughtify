@@ -22,7 +22,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext()
-
+  console.log(savedPersonalChatMsgs)
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([])
@@ -91,7 +91,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         ) {
 
           setmessages((prev) => [...prev, response.payload]);
-          setsavedPersonalChatMsgs((prev) => [...prev, response.payload]);
+          setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
 
           setTimeout(() => {
             if (messagesDiv.current) {
@@ -153,6 +153,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       );
 
       setmessages((prev) => [...prev, createMessage]);
+      setsavedPersonalChatMsgs((prev) => [...prev, createMessage])
       setTimeout(() => {
         if (messagesDiv.current) {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
