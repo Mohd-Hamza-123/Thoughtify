@@ -11,14 +11,13 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-  console.log(receiverDetails)
+  // console.log(receiverDetails)
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
-  const {
-    savedPersonalChatMsgs,
+  const { savedPersonalChatMsgs,
     setsavedPersonalChatMsgs,
     setnotificationPopMsg,
     setNotificationPopMsgNature,
@@ -32,11 +31,9 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
   const getMessages = async (ChatRoomID) => {
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID });
-    console.log(messagesData)
-    setmessages((prev) => [...messagesData?.documents]);
-    setsavedPersonalChatMsgs((prev) => [...messagesData?.documents])
+    setmessages((prev) => [...messagesData.documents]);
+    setsavedPersonalChatMsgs((prev) => [...messagesData.documents])
     if (messagesDiv.current) {
-
       messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight
     }
   }
@@ -54,18 +51,17 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
       let totalMessagesToDelete = listMesssages?.total;
       while (totalMessagesToDelete > 0) {
-
         const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
         totalMessagesToDelete = listMesssages?.total;
         for (let i = 0; i < listMesssages?.documents?.length; i++) {
-          personalChat.deleteMessage(listMesssages?.documents[i]?.$id)
+          personalChat.deleteMessage(listMesssages.documents[i].$id)
         }
       }
       const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID !== ChatRoomID);
       setsavedPersonalChatMsgs((prev) => deletingThisChatRoomMsgs);
     } catch (error) {
       setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => "comments not deleted")
+      setNotificationPopMsgNature((prev) => "Comments not deleted. Try Again");
     }
 
   }
@@ -88,7 +84,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response);
+        console.log(response)
 
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
@@ -96,7 +92,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
           setmessages((prev) => [...prev, response.payload]);
           setsavedPersonalChatMsgs((prev) => [...prev, response.payload]);
-         
+
           setTimeout(() => {
             if (messagesDiv.current) {
               messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
@@ -112,6 +108,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
               messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
             }
           }, 1000)
+
         }
 
       } else if ("databases.*.collections.*.documents.*.delete") {
@@ -137,16 +134,9 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     }
 
     profile.getStoragePreview(receiverDetails[0]?.profileImgID)
-      .then((res) => setreceiverImage(res.href))
+      .then((res) => setreceiverImage(res?.href))
 
-    deleteMsgsAutomatically();
-    getMessages()
-
-    setTimeout(() => {
-      if (messagesDiv.current) {
-        messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-      }
-    }, 1000)
+    deleteMsgsAutomatically()
   }, [])
 
   const sendText = async (data) => {
@@ -168,6 +158,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
         }
       }, 1000)
+
     } catch (error) {
       setmessages((prev) => [...prev]);
     }

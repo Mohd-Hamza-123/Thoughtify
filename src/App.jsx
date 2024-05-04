@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Outlet } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "./store/authSlice";
+import { login, logout } from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
@@ -19,9 +19,10 @@ import notification from "./appwrite/notification";
 
 
 function App() {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth.userData);
+  const userData = useSelector((state) => state.auth?.userData);
 
 
   const [isOpen, setIsOpen] = useState(false);
@@ -75,12 +76,12 @@ function App() {
   const fetchData = async () => {
     try {
       const userData = await authService.getCurrentUser();
-      console.log(userData)
+
       if (userData) {
         dispatch(login({ userData }))
         const userProfile = await profile.listProfile({ slug: userData?.$id });
         if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
-          console.log("create profile");
+
           const userProfile = await profile.createProfile({
             name: userData?.name,
             userIdAuth: userData?.$id,
@@ -97,45 +98,57 @@ function App() {
 
 
         } else {
-          console.log("profile already created")
+
           setMyUserProfile(prev => userProfile?.documents[0]);
-          dispatch(getUserProfile({ userProfile: userProfile?.documents[0] }));
 
           const profileImageID = userProfile?.documents[0]?.profileImgID
           const URL = await profile.getStoragePreview(profileImageID);
 
           if (URL) {
-            dispatch(getUserProfile({ userProfileImgURL: URL?.href }));
+            dispatch(getUserProfile({ userProfile: userProfile?.documents[0], userProfileImgURL: URL?.href }));
+          } else {
+            dispatch(getUserProfile({ userProfile: userProfile?.documents[0], userProfileImgURL: '' }));
           }
           navigate("/");
         }
 
       }
     } catch (err) {
-      console.error(err);
       setnotificationPopMsg((prev) => false)
-      setnotificationPopMsg((prev) => "Oops ! Error")
+      setnotificationPopMsg((prev) => "Oops ! Error");
+      navigate("/signup")
+
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  useEffect(() => {
-    if (body) {
-      if (isDarkModeOn) {
+  // getting notifications
+  const [notifications, setnotifications] = useState(null);
 
-        localStorage.setItem("isDarkModeOn", true);
-        body[0].classList.add("darkMode")
-      } else {
 
-        localStorage.setItem("isDarkModeOn", false)
-        body[0].classList.remove("darkMode")
-      }
+
+  const deleteNotication = async () => {
+    const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id });
+
+    for (let i = 0; i < listdocumentstoDelete.documents.length; i++) {
+      let notificationID = listdocumentstoDelete?.documents[i]?.$id;
+      if (!notificationID) return;
+      notification.deleteNotication({ notificationID });
     }
-  }, [isDarkModeOn])
+  }
 
-  useEffect(() => {
+  const increaseViews = async (PostId) => {
+    try {
+      const previesViews = await appwriteService.getPost(PostId)
+      const updateViews = await appwriteService.updatePostViews(PostId, previesViews.views + 1, previesViews.commentCount);
+      dispatch(getInitialPost({ initialPosts: [updateViews] }))
+    } catch (error) {
 
+    }
+  }
+
+  const verifyEmail = () => {
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret)
         .then((res) => {
@@ -149,83 +162,64 @@ function App() {
           console.error(err)
         })
     }
+  }
 
-  }, [])
-  useEffect(() => {
-    if (indicator.current) {
-      fetchData();
-      indicator.current = false
-    }
-
-  }, []);
-
-  useEffect(() => {
-    async function getData() {
+  async function getNotification() {
+    try {
       const userData = await authService.getCurrentUser();
-      const userProfile = await profile.listProfile({ slug: userData?.$id });
-      setMyUserProfile(prev => userProfile?.documents[0]);
-    }
-    if (!myUserProfile && userData) {
-      getData()
-    }
-  }, [userData])
+      const res = await notification.getNotification({ userID: userData?.$id });
 
-  // getting notifications
-  const [notifications, setnotifications] = useState(null);
+      setnotifications((prev) => res?.documents)
 
-  useEffect(() => {
-    async function getNotification() {
-      const userData = await authService.getCurrentUser();
-      try {
-        const res = await notification.getNotification({ userID: userData?.$id });
+      if (res?.total > 25) {
+        const totalItemsToDelete = res?.total - 25;
 
-        setnotifications((prev) => res?.documents)
+        const limitToDelete = Math.min(totalItemsToDelete, 50);
+        const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id, limit: limitToDelete });
 
-        if (res?.total > 25) {
-          const totalItemsToDelete = res?.total - 25;
-
-          const limitToDelete = Math.min(totalItemsToDelete, 50);
-          const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id, limit: limitToDelete });
-
-          for (let i = 0; i < limitToDelete; i++) {
-            let notificationID = listdocumentstoDelete?.documents[i]?.$id;
-            if (!notificationID) return;
-            notification.deleteNotication({ notificationID });
-          }
+        for (let i = 0; i < limitToDelete; i++) {
+          let notificationID = listdocumentstoDelete?.documents[i]?.$id;
+          if (!notificationID) return;
+          notification.deleteNotication({ notificationID });
         }
-
-      } catch (error) {
-        console.error(error)
       }
 
-
-    }
-    getNotification()
-  }, []);
-
-  const increaseViews = async (PostId) => {
-    try {
-      const previesViews = await appwriteService.getPost(PostId)
-      const updateViews = await appwriteService.updatePostViews(PostId, previesViews.views + 1, previesViews.commentCount);
-
-      dispatch(getInitialPost({ initialPosts: [updateViews] }))
     } catch (error) {
-      console.log("Error")
+      setnotifications((prev) => [])
     }
-  }
-  const deleteNotication = async () => {
-    const listdocumentstoDelete = await notification.getNotification({ userID: userData?.$id });
 
-    for (let i = 0; i < listdocumentstoDelete.documents.length; i++) {
-      let notificationID = listdocumentstoDelete?.documents[i]?.$id;
-      if (!notificationID) return;
-      notification.deleteNotication({ notificationID });
+
+  }
+
+  async function getData() {
+    try {
+      const userProfile = await profile.listProfile({ slug: userData?.$id });
+      setMyUserProfile(prev => userProfile?.documents[0]);
+    } catch (error) {
+      setMyUserProfile((prev) => null);
+      dispatch(logout());
     }
   }
 
   const [appInstallPrompt, setAppInstallPrompt] = useState(null);
   const [isAppInstalled, setisAppInstalled] = useState(true);
-  // console.log(appInstallPrompt);
+  const onInstallApp = async () => {
+    if (appInstallPrompt) {
+      console.log(appInstallPrompt)
+      appInstallPrompt.prompt()
+      appInstallPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          // User accepted the install prompt
+          setisAppInstalled((prev) => true)
+        } else {
+          // User dismissed the install prompt
+          setisAppInstalled((prev) => false)
+        }
+      });
+    }
+  }
+
+
   useEffect(() => {
     const installApp = (e) => {
       e.preventDefault();
@@ -246,24 +240,38 @@ function App() {
     };
   }, []);
 
-  const onInstallApp = async () => {
-    if (appInstallPrompt) {
-      console.log(appInstallPrompt)
-      appInstallPrompt.prompt()
-      appInstallPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          // User accepted the install prompt
-          setisAppInstalled((prev) => true)
-        } else {
-          // User dismissed the install prompt
-          setisAppInstalled((prev) => false)
-        }
-      });
-    }
-  }
+  useEffect(() => {
+    if (!body) return
+    if (isDarkModeOn) {
+      localStorage.setItem("isDarkModeOn", true);
+      body[0].classList.add("darkMode")
+    } else {
 
-  // console.log(userData);
-  // console.log(myUserProfile)
+      localStorage.setItem("isDarkModeOn", false)
+      body[0].classList.remove("darkMode")
+    }
+  }, [isDarkModeOn])
+
+  useEffect(() => {
+    if (indicator.current) {
+      fetchData();
+      indicator.current = false
+    }
+
+    verifyEmail();
+
+    getNotification();
+  }, [])
+
+  useEffect(() => {
+    if (!myUserProfile && userData) {
+      getData()
+    }
+  }, [userData])
+
+
+  console.log(userData);
+  console.log(myUserProfile)
 
   return !loading ? (
     <>
