@@ -151,7 +151,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           chatRoomID: ChatRoomID,
           userId: userData?.$id,
           username: userData?.name,
-          participantsIDs: [userData?.$id, receiverDetails[0].userIdAuth]
+          participantsIDs: [userData?.$id, receiverDetails[0].userIdAuth],
+          createdDateTime : new Date().toISOString(),
         }
       );
 
