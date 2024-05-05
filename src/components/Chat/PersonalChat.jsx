@@ -36,7 +36,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
 
     setsavedPersonalChatMsgs((prev) => {
-      let arr = [...prev, ...messagesData.documents,]
+      let arr = [...prev, ...messagesData?.documents,]
       let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
         , obj])).values());
       return uniqueArray
@@ -64,7 +64,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
         const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
         totalMessagesToDelete = listMesssages?.total;
         for (let i = 0; i < listMesssages?.documents?.length; i++) {
-          personalChat.deleteMessage(listMesssages.documents[i].$id)
+          personalChat.deleteMessage(listMesssages?.documents[i].$id)
         }
       }
       const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID !== ChatRoomID);
