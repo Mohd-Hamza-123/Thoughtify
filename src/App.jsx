@@ -229,8 +229,6 @@ function App() {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
-        console.log(userData?.$id)
-        console.log(response.payload?.participantsIDs?.includes(userData?.$id))
 
         setsavedPersonalChatMsgs((prev) => {
           let arr = [...prev, response.payload]
@@ -287,6 +285,9 @@ function App() {
   }, [isDarkModeOn])
 
   useEffect(() => {
+
+    realTimeChat()
+
     if (indicator.current) {
       fetchData();
       indicator.current = false
@@ -296,7 +297,7 @@ function App() {
 
     getNotification();
 
-    realTimeChat()
+
 
   }, [])
 
@@ -304,8 +305,6 @@ function App() {
     if (!myUserProfile && userData) {
       getData()
     }
-
-
 
   }, [userData])
 
