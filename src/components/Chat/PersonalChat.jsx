@@ -95,7 +95,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-
+        console.log(response)
 
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
@@ -133,13 +133,13 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   }, []);
 
   useEffect(() => {
-  
+
     setmessages((prev) => {
 
       let arr = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID);
 
       arr.sort((a, b) => new Date(a.createdDateTime) - new Date(b.createdDateTime));
-      
+
       return [...arr]
     })
   }, [savedPersonalChatMsgs, isSending])
@@ -159,6 +159,12 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           createdDateTime: new Date().toISOString()
         }
       );
+      setsavedPersonalChatMsgs((prev) => {
+        let arr = [...prev, createMessage]
+        let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
+          , obj])).values());
+        return uniqueArray
+      });
 
       setTimeout(() => {
         if (messagesDiv.current) {
