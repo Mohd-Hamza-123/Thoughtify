@@ -229,7 +229,10 @@ function App() {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
+        console.log(userData?.$id)
+        console.log(response.payload?.participantsIDs?.includes(userData?.$id))
         if (response.payload?.participantsIDs?.includes(userData?.$id)) {
+          console.log("HI")
           setsavedPersonalChatMsgs((prev) => {
             let arr = [...prev, response.payload]
             let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
@@ -294,12 +297,17 @@ function App() {
 
     getNotification();
 
-    realTimeChat()
+
+
   }, [])
 
   useEffect(() => {
     if (!myUserProfile && userData) {
       getData()
+    }
+
+    if (userData?.$id) {
+      realTimeChat()
     }
   }, [userData])
 
