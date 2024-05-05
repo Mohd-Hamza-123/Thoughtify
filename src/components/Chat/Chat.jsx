@@ -17,7 +17,7 @@ import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
 
 const Chat = ({ post, slug }) => {
-
+  console.log(post)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state?.commentsSlice?.comments);
@@ -155,7 +155,7 @@ const Chat = ({ post, slug }) => {
     if (!data.commentContent) return
     if (post) {
 
-      if (post?.opinionsFrom === 'Responders' && myUserProfile?.trustedResponder !== true) {
+      if ((post?.opinionsFrom === 'Responders' && myUserProfile?.trustedResponder !== true) || post?.userId === userData?.$id) {
         setNotificationPopMsgNature((prev) => false);
         setnotificationPopMsg((prev) => 'Only Responders can Comment on this post.')
         return
@@ -195,10 +195,10 @@ const Chat = ({ post, slug }) => {
           // Getting Post Uploader profile to know whether he follows you or not.
           const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
 
-       
+
           let followersArr = getPostUploaderProfile?.documents[0]?.followers
           followersArr = followersArr?.map((obj) => JSON.parse(obj))
-    
+
           const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authid);
 
           // If He follows you , notification will be sent
