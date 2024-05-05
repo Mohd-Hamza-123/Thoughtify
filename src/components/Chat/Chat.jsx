@@ -155,7 +155,7 @@ const Chat = ({ post, slug }) => {
     if (!data.commentContent) return
     if (post) {
 
-      if ((post?.opinionsFrom === 'Responders' && myUserProfile?.trustedResponder !== true) || post?.userId === userData?.$id) {
+      if ((post?.opinionsFrom === 'Responders' && myUserProfile?.trustedResponder !== true) && post?.userId !== userData?.$id) {
         setNotificationPopMsgNature((prev) => false);
         setnotificationPopMsg((prev) => 'Only Responders can Comment on this post.')
         return
