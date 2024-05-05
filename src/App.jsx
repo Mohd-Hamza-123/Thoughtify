@@ -56,7 +56,7 @@ function App() {
 
   // For personal Chat Messages
   const [savedPersonalChatMsgs, setsavedPersonalChatMsgs] = useState([]);
-  // console.log(savedPersonalChatMsgs);
+  console.log(savedPersonalChatMsgs);
   // To my Profile Posts
   const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
 
