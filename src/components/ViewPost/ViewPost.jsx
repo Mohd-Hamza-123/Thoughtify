@@ -661,25 +661,7 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-                        {true && (
-                          <li>
-                            <Button
-                              onClick={
-                                () => {
-                                  if (!navigator?.clipboard) {
-                                    setNotificationPopMsgNature((prev) => false);
-                                    setnotificationPopMsg((prev) => "Link is not Copied")
-                                    return;
-                                  }
-                                  navigator.clipboard.writeText(window.location.href);
-                                  setNotificationPopMsgNature((prev) => true);
-                                  setnotificationPopMsg((prev) => "Link is Copied")
-                                }
-                              }>
-                              <i className="fa-solid fa-copy"></i>
-                            </Button>
-                          </li>
-                        )}
+            
                       </ul>
                     </div>
                     <Button>
