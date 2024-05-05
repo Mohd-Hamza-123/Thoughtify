@@ -31,7 +31,7 @@ const FindFriends = () => {
     setisSearching((prev) => true);
     try {
       const GettingName = await profile.listProfile({ name: data?.searchValue });
-      console.log(GettingName);
+   
       if (GettingName?.documents?.length === 0) {
         setNotificationPopMsgNature((prev) => false)
         setnotificationPopMsg((prev) => 'No Users Found');
@@ -53,7 +53,6 @@ const FindFriends = () => {
     setisSearching((prev) => false)
   }
   const nav = (slug) => {
-
     navigate(slug);
   }
 

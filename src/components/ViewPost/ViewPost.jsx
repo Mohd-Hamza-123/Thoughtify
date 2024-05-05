@@ -71,21 +71,19 @@ const ViewPost = () => {
   const [likeCount, setlikeCount] = useState(0);
   const [disLikeCount, setdisLikeCount] = useState(0)
 
-
   const navigateToRelatedPost = (postId) => {
     navigate(`/post/${postId}/${null}`);
   }
   const deleteComments = async (documentid) => {
-    // return
+
     realTime
       .deleteComment(documentid)
       .then(() => {
-        // console.log("deleted")
+
         let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
-        // console.log("dispatched")
+
         dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
-      })
-      .catch((err) => console.log(err.message));
+      }).catch((err) => { })
 
 
     appwriteService
@@ -95,7 +93,7 @@ const ViewPost = () => {
 
         setpostCommentCount((prev) => post.commentCount - 1)
       })
-      .catch((error) => console.log(error))
+      .catch((error) => { })
 
     setfilteredComment((prev) => null)
   }
@@ -224,12 +222,13 @@ const ViewPost = () => {
 
   const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
   const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
+
   useEffect(() => {
 
     const getRelatedQueries = () => {
-      // console.log(initialPost)
+
       let relatedArr = initialPost?.filter((initialPostObj) => {
-        // console.log(post)
+
         if (initialPostObj?.category
           === post?.category && post?.$id !== initialPostObj?.$id) {
           return initialPostObj
@@ -352,13 +351,18 @@ const ViewPost = () => {
       setIsPollOpinionVisible(true)
     }
   }
+
+  const [pauseLikeDisLike, setpauseLikeDisLike] = useState(false)
+  // console.log(pauseLikeDisLike)
   const like_dislike_BookMark = async (flag) => {
+
+    if (pauseLikeDisLike === true) return
     if (!userAuthStatus) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg((prev) => 'Please Login')
       return
     }
-
+    setpauseLikeDisLike((prev) => true)
     const likedQuestionsInContext = myUserProfile?.likedQuestions
     const dislikedQuestionsInContext = myUserProfile?.dislikedQuestions
     const bookmarksInContext = myUserProfile?.bookmarks
@@ -510,6 +514,8 @@ const ViewPost = () => {
         setMyUserProfile((prev) => updateBookMarkInProfile)
       }
     }
+
+    setpauseLikeDisLike((prev) => false)
   }
 
   const ViewPostRef = useRef()
@@ -540,7 +546,7 @@ const ViewPost = () => {
     }
     try {
       const listComments = await realTime.listComment(post?.$id);
-      console.log(listComments)
+
       let totalCommentsToDelete = listComments?.total;
       while (totalCommentsToDelete > 0) {
         const listComments = await realTime.listComment(post?.$id);
@@ -555,12 +561,12 @@ const ViewPost = () => {
   }
 
   useEffect(() => {
-   
+
     if (ViewPostRef.current) {
-  
+
       const storedScrollPosition = sessionStorage.getItem('scrollPositionofViewPost');
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-   
+
       ViewPostRef.current.scrollTop = parsedScrollPosition
     }
   }, [ViewPostRef.current]);
@@ -661,25 +667,7 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-                        {true && (
-                          <li>
-                            <Button
-                              onClick={
-                                () => {
-                                  if (!navigator?.clipboard) {
-                                    setNotificationPopMsgNature((prev) => false);
-                                    setnotificationPopMsg((prev) => "Link is not Copied")
-                                    return;
-                                  }
-                                  navigator.clipboard.writeText(window.location.href);
-                                  setNotificationPopMsgNature((prev) => true);
-                                  setnotificationPopMsg((prev) => "Link is Copied")
-                                }
-                              }>
-                              <i className="fa-solid fa-copy"></i>
-                            </Button>
-                          </li>
-                        )}
+
                       </ul>
                     </div>
                     <Button>
@@ -776,6 +764,12 @@ const ViewPost = () => {
           <section id="ViewPost_Like_Dislike_BookMark">
             <div onClick={() => {
 
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
+
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
@@ -808,6 +802,12 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
@@ -840,6 +840,12 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
+
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
@@ -870,6 +876,7 @@ const ViewPost = () => {
                   onClick={() => {
                     navigateToRelatedPost(QuestionObj?.$id);
                     if (viewPostLeft.current && viewPostRight.current) {
+                      if (!window.screen.width <= 500) return
                       viewPostLeft.current.classList.toggle("none");
                     }
                   }}

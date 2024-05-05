@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE, Input, Button, TextArea, HorizontalLine, Opinions } from "../";
+import { RTE, Input, Button, TextArea, HorizontalLine} from "../";
 import conf from "../../conf/conf";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -141,7 +141,7 @@ const AskQue = ({ post }) => {
             pollQuestion,
             pollOptions
           }, categoryValue);
-          console.log(dbPost)
+    
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotificationPopMsgNature((prev) => true)
           setnotificationPopMsg((prev) => 'Post Updated')
@@ -161,7 +161,7 @@ const AskQue = ({ post }) => {
             pollQuestion,
             pollOptions
           }, categoryValue);
-          console.log(dbPost)
+    
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotificationPopMsgNature((prev) => true)
           setnotificationPopMsg((prev) => 'Post Updated')
@@ -181,7 +181,7 @@ const AskQue = ({ post }) => {
           const randomIndex = Math.floor(Math.random() * 10);
        
           const ImgURL = ImgArrUnsplash[randomIndex].urls.full
-          console.log(ImgURL)
+        
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
             queImage: ImgURL,
@@ -189,7 +189,7 @@ const AskQue = ({ post }) => {
             pollQuestion,
             pollOptions,
           }, categoryValue);
-          console.log(dbPost)
+        
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotificationPopMsgNature((prev) => true)
           setnotificationPopMsg((prev) => 'Post Updated')
@@ -385,7 +385,6 @@ const AskQue = ({ post }) => {
                   name="content"
                   defaultValue={getValues("content")}
                   control={control}
-                  // handleImageUpload={handleImageUpload}
                 />
               </div>
             </div>
@@ -405,7 +404,7 @@ const AskQue = ({ post }) => {
                       {...register("opinionsFrom", {
                         required: false
                       })}
-                      // defaultChecked
+
                       defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
                       type="radio"
                       value="Everyone"

@@ -38,13 +38,13 @@ const Questions = ({ visitedProfileUserID }) => {
   const userData = useSelector((state) => state.auth.userData);
   const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
   const { register, handleSubmit, reset, getValues } = useForm({})
-  const [totalNumberofPosts, settotalNumberofPosts] = useState(0)
+  const [totalNumberofPosts, settotalNumberofPosts] = useState(0);
 
   const submit = async (data) => {
 
     if (visitedProfileUserID !== userData?.$id) {
       const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
-    
+
 
       if (!visitedProfileUserData) return
 
@@ -112,7 +112,7 @@ const Questions = ({ visitedProfileUserID }) => {
     if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
   }, [queries, isIntersecting, isLoading])
   useEffect(() => {
-    
+
     const getMoreQueries = async () => {
       const data = getValues()
       const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
@@ -146,7 +146,7 @@ const Questions = ({ visitedProfileUserID }) => {
     }
 
   }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
-  
+
   useEffect(() => {
     if (TotalPostByMe == 0) {
       appwriteService
@@ -292,9 +292,8 @@ const Questions = ({ visitedProfileUserID }) => {
         <Button type='Submit' className={`Profile_Questions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{isSearching ? 'Searching' : 'Apply Filter'}</Button>
         <input type='reset' onClick={() => {
           reset()
-          setSavedMyProfilePosts((prev) => [])
-          setQueries((prev) => [])
-          sethasMorePostsInProfileFilterQuestions(false)
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => "Filter Cleared")
         }} value={'Reset Filter'} className={`Profile_Questions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>
       <div

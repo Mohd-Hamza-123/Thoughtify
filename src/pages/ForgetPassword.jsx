@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import './ForgetPassword.css'
 import QueryFlow from '../assets/QueryFlow.png'
 import { Button } from '../components'
-import { Link } from 'react-router-dom'
 import { useForm } from "react-hook-form";
-import ResetPassword from './ResetPassword'
 import authService from '../appwrite/auth'
 import { useAskContext } from '../context/AskContext'
 const ForgetPassword = () => {
@@ -72,7 +70,7 @@ const ForgetPassword = () => {
         </div>
       </div>
     </div>
-  
+
   )
 }
 

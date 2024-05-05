@@ -42,8 +42,7 @@ const MyProfile = () => {
   const [profileData, setProfileData] = useState(null);
   
 
-  const [countryName, setcountryName] = useState(null);
-  const [flag, setflag] = useState(null);
+
   const [URLimg, setURLimg] = useState('')
   const [isFollowing, setisFollowing] = useState(false)
 
@@ -53,7 +52,6 @@ const MyProfile = () => {
 
 
   const getUserProfile = async (slug) => {
-
     const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user?.userIdAuth === slug
     )
 
@@ -61,7 +59,7 @@ const MyProfile = () => {
     if (isUserAlreadyInReduxState === -1) {
 
       const listprofileData = await profile.listProfile({ slug });
-      console.log(listprofileData);
+      
       if (listprofileData?.total === 0) {
         setProfileData((prev) => null)
         setnotificationPopMsg((prev) => false)

@@ -12,7 +12,6 @@ import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
 import NoProfile from '../../assets/NoProfile.png'
 import * as imageConversion from 'image-conversion'
-import { compress, compressAccurately } from 'image-conversion'
 
 
 const MinimumDimension = 50;
@@ -52,7 +51,7 @@ const EditProfile = ({
   const [interestedTagArr, setInterestedTagArr] = useState([]);
   const [file, setFile] = useState(null);
 
-  const [canvasPreview, setcanvasPreview] = useState(true)
+  const [canvasPreview, setcanvasPreview] = useState(true);
   const [prevFileURL, setprevFileURL] = useState('')
   const [imageURL, setImageURL] = useState("");
   const [URLerror, setURLerror] = useState("");
@@ -74,8 +73,6 @@ const EditProfile = ({
   const [isUpdating, setisUpdating] = useState(false)
   useEffect(() => {
 
-    console.log(profileImgID);
-    console.log(prevFileURL)
     if (profileImgID) {
 
       if (myUserProfile?.profileImgURL) {
@@ -155,9 +152,9 @@ const EditProfile = ({
       }
 
       let blob = await imageConversion.compressAccurately(file, 200)
-      console.log(blob)
+      
       let uploadFile = new File([blob], userData?.name, { type: blob.type });
-      console.log(uploadFile)
+     
       if (!uploadFile) return
       let uploadedPic = await profile.createBucket({ file: uploadFile });
       if (!uploadedPic) {
@@ -314,7 +311,7 @@ const EditProfile = ({
     setprevFileURL('')
     const file = e.currentTarget?.files[0];
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
-    console.log(file.size)
+   
     if (file.size > MAX_FILE_SIZE) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")

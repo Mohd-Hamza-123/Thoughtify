@@ -2,172 +2,118 @@ import React, { useState, useEffect, useRef } from 'react'
 import './PersonalChat.css'
 import { HorizontalLine, TextArea, UpperNavigationBar } from '../../components/index'
 import { useForm } from 'react-hook-form'
-import personalChat from '../../appwrite/personalChat'
 import { useSelector } from 'react-redux'
-import conf from '../../conf/conf'
-import { Client } from 'appwrite'
-import profile from '../../appwrite/profile'
 import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
+import { addDoc, collection, onSnapshot, query, where, deleteDoc, doc } from 'firebase/firestore'
+import { db } from '../../Firebase/Firebase-config'
+
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-  // console.log(receiverDetails)
-  let client = new Client()
-    .setEndpoint(conf.appwriteURL)
-    .setProject(conf.appwriteProjectId)
+  console.log(receiverDetails)
+
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
-  const { savedPersonalChatMsgs,
-    setsavedPersonalChatMsgs,
+  const {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext()
 
   const [receiverImage, setreceiverImage] = useState('')
+
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([]);
-  // console.log(messages)
 
-  const { register, handleSubmit, setValue } = useForm();
-
-  const getMessages = async (ChatRoomID, notEqualArr) => {
-
-    const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
-
-    setsavedPersonalChatMsgs((prev) => {
-      let arr = [...messagesData.documents, ...prev]
-      let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
-        , obj])).values());
-      return uniqueArray
-    });
+  const [isSending, setIsSending] = useState(false)
 
 
-    if (messagesDiv.current) {
-      messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight
-    }
-  }
-  const deleteMessage = async (messageid) => {
-    personalChat.deleteMessage(messageid)
-      .then((res) => {
-        const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.$id !== messageid);
-        setsavedPersonalChatMsgs((prev) => deletingThisChatRoomMsgs);
-      })
-  }
-  const deleteAllMessages = async () => {
-    setisDeleteAllMsgActive((prev) => false);
-    try {
-      const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
-
-      let totalMessagesToDelete = listMesssages?.total;
-      while (totalMessagesToDelete > 0) {
-        const listMesssages = await personalChat.listPersonalMessages({ ChatRoomID });
-        totalMessagesToDelete = listMesssages?.total;
-        for (let i = 0; i < listMesssages?.documents?.length; i++) {
-          personalChat.deleteMessage(listMesssages.documents[i].$id)
-        }
-      }
-      const deletingThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID !== ChatRoomID);
-      setsavedPersonalChatMsgs((prev) => deletingThisChatRoomMsgs);
-    } catch (error) {
-      setNotificationPopMsgNature((prev) => false)
-      setNotificationPopMsgNature((prev) => "Comments not deleted. Try Again");
-    }
-
-  }
-  const deleteMsgsAutomatically = async () => {
-    const res = await personalChat.listPersonalMessages({ ChatRoomID });
-
-    if (res?.total > 25) {
-      const totalItemsToDelete = res?.total - 25;
-
-      const listdocumentstoDelete = await personalChat.listPersonalMessages({ ChatRoomID, limit: 25 })
-
-      for (let i = 0; i < totalItemsToDelete; i++) {
-        let messageID = listdocumentstoDelete?.documents[i]?.$id;
-        if (!messageID) return;
-        personalChat.deleteMessage(messageID);
-      }
-    }
-  }
-
-  useEffect(() => {
-    const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
-
-      if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response);
-
-        if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
-          userIdAuth === response.payload.userId
-        ) {
-
-          setTimeout(() => {
-            if (messagesDiv.current) {
-              messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-            }
-          }, 1000)
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
-        }
-      }
-    })
-
-    return () => realtime()
-  }, [])
+  const { register, handleSubmit, setValue, reset } = useForm();
 
 
-  useEffect(() => {
-    let notEqualArr = []
-    const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => {
-      if (obj.chatRoomID === ChatRoomID) notEqualArr.push(obj.$id);
-      return obj.chatRoomID === ChatRoomID
-    });
-
-    // let uniqueArray = Array.from(new Map(filterThisChatRoomMsgs?.map(obj => [obj.$id
-    //   , obj])).values());
-
-    getMessages(ChatRoomID, notEqualArr);
-
-
-    profile.getStoragePreview(receiverDetails[0]?.profileImgID)
-      .then((res) => setreceiverImage(res?.href))
-
-    deleteMsgsAutomatically()
-  }, []);
-
-  useEffect(() => {
-    setmessages((prev) => {
-      let arr = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID);
-      return [...arr]
-    })
-  }, [savedPersonalChatMsgs])
-
+  const messageRef = collection(db, "messages");
   const sendText = async (data) => {
-    setValue('text', '');
-    setisDeleteAllMsgActive((prev) => false);
-    try {
-      const createMessage = await personalChat.sendPersonalMessage(
-        {
-          ...data,
-          chatRoomID: ChatRoomID,
-          userId: userData?.$id,
-          username: userData?.name,
-          participantsIDs: [userData?.$id , receiverDetails[0].userIdAuth]
-        }
-      );
 
+    const createdMsg = await addDoc(messageRef, {
+      text: data.text,
+      username: userData?.name,
+      createdAt: new Date().toISOString(),
+      room: ChatRoomID,
+      userId: userData?.$id,
+    })
 
+    setTimeout(() => {
+      if (messagesDiv.current) {
+        messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+      }
+    }, 500);
+
+    reset()
+
+  }
+
+  useEffect(() => {
+    const queryMessage = query(messageRef, where("room", "==", ChatRoomID));
+    const unsuscribe = onSnapshot(queryMessage, (snapshot) => {
       setTimeout(() => {
         if (messagesDiv.current) {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
         }
-      }, 1000)
+      }, 500)
+      let messages = []
+      snapshot.forEach((doc) => {
+        messages.push({ ...doc.data(), $id: doc.id })
+      })
 
+
+      setmessages((prev) => {
+        return messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      })
+    })
+
+
+    setTimeout(() => {
+      if (messagesDiv.current) {
+        messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
+      }
+    }, 500)
+    return () => unsuscribe()
+
+
+  }, [])
+
+
+  const handleDeleteMessage = async (id) => {
+    try {
+      await deleteDoc(doc(db, "messages", id));
+      setNotificationPopMsgNature((prev) => true)
+      setnotificationPopMsg((prev) => "Message Deleted")
     } catch (error) {
-      setmessages((prev) => [...prev]);
+      setNotificationPopMsgNature((prev) => false)
+      setnotificationPopMsg((prev) => "Oops")
+    }
+  };
+
+  const deleteAllMessages = async () => {
+    messages.forEach((msg) => {
+      deleteDoc(doc(db, "messages", msg?.$id))
+        .then((res) => {
+          setNotificationPopMsgNature((prev) => true)
+          setnotificationPopMsg((prev) => "All Messages Cleared")
+        })
+    })
+
+  };
+
+  useEffect(() => {
+
+    if (messages.length > 100) {
+
+      for (let i = messages?.length, j = 0; i >= 100; i--, j++) {
+        deleteDoc(doc(db, "messages", messages[j].$id))
+      }
     }
 
-  }
-
+  }, [messages])
   return (
 
     <div className="PersonalChat_container">
@@ -182,7 +128,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
             <Link to={`/profile/${receiverDetails[0]?.userIdAuth}`}>
               <div className='flex items-center px-5 gap-4'>
                 <div>
-                  <img src={receiverImage ? receiverImage : NoProfile} />
+                  <img src={receiverDetails ? receiverDetails[0]?.profileImgURL : NoProfile} />
                 </div>
 
                 <div>
@@ -192,7 +138,9 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
             </Link>
             <div className='PersonalChat_Ellipsis_Vertical'>
               {messages?.length !== 0 && <i onClick={() => setisDeleteAllMsgActive((prev) => !prev)} className="fa-solid fa-ellipsis-vertical cursor-pointer"></i>}
-              {messages?.length !== 0 && <p onClick={deleteAllMessages} className={`${isDeleteAllMsgActive ? 'active' : ''}`}>Clear Chat</p>}
+              {messages?.length !== 0 && <p
+                onClick={deleteAllMessages}
+                className={`${isDeleteAllMsgActive ? 'active' : ''}`}>Clear Chat</p>}
             </div>
 
           </div>
@@ -203,14 +151,14 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
                 <div className="message--header">
                   <button
                     className={`PersonalChatDeleteBtn ${message.userId === userData.$id ? '' : 'hidden'}`}
-                    onClick={() => deleteMessage(message.$id)}
+                    onClick={() => handleDeleteMessage(message.$id)}
                     id=''
                   >
                     Delete
                   </button>
                 </div>
                 <p className={`message-timestamp ${message?.userId === userData.$id ? 'text-right' : 'text-left'}`}>
-                  {new Date(message.$createdAt).toLocaleDateString() + ', ' + new Date(message.$createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                  {new Date(message.createdAt).toLocaleDateString() + ', ' + new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                 </p>
                 <div className={`message--body ${message?.userId === userData.$id ? 'PersonalChatMyColor self-end' : 'bg-black self-start PersonalChatYourColor'}`}>
                   <span>{message?.text}</span>
@@ -236,12 +184,12 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
                 ></TextArea>
               </div>
               <div className="send-btn--wrapper">
-
                 <button
                   type='submit'
                   id='PersonalChatSubmit'
-                  className="btn">
-                  <i className="fa-regular fa-paper-plane"></i>
+                  className="btn flex justify-center items-center">
+                  {!isSending && <i className="fa-regular fa-paper-plane"></i>}
+                  {isSending && <i>---</i>}
                 </button>
               </div>
 

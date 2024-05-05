@@ -50,7 +50,7 @@ const PersonalChatPage = () => {
         JSON.stringify({ FirstParticipant: senderDetails.name }),
         JSON.stringify({ SecondParticpant: receiverName.current })
       ]
-      console.log(participantsDetails)
+     
       let createdChatRoom = await personalChat.createPersonalChatRoom({
         ChatRoomID,
       }, participantsDetails)

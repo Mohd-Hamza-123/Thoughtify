@@ -3,6 +3,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 import "./RTE.css"
 import conf from "../conf/conf";
+import { useAskContext } from "../context/AskContext";
 
 const RTE = ({
   name,
@@ -10,6 +11,9 @@ const RTE = ({
   defaultValue = "",
 }) => {
 
+  const {
+    setnotificationPopMsg,
+    setNotificationPopMsgNature } = useAskContext()
 
   return (
     <div className="w-full">
@@ -43,7 +47,8 @@ const RTE = ({
                     const file = input.files[0];
                     const MAX_FILE_SIZE = 1 * 1024 * 1024;
                     if (file.size > MAX_FILE_SIZE) {
-                      console.log("Image Must be Less then and Equal to 1 MB ")
+                      setNotificationPopMsgNature((prev) => false)
+                      setnotificationPopMsg((prev) => "Image Must be Less then and Equal to 1 MB")
                       return
                     }
                     const reader = new FileReader();

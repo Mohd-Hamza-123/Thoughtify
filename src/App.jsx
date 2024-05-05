@@ -15,14 +15,9 @@ import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
-import { Client } from "appwrite";
-import conf from "./conf/conf";
+
 
 function App() {
-
-  let client = new Client()
-    .setEndpoint(conf.appwriteURL)
-    .setProject(conf.appwriteProjectId);
 
 
   const dispatch = useDispatch();
@@ -53,10 +48,7 @@ function App() {
 
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] = useState(true);
-
-  // For personal Chat Messages
-  const [savedPersonalChatMsgs, setsavedPersonalChatMsgs] = useState([]);
-  console.log(savedPersonalChatMsgs);
+ 
   // To my Profile Posts
   const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
 
@@ -130,7 +122,6 @@ function App() {
 
   // getting notifications
   const [notifications, setnotifications] = useState(null);
-
 
 
   const deleteNotication = async () => {
@@ -224,33 +215,7 @@ function App() {
     }
   }
 
-  const realTimeChat = () => {
-    const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
-
-      if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response);
-        if (!response.payload.participantsIDs.includes(userData?.$id)) return
-        setsavedPersonalChatMsgs((prev) => {
-          let arr = [...prev, response.payload]
-          let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
-            , obj])).values());
-          return uniqueArray
-        })
-
-      } else if ("databases.*.collections.*.documents.*.delete") {
-        console.log(response)
-        if (!response.payload.participantsIDs.includes(userData?.$id)) return
-        setsavedPersonalChatMsgs((prev) => {
-          let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
-          return newChatMsgsArray
-        })
-
-      }
-    })
-
-    return () => realtime()
-  }
-
+  
   useEffect(() => {
     const installApp = (e) => {
       e.preventDefault();
@@ -285,8 +250,6 @@ function App() {
 
   useEffect(() => {
 
-
-
     if (indicator.current) {
       fetchData();
       indicator.current = false
@@ -296,8 +259,6 @@ function App() {
 
     getNotification();
 
-
-
   }, [])
 
   useEffect(() => {
@@ -305,18 +266,7 @@ function App() {
       getData()
     }
 
-    if (userData) {
-      realTimeChat()
-    }
-
   }, [userData])
-
-
-
-
-
-  // console.log(userData);
-  // console.log(myUserProfile)
 
   return !loading ? (
     <>
@@ -357,7 +307,6 @@ function App() {
           isUnreadNotificationExist, setIsUnreadNotificationExist,
           isDarkModeOn, setisDarkModeOn,
           mainResponder, setmainResponder,
-          savedPersonalChatMsgs, setsavedPersonalChatMsgs,
           savedMyProfilePosts, setSavedMyProfilePosts,
           savedMyProfileComments, setsavedMyProfileComments,
         }}
