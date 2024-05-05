@@ -11,7 +11,7 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-  // console.log(receiverDetails)
+  console.log(receiverDetails)
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)
@@ -114,49 +114,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     return () => realtime()
   }, [])
 
-  // useEffect(() => {
-  //   const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
-  //     if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-  //       console.log(response)
-
-  //       if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
-  //         userIdAuth === response.payload.userId
-  //       ) {
-
-  //         setmessages((prev) => [...prev, response.payload]);
-  //         setsavedPersonalChatMsgs((prev) => [...prev, response.payload])
-
-  //         setTimeout(() => {
-  //           if (messagesDiv.current) {
-  //             messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-  //           }
-  //         }, 1000)
-  //         setNotificationPopMsgNature((prev) => true)
-  //         setnotificationPopMsg((prev) => `${receiverDetails[0].name + ' replied'}`)
-  //       }
-
-  //       if (response.payload.userId === userData?.$id) {
-  //         setTimeout(() => {
-  //           if (messagesDiv.current) {
-  //             messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
-  //           }
-  //         }, 1000)
-
-  //       }
-
-  //     } else if ("databases.*.collections.*.documents.*.delete") {
-
-  //       setmessages((prev) => prev.filter((message) => {
-  //         if (response.payload.chatRoomID === ChatRoomID) {
-  //           return message.$id !== response.payload.$id
-  //         }
-  //       }))
-  //     }
-  //   })
-
-  //   return () => realtime()
-  // }, [])
   useEffect(() => {
     let notEqualArr = []
     const filterThisChatRoomMsgs = savedPersonalChatMsgs?.filter((obj) => {
@@ -192,7 +150,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           ...data,
           chatRoomID: ChatRoomID,
           userId: userData?.$id,
-          username: userData?.name
+          username: userData?.name,
+          participantsIDs: [userData?.$id, receiverDetails[0].userIdAuth]
         }
       );
 

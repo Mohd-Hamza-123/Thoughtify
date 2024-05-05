@@ -229,20 +229,23 @@ function App() {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
-
-        setsavedPersonalChatMsgs((prev) => {
-          let arr = [...prev, response.payload]
-          let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
-            , obj])).values());
-          return uniqueArray
-        })
-
+        if (response.payload?.participantsIDs?.includes(userData?.$id)) {
+          setsavedPersonalChatMsgs((prev) => {
+            let arr = [...prev, response.payload]
+            let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
+              , obj])).values());
+            return uniqueArray
+          })
+        }
 
       } else if ("databases.*.collections.*.documents.*.delete") {
-        setsavedPersonalChatMsgs((prev) => {
-          let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
-          return newChatMsgsArray
-        })
+        console.log(response)
+        if (response.payload?.participantsIDs?.includes(userData?.$id)) {
+          setsavedPersonalChatMsgs((prev) => {
+            let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
+            return newChatMsgsArray
+          })
+        }
       }
     })
 
@@ -300,13 +303,7 @@ function App() {
     }
   }, [userData])
 
-  // useEffect(() => {
-  //   setsavedPersonalChatMsgs((prev) => {
-  //     let arr = savedPersonalChatMsgs;
-  //     arr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  //     return arr
-  //   })
-  // }, [savedPersonalChatMsgs])
+
 
 
 

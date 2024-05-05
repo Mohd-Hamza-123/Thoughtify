@@ -55,13 +55,14 @@ export class PersonalChat {
         }
     }
 
-    async sendPersonalMessage({ text, chatRoomID, username, userId }) {
+    async sendPersonalMessage({ text, chatRoomID, username, userId, participantsIDs }) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId, ID.unique(), {
                 text,
                 chatRoomID,
                 username,
-                userId
+                userId,
+                participantsIDs
             })
         } catch (error) {
             return null
