@@ -26,7 +26,8 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([]);
-  
+  const [isSending, setIsSending] = useState(false)
+
 
   const { register, handleSubmit, setValue } = useForm();
 
@@ -94,7 +95,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        
+
 
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
@@ -139,6 +140,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   }, [savedPersonalChatMsgs])
 
   const sendText = async (data) => {
+    setIsSending((prev) => true)
     setValue('text', '');
     setisDeleteAllMsgActive((prev) => false);
     try {
@@ -148,16 +150,16 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           chatRoomID: ChatRoomID,
           userId: userData?.$id,
           username: userData?.name,
-          participantsIDs: [userData?.$id , receiverDetails[0].userIdAuth]
+          participantsIDs: [userData?.$id, receiverDetails[0].userIdAuth]
         }
       );
-
 
       setTimeout(() => {
         if (messagesDiv.current) {
           messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
         }
       }, 1000)
+      setIsSending((prev) => false)
 
     } catch (error) {
       setmessages((prev) => [...prev]);
@@ -233,12 +235,12 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
                 ></TextArea>
               </div>
               <div className="send-btn--wrapper">
-
                 <button
                   type='submit'
                   id='PersonalChatSubmit'
-                  className="btn">
-                  <i className="fa-regular fa-paper-plane"></i>
+                  className="btn flex justify-center items-center">
+                  {!isSending && <i className="fa-regular fa-paper-plane"></i>}
+                  {isSending && <i>---</i>}
                 </button>
               </div>
 
