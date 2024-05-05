@@ -56,7 +56,7 @@ function App() {
 
   // For personal Chat Messages
   const [savedPersonalChatMsgs, setsavedPersonalChatMsgs] = useState([]);
-  console.log(savedPersonalChatMsgs);
+  // console.log(savedPersonalChatMsgs);
   // To my Profile Posts
   const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
 
@@ -229,7 +229,7 @@ function App() {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
         console.log(response);
-
+        if (!response.payload.participantsIDs.includes(userData?.$id)) return
         setsavedPersonalChatMsgs((prev) => {
           let arr = [...prev, response.payload]
           let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
@@ -237,10 +237,9 @@ function App() {
           return uniqueArray
         })
 
-
       } else if ("databases.*.collections.*.documents.*.delete") {
         console.log(response)
-
+        if (!response.payload.participantsIDs.includes(userData?.$id)) return
         setsavedPersonalChatMsgs((prev) => {
           let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
           return newChatMsgsArray
@@ -286,7 +285,7 @@ function App() {
 
   useEffect(() => {
 
-    realTimeChat()
+
 
     if (indicator.current) {
       fetchData();
@@ -304,6 +303,10 @@ function App() {
   useEffect(() => {
     if (!myUserProfile && userData) {
       getData()
+    }
+
+    if (userData) {
+      realTimeChat()
     }
 
   }, [userData])
