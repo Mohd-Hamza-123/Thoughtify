@@ -231,24 +231,23 @@ function App() {
         console.log(response);
         console.log(userData?.$id)
         console.log(response.payload?.participantsIDs?.includes(userData?.$id))
-        if (response.payload?.participantsIDs?.includes(userData?.$id)) {
-          console.log("HI")
-          setsavedPersonalChatMsgs((prev) => {
-            let arr = [...prev, response.payload]
-            let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
-              , obj])).values());
-            return uniqueArray
-          })
-        }
+
+        setsavedPersonalChatMsgs((prev) => {
+          let arr = [...prev, response.payload]
+          let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
+            , obj])).values());
+          return uniqueArray
+        })
+
 
       } else if ("databases.*.collections.*.documents.*.delete") {
         console.log(response)
-        if (response.payload?.participantsIDs?.includes(userData?.$id)) {
-          setsavedPersonalChatMsgs((prev) => {
-            let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
-            return newChatMsgsArray
-          })
-        }
+
+        setsavedPersonalChatMsgs((prev) => {
+          let newChatMsgsArray = prev?.filter((msg) => msg?.$id !== response.payload.$id);
+          return newChatMsgsArray
+        })
+
       }
     })
 
@@ -297,7 +296,7 @@ function App() {
 
     getNotification();
 
-
+    realTimeChat()
 
   }, [])
 
@@ -306,9 +305,8 @@ function App() {
       getData()
     }
 
-    if (userData?.$id) {
-      realTimeChat()
-    }
+
+
   }, [userData])
 
 
