@@ -63,6 +63,7 @@ export class PersonalChat {
                 username,
                 userId,
                 participantsIDs,
+                createdDateTime
             })
         } catch (error) {
             return null
