@@ -36,7 +36,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const messagesData = await personalChat.listPersonalMessages({ ChatRoomID, notEqualArr });
 
     setsavedPersonalChatMsgs((prev) => {
-      let arr = [...messagesData.documents, ...prev]
+      let arr = [...prev, ...messagesData.documents,]
       let uniqueArray = Array.from(new Map(arr?.map(obj => [obj.$id
         , obj])).values());
       return uniqueArray
@@ -133,11 +133,16 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   }, []);
 
   useEffect(() => {
+  
     setmessages((prev) => {
+
       let arr = savedPersonalChatMsgs?.filter((obj) => obj.chatRoomID === ChatRoomID);
+
+      arr.sort((a, b) => new Date(a.createdDateTime) - new Date(b.createdDateTime));
+      
       return [...arr]
     })
-  }, [savedPersonalChatMsgs])
+  }, [savedPersonalChatMsgs, isSending])
 
   const sendText = async (data) => {
     setIsSending((prev) => true)
@@ -151,7 +156,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
           userId: userData?.$id,
           username: userData?.name,
           participantsIDs: [userData?.$id, receiverDetails[0].userIdAuth],
-          createdDateTime : new Date().toISOString()
+          createdDateTime: new Date().toISOString()
         }
       );
 
