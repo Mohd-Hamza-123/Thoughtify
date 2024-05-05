@@ -121,7 +121,7 @@ const NavigationBar = () => {
             </form>
           </div>
           {(authStatus && myUserProfile) && <div id="UpperNavigationBar_Bell_Div">
-            {isUnreadNotificationExist && <span>!</span>}
+            {isUnreadNotificationExist && <span onClick={() => setnotificationPopUp((prev) => !prev)}>!</span>}
             <i onClick={() => setnotificationPopUp((prev) => !prev)} className={`fa-regular fa-bell cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}></i>
             <section className={`UpperNavigationBar_Notification_DropDown_Section ${notificationPopUp ? 'active' : ''}`}>
 
