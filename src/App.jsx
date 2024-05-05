@@ -56,7 +56,7 @@ function App() {
 
   // For personal Chat Messages
   const [savedPersonalChatMsgs, setsavedPersonalChatMsgs] = useState([]);
-  console.log(savedPersonalChatMsgs)
+ 
   // To my Profile Posts
   const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
 
@@ -227,7 +227,7 @@ function App() {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-       console.log(response)
+     
         if (!response.payload.participantsIDs.includes(userData?.$id)) return
         setsavedPersonalChatMsgs((prev) => {
           let arr = [...prev, response.payload]

@@ -95,7 +95,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response)
+       
 
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
