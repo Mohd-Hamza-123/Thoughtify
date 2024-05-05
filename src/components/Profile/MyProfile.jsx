@@ -59,7 +59,7 @@ const MyProfile = () => {
     if (isUserAlreadyInReduxState === -1) {
 
       const listprofileData = await profile.listProfile({ slug });
-      console.log(listprofileData);
+      
       if (listprofileData?.total === 0) {
         setProfileData((prev) => null)
         setnotificationPopMsg((prev) => false)
