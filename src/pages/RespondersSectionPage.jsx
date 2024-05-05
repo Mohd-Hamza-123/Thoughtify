@@ -9,7 +9,7 @@ const RespondersSectionPage = () => {
 
     const dispatch = useDispatch();
     const initialTrustedPosts = useSelector((state) => state?.postsSlice?.initialResponderPosts);
-   
+
 
     const { increaseViews, hasMorePostInTrustedPost,
         sethasMorePostInTrustedPost, isDarkModeOn } = useAskContext();
@@ -26,37 +26,38 @@ const RespondersSectionPage = () => {
     const homeRight = useRef();
     const homeLeft = useRef()
 
-    useEffect(() => {
-        const getAllPosts = async () => {
-            setIsLoading((prev) => true);
-            try {
-                if (initialTrustedPosts?.length === 0) {
-                    const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true });
-                    setmaximumPostsNumber((prev) => posts?.total)
-                    if (initialTrustedPosts?.length < posts?.total) {
-                        sethasMorePostInTrustedPost((prev) => true)
-                    } else {
-                        sethasMorePostInTrustedPost((prev) => false)
-                    }
-                    if (posts) {
-                        setPosts((prev) => posts.documents)
-                        let lastID = posts.documents[posts.documents.length - 1]?.$id
-                        setLastPostID((prev) => lastID);
-                        dispatch(getResponderInitialPosts({ initialResponderPosts: posts.documents }))
-                    }
+
+    const getAllPosts = async () => {
+        setIsLoading((prev) => true);
+        try {
+            if (initialTrustedPosts?.length === 0) {
+                const posts = await appwriteService.getPosts({ lastPostID, TrustedResponders: true });
+                setmaximumPostsNumber((prev) => posts?.total)
+                if (initialTrustedPosts?.length < posts?.total) {
+                    sethasMorePostInTrustedPost((prev) => true)
                 } else {
-                    setPosts((prev) => [...initialTrustedPosts])
+                    sethasMorePostInTrustedPost((prev) => false)
                 }
-            } catch (error) {
-                setIsLoading(false)
+                if (posts) {
+                    setPosts((prev) => posts.documents)
+                    let lastID = posts.documents[posts.documents.length - 1]?.$id
+                    setLastPostID((prev) => lastID);
+                    dispatch(getResponderInitialPosts({ initialResponderPosts: posts.documents }))
+                }
+            } else {
+                setPosts((prev) => [...initialTrustedPosts])
             }
+        } catch (error) {
+            setIsLoading(false)
         }
+    }
+    useEffect(() => {
         getAllPosts();
     }, []);
 
     useEffect(() => {
         const ref = spinnerRef.current;
-      
+
         if (ref) {
             const observer = new IntersectionObserver(([entry]) => {
                 setIsIntersecting((prev) => entry.isIntersecting)
@@ -96,7 +97,7 @@ const RespondersSectionPage = () => {
             }
             getAllPosts()
         }
-      
+
     }, [isIntersecting, hasMorePostInTrustedPost, initialTrustedPosts])
 
     useEffect(() => {
@@ -120,23 +121,23 @@ const RespondersSectionPage = () => {
 
         sessionStorage.setItem('scrollPosition', position.toString());
         if (lastScrollY.current < position) {
-            
+
             setisNavbarHidden(true)
         } else {
-     
+
             setisNavbarHidden(false)
         }
-  
+
         lastScrollY.current = position
     }
 
     useEffect(() => {
-       
+
         if (RespondersSectionPageRef.current) {
-     
+
             const storedScrollPosition = sessionStorage.getItem('scrollPosition');
             const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-    
+
             RespondersSectionPageRef.current.scrollTop = parsedScrollPosition
         }
     }, [RespondersSectionPageRef.current, posts]);
@@ -159,7 +160,6 @@ const RespondersSectionPage = () => {
                     onClick={() => {
                         if (homeLeft.current && homeRight.current) {
                             homeLeft.current.classList.toggle("none");
-                            // homeRight.current.classList.toggle("none");
                         }
                     }}
                     className="Home_RIGHT_LEFT_Grid_div">

@@ -4,7 +4,6 @@ const TextArea = (
   { id = "", className = "", placeholder = "", ...props },
   ref
 ) => {
-  // console.log(id)
   return (
     <textarea
       ref={ref}

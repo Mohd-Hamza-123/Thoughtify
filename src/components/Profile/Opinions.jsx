@@ -117,7 +117,7 @@ const Opinions = ({ visitedProfileUserID }) => {
     const getMorecomments = async () => {
       const data = getValues()
       const filteredOpinions = await realTime.getCommentsWithQueries({ ...data, lastPostID })
-      console.log(filteredOpinions)
+     
       if (filteredOpinions.length !== 0) {
         setcomments((prev) => [...prev, ...filteredOpinions.documents])
       }

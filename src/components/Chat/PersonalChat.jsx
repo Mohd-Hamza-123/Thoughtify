@@ -11,7 +11,7 @@ import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-  // console.log(receiverDetails)
+
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId)
@@ -26,7 +26,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const [receiverImage, setreceiverImage] = useState('')
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([]);
-  // console.log(messages)
+  
 
   const { register, handleSubmit, setValue } = useForm();
 
@@ -94,7 +94,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     const realtime = client.subscribe(`databases.${conf.appwriteDatabaseId}.collections.${conf.appwritePersonalChatConverstionsCollectionId}.documents`, (response) => {
 
       if (response.events.includes("databases.*.collections.*.documents.*.create")) {
-        console.log(response);
+        
 
         if (response.payload.chatRoomID === ChatRoomID && receiverDetails[0].
           userIdAuth === response.payload.userId
@@ -121,9 +121,6 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       if (obj.chatRoomID === ChatRoomID) notEqualArr.push(obj.$id);
       return obj.chatRoomID === ChatRoomID
     });
-
-    // let uniqueArray = Array.from(new Map(filterThisChatRoomMsgs?.map(obj => [obj.$id
-    //   , obj])).values());
 
     getMessages(ChatRoomID, notEqualArr);
 

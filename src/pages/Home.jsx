@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import { useEffect } from "react"
 import { useState } from "react"
 import { PostCard, UpperNavigationBar, LowerNavigationBar, HorizontalLine, HomeRight, SecondLoader, Button, SideBar } from "../components/index";
@@ -21,7 +21,7 @@ const Home = () => {
     isDarkModeOn } = useAskContext();
 
   const [posts, setPosts] = useState([]);
-  // console.log(posts)
+ 
   const [isLoading, setIsLoading] = useState(false)
   const [lastPostID, setLastPostID] = useState(null)
   const [isIntersecting, setIsIntersecting] = useState(false)
@@ -35,7 +35,7 @@ const Home = () => {
     try {
       if (initialPost?.length === 0) {
         const posts = await appwriteService.getPosts({ lastPostID })
-        // console.log(posts)
+      
         if (posts === false) {
           setPosts((prev) => false)
         }
@@ -52,11 +52,9 @@ const Home = () => {
           dispatch(getInitialPost({ initialPosts: posts?.documents }))
         }
       } else {
-
         setPosts((prev) => [...initialPost])
       }
     } catch (error) {
-     
       setIsLoading(false)
     }
   }
@@ -212,7 +210,7 @@ const Home = () => {
 
       <section>
         <nav className={`Home_Nav_Container w-full text-center ${isNavbarHidden ? 'active' : ''}`}>
-          <UpperNavigationBar className='' />
+          <UpperNavigationBar />
           <HorizontalLine />
           <LowerNavigationBar />
         </nav>
