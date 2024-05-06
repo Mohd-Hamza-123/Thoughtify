@@ -19,7 +19,6 @@ import { Client } from "appwrite";
 import conf from "./conf/conf";
 
 function App() {
-  console.log(conf)
 
   let client = new Client()
     .setEndpoint(conf.appwriteURL)

@@ -30,7 +30,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   const [isSending, setIsSending] = useState(false)
 
 
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, reset } = useForm();
 
 
   const messageRef = collection(db, "messages");
@@ -48,7 +48,9 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       if (messagesDiv.current) {
         messagesDiv.current.scrollTop = messagesDiv.current.scrollHeight;
       }
-    }, 500)
+    }, 500);
+
+    reset()
 
   }
 
