@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@tinymce/tinymce-react": "^5.0.0",
     "appwrite": "^13.0.0",
+    "firebase": "^10.11.1",
     "html-react-parser": "^5.0.6",
     "https-localhost": "^4.7.1",
     "image-conversion": "^2.1.1",

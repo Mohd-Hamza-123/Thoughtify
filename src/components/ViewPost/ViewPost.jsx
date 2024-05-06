@@ -80,12 +80,11 @@ const ViewPost = () => {
     realTime
       .deleteComment(documentid)
       .then(() => {
-        // console.log("deleted")
+
         let commentsAfterDeletion = commentsInRedux.filter((comment) => comment.$id !== documentid)
-        // console.log("dispatched")
+
         dispatch(getCommentsInRedux({ comments: commentsAfterDeletion, isMerge: false }))
-      })
-      .catch((err) => console.log(err.message));
+      }).catch((err) => { })
 
 
     appwriteService
@@ -95,7 +94,7 @@ const ViewPost = () => {
 
         setpostCommentCount((prev) => post.commentCount - 1)
       })
-      .catch((error) => console.log(error))
+      .catch((error) => { })
 
     setfilteredComment((prev) => null)
   }
@@ -227,9 +226,9 @@ const ViewPost = () => {
   useEffect(() => {
 
     const getRelatedQueries = () => {
-      // console.log(initialPost)
+
       let relatedArr = initialPost?.filter((initialPostObj) => {
-        // console.log(post)
+
         if (initialPostObj?.category
           === post?.category && post?.$id !== initialPostObj?.$id) {
           return initialPostObj
@@ -540,7 +539,7 @@ const ViewPost = () => {
     }
     try {
       const listComments = await realTime.listComment(post?.$id);
-      console.log(listComments)
+
       let totalCommentsToDelete = listComments?.total;
       while (totalCommentsToDelete > 0) {
         const listComments = await realTime.listComment(post?.$id);
@@ -555,12 +554,12 @@ const ViewPost = () => {
   }
 
   useEffect(() => {
-   
+
     if (ViewPostRef.current) {
-  
+
       const storedScrollPosition = sessionStorage.getItem('scrollPositionofViewPost');
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-   
+
       ViewPostRef.current.scrollTop = parsedScrollPosition
     }
   }, [ViewPostRef.current]);
@@ -661,7 +660,7 @@ const ViewPost = () => {
                             </Button>
                           </li>
                         )}
-            
+
                       </ul>
                     </div>
                     <Button>
