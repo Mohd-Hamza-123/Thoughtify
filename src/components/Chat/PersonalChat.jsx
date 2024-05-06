@@ -6,11 +6,11 @@ import { useSelector } from 'react-redux'
 import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
-import { addDoc, collection, onSnapshot, query, where, deleteDoc, doc, getDocs } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot, query, where, deleteDoc, doc } from 'firebase/firestore'
 import { db } from '../../Firebase/Firebase-config'
 
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
-
+  console.log(receiverDetails)
 
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
@@ -20,9 +20,10 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
   } = useAskContext()
 
   const [receiverImage, setreceiverImage] = useState('')
+
   const [isDeleteAllMsgActive, setisDeleteAllMsgActive] = useState(false)
   const [messages, setmessages] = useState([]);
- 
+
   const [isSending, setIsSending] = useState(false)
 
 
@@ -62,7 +63,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
       snapshot.forEach((doc) => {
         messages.push({ ...doc.data(), $id: doc.id })
       })
-     
+
 
       setmessages((prev) => {
         return messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -127,7 +128,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
             <Link to={`/profile/${receiverDetails[0]?.userIdAuth}`}>
               <div className='flex items-center px-5 gap-4'>
                 <div>
-                  <img src={receiverImage ? receiverImage : NoProfile} />
+                  <img src={receiverDetails ? receiverDetails[0]?.profileImgURL : NoProfile} />
                 </div>
 
                 <div>
