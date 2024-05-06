@@ -15,11 +15,11 @@ import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
-import conf from './conf/conf'
+
 
 function App() {
 
-  console.log(conf)
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth?.userData);
