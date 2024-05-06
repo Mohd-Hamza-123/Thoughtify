@@ -18,8 +18,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
     .setProject(conf.appwriteProjectId)
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
-  const { savedPersonalChatMsgs,
-    setsavedPersonalChatMsgs,
+  const {
     setnotificationPopMsg,
     setNotificationPopMsgNature,
   } = useAskContext()

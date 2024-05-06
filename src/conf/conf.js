@@ -14,7 +14,13 @@ const conf = {
     appwrite_Notification_CollectionID: String(import.meta.env.VITE_APPWRITE_NOTIFICATION_COLLECTION_ID),
     unsplashApiKey: String(import.meta.env.VITE_UNSPLASH_API_KEY),
     myPrivateUserID: String(import.meta.env.VITE_MY_PRIVATE_USER_ID),
-    tinyMCEapiKey: String(import.meta.env.VITE_TINYMCE_API)
+    tinyMCEapiKey: String(import.meta.env.VITE_TINYMCE_API),
+    firebaseApiKey: String(import.meta.env.VITE_FIREBASE_API_KEY),
+    firebaseAuthDomain: String(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
+    firebaseProjectID: String(import.meta.env.VITE_FIREBASE_PROJECT_ID),
+    firebaseStorageBucketID: String(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET_ID),
+    firebaseMsgSenderID: String(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
+    firebaseAppId: String(import.meta.env.VITE_FIREBASE_APPID)
 }
 // console.log(conf)
 export default conf;

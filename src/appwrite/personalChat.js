@@ -1,5 +1,5 @@
 import conf from '../conf/conf'
-import { Account, Query, ID, Storage, Client, Databases } from 'appwrite'
+import { Query, Storage, Client, Databases } from 'appwrite'
 
 export class PersonalChat {
     client = new Client()
@@ -34,14 +34,6 @@ export class PersonalChat {
         }
     }
 
-    async deleteMessage(messageid) {
-        try {
-            await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId, messageid)
-        } catch (error) {
-
-            return false
-        }
-    }
 
     async getPersonalChatRooms(chatRoomID) {
         if (!chatRoomID) return false
@@ -55,47 +47,6 @@ export class PersonalChat {
         }
     }
 
-    async sendPersonalMessage({ text, chatRoomID, username, userId, participantsIDs,createdDateTime }) {
-        try {
-            return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId, ID.unique(), {
-                text,
-                chatRoomID,
-                username,
-                userId,
-                participantsIDs,
-                createdDateTime
-            })
-        } catch (error) {
-            return null
-        }
-    }
-
-    async listPersonalMessages({ ChatRoomID, limit, notEqualArr }) {
-
-        if (!ChatRoomID) return null
-
-        let arr = []
-
-        if (ChatRoomID) {
-            arr.push(Query.equal("chatRoomID", [`${ChatRoomID}`]))
-        }
-        if (limit) {
-            arr.push(Query.orderAsc('$createdAt'));
-        }
-        if (notEqualArr?.length > 0) {
-            for (let i = 0; i < notEqualArr?.length; i++) {
-                arr.push(Query.notEqual("$id", [`${notEqualArr[i]}`]))
-            }
-        }
-
-        try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwritePersonalChatConverstionsCollectionId,
-                arr
-            )
-        } catch (error) {
-            return null
-        }
-    }
 
 }
 
