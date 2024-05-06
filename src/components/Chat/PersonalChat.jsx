@@ -3,8 +3,6 @@ import './PersonalChat.css'
 import { HorizontalLine, TextArea, UpperNavigationBar } from '../../components/index'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import conf from '../../conf/conf'
-import { Client } from 'appwrite'
 import NoProfile from '../../assets/NoProfile.png'
 import { Link } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
@@ -13,9 +11,7 @@ import { db } from '../../Firebase/Firebase-config'
 
 const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
 
-  let client = new Client()
-    .setEndpoint(conf.appwriteURL)
-    .setProject(conf.appwriteProjectId)
+
   const userData = useSelector((state) => state.auth.userData)
   const messagesDiv = useRef();
   const {

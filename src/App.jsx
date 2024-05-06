@@ -15,14 +15,9 @@ import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
-import { Client } from "appwrite";
-import conf from "./conf/conf";
+
 
 function App() {
-
-  let client = new Client()
-    .setEndpoint(conf.appwriteURL)
-    .setProject(conf.appwriteProjectId);
 
 
   const dispatch = useDispatch();
