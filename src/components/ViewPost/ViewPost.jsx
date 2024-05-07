@@ -223,6 +223,7 @@ const ViewPost = () => {
 
   const [isRelatedQueriesExist, setisRelatedQueriesExist] = useState(false)
   const [relatedQueriesArr, setRelatedQueriesArr] = useState([])
+
   useEffect(() => {
 
     const getRelatedQueries = () => {
@@ -851,6 +852,7 @@ const ViewPost = () => {
                   onClick={() => {
                     navigateToRelatedPost(QuestionObj?.$id);
                     if (viewPostLeft.current && viewPostRight.current) {
+                      if (!window.screen.width <= 500) return
                       viewPostLeft.current.classList.toggle("none");
                     }
                   }}

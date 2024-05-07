@@ -17,7 +17,7 @@ import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
 
 const Chat = ({ post, slug }) => {
-  console.log(post)
+ 
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state?.commentsSlice?.comments);
