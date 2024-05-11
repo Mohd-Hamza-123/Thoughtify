@@ -71,12 +71,11 @@ const ViewPost = () => {
   const [likeCount, setlikeCount] = useState(0);
   const [disLikeCount, setdisLikeCount] = useState(0)
 
-
   const navigateToRelatedPost = (postId) => {
     navigate(`/post/${postId}/${null}`);
   }
   const deleteComments = async (documentid) => {
-    // return
+
     realTime
       .deleteComment(documentid)
       .then(() => {
@@ -352,13 +351,18 @@ const ViewPost = () => {
       setIsPollOpinionVisible(true)
     }
   }
+
+  const [pauseLikeDisLike, setpauseLikeDisLike] = useState(false)
+  // console.log(pauseLikeDisLike)
   const like_dislike_BookMark = async (flag) => {
+
+    if (pauseLikeDisLike === true) return
     if (!userAuthStatus) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg((prev) => 'Please Login')
       return
     }
-
+    setpauseLikeDisLike((prev) => true)
     const likedQuestionsInContext = myUserProfile?.likedQuestions
     const dislikedQuestionsInContext = myUserProfile?.dislikedQuestions
     const bookmarksInContext = myUserProfile?.bookmarks
@@ -510,6 +514,8 @@ const ViewPost = () => {
         setMyUserProfile((prev) => updateBookMarkInProfile)
       }
     }
+
+    setpauseLikeDisLike((prev) => false)
   }
 
   const ViewPostRef = useRef()
@@ -758,6 +764,12 @@ const ViewPost = () => {
           <section id="ViewPost_Like_Dislike_BookMark">
             <div onClick={() => {
 
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
+
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
@@ -790,6 +802,12 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
@@ -822,6 +840,12 @@ const ViewPost = () => {
             </div>
 
             <div onClick={() => {
+              if (pauseLikeDisLike) {
+                setNotificationPopMsgNature((prev) => false)
+                setnotificationPopMsg((prev) => 'wait...')
+                return
+              }
+
               if (!userAuthStatus) {
                 setNotificationPopMsgNature((prev) => false)
                 setnotificationPopMsg((prev) => 'Please Login')
