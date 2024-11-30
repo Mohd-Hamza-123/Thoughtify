@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 import "./RTE.css";
@@ -22,7 +21,8 @@ const RTE = ({ name, control, defaultValue = "" }) => {
               initialValue: defaultValue,
               height: 500,
               autoresize_max_height: 800,
-              menubar: false,
+              menubar: true,
+              codesample_global_prismjs: true,
               plugins:
                 "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount linkchecker",
               toolbar:
