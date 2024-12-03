@@ -26,6 +26,7 @@ import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
 import Prism from "../Prism";
 import { Client } from "appwrite";
+import { makeCodeBlock } from "../../helpers/code-block-formatting";
 
 const ViewPost = () => {
   let client = new Client()
@@ -702,6 +703,11 @@ const ViewPost = () => {
       ViewPostRef.current.scrollTop = parsedScrollPosition;
     }
   }, [ViewPostRef.current]);
+
+useEffect(()=>{
+  makeCodeBlock()
+},[post?.content])
+
   return post ? (
     <div
       id="ViewPost_Scroll_Div"
