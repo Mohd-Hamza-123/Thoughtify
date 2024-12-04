@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import "./Chat.css";
-import NoProfile from '../../assets/NoProfile.png'
-import { ChatRTE, Button, Spinner } from "../index";
+import { ChatRTE, Spinner } from "../index";
+import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import realTime from "../../appwrite/realTime";
 import parse from "html-react-parser";
@@ -17,7 +17,7 @@ import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
 
 const Chat = ({ post, slug }) => {
- 
+
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const commentsInRedux = useSelector((state) => state?.commentsSlice?.comments);
@@ -354,8 +354,8 @@ const Chat = ({ post, slug }) => {
                   <div className="flex gap-2 cursor-pointer">
                     <img
                       className="Chat_Comment_Div_img"
-                      src={`${profilePicURL ? profilePicURL : NoProfile}`}
-                      alt=""
+                      src={`${profilePicURL}`}
+                      alt="profilePic"
                     />
                     <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
                   </div>

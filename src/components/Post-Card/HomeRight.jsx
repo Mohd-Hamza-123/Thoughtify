@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAskContext } from '../../context/AskContext'
 import { useSelector } from 'react-redux'
 import authService from '../../appwrite/auth'
-const HomeRight = () => {
+
+
+const HomeRight = ({ switchTrigger }) => {
     const userData = useSelector((state) => state.auth.userData)
 
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false
@@ -49,12 +51,12 @@ const HomeRight = () => {
     }
 
     return (
-        <>
-            <div className={`HomeRight_Category mb-4 ${isDarkModeOn ? "darkMode" : ''}`}>
+        <section className={`w-full md:w-[35%] ${switchTrigger === false ? "block" : "hidden"} md:block`}>
+            <div className={`HomeRight_Category my-4 ${isDarkModeOn ? "darkMode" : ''}`}>
                 <p className={`${isDarkModeOn ? "text-white" : ''}`}>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
                     {categoriesArr?.map((category, index) => (
-                        <span onClick={() => navigate(`/BrowseQuestion/${category.category}/${null}`)} className='cursor-pointer' key={category.category}>{category.category}</span>
+                        <span onClick={() => navigate(`/BrowseQuestion/${category?.category}/${null}`)} className='cursor-pointer' key={category?.category}>{category.category}</span>
                     ))}
                 </div>
             </div>
@@ -89,7 +91,7 @@ const HomeRight = () => {
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail}
                     className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`}>Verify Your Email</span>}
             </div>
-        </>
+        </section>
     )
 }
 

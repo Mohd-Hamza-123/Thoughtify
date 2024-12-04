@@ -10,8 +10,7 @@ import {
   ChatInProfile,
   SecondLoader,
 } from "../index";
-import NoProfile from '../../assets/NoProfile.png'
-import { Button } from "../index";
+import { Button } from "../ui/button";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
@@ -286,7 +285,7 @@ const MyProfile = () => {
               id="MyProfile_Img_Div"
               className="w-1/4 h-full flex justify-center items-center"
             >
-              <img src={URLimg ? URLimg : NoProfile} />
+              <img src={URLimg} />
             </div>
             <div
               id="MyProfile_Name_Div"

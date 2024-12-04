@@ -1,12 +1,7 @@
-import React from 'react'
-import { ViewPost, UpperNavigationBar, HorizontalLine, LowerNavigationBar } from '../components'
+import React from "react";
+import { ViewPost } from "../components";
 const ViewPostPage = () => {
-    
-    return (
-        <>
-            <ViewPost />
-        </>
-    )
-}
+  return <ViewPost />;
+};
 
-export default ViewPostPage
+export default ViewPostPage;

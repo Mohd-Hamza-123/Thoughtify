@@ -33,7 +33,6 @@ const postSlice = createSlice({
                 state.initialPosts = uniqueArray
 
             } else if (action.payload.initialPostsFlag === false) {
-                console.log(action.payload.initialPosts)
                 array = [...action.payload.initialPosts]
 
 
@@ -44,7 +43,7 @@ const postSlice = createSlice({
           
                 array = [...state.initialPosts, ...action.payload.initialPosts]
 
-                let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id, obj])).values());
+                let uniqueArray = Array.from(new Map(array.map(obj => [obj?.$id, obj])).values());
                 state.initialPosts = uniqueArray
             }
 

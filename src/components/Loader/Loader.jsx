@@ -1,13 +1,12 @@
 import React from 'react'
 import './Loader.css'
-import QueryFlow from '../../assets/QueryFlow.png'
 
 const Loader = () => {
    
     return (
         <div className='LoaderPage'>
             <div>
-                <img src={QueryFlow} alt="" />
+                <img src="Thoughtify.webp" alt="Thoughtify" />
                 <h1>Thoughtify</h1>
             </div>
 

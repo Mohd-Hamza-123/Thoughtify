@@ -14,16 +14,26 @@ export class Profile {
         this.storage = new Storage(this.client)
     }
 
-    async createProfile({ userIdAuth, gender, name, profileImgID, profileImgURL }) {
+    async createProfile({
+        name,
+        userIdAuth,
+        profileImgID,
+        profileImgURL
+    }) {
+        console.log(userIdAuth, name)
         try {
-            return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
-                userIdAuth,
-                gender,
-                name,
-                profileImgID,
-                profileImgURL
-            })
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                ID.unique(),
+                {
+                    userIdAuth,
+                    name,
+                    profileImgID,
+                    profileImgURL
+                })
         } catch (error) {
+            console.log(error)
             return null
         }
     }
@@ -86,7 +96,7 @@ export class Profile {
         if (dislikedQuestions) obj.dislikedQuestions = dislikedQuestions
         if (bookmarks) obj.bookmarks = bookmarks
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID, 
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
                 obj
             )
         } catch (error) {
@@ -95,7 +105,7 @@ export class Profile {
         }
     }
     async listProfile({ slug, name }) {
-
+        // console.log(name)
         let QueryArr = []
         if (slug) {
             QueryArr.push(Query.equal("userIdAuth", [`${slug}`]))
@@ -105,9 +115,11 @@ export class Profile {
         }
 
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+            const res = await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
             )
+            // console.log(res)
+            return res
         } catch (error) {
             return null
         }

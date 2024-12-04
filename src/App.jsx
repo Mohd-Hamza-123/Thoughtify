@@ -2,20 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "./store/authSlice";
-import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { Loader, NotificationPop, SideBar } from "./components";
-import appwriteService from "./appwrite/config";
-import profile from "./appwrite/profile";
-import { getUserProfile } from "./store/profileSlice";
+import { NavBar, NotificationPop, SideBar } from "./components";
+import { userProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
 import authService from "./appwrite/auth";
-import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
 import Home from "./pages/Home";
+import { useGetProfileData } from "./lib/profile";
 import LoginPage from "./pages/LoginPage";
 import ForgetPassword from "./pages/ForgetPassword";
 import SignupPage from "./pages/SignupPage";
@@ -30,22 +26,27 @@ import ResetPassword from "./pages/ResetPassword";
 import FindFriends from "./pages/FindFriends";
 import RespondersSectionPage from "./pages/RespondersSectionPage";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage";
-function App() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const userData = useSelector((state) => state.auth?.userData);
+import InitializationWrapper from "./wrapper/InitializationWrapper";
 
+function App() {
+
+  const dispatch = useDispatch();
+
+  const userData = useSelector((state) => state.auth?.userData);
+  const myUserProfile = useSelector((state) => state.profileSlice?.userProfile);
+  // console.log(myUserProfile)
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+
+
+  const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
+  const [notificationShow, setNotificationShow] = useState(null);
+  const [hasMoreComments, sethasMoreComments] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
-  const [notificationPopUp, setnotificationPopUp] = useState(false);
-  const [myUserProfile, setMyUserProfile] = useState(null);
-  const [notificationShow, setNotificationShow] = useState(null);
-  const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
-  const [hasMoreComments, sethasMoreComments] = useState(true);
-  const [hasMorePostsInBrowseQuestions, sethasMorePostsInBrowseQuestions] =
+  const [
+    hasMorePostsInBrowseQuestions,
+    sethasMorePostsInBrowseQuestions] =
     useState(true);
   const [
     hasMorePostsInProfileFilterQuestions,
@@ -63,11 +64,6 @@ function App() {
     useState(true);
   const [queries, setQueries] = useState([]);
 
-  //For Notification Pop
-  const [notificationPopMsg, setnotificationPopMsg] = useState("");
-  const [notificationPopMsgNature, setNotificationPopMsgNature] =
-    useState(false);
-
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] =
     useState(true);
@@ -80,72 +76,67 @@ function App() {
 
   const [mainResponder, setmainResponder] = useState(null);
 
-  const indicator = useRef(true);
-
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
-
-  const body = document.getElementsByTagName("body");
 
   const [isDarkModeOn, setisDarkModeOn] = useState(
     localStorage.getItem("isDarkModeOn") === "true"
   );
 
-  const fetchData = async () => {
-    try {
-      const userData = await authService.getCurrentUser();
+  const { getProfileData } = useGetProfileData()
 
-      if (userData) {
-        dispatch(login({ userData }));
-        const userProfile = await profile.listProfile({ slug: userData?.$id });
-        if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
-          const userProfile = await profile.createProfile({
-            name: userData?.name,
-            userIdAuth: userData?.$id,
-            profileImgID: null,
-            profileImgURL:
-              "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
-          });
-          setMyUserProfile(userProfile);
-          dispatch(getUserProfile({ userProfile }));
-          if (userProfile) {
-            navigate("/");
-          } else {
-            navigate("/signup");
-          }
-        } else {
-          setMyUserProfile(userProfile?.documents[0]);
+  // const fetchData = async () => {
+  //   try {
+  //     const userData = await authService.getCurrentUser();
+  //     if (userData) {
+  //       dispatch(login({ userData }));
+  //       const response = await profile.listProfile({ slug: userData?.$id });
+  //       console.log(response)
+  //       if (response?.documents?.length === 0 || response?.total === 0) {
+  //         const response = await profile.createProfile({
+  //           name: userData?.name,
+  //           userIdAuth: userData?.$id,
+  //           profileImgID: null,
+  //           profileImgURL:
+  //             "https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png",
+  //         });
+  //         dispatch(userProfile({ userProfile: response?.documents[0] }));
+  //         if (response) {
+  //           navigate("/");
+  //         } else {
+  //           navigate("/signup");
+  //         }
+  //       } else {
+  //         dispatch(userProfile({ userProfile: response?.documents[0] }));
+  //         const profileImageID = response?.documents[0]?.profileImgID;
+  //         const URL = await profile.getStoragePreview(profileImageID);
 
-          const profileImageID = userProfile?.documents[0]?.profileImgID;
-          const URL = await profile.getStoragePreview(profileImageID);
-
-          if (URL) {
-            dispatch(
-              getUserProfile({
-                userProfile: userProfile?.documents[0],
-                userProfileImgURL: URL?.href,
-              })
-            );
-          } else {
-            dispatch(
-              getUserProfile({
-                userProfile: userProfile?.documents[0],
-                userProfileImgURL: "",
-              })
-            );
-          }
-          navigate("/");
-        }
-      }
-    } catch (err) {
-      setnotificationPopMsg(false);
-      setnotificationPopMsg("Oops ! Error");
-      navigate("/signup");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //         if (URL) {
+  //           dispatch(
+  //             userProfile({
+  //               userProfile: userProfile?.documents[0],
+  //               userProfileImgURL: URL?.href,
+  //             })
+  //           );
+  //         } else {
+  //           dispatch(
+  //             userProfile({
+  //               userProfile: userProfile?.documents[0],
+  //               userProfileImgURL: "",
+  //             })
+  //           );
+  //         }
+  //         navigate("/");
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log("error", err)
+  //     navigate("/signup");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // getting notifications
   const [notifications, setnotifications] = useState(null);
@@ -160,16 +151,6 @@ function App() {
       if (!notificationID) return;
       notification.deleteNotication({ notificationID });
     }
-  };
-
-  const increaseViews = async (PostId) => {
-    const previesViews = await appwriteService.getPost(PostId);
-    const updateViews = await appwriteService.updatePostViews(
-      PostId,
-      previesViews.views + 1,
-      previesViews.commentCount
-    );
-    dispatch(getInitialPost({ initialPosts: [updateViews] }));
   };
 
   const verifyEmail = () => {
@@ -210,18 +191,9 @@ function App() {
     }
   }
 
-  async function getData() {
-    try {
-      const userProfile = await profile.listProfile({ slug: userData?.$id });
-      setMyUserProfile(userProfile?.documents[0]);
-    } catch (error) {
-      setMyUserProfile(null);
-      dispatch(logout());
-    }
-  }
-
   const [appInstallPrompt, setAppInstallPrompt] = useState(null);
   const [isAppInstalled, setisAppInstalled] = useState(true);
+
   const onInstallApp = async () => {
     if (appInstallPrompt) {
       appInstallPrompt.prompt();
@@ -261,138 +233,101 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!body) return;
-    if (isDarkModeOn) {
-      localStorage.setItem("isDarkModeOn", true);
-      body[0].classList.add("darkMode");
-    } else {
-      localStorage.setItem("isDarkModeOn", false);
-      body[0].classList.remove("darkMode");
-    }
-  }, [isDarkModeOn]);
-
-  useEffect(() => {
-    if (indicator.current) {
-      fetchData();
-      indicator.current = false;
-    }
-
+    // if (indicator.current) {
+    //   fetchData();
+    //   indicator.current = false;
+    // }
     verifyEmail();
-
     getNotification();
   }, []);
 
   useEffect(() => {
     if (!myUserProfile && userData) {
-      getData();
+      const profileData = getProfileData();
+      dispatch(userProfile({ userProfile: profileData }));
     }
   }, [userData]);
 
-  return !loading ? (
-    <>
-      <AskProvider
-        value={{
-          isAppInstalled,
-          onInstallApp,
-          queries,
-          setQueries,
-          hasMorePostsInProfileFilterBookmark,
-          sethasMorePostsInProfileFilterBookmark,
-          hasMorePostsInProfileFilterOpinions,
-          sethasMorePostsInProfileFilterOpinions,
-          hasMorePostsInProfileFilterQuestions,
-          sethasMorePostsInProfileFilterQuestions,
-          hasMorePostsInBrowseQuestions,
-          sethasMorePostsInBrowseQuestions,
-          hasMorePostInTrustedPost,
-          sethasMorePostInTrustedPost,
-          hasMoreComments,
-          sethasMoreComments,
-          hasMorePostsInHome,
-          sethasMorePostsInHome,
-          myUserProfile,
-          setMyUserProfile,
-          notificationPopUp,
-          setnotificationPopUp,
-          notificationShow,
-          setNotificationShow,
-          increaseViews,
-          feedbackPopUp,
-          setfeedbackPopUp,
-          SettingPopUp,
-          SetSettingPopUp,
-          isOverlayBoolean,
-          setisOverlayBoolean,
-          isOpen,
-          setIsOpen,
-          notificationPopMsg,
-          setnotificationPopMsg,
-          notificationPopMsgNature,
-          setNotificationPopMsgNature,
-          notifications,
-          setnotifications,
-          deleteNotication,
-          isUnreadNotificationExist,
-          setIsUnreadNotificationExist,
-          isDarkModeOn,
-          setisDarkModeOn,
-          mainResponder,
-          setmainResponder,
-          savedMyProfilePosts,
-          setSavedMyProfilePosts,
-          savedMyProfileComments,
-          setsavedMyProfileComments,
-        }}
-      >
-        <NotificationPop
-          notificationPopMsg={notificationPopMsg}
-          notificationPopMsgNature={notificationPopMsgNature}
+  return <AskProvider
+    value={{
+      isAppInstalled,
+      onInstallApp,
+      queries,
+      setQueries,
+      hasMorePostsInProfileFilterBookmark,
+      sethasMorePostsInProfileFilterBookmark,
+      hasMorePostsInProfileFilterOpinions,
+      sethasMorePostsInProfileFilterOpinions,
+      hasMorePostsInProfileFilterQuestions,
+      sethasMorePostsInProfileFilterQuestions,
+      hasMorePostsInBrowseQuestions,
+      sethasMorePostsInBrowseQuestions,
+      hasMorePostInTrustedPost,
+      sethasMorePostInTrustedPost,
+      hasMoreComments,
+      sethasMoreComments,
+      hasMorePostsInHome,
+      sethasMorePostsInHome,
+      notificationShow,
+      setNotificationShow,
+      feedbackPopUp,
+      setfeedbackPopUp,
+      SettingPopUp,
+      SetSettingPopUp,
+      isOverlayBoolean,
+      setisOverlayBoolean,
+      isOpen,
+      setIsOpen,
+      notifications,
+      setnotifications,
+      deleteNotication,
+      isUnreadNotificationExist,
+      setIsUnreadNotificationExist,
+      isDarkModeOn,
+      setisDarkModeOn,
+      mainResponder,
+      setmainResponder,
+      savedMyProfilePosts,
+      setSavedMyProfilePosts,
+      savedMyProfileComments,
+      setsavedMyProfileComments,
+    }}
+  >
+    <InitializationWrapper>
+      <NavBar />
+      <SideBar />
+      <Overlay />
+      <Setting />
+      <Feedback />
+      <NotificationPop />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignupPage />} />
+        <Route path="profile/:slug" element={<Profile />} />
+        <Route path="Find-People" element={<FindFriends />} />
+        <Route path="AskQuestion" element={<AskQuestion />} />
+        <Route path="forgotPassword" element={<ForgetPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
+        <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
+        <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
+        <Route
+          path="EditProfile/:editProfileSlug"
+          element={<EditProfilePage />}
         />
-        <Feedback />
-        <Setting />
-
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-          <Route path="profile/:slug" element={<Profile />} />
-          <Route path="Find-People" element={<FindFriends />} />
-          <Route path="AskQuestion" element={<AskQuestion />} />
-          <Route path="forgotPassword" element={<ForgetPassword />} />
-          <Route path="reset-password" element={<ResetPassword />} />
-          <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
-          <Route
-            path="/trustedResponders"
-            element={<TrustedRespondersPage />}
-          />
-          <Route
-            path="EditProfile/:editProfileSlug"
-            element={<EditProfilePage />}
-          />
-          <Route
-            path="ChatRoom/:senderSlug/:receiverSlug"
-            element={<PersonalChatPage />}
-          />
-          <Route
-            path="BrowseQuestion/:category/:searchInput"
-            element={<SearchPage />}
-          />
-          <Route
-            path="post/:slug/:filterCommentID"
-            element={<ViewPostPage />}
-          />
-          <Route
-            path="Responders-Section"
-            element={<RespondersSectionPage />}
-          />
-        </Routes>
-        <SideBar />
-        <Overlay />
-      </AskProvider>
-    </>
-  ) : (
-    <Loader />
-  );
+        <Route
+          path="ChatRoom/:senderSlug/:receiverSlug"
+          element={<PersonalChatPage />}
+        />
+        <Route
+          path="BrowseQuestion/:category/:searchInput"
+          element={<SearchPage />}
+        />
+        <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
+        <Route path="Responders-Section" element={<RespondersSectionPage />} />
+      </Routes>
+    </InitializationWrapper>
+  </AskProvider>
 }
 
 export default App;

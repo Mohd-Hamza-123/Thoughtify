@@ -1,19 +1,12 @@
-import React from 'react'
-import { AskQue, Container, UpperNavigationBar, HorizontalLine, LowerNavigationBar } from '../components/index'
-import './AskQuestion.css'
+import React from "react";
+import "./AskQuestion.css";
+import { AskQue, NavBar } from "../components/index";
 const AskQuestion = () => {
-    return (
-        <div id='AskQuestion'>
-            <Container>
-                <div>
-                    <UpperNavigationBar />
-                    <HorizontalLine />
-                    <LowerNavigationBar />
-                </div>
-                <AskQue />
-            </Container>
-        </div>
-    )
-}
+  return (
+    <div id="AskQuestion">
+      <AskQue />
+    </div>
+  );
+};
 
-export default AskQuestion
+export default AskQuestion;

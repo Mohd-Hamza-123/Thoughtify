@@ -12,27 +12,36 @@ export class AuthService {
         this.account = new Account(this.client);
     }
 
-    async createAccount({ email, password, name, gender = null }) {
+    async createAccount({ email, password, name }) {
 
         try {
-
             const userAccount = await this.account.create(
-                ID.unique(), email, password, name);
-
+                ID.unique(),
+                email,
+                password,
+                name
+            );
+            console.log(userAccount)
             if (userAccount) {
-                return await this.login({ email, password })
+                const login = await this.login({
+                    email,
+                    password
+                })
+                console.log(login)
+                return login
             } else { return undefined }
         } catch (error) {
-
-            return `${error}`
+            console.log(error?.message)
+            throw new Error(error?.message)
         }
     }
 
     async login({ email, password }) {
         try {
-            return await this.account.createEmailSession(email, password);
+            const session = await this.account.createEmailSession(email, password);
+            return { success: true, session }
         } catch (error) {
-            return null
+            return { success: false, error: error.message }
         }
     }
 
@@ -98,9 +107,11 @@ export class AuthService {
 
     async logout() {
         try {
-            return await this.account.deleteSessions();
+            const logout = await this.account.deleteSessions();
+            return logout ? true : false
         } catch (error) {
-            return null
+            console.log(error)
+            return false
         }
     }
 

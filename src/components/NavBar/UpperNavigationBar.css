@@ -8,41 +8,8 @@
         'opsz' 24
 }
 
-#nav {
-    width: 100vw;
-    padding: 7px 20px;
-    display: flex;
-    background-color: white;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 3;
-    position: relative;
-    transition: background-color 1s ease;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
 
 @media only screen and (max-width: 500px) {
-    #nav {
-        padding: 5px 6px;
-        background-color: white;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-    }
-
-    .logo_Name {
-        font-size: 19px !important;
-    }
-
-    .logo {
-        width: 28px !important;
-    }
-
-    .UpperNavigationBar_Nav_Right_Items {
-        width: 100vw !important;
-        margin-top: 10px;
-        padding: 0px 5px;
-    }
 
     .search_Form {
         margin-right: 0px !important;
@@ -53,16 +20,7 @@
         width: 50% !important;
     }
 
-    .UpperNavigationBar_Buttons_ul {
-        justify-content: space-around !important;
-        width: 50% !important;
-        padding: 0px 5px !important;
-    }
 
-    #UpperNavigationBar_search_Input {
-        padding: 0px 0px 0px 5px !important;
-        font-size: 12px !important;
-    }
 
     #UpperNavigationBar_Bell_Div section {
         top: 98px !important;
@@ -92,12 +50,6 @@
         font-size: 13px !important;
     }
 
-    .UpperNavigationBar_Buttons {
-        padding: 5px 10px !important;
-        font-size: 13px !important;
-        margin: 0px !important;
-    }
-
 }
 
 body.darkMode #nav {
@@ -105,32 +57,14 @@ body.darkMode #nav {
     color: white !important;
 }
 
-.UpperNavigationBar_Nav_Right_Items {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    justify-content: space-between;
-}
+
 
 .logo_div {
     align-items: center;
 }
 
-.logo {
-    width: 32px;
-    filter: brightness(200%);
-}
-
 .logo.darkMode {
     filter: brightness(200%) invert(100%);
-}
-
-.logo_Name {
-    font-size: 25px;
-    letter-spacing: 1px;
-    font-weight: bold;
-    font-family: 'Gabarito', sans-serif;
-    margin-top: 4px;
 }
 
 
@@ -193,12 +127,7 @@ body.darkMode #nav {
     background-color: white;
 }
 
-#UpperNavigationBar_search_Input {
-    width: 100%;
-    height: 100%;
-    font-family: 'Poppins', sans-serif;
-    font-size: 15px;
-}
+
 
 .search_div_input {
     display: flex;
@@ -208,9 +137,7 @@ body.darkMode #nav {
     padding: 0px 0px 0px 10px;
 }
 
-#UpperNavigationBar_search_Input.darkMode {
-    border: 2px solid white;
-}
+
 
 .UpperNavigationBar_Notification_DropDown_Section {
     background-color: rgb(255, 255, 255) !important;
@@ -265,16 +192,6 @@ body.darkMode .UpperNavigationBarNotificationUL span {
     width: 35px;
     height: 35px;
     border-radius: 50%;
-}
-
-#upperNavbar_svg_div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    cursor: pointer;
 }
 
 #search_icon_div svg {
@@ -401,29 +318,9 @@ body.darkMode #UpperNavigationBar_Bell_Div section ul li.Read {
 }
 
 #upperNavbar_svg_div img {
-    width: 100%;
-    background-color: white;
-    height: 100%;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-}
-
-.UpperNavigationBar_Buttons {
-    margin-left: 15px;
-    background-color: var(--secondryBlue);
-    border-radius: 100px;
-    box-shadow: rgba(44, 187, 182, 0.2) 0 -25px 18px -14px inset, rgba(44, 177, 187, 0.15) 0 1px 2px, rgba(48, 172, 225, 0.15) 0 2px 4px, rgba(44, 180, 187, 0.15) 0 4px 8px, rgba(44, 146, 187, 0.15) 0 8px 16px, rgba(44, 151, 187, 0.15) 0 16px 32px;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    display: inline-block;
-    padding: 7px 20px;
-    text-align: center;
-    text-decoration: none;
-    border: 0;
-    font-weight: 500;
-    font-size: 16px;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
 }
 
 body.darkMode .UpperNavigationBar_Buttons {
