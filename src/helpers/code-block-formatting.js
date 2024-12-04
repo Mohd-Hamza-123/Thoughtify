@@ -2,7 +2,7 @@
 function copyToClipboard(copyText) {
     navigator.clipboard.writeText(copyText).then(
         () => {
-            
+        
         },
         (err) => {
             console.error("Failed to copy text: ", err);
@@ -14,6 +14,7 @@ function copyToClipboard(copyText) {
 
 
 export function makeCodeBlock() {
+    
     const codeBlocks = document.querySelectorAll("pre");
 
     codeBlocks.forEach((element) => {
@@ -23,9 +24,8 @@ export function makeCodeBlock() {
             copyBtn.innerText = "Copy code";
             copyBtn.setAttribute("class", "copyBtn");
             copyBtn.setAttribute("type", "button");
-            element.prepend(copyBtn);
-
             let copyText = element.textContent;
+            element.prepend(copyBtn);
             copyBtn.addEventListener("click", () => copyToClipboard(copyText));
         }
     });
