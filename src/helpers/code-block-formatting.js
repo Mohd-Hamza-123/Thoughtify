@@ -12,7 +12,6 @@ function copyToClipboard(copyText) {
 
 
 
-
 export function makeCodeBlock() {
     
     const codeBlocks = document.querySelectorAll("pre");

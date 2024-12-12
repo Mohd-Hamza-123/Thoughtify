@@ -1047,13 +1047,13 @@ useEffect(()=>{
               </Button>
             </div>
           </section>
-          <div className="Chat w-4/6 mt-6">
+          {/* <div className="Chat w-4/6 mt-6 hidden">
             <Chat
               post={post}
               navigateToRelatedPost={navigateToRelatedPost}
               slug={slug}
             />
-          </div>
+          </div> */}
         </div>
         <div
           ref={viewPostRight}
