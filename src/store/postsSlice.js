@@ -33,7 +33,6 @@ const postSlice = createSlice({
                 state.initialPosts = uniqueArray
 
             } else if (action.payload.initialPostsFlag === false) {
-                console.log(action.payload.initialPosts)
                 array = [...action.payload.initialPosts]
 
 

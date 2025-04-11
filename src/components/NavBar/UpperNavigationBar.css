@@ -8,35 +8,8 @@
         'opsz' 24
 }
 
-#nav {
-    width: 100vw;
-    padding: 7px 20px;
-    display: flex;
-    background-color: white;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 3;
-    position: relative;
-    transition: background-color 1s ease;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
 
 @media only screen and (max-width: 500px) {
-    #nav {
-        padding: 5px 6px;
-        background-color: white;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-    }
-
-    .logo_Name {
-        font-size: 19px !important;
-    }
-
-    .logo {
-        width: 28px !important;
-    }
 
     .UpperNavigationBar_Nav_Right_Items {
         width: 100vw !important;
@@ -51,12 +24,6 @@
     #UpperNavigationBar_Search_Bar {
         height: 32px;
         width: 50% !important;
-    }
-
-    .UpperNavigationBar_Buttons_ul {
-        justify-content: space-around !important;
-        width: 50% !important;
-        padding: 0px 5px !important;
     }
 
     #UpperNavigationBar_search_Input {
@@ -92,12 +59,6 @@
         font-size: 13px !important;
     }
 
-    .UpperNavigationBar_Buttons {
-        padding: 5px 10px !important;
-        font-size: 13px !important;
-        margin: 0px !important;
-    }
-
 }
 
 body.darkMode #nav {
@@ -116,21 +77,8 @@ body.darkMode #nav {
     align-items: center;
 }
 
-.logo {
-    width: 32px;
-    filter: brightness(200%);
-}
-
 .logo.darkMode {
     filter: brightness(200%) invert(100%);
-}
-
-.logo_Name {
-    font-size: 25px;
-    letter-spacing: 1px;
-    font-weight: bold;
-    font-family: 'Gabarito', sans-serif;
-    margin-top: 4px;
 }
 
 
@@ -407,24 +355,7 @@ body.darkMode #UpperNavigationBar_Bell_Div section ul li.Read {
     border-radius: 50%;
 }
 
-.UpperNavigationBar_Buttons {
-    margin-left: 15px;
-    background-color: var(--secondryBlue);
-    border-radius: 100px;
-    box-shadow: rgba(44, 187, 182, 0.2) 0 -25px 18px -14px inset, rgba(44, 177, 187, 0.15) 0 1px 2px, rgba(48, 172, 225, 0.15) 0 2px 4px, rgba(44, 180, 187, 0.15) 0 4px 8px, rgba(44, 146, 187, 0.15) 0 8px 16px, rgba(44, 151, 187, 0.15) 0 16px 32px;
-    color: rgb(255, 255, 255);
-    cursor: pointer;
-    display: inline-block;
-    padding: 7px 20px;
-    text-align: center;
-    text-decoration: none;
-    border: 0;
-    font-weight: 500;
-    font-size: 16px;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-}
+
 
 body.darkMode .UpperNavigationBar_Buttons {
     background-color: #FF3500;

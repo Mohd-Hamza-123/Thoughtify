@@ -25,13 +25,14 @@ const PostCard = ({
   opinionsFrom,
   trustedResponderPost
 }) => {
-
+  
   const dispatch = useDispatch();
   const postProfilesPic = useSelector((state) => state.postsSlice?.postUploaderProfilePic);
 
   const { myUserProfile, isDarkModeOn } = useAskContext()
 
   const [profileImgURL, setprofileImgURL] = useState('')
+
   const [thumbnailURL, setthumbnailURL] = useState('')
 
 
@@ -46,12 +47,14 @@ const PostCard = ({
   const profileData = async () => {
 
     const isProfilePicAlreadyInReduxIndex = postProfilesPic?.findIndex((profile) => profile?.userId === userId)
+    console.log(isProfilePicAlreadyInReduxIndex)
 
     if (isProfilePicAlreadyInReduxIndex === -1) {
-
-      const gettinProfiles = await profile.listProfile({ slug: userId })
-
-      const gettingProfileImgURL = await profile.getStoragePreview(gettinProfiles?.documents[0]?.profileImgID)
+      const gettingProfiles = await profile.listProfile({ slug: userId })
+      console.log(gettingProfiles)
+      const profileImageUrl = gettingProfiles?.documents[0]?.profileImgURL
+      // setprofileImgURL(profileImageUrl)
+      const gettingProfileImgURL = await profile.getStoragePreview(gettingProfiles?.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 
       if (postProfilesPic.length !== 0) {
@@ -65,8 +68,10 @@ const PostCard = ({
       }
     } else {
       if (userId === myUserProfile?.userIdAuth) {
+       
         setprofileImgURL((prev) => myUserProfile?.profileImgURL)
       } else {
+        console.log(postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePicL)
         setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
       }
 

@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import { useState } from "react";
 import {
   PostCard,
-  UpperNavigationBar,
-  LowerNavigationBar,
-  HorizontalLine,
   HomeRight,
   SecondLoader,
-  Button,
+  HorizontalLine,
+  UpperNavigationBar,
+  LowerNavigationBar,
 } from "../components/index";
+import { Button } from "@/components/ui/button";
 import { useSelector, useDispatch } from "react-redux";
 import "./Home.css";
 import appwriteService from "../appwrite/config";
@@ -148,6 +148,12 @@ const Home = () => {
     }
   }, [HomePageRef.current, posts]);
 
+  const toggleGridButton = () => {
+    if (homeLeft.current && homeRight.current) {
+      homeLeft.current.classList.toggle("none");
+    }
+  }
+
   if (posts?.length > 0) {
     return (
       <div
@@ -173,18 +179,15 @@ const Home = () => {
               isDarkModeOn ? "darkMode" : ""
             }`}
           >
-            <div
-              onClick={() => {
-                if (homeLeft.current && homeRight.current) {
-                  homeLeft.current.classList.toggle("none");
-                }
-              }}
-              className="Home_RIGHT_LEFT_Grid_div"
-            >
-              <button className="flex justify-center items-center">
-                <i className="bx bxs-grid-alt"></i>
-              </button>
-            </div>
+
+              <Button 
+              onClick={toggleGridButton}
+              className="flex justify-center items-center w-8 md:hidden"
+              variant="outline"
+              >
+                <i className="bx bxs-grid-alt text-xl"></i>
+              </Button>
+     
             <div ref={homeLeft} className="Home_Left">
               {posts?.map((post) => (
                 <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
