@@ -49,9 +49,6 @@
     }
 }
 
-.SideBar_Profile_Name p {
-    font-weight: 600;
-}
 
 .SideBarContent p {
     font-weight: 500 !important;
@@ -91,10 +88,6 @@ body.darkMode .SideBar hr {
 body.darkMode .SideBarContent svg {
     fill: white;
 }
-
-
-
-
 
 .SideBarItems:hover {
     background-color: rgba(165, 165, 165, 0.267);

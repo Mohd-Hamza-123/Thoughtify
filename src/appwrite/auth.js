@@ -98,9 +98,10 @@ export class AuthService {
 
     async logout() {
         try {
-            return await this.account.deleteSessions();
+            const logout = await this.account.deleteSessions();
+            return logout ? true : false
         } catch (error) {
-            return null
+            return false
         }
     }
 
