@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login, logout } from "./store/authSlice";
+import { login} from "./store/authSlice";
 import { useNavigate } from "react-router-dom";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
@@ -16,6 +16,7 @@ import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
 import Home from "./pages/Home";
+import { getProfileData } from "./lib/profile";
 import LoginPage from "./pages/LoginPage";
 import ForgetPassword from "./pages/ForgetPassword";
 import SignupPage from "./pages/SignupPage";
@@ -105,7 +106,7 @@ function App() {
             userIdAuth: userData?.$id,
             profileImgID: null,
             profileImgURL:
-              "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+              "https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png",
           });
           setMyUserProfile(userProfile);
           dispatch(getUserProfile({ userProfile }));
@@ -210,18 +211,9 @@ function App() {
     }
   }
 
-  async function getData() {
-    try {
-      const userProfile = await profile.listProfile({ slug: userData?.$id });
-      setMyUserProfile(userProfile?.documents[0]);
-    } catch (error) {
-      setMyUserProfile(null);
-      dispatch(logout());
-    }
-  }
-
   const [appInstallPrompt, setAppInstallPrompt] = useState(null);
   const [isAppInstalled, setisAppInstalled] = useState(true);
+
   const onInstallApp = async () => {
     if (appInstallPrompt) {
       appInstallPrompt.prompt();
@@ -276,15 +268,14 @@ function App() {
       fetchData();
       indicator.current = false;
     }
-
     verifyEmail();
-
     getNotification();
   }, []);
 
   useEffect(() => {
     if (!myUserProfile && userData) {
-      getData();
+      const profileData = getProfileData()
+      setMyUserProfile(profileData);
     }
   }, [userData]);
 
@@ -350,7 +341,7 @@ function App() {
         />
         <Feedback />
         <Setting />
-
+        
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="login" element={<LoginPage />} />
