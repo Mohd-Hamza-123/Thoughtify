@@ -71,7 +71,6 @@ const PostCard = ({
        
         setprofileImgURL((prev) => myUserProfile?.profileImgURL)
       } else {
-        console.log(postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePicL)
         setprofileImgURL((prev) => postProfilesPic[isProfilePicAlreadyInReduxIndex].profilePic)
       }
 
