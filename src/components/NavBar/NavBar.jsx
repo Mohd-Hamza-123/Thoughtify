@@ -1,13 +1,13 @@
-import React from 'react'
-import { UpperNavigationBar, LowerNavigationBar } from '../'
+import React from "react";
+import { UpperNavigationBar, LowerNavigationBar } from "../";
 
 const NavBar = () => {
-    return (
-        <div className='z-30 relative'>
-            <UpperNavigationBar />
-            <LowerNavigationBar />
-        </div>
-    )
-}
+  return (
+    <header className="z-30 relative">
+      <UpperNavigationBar />
+      <LowerNavigationBar />
+    </header>
+  );
+};
 
-export default NavBar
+export default NavBar;

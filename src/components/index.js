@@ -24,7 +24,6 @@ import Opinions from './Profile/Opinions'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
 import PersonalChat from "./Chat/PersonalChat";
-import HorizontalLine from './HorizontalLine'
 import HomeRight from "./Post-Card/HomeRight";
 import BrowseQuestions from "./SearchPage/BrowseQuestions";
 import Feedback from "./Feedback/Feedback";
@@ -39,5 +38,5 @@ import SvgIcons from "./SvgIcons";
 import UpperNavigationBarNotification from "./NavBar/UpperNavigationBarNotification";
 import UpperNavigationBarSearch from "./NavBar/UpperNavigationBarSearch";
 import UpperNavigationBarBtns from "./NavBar/UpperNavigationBarBtns";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader,DarkModeToggle , Logo , SvgIcons,UpperNavigationBarNotification, UpperNavigationBarSearch,UpperNavigationBarBtns}
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns }
 

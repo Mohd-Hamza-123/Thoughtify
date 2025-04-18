@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE, Input, Button, TextArea, HorizontalLine } from "../";
+import { RTE, Input, Button, TextArea} from "../";
 import conf from "../../conf/conf";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -346,7 +346,6 @@ const AskQue = ({ post }) => {
 
   return (
     <>
-      <HorizontalLine />
       <div
         className={`ask_Que_Container ${isDarkModeOn ? 'darkMode' : ''}`}
       >
