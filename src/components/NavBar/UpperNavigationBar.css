@@ -215,16 +215,6 @@ body.darkMode .UpperNavigationBarNotificationUL span {
     border-radius: 50%;
 }
 
-#upperNavbar_svg_div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
 #search_icon_div svg {
     font-size: 16px;
 }
@@ -349,13 +339,10 @@ body.darkMode #UpperNavigationBar_Bell_Div section ul li.Read {
 }
 
 #upperNavbar_svg_div img {
-    width: 100%;
-    background-color: white;
-    height: 100%;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
 }
-
-
 
 body.darkMode .UpperNavigationBar_Buttons {
     background-color: #FF3500;

@@ -2,8 +2,11 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAskContext } from "@/context/AskContext";
 import { updateNotification } from "@/lib/notifications";
+
 const UpperNavigationBarNotification = () => {
+
   const authStatus = useSelector((state) => state.auth.status);
+
   const {
     isDarkModeOn,
     notifications,
@@ -114,7 +117,7 @@ const UpperNavigationBarNotification = () => {
               <span
                 onClick={() => {
                   deleteNotication();
-                  setnotifications((prev) => []);
+                  setnotifications([]);
                   setNotificationPopMsgNature(true);
                   setnotificationPopMsg("Notifications  Deleted");
                 }}
