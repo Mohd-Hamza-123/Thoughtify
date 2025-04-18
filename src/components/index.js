@@ -34,5 +34,7 @@ import Loader from "./Loader/Loader";
 import NotificationPop from "./Notification/NotificationPop";
 import SecondLoader from "./Loader/SecondLoader";
 import DarkModeToggle from "./DarkModeToggle";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader,DarkModeToggle }
+import Logo from "./Logo";
+import SvgIcons from "./SvgIcons";
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HorizontalLine, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader,DarkModeToggle , Logo , SvgIcons}
 

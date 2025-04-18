@@ -47,13 +47,13 @@ const PostCard = ({
   const profileData = async () => {
 
     const isProfilePicAlreadyInReduxIndex = postProfilesPic?.findIndex((profile) => profile?.userId === userId)
-    console.log(isProfilePicAlreadyInReduxIndex)
+   
 
     if (isProfilePicAlreadyInReduxIndex === -1) {
       const gettingProfiles = await profile.listProfile({ slug: userId })
-      console.log(gettingProfiles)
+     
       const profileImageUrl = gettingProfiles?.documents[0]?.profileImgURL
-      // setprofileImgURL(profileImageUrl)
+      setprofileImgURL(profileImageUrl)
       const gettingProfileImgURL = await profile.getStoragePreview(gettingProfiles?.documents[0]?.profileImgID)
       setprofileImgURL(gettingProfileImgURL?.href)
 

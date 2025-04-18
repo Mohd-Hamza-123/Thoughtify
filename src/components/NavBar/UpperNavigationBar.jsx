@@ -1,14 +1,15 @@
-import React, { useEffect } from "react";
-import "./UpperNavigationBar.css";
-import { useNavigate } from "react-router-dom";
-import { useAskContext } from "../../context/AskContext";
-import { useSelector } from "react-redux/es/hooks/useSelector";
-import QueryFlow from "../../assets/QueryFlow.png";
 import "../../index.css";
+import "./UpperNavigationBar.css";
+import { Button } from "../ui/button";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { UserCircle, Logo, SvgIcons } from "..";
 import NoProfile from "../../assets/NoProfile.png";
 import notification from "../../appwrite/notification";
-import { Button } from "../ui/button";
+import { useAskContext } from "../../context/AskContext";
+import { updateNotification } from "@/lib/notifications";
+import { useSelector } from "react-redux/es/hooks/useSelector";
 
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -51,28 +52,23 @@ const NavigationBar = () => {
     setIsOpen(true);
     setisOverlayBoolean(true);
   };
+
   const submit = async (data) => {
     navigate(`/BrowseQuestion/${null}/${data.searchQuestion}`);
     setValue("searchQuestion", "");
   };
-  const updateNotification = async (notificationID) => {
-    console.log(notificationID);
-    notification
-      .updateNotification({ notificationID, isRead: true })
-      .then((res) => {
-        const newNotificationArr = notifications?.map((note) => {
-          if (note.$id !== notificationID) {
-            return note;
-          } else {
-            return res;
-          }
-        });
-        setnotifications((prev) => newNotificationArr);
-      });
+
+  const Notification = async (notificationID) => {
+    try {
+      const newNotificationArr = await updateNotification(notificationID);
+      setnotifications(newNotificationArr);
+    } catch (error) {
+      setnotifications([]);
+    }
   };
 
   useEffect(() => {
-    setNotificationShow((prev) => notifications);
+    setNotificationShow(notifications);
     const notificationBoolean = notifications?.some(
       (note) => note?.isRead === false
     );
@@ -86,20 +82,11 @@ const NavigationBar = () => {
 
   return (
     <>
-      <nav id={"nav"} className="w-screen relative z-10 flex flex-col md:flex-row justify-between items-center px-4 py-2 shadow-md transition-all">
-        <figure
-          onClick={() => navigate("/")}
-          className="logo_div flex justify-around cursor-pointer gap-2 items-center"
-        >
-          <img
-            className="w-7 md:w-8 filter brightness-200 dark:invert"
-            src={QueryFlow}
-            alt="Logo"
-          />
-          <h1 className="md:text-2xl text-xl font-semibold dark:text-white">
-            Thoughtify
-          </h1>
-        </figure>
+      <nav
+        id={"nav"}
+        className="w-screen relative z-10 flex flex-col md:flex-row justify-between items-center px-4 py-2 shadow-md transition-all"
+      >
+        <Logo />
 
         <div className="UpperNavigationBar_Nav_Right_Items">
           <div id="UpperNavigationBar_Search_Bar">
@@ -108,14 +95,7 @@ const NavigationBar = () => {
                 className={`search_icon_div ${isDarkModeOn ? "darkMode" : ""}`}
               >
                 <button type="submit">
-                  <svg
-                    id="search_icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="1em"
-                    viewBox="0 0 512 512"
-                  >
-                    <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-                  </svg>
+                  <SvgIcons.search />
                 </button>
               </div>
 
@@ -134,6 +114,7 @@ const NavigationBar = () => {
               </div>
             </form>
           </div>
+          
           {authStatus && myUserProfile && (
             <div id="UpperNavigationBar_Bell_Div">
               {isUnreadNotificationExist && (
@@ -177,7 +158,7 @@ const NavigationBar = () => {
                               className="cursor-pointer"
                               onClick={() => {
                                 setnotificationPopUp((prev) => !prev);
-                                updateNotification(note?.$id);
+                                Notification(note?.$id);
                                 navigate(note.slug);
                               }}
                             >
@@ -238,9 +219,7 @@ const NavigationBar = () => {
           )}
           {authStatus && myUserProfile && (
             <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
-              <img
-                src={myUserProfile ? myUserProfile?.profileImgURL : NoProfile}
-              />
+              <UserCircle />
             </div>
           )}
           {(!authStatus || !myUserProfile) && (
