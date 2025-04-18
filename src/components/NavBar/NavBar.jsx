@@ -1,9 +1,9 @@
 import React from 'react'
 import { UpperNavigationBar, LowerNavigationBar } from '../'
-import './Navbar.css'
+
 const NavBar = () => {
     return (
-        <div id='Navbar'>
+        <div className='z-30 relative'>
             <UpperNavigationBar />
             <LowerNavigationBar />
         </div>
