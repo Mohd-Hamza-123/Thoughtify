@@ -4,9 +4,9 @@ import appwriteService from "../../appwrite/config";
 import {
   Button,
   Chat,
-  HorizontalLine,
   UpperNavigationBar,
   LowerNavigationBar,
+  NavBar,
 } from "../index";
 import parse from "html-react-parser";
 import { useSelector, useDispatch } from "react-redux";
@@ -720,9 +720,7 @@ useEffect(()=>{
           isNavbarHidden ? "active" : ""
         }`}
       >
-        <UpperNavigationBar className="" />
-        <HorizontalLine />
-        <LowerNavigationBar />
+        <NavBar />
       </nav>
       <HorizontalLine />
       <div id="ViewPost_ViewPost_RecentQuestions_Container" className="flex">

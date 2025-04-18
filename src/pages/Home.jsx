@@ -5,9 +5,7 @@ import {
   PostCard,
   HomeRight,
   SecondLoader,
-  HorizontalLine,
-  UpperNavigationBar,
-  LowerNavigationBar,
+  NavBar,
 } from "../components/index";
 import { Button } from "@/components/ui/button";
 import { useSelector, useDispatch } from "react-redux";
@@ -152,12 +150,12 @@ const Home = () => {
     if (homeLeft.current && homeRight.current) {
       homeLeft.current.classList.toggle("none");
     }
-  }
+  };
 
   if (posts?.length > 0) {
     return (
       <div
-        id="Home"
+        // id="Home"
         ref={HomePageRef}
         className={`${isDarkModeOn ? "darkMode" : ""}`}
         onScroll={handleScroll}
@@ -168,9 +166,7 @@ const Home = () => {
               isDarkModeOn ? "darkMode" : ""
             }`}
           >
-            <UpperNavigationBar />
-            <HorizontalLine />
-            <LowerNavigationBar />
+            <NavBar />
           </nav>
 
           <div
@@ -179,15 +175,14 @@ const Home = () => {
               isDarkModeOn ? "darkMode" : ""
             }`}
           >
-
-              <Button 
+            <Button
               onClick={toggleGridButton}
               className="flex justify-center items-center w-8 md:hidden"
               variant="outline"
-              >
-                <i className="bx bxs-grid-alt text-xl"></i>
-              </Button>
-     
+            >
+              <i className="bx bxs-grid-alt text-xl"></i>
+            </Button>
+
             <div ref={homeLeft} className="Home_Left">
               {posts?.map((post) => (
                 <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
@@ -225,9 +220,7 @@ const Home = () => {
               isNavbarHidden ? "active" : ""
             }`}
           >
-            <UpperNavigationBar />
-            <HorizontalLine />
-            <LowerNavigationBar />
+            <NavBar />
           </nav>
 
           <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
@@ -268,9 +261,7 @@ const Home = () => {
             isNavbarHidden ? "active" : ""
           }`}
         >
-          <UpperNavigationBar className="" />
-          <HorizontalLine />
-          <LowerNavigationBar />
+          <NavBar />
         </nav>
 
         <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
