@@ -1,6 +1,6 @@
 import React from 'react'
 import './Feedback.css'
-import { Button } from '../index'
+import { Button } from '../ui/button'
 import { useAskContext } from '../../context/AskContext'
 import { useForm } from 'react-hook-form'
 import feedbackService from '../../appwrite/feedback'

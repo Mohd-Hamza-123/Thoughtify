@@ -1,19 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
 import "./BrowseQuestions.css";
-import {
-  UpperNavigationBar,
-  Input,
-  Button,
-  LowerNavigationBar,
-  Spinner,
-  NavBar,
-} from "../index";
-import { categoriesArr } from "../AskQue/Category";
-import appwriteService from "../../appwrite/config";
+import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
+import { Spinner } from "../index";
+import { Input } from "../ui/input";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
+import { categoriesArr } from "../AskQue/Category";
+import appwriteService from "../../appwrite/config";
 import { useAskContext } from "../../context/AskContext";
+import React, { useEffect, useState, useRef } from "react";
 
 const BrowseQuestions = () => {
   const { category, searchInput } = useParams();
@@ -147,12 +142,10 @@ const BrowseQuestions = () => {
   }, [searchInput]);
   return (
     <div id="BrowseQuestions">
-      <NavBar />
       <strong
         id="BrowseQuestions_SearchQuestion_Heading"
-        className={`flex justify-center ${
-          isDarkModeOn ? "text-white" : "text-black"
-        }`}
+        className={`flex justify-center ${isDarkModeOn ? "text-white" : "text-black"
+          }`}
       >
         Filter Questions
       </strong>
@@ -174,9 +167,8 @@ const BrowseQuestions = () => {
         <form
           ref={BrowseQuestionLeft}
           id="BrowseQuestions_Filters"
-          className={`w-full flex flex-col gap-5 p-3 relative ${
-            isDarkModeOn ? "darkMode" : ""
-          }`}
+          className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? "darkMode" : ""
+            }`}
           onSubmit={handleSubmit(submit)}
         >
           <div id="BrowseQuestions_PostTitle">
@@ -252,9 +244,8 @@ const BrowseQuestions = () => {
                   value={"Recent"}
                 />
                 <label
-                  className={`cursor-pointer ${
-                    isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                  className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
+                    }`}
                   htmlFor="BrowseQuestion_PostAge_Recent"
                 >
                   Recent
@@ -269,9 +260,8 @@ const BrowseQuestions = () => {
                   value={"Oldest"}
                 />
                 <label
-                  className={`cursor-pointer ${
-                    isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                  className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
+                    }`}
                   htmlFor="BrowseQuestion_PostAge_Oldest"
                 >
                   Oldest
@@ -294,9 +284,8 @@ const BrowseQuestions = () => {
                   value={"Most Commented"}
                 />
                 <label
-                  className={`cursor-pointer ${
-                    isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                  className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
+                    }`}
                   htmlFor="BrowseQuestion_Most_Commented"
                 >
                   Most Commented
@@ -311,9 +300,8 @@ const BrowseQuestions = () => {
                   value={"Least Commented"}
                 />
                 <label
-                  className={`cursor-pointer ${
-                    isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                  className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
+                    }`}
                   htmlFor="BrowseQuestion_Least_Commented"
                 >
                   Least Commented
@@ -488,9 +476,8 @@ const BrowseQuestions = () => {
 
           <Button
             type="Submit"
-            className={`BrowseQuestions_ApplyFilter ${
-              isDarkModeOn ? "darkMode" : ""
-            }`}
+            className={`BrowseQuestions_ApplyFilter ${isDarkModeOn ? "darkMode" : ""
+              }`}
           >
             {isSearching ? "Searching..." : "Apply Filter"}
           </Button>
@@ -501,9 +488,8 @@ const BrowseQuestions = () => {
               sethasMorePostsInBrowseQuestions(false);
             }}
             value={"Reset Filter"}
-            className={`BrowseQuestions_ResentFilter ${
-              isDarkModeOn ? "darkMode" : ""
-            }`}
+            className={`BrowseQuestions_ResentFilter ${isDarkModeOn ? "darkMode" : ""
+              }`}
           />
         </form>
 
@@ -514,9 +500,8 @@ const BrowseQuestions = () => {
         >
           {!isPostAvailable && (
             <p
-              className={`text-center ${
-                isDarkModeOn ? "text-white" : "text-black"
-              }`}
+              className={`text-center ${isDarkModeOn ? "text-white" : "text-black"
+                }`}
             >
               No Posts Available
             </p>
@@ -528,9 +513,8 @@ const BrowseQuestions = () => {
             return (
               <div key={querie.$id}>
                 <span
-                  className={`BrowseQuestions_querieName ${
-                    isDarkModeOn ? "darkMode" : ""
-                  }`}
+                  className={`BrowseQuestions_querieName ${isDarkModeOn ? "darkMode" : ""
+                    }`}
                 >
                   {querie.name}
                 </span>
@@ -555,60 +539,52 @@ const BrowseQuestions = () => {
                     <span>{querie.category}</span>
                     <div className="flex justify-center items-center">
                       <span
-                        className={`${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       >
                         {querie.views}
                       </span>
                       <i
-                        className={`fa-solid fa-eye ${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`fa-solid fa-eye ${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                         aria-hidden="true"
                       ></i>
                     </div>
                     <div>
                       <span
-                        className={`${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       >
                         {querie.commentCount}
                       </span>
                       <i
-                        className={`fa-solid fa-comment ${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`fa-solid fa-comment ${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       ></i>
                     </div>
                     <div>
                       <span
-                        className={`${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       >
                         {querie?.like}
                       </span>
                       <i
-                        className={`fa-solid fa-thumbs-up ${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`fa-solid fa-thumbs-up ${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       ></i>
                     </div>
 
                     <div>
                       <span
-                        className={`${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       >
                         {querie?.dislike}
                       </span>
                       <i
-                        className={`fa-solid fa-thumbs-down ${
-                          isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                        className={`fa-solid fa-thumbs-down ${isDarkModeOn ? "text-white" : "text-black"
+                          }`}
                       ></i>
                     </div>
                   </div>

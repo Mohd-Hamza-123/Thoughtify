@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../";
+import { Button } from "../ui/button";
 import { getUserProfile } from "../../store/profileSlice";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";

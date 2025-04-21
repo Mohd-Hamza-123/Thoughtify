@@ -26,8 +26,7 @@ const NavigationBar = () => {
 
   return (
     <nav
-      id={"nav"}
-      className="w-screen relative z-10 flex flex-col md:flex-row justify-between items-center px-4 py-2 shadow-md transition-all mb-3"
+      className="w-full relative flex flex-col md:flex-row justify-between items-center px-4 py-2 shadow-md transition-all"
     >
       <Logo />
 

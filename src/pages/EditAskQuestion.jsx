@@ -24,7 +24,6 @@ const EditAskQuestion = () => {
 
   return post ? (
     <>
-      <NavBar />
       <AskQue post={post} />
     </>
   ) : (

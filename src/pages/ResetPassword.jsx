@@ -2,7 +2,7 @@ import React from "react";
 import './ResetPassword.css'
 import { useForm } from "react-hook-form";
 import QueryFlow from '../assets/QueryFlow.png'
-import { Button } from "../components";
+import { Button } from "@/components/ui/button";
 import authService from "../appwrite/auth";
 import { useNavigate } from 'react-router-dom'
 import { useAskContext } from "../context/AskContext";

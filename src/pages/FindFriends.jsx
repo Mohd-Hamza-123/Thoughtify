@@ -59,8 +59,6 @@ const FindFriends = () => {
 
   return (
     <div id="FindFriendsPage">
-    
-        <NavBar />
       
       <h3
         className={`FindFirendsPage_Heading text-center ${

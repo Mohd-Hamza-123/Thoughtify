@@ -3,9 +3,6 @@ import LowerNavigationBar from "./NavBar/LowerNavigationBar";
 import SideBar from "./Sidebar/SideBar";
 import NavBar from "./NavBar/NavBar";
 import AskQue from "./AskQue/AskQue";
-import Input from './Input'
-import Button from "./Button"
-import Container from "./Container";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
 import UserCircle from "./UserCircle";
@@ -38,5 +35,8 @@ import SvgIcons from "./SvgIcons";
 import UpperNavigationBarNotification from "./NavBar/UpperNavigationBarNotification";
 import UpperNavigationBarSearch from "./NavBar/UpperNavigationBarSearch";
 import UpperNavigationBarBtns from "./NavBar/UpperNavigationBarBtns";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Input, Button, Container, Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns }
+import ViewPostMainContent from "./ViewPost/ViewPostMainContent";
+import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark";
+import HomeLeft from "./Home/HomeLeft";
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar,Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft,ViewPostMainContent,ViewPostLikeDislikeBookmark }
 

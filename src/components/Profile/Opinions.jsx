@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import realTime from '../../appwrite/realTime.js'
-import { Button, Spinner } from '../'
+import { Spinner } from '../'
+import { Button } from '../ui/button.jsx'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'

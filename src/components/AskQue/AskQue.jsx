@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE, Input, Button, TextArea} from "../";
+import { RTE,TextArea} from "../";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import conf from "../../conf/conf";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
