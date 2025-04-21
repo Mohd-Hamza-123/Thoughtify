@@ -159,13 +159,6 @@ const RespondersSectionPage = () => {
       className="w-full relative"
       onScroll={handleScroll}
     >
-      <nav
-        className={`Home_Nav_Container w-full text-center ${
-          isNavbarHidden ? "active" : ""
-        } ${isDarkModeOn ? "darkMode" : ""}`}
-      >
-        <NavBar />
-      </nav>
 
       <div id="Home_RIGHT_LEFT" className={`flex gap-5 px-8 py-5 w-full`}>
         <div

@@ -1,7 +1,7 @@
 import React from 'react'
 import './ForgetPassword.css'
 import QueryFlow from '../assets/QueryFlow.png'
-import { Button } from '../components'
+import { Button } from '@/components/ui/button';
 import { useForm } from "react-hook-form";
 import authService from '../appwrite/auth'
 import { useAskContext } from '../context/AskContext'

@@ -4,7 +4,6 @@ import { AskQue, NavBar } from "../components/index";
 const AskQuestion = () => {
   return (
     <div id="AskQuestion">
-      <NavBar />
       <AskQue />
     </div>
   );

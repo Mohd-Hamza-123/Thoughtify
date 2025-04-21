@@ -11,7 +11,7 @@ import {
   SecondLoader,
 } from "../index";
 import NoProfile from '../../assets/NoProfile.png'
-import { Button } from "../index";
+import { Button } from "../ui/button";
 import { useParams } from "react-router-dom";
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";

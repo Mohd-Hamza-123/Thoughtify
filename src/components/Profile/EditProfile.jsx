@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./EditProfile.css";
-import { Button, TextArea } from "../index";
+import { TextArea } from "../index";
+import { Button } from "../ui/button";
 import { educationLevels, occupation_Arr } from "./Profile_arr";
 import ReactCrop, { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -152,9 +153,9 @@ const EditProfile = ({
       }
 
       let blob = await imageConversion.compressAccurately(file, 200)
-      
+
       let uploadFile = new File([blob], userData?.name, { type: blob.type });
-     
+
       if (!uploadFile) return
       let uploadedPic = await profile.createBucket({ file: uploadFile });
       if (!uploadedPic) {
@@ -311,7 +312,7 @@ const EditProfile = ({
     setprevFileURL('')
     const file = e.currentTarget?.files[0];
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
-   
+
     if (file.size > MAX_FILE_SIZE) {
       setNotificationPopMsgNature((prev) => false)
       setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")

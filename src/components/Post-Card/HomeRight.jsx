@@ -49,8 +49,8 @@ const HomeRight = () => {
     }
 
     return (
-        <>
-            <div className={`HomeRight_Category mb-4 ${isDarkModeOn ? "darkMode" : ''}`}>
+        <section className='w-[35%]'>
+            <div className={`HomeRight_Category my-4 ${isDarkModeOn ? "darkMode" : ''}`}>
                 <p className={`${isDarkModeOn ? "text-white" : ''}`}>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
                     {categoriesArr?.map((category, index) => (
@@ -89,7 +89,7 @@ const HomeRight = () => {
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail}
                     className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`}>Verify Your Email</span>}
             </div>
-        </>
+        </section>
     )
 }
 

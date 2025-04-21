@@ -4,7 +4,6 @@ import './Profile.css'
 const Profile = () => {
   return (
     <div className="Profile">
-        <UpperNavigationBar />
         <MyProfile />
     </div>
   );

@@ -1,12 +1,4 @@
-#Home {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    height: 100%;
-    width: 100%;
-    position: relative;
-}
-
-#Home::-webkit-scrollbar {
+/* #Home::-webkit-scrollbar {
     display: none;
 }
 
@@ -14,14 +6,6 @@
 
     .Home_Nav_Container.active {
         top: -220px !important;
-    }
-
-    #Home_RIGHT_LEFT {
-        display: flex;
-        margin-top: 160px !important;
-        padding: 0px 10px 10px 10px !important;
-        flex-direction: column;
-        gap: 9px;
     }
 
     .Home_Left {
@@ -72,11 +56,6 @@
 
 .Home_Nav_Container.active {
     top: -120px;
-}
-
-#Home_RIGHT_LEFT {
-    margin-top: 120px;
-    transition: background-color 0.2s ease;
 }
 
 #MainHome_loader {
@@ -194,4 +173,4 @@
 body.darkMode .Reload_Page_Btn {
     background-color: #FF3500;
     box-shadow: none;
-}
+} */
