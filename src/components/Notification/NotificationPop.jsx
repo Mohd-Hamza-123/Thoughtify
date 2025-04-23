@@ -1,26 +1,44 @@
-import React, { useEffect } from 'react'
 import './NotificationPop.css'
-import { useAskContext } from '../../context/AskContext'
-const NotificationPop = ({ notificationPopMsg, notificationPopMsgNature }) => {
-    const { setnotificationPopMsg } = useAskContext()
+import React, { useEffect } from 'react'
+import { useNotificationContext } from '../../context/NotificationContext'
+import { BiSolidError } from "react-icons/bi";
+import { FaCircleCheck } from "react-icons/fa6";
+import { RxCross1 } from "react-icons/rx";
+
+
+const NotificationPop = () => {
+    const { notification, setNotification } = useNotificationContext()
+
     useEffect(() => {
-        if (notificationPopMsg !== '') {
+        if (notification?.message !== '') {
             setTimeout(() => {
-                setnotificationPopMsg((prev) => "")
+                setNotification({ message: '', type: '' })
             }, 5000)
         }
-    }, [notificationPopMsg])
+    }, [notification])
+
+
+    const setStyle = (type) => {
+        if (type === "success") {
+            return "green"
+        } else if (type === "error") {
+            return "red"
+        }
+    }
+
+    const closeNotification = () => {
+        setNotification({ message: '', type: '' })
+    }
+
     return (
-        <div id='NotificationPop' className={`${notificationPopMsg ? 'active' : ''}`}>
-            <section className={`${notificationPopMsgNature ? "green" : "red"}`}>
-                {!notificationPopMsgNature && <i className="fa-solid fa-exclamation"></i>}
-                {notificationPopMsgNature && <i className="fa-solid fa-check"></i>}
+        <div id='NotificationPop' className={`${notification?.message ? 'active' : ''}`}>
+            <section className={`${setStyle(notification?.type)} flex justify-between items-center`}>
+                {notification?.type === "error" && <BiSolidError className='text-xl fill-white' />}
+                {notification?.type === "success" && <FaCircleCheck className='text-xl fill-white' />}
             </section>
             <section>
-                <p>{notificationPopMsg}</p>
-                <i onClick={() => {
-                    setnotificationPopMsg((prev) => '')
-                }} className="fa-solid fa-x"></i>
+                <p>{notification?.message}</p>
+                <RxCross1 onClick={closeNotification} />
             </section>
         </div>
     )

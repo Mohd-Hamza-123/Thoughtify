@@ -14,72 +14,83 @@ import goBack from '../../assets/goBack.png'
 
 
 const Signup = () => {
-  const { setMyUserProfile, isDarkModeOn, setnotificationPopMsg, setNotificationPopMsgNature, } = useAskContext();
+  const {
+    setMyUserProfile,
+    isDarkModeOn,
+    setnotificationPopMsg,
+    setNotificationPopMsgNature
+  } = useAskContext();
+
   const [isWaiting, setIsWaiting] = useState(false);
+
   const authRateLimit =
     "AppwriteException: Rate limit for the current endpoint has been exceeded. Please try again after some time.";
+
   const sameId =
     "AppwriteException: A user with the same id, email, or phone already exists in this project.";
 
-  const [error, setError] = useState(null);
   const { register, handleSubmit } = useForm();
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
   const create = async (data) => {
-    setError(null);
-    setIsWaiting((prev) => true);
 
-    // Checking if username already exists 
-    const isProfileNameAlreadyExist = await profile.listProfile({ name: data?.name })
-    if (isProfileNameAlreadyExist?.total > 0) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => 'Username Already Taken. Try another name')
-      setIsWaiting((prev) => false);
-      return
-    }
+    try {
+      setError(null);
+      setIsWaiting(true);
+      // Checking if username already exists 
+      const isProfileNameAlreadyExist = await profile.listProfile({ name: data?.name })
 
-    const userDataCreated = await authService.createAccount({ ...data });
-
-    if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
-      setError("You Have reached Maximum signup limit. Try later sometime");
-      return;
-    }
-    if (typeof userDataCreated === "string" && userDataCreated === sameId) {
-      setError("A user with the same name, email, or phone already exists");
-      return;
-    }
-
-    if (userDataCreated) {
-      const userData = await authService.getCurrentUser();
-
-      if (!userData) {
+      if (isProfileNameAlreadyExist?.total > 0) {
         setIsWaiting((prev) => false);
-        setNotificationPopMsgNature((prev) => false);
-        setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
-        return
+        return setError("Username already exists")
       }
-      dispatch(login({ userData }));
 
-      const userProfile = await profile.createProfile({
-        name: userData?.name,
-        userIdAuth: userData?.$id,
-        profileImgID: null,
-        profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
-      });
-
-      console.log(userProfile)
-      setMyUserProfile((prev) => userProfile)
-      dispatch(getUserProfile({ userProfile }))
-      if (userProfile) {
-        navigate("/");
+      const userDataCreated = await authService.createAccount({ ...data });
+  
+      if (typeof userDataCreated === "string" && userDataCreated === authRateLimit) {
+        setError("You Have reached Maximum signup limit. Try later sometime");
+        return null
       }
-    } else {
-      setError("Please check the credentials");
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
+      if (typeof userDataCreated === "string" && userDataCreated === sameId) {
+        setError("A user with the same name, email, or phone already exists");
+        return null
+      }
+
+      if (userDataCreated) {
+        const userData = await authService.getCurrentUser();
+
+        if (!userData) {
+          setIsWaiting((prev) => false);
+          setNotificationPopMsgNature((prev) => false);
+          setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
+          return
+        }
+        
+        dispatch(login({ userData }));
+
+        const userProfile = await profile.createProfile({
+          name: userData?.name,
+          userIdAuth: userData?.$id,
+          profileImgID: null,
+          profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
+        });
+
+        console.log(userProfile)
+        setMyUserProfile((prev) => userProfile)
+        dispatch(getUserProfile({ userProfile }))
+        if (userProfile) navigate("/");
+
+      } else {
+        setError("Please check the credentials");
+      }
+      setIsWaiting(false)
+    } catch (error) {
+      setIsWaiting(false)
     }
-    setIsWaiting((prev) => false)
+
   }
 
 
@@ -115,7 +126,7 @@ const Signup = () => {
                 </Link>
               </p>
             </div>
-            {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
+            {error && <p className="text-red-600 my-2 text-center text-sm">{error}</p>}
 
             <form
               className="max-w-full flex flex-col justify-center items-center"

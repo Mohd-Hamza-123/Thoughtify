@@ -11,7 +11,7 @@ import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
 import { getUserProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
-import authService from "./appwrite/auth";
+import authService, { AuthService } from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
@@ -31,11 +31,13 @@ import ResetPassword from "./pages/ResetPassword";
 import FindFriends from "./pages/FindFriends";
 import RespondersSectionPage from "./pages/RespondersSectionPage";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage";
+import NotificationProviders from "./Providers/NotificationProvider";
+
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth?.userData);
-
+  console.log(userData)
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
@@ -270,6 +272,7 @@ function App() {
     }
     verifyEmail();
     getNotification();
+    // authService.logout().then((res) => console.log(res))
   }, []);
 
   const { getProfileData } = useGetProfileData()
@@ -282,96 +285,99 @@ function App() {
   }, [userData]);
 
   return !loading ? (
-    <AskProvider
-      value={{
-        isAppInstalled,
-        onInstallApp,
-        queries,
-        setQueries,
-        hasMorePostsInProfileFilterBookmark,
-        sethasMorePostsInProfileFilterBookmark,
-        hasMorePostsInProfileFilterOpinions,
-        sethasMorePostsInProfileFilterOpinions,
-        hasMorePostsInProfileFilterQuestions,
-        sethasMorePostsInProfileFilterQuestions,
-        hasMorePostsInBrowseQuestions,
-        sethasMorePostsInBrowseQuestions,
-        hasMorePostInTrustedPost,
-        sethasMorePostInTrustedPost,
-        hasMoreComments,
-        sethasMoreComments,
-        hasMorePostsInHome,
-        sethasMorePostsInHome,
-        myUserProfile,
-        setMyUserProfile,
-        notificationPopUp,
-        setnotificationPopUp,
-        notificationShow,
-        setNotificationShow,
-        increaseViews,
-        feedbackPopUp,
-        setfeedbackPopUp,
-        SettingPopUp,
-        SetSettingPopUp,
-        isOverlayBoolean,
-        setisOverlayBoolean,
-        isOpen,
-        setIsOpen,
-        notificationPopMsg,
-        setnotificationPopMsg,
-        notificationPopMsgNature,
-        setNotificationPopMsgNature,
-        notifications,
-        setnotifications,
-        deleteNotication,
-        isUnreadNotificationExist,
-        setIsUnreadNotificationExist,
-        isDarkModeOn,
-        setisDarkModeOn,
-        mainResponder,
-        setmainResponder,
-        savedMyProfilePosts,
-        setSavedMyProfilePosts,
-        savedMyProfileComments,
-        setsavedMyProfileComments,
-      }}
-    >
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignupPage />} />
-        <Route path="profile/:slug" element={<Profile />} />
-        <Route path="Find-People" element={<FindFriends />} />
-        <Route path="AskQuestion" element={<AskQuestion />} />
-        <Route path="forgotPassword" element={<ForgetPassword />} />
-        <Route path="reset-password" element={<ResetPassword />} />
-        <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
-        <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
-        <Route
-          path="EditProfile/:editProfileSlug"
-          element={<EditProfilePage />}
+    <NotificationProviders>
+      <AskProvider
+        value={{
+          isAppInstalled,
+          onInstallApp,
+          queries,
+          setQueries,
+          hasMorePostsInProfileFilterBookmark,
+          sethasMorePostsInProfileFilterBookmark,
+          hasMorePostsInProfileFilterOpinions,
+          sethasMorePostsInProfileFilterOpinions,
+          hasMorePostsInProfileFilterQuestions,
+          sethasMorePostsInProfileFilterQuestions,
+          hasMorePostsInBrowseQuestions,
+          sethasMorePostsInBrowseQuestions,
+          hasMorePostInTrustedPost,
+          sethasMorePostInTrustedPost,
+          hasMoreComments,
+          sethasMoreComments,
+          hasMorePostsInHome,
+          sethasMorePostsInHome,
+          myUserProfile,
+          setMyUserProfile,
+          notificationPopUp,
+          setnotificationPopUp,
+          notificationShow,
+          setNotificationShow,
+          increaseViews,
+          feedbackPopUp,
+          setfeedbackPopUp,
+          SettingPopUp,
+          SetSettingPopUp,
+          isOverlayBoolean,
+          setisOverlayBoolean,
+          isOpen,
+          setIsOpen,
+          notificationPopMsg,
+          setnotificationPopMsg,
+          notificationPopMsgNature,
+          setNotificationPopMsgNature,
+          notifications,
+          setnotifications,
+          deleteNotication,
+          isUnreadNotificationExist,
+          setIsUnreadNotificationExist,
+          isDarkModeOn,
+          setisDarkModeOn,
+          mainResponder,
+          setmainResponder,
+          savedMyProfilePosts,
+          setSavedMyProfilePosts,
+          savedMyProfileComments,
+          setsavedMyProfileComments,
+        }}
+      >
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
+          <Route path="profile/:slug" element={<Profile />} />
+          <Route path="Find-People" element={<FindFriends />} />
+          <Route path="AskQuestion" element={<AskQuestion />} />
+          <Route path="forgotPassword" element={<ForgetPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
+          <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
+          <Route
+            path="EditProfile/:editProfileSlug"
+            element={<EditProfilePage />}
+          />
+          <Route
+            path="ChatRoom/:senderSlug/:receiverSlug"
+            element={<PersonalChatPage />}
+          />
+          <Route
+            path="BrowseQuestion/:category/:searchInput"
+            element={<SearchPage />}
+          />
+          <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
+          <Route path="Responders-Section" element={<RespondersSectionPage />} />
+        </Routes>
+        <SideBar />
+        <Overlay />
+        <Setting />
+        <Feedback />
+
+        <NotificationPop
+        // notificationPopMsg={notificationPopMsg}
+        // notificationPopMsgNature={notificationPopMsgNature}
         />
-        <Route
-          path="ChatRoom/:senderSlug/:receiverSlug"
-          element={<PersonalChatPage />}
-        />
-        <Route
-          path="BrowseQuestion/:category/:searchInput"
-          element={<SearchPage />}
-        />
-        <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
-        <Route path="Responders-Section" element={<RespondersSectionPage />} />
-      </Routes>
-      <SideBar />
-      <Overlay />
-      <Setting />
-      <Feedback />
-      <NotificationPop
-        notificationPopMsg={notificationPopMsg}
-        notificationPopMsgNature={notificationPopMsgNature}
-      />
-    </AskProvider>
+      </AskProvider>
+    </NotificationProviders>
   ) : (
     <Loader />
   );
