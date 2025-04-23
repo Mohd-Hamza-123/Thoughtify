@@ -9,9 +9,9 @@ import "./App.css";
 import { Loader, NavBar, NotificationPop, SideBar } from "./components";
 import appwriteService from "./appwrite/config";
 import profile from "./appwrite/profile";
-import { getUserProfile } from "./store/profileSlice";
+import { userProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
-import authService, { AuthService } from "./appwrite/auth";
+import authService from "./appwrite/auth";
 import { getInitialPost } from "./store/postsSlice";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
@@ -37,14 +37,14 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth?.userData);
-  // console.log(userData)
+  const myUserProfile = useSelector((state) => state.profileSlice?.userProfile);
+  console.log(myUserProfile)
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
   const [notificationPopUp, setnotificationPopUp] = useState(false);
-  const [myUserProfile, setMyUserProfile] = useState(null);
   const [notificationShow, setNotificationShow] = useState(null);
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
   const [hasMoreComments, sethasMoreComments] = useState(true);
@@ -66,11 +66,6 @@ function App() {
     useState(true);
   const [queries, setQueries] = useState([]);
 
-  //For Notification Pop
-  const [notificationPopMsg, setnotificationPopMsg] = useState("");
-  const [notificationPopMsgNature, setNotificationPopMsgNature] =
-    useState(false);
-
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] =
     useState(true);
@@ -89,50 +84,48 @@ function App() {
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
 
-  const body = document.getElementsByTagName("body");
-
   const [isDarkModeOn, setisDarkModeOn] = useState(
     localStorage.getItem("isDarkModeOn") === "true"
   );
 
+  const { getProfileData } = useGetProfileData()
+
   const fetchData = async () => {
     try {
       const userData = await authService.getCurrentUser();
-
       if (userData) {
         dispatch(login({ userData }));
-        const userProfile = await profile.listProfile({ slug: userData?.$id });
-        if (userProfile?.documents?.length === 0 || userProfile?.total === 0) {
-          const userProfile = await profile.createProfile({
+        const response = await profile.listProfile({ slug: userData?.$id });
+        console.log(response)
+        if (response?.documents?.length === 0 || response?.total === 0) {
+          const response = await profile.createProfile({
             name: userData?.name,
             userIdAuth: userData?.$id,
             profileImgID: null,
             profileImgURL:
               "https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png",
           });
-          setMyUserProfile(userProfile);
-          dispatch(getUserProfile({ userProfile }));
-          if (userProfile) {
+          dispatch(userProfile({ userProfile: response?.documents[0] }));
+          if (response) {
             navigate("/");
           } else {
             navigate("/signup");
           }
         } else {
-          setMyUserProfile(userProfile?.documents[0]);
-
-          const profileImageID = userProfile?.documents[0]?.profileImgID;
+          dispatch(userProfile({ userProfile: response?.documents[0] }));
+          const profileImageID = response?.documents[0]?.profileImgID;
           const URL = await profile.getStoragePreview(profileImageID);
 
           if (URL) {
             dispatch(
-              getUserProfile({
+              userProfile({
                 userProfile: userProfile?.documents[0],
                 userProfileImgURL: URL?.href,
               })
             );
           } else {
             dispatch(
-              getUserProfile({
+              userProfile({
                 userProfile: userProfile?.documents[0],
                 userProfileImgURL: "",
               })
@@ -142,8 +135,7 @@ function App() {
         }
       }
     } catch (err) {
-      setnotificationPopMsg(false);
-      setnotificationPopMsg("Oops ! Error");
+      console.log("error", err)
       navigate("/signup");
     } finally {
       setLoading(false);
@@ -254,16 +246,16 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!body) return;
-    if (isDarkModeOn) {
-      localStorage.setItem("isDarkModeOn", true);
-      body[0].classList.add("darkMode");
-    } else {
-      localStorage.setItem("isDarkModeOn", false);
-      body[0].classList.remove("darkMode");
-    }
-  }, [isDarkModeOn]);
+  // useEffect(() => {
+  //   if (!body) return;
+  //   if (isDarkModeOn) {
+  //     localStorage.setItem("isDarkModeOn", true);
+  //     body[0].classList.add("darkMode");
+  //   } else {
+  //     localStorage.setItem("isDarkModeOn", false);
+  //     body[0].classList.remove("darkMode");
+  //   }
+  // }, [isDarkModeOn]);
 
   useEffect(() => {
     if (indicator.current) {
@@ -272,15 +264,19 @@ function App() {
     }
     verifyEmail();
     getNotification();
+    authService.getCurrentUser().then((res) => {
+      dispatch(login({ userData: res }))
+    })
+
     // authService.logout().then((res) => console.log(res))
   }, []);
 
-  const { getProfileData } = useGetProfileData()
+  
 
   useEffect(() => {
     if (!myUserProfile && userData) {
       const profileData = getProfileData();
-      setMyUserProfile(profileData);
+      dispatch(userProfile({ userProfile: profileData }));
     }
   }, [userData]);
 
@@ -306,8 +302,6 @@ function App() {
           sethasMoreComments,
           hasMorePostsInHome,
           sethasMorePostsInHome,
-          myUserProfile,
-          setMyUserProfile,
           notificationPopUp,
           setnotificationPopUp,
           notificationShow,
@@ -321,10 +315,6 @@ function App() {
           setisOverlayBoolean,
           isOpen,
           setIsOpen,
-          notificationPopMsg,
-          setnotificationPopMsg,
-          notificationPopMsgNature,
-          setNotificationPopMsgNature,
           notifications,
           setnotifications,
           deleteNotication,

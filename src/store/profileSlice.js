@@ -13,7 +13,7 @@ const profileSlice = createSlice({
     name: 'profileSlice',
     initialState,
     reducers: {
-        getUserProfile: (state, action) => {
+        userProfile: (state, action) => {
             const { userProfile, userProfileImgURL } = action.payload
             state.userProfile = userProfile
             state.userProfileImgURL = userProfileImgURL
@@ -34,6 +34,10 @@ const profileSlice = createSlice({
 })
 
 
-export const { getUserProfile, getTotalPostByMe, getTotalCommentsByMe, getFilteredBookmarkPosts } = profileSlice.actions;
+export const {
+    userProfile,
+    getTotalPostByMe,
+    getTotalCommentsByMe,
+    getFilteredBookmarkPosts } = profileSlice.actions;
 export default profileSlice.reducer
 

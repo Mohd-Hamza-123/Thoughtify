@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Signup.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import { getUserProfile } from "../../store/profileSlice";
+import { userProfile } from "../../store/profileSlice";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
@@ -11,15 +11,16 @@ import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
+import { useNotificationContext } from "@/context/NotificationContext";
 
 
 const Signup = () => {
   const {
     setMyUserProfile,
     isDarkModeOn,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature
   } = useAskContext();
+
+  const {setNotification} = useNotificationContext()
 
   const [isWaiting, setIsWaiting] = useState(false);
 
@@ -64,24 +65,23 @@ const Signup = () => {
 
         if (!userData) {
           setIsWaiting((prev) => false);
-          setNotificationPopMsgNature((prev) => false);
-          setnotificationPopMsg((prev) => 'Please check the credentials or Internet Connection')
-          return
+          setNotification({ message: "User not found", type: "error" })
+          return undefined
         }
         
         dispatch(login({ userData }));
 
-        const userProfile = await profile.createProfile({
+        const response = await profile.createProfile({
           name: userData?.name,
           userIdAuth: userData?.$id,
           profileImgID: null,
           profileImgURL: "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg",
         });
 
-        console.log(userProfile)
-        setMyUserProfile((prev) => userProfile)
-        dispatch(getUserProfile({ userProfile }))
-        if (userProfile) navigate("/");
+       
+        setMyUserProfile((prev) => response)
+        dispatch(userProfile({ response }))
+        if (response) navigate("/");
 
       } else {
         setError("Please check the credentials");

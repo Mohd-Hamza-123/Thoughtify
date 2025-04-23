@@ -1,10 +1,12 @@
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
 import appwriteService from "@/appwrite/config";
+import { useSelector } from "react-redux";
 
 export function useGetProfileData() {
 
     const dispatch = useDispatch();
+    const userData = useSelector((state) => state?.auth?.userData);
 
     async function getProfileData() {
         try {
