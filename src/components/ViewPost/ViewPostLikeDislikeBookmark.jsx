@@ -77,6 +77,8 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   //   }, [myUserProfile])
   // );
 
+
+
   const like_func = async () => {
 
     if (pauseLikeDisLike) {
@@ -102,7 +104,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     else {
       console.log("not liked")
       console.log(post)
-      await updateLikeCount(post?.$id, like, dislike)
+      await updateLikeCount($id, like, dislike)
       //   setlikeCount((prev) => prev + 1);
       //   if (myUserProfile?.dislikedQuestions?.includes(slug)) {
       //     setdisLikeCount((prev) => {
@@ -120,6 +122,244 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
 
   const bookMark_func = () => {
   }
+
+  // if (flag === "Like") {
+  //   try {
+  //     if (likedQuestionsInContext.includes(post?.$id)) {
+  //       // update in Query
+  //       const increaseLike = await appwriteService.updatePost_Like_DisLike({
+  //         postId: post?.$id,
+  //         like: previousLike - 1,
+  //         dislike: previousDislike,
+  //       });
+  //       setPost((prev) => increaseLike);
+  //       dispatch(
+  //         getAllVisitedQuestionsInViewPost({ questions: increaseLike })
+  //       );
+
+  //       //Update In Profile
+  //       let likedQuestions = likedQuestionsInContext.filter(
+  //         (likedPostIDs) => likedPostIDs !== post?.$id
+  //       );
+
+  //       const updateLikeArr_In_MyProfile =
+  //         await profile.updateProfileWithQueries({
+  //           profileID: myUserProfile?.$id,
+  //           likedQuestions,
+  //           dislikedQuestions: dislikedQuestionsInContext,
+  //           bookmarks: bookmarksInContext,
+  //         });
+
+  //       setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+  //     } else {
+  //       if (dislikedQuestionsInContext.includes(post?.$id)) {
+  //         // Update in Query
+  //         const increaseLike = await appwriteService.updatePost_Like_DisLike({
+  //           postId: post?.$id,
+  //           like: previousLike + 1,
+  //           dislike: previousDislike - 1,
+  //         });
+  //         dispatch(
+  //           getAllVisitedQuestionsInViewPost({ questions: increaseLike })
+  //         );
+  //         setPost((prev) => increaseLike);
+
+  //         //Update In Profile
+  //         let likedQuestions = [...likedQuestionsInContext];
+  //         likedQuestions.push(post?.$id);
+
+  //         let dislikedQuestions = dislikedQuestionsInContext.filter(
+  //           (dislikedPostIDs) => dislikedPostIDs !== post?.$id
+  //         );
+  //         const updateLikeArr_In_MyProfile =
+  //           await profile.updateProfileWithQueries({
+  //             profileID: myUserProfile?.$id,
+  //             likedQuestions,
+  //             dislikedQuestions,
+  //             bookmarks: bookmarksInContext,
+  //           });
+
+  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+  //       } else {
+  //         // Update in Query
+  //         const increaseLike = await appwriteService.updatePost_Like_DisLike({
+  //           postId: post?.$id,
+  //           like: previousLike + 1,
+  //           dislike: previousDislike,
+  //         });
+
+  //         dispatch(
+  //           getAllVisitedQuestionsInViewPost({ questions: increaseLike })
+  //         );
+  //         setPost((prev) => increaseLike);
+
+  //         //Update In Profile
+  //         let likedQuestions = [...likedQuestionsInContext];
+  //         likedQuestions.push(post?.$id);
+
+  //         const updateLikeArr_In_MyProfile =
+  //           await profile.updateProfileWithQueries({
+  //             profileID: myUserProfile?.$id,
+  //             likedQuestions,
+  //             dislikedQuestions: dislikedQuestionsInContext,
+  //             bookmarks: bookmarksInContext,
+  //           });
+
+  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+  //       }
+
+  //       try {
+  //         if (userData?.$id !== post?.userId) {
+  //           // Getting Post Uploader profile to know whether he follows you or not.
+  //           const getPostUploaderProfile = await profile?.listProfile({
+  //             slug: post?.userId,
+  //           });
+
+  //           let followersArr =
+  //             getPostUploaderProfile?.documents[0]?.followers;
+  //           followersArr = followersArr?.map((obj) => JSON.parse(obj));
+
+  //           const isNotificationSend = followersArr?.findIndex(
+  //             (profile) => profile?.profileID === userData?.$id
+  //           );
+
+  //           if (isNotificationSend !== -1) {
+  //             const createNotification =
+  //               await notification.createNotification({
+  //                 content: `${userData.name} has liked your post`,
+  //                 isRead: false,
+  //                 slug: `/post/${slug}/null`,
+  //                 name: userData?.name,
+  //                 userID: userData.$id,
+  //                 userIDofReceiver: post.userId,
+  //                 userProfilePic: myUserProfile?.profileImgURL,
+  //               });
+  //           }
+  //         }
+  //       } catch (error) {
+  //         return null;
+  //       }
+  //     }
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // } else if (flag === "Dislike") {
+  //   try {
+  //     if (dislikedQuestionsInContext.includes(post?.$id)) {
+  //       // update in Query
+  //       const decreaseDislike = await appwriteService.updatePost_Like_DisLike(
+  //         {
+  //           postId: post?.$id,
+  //           like: previousLike,
+  //           dislike: previousDislike - 1,
+  //         }
+  //       );
+  //       setPost((prev) => decreaseDislike);
+  //       dispatch(
+  //         getAllVisitedQuestionsInViewPost({ questions: decreaseDislike })
+  //       );
+
+  //       //Update In Profile
+  //       let dislikedQuestions = dislikedQuestionsInContext.filter(
+  //         (dislikedPostIDs) => dislikedPostIDs !== post?.$id
+  //       );
+
+  //       const updateDislikeArr_In_MyProfile =
+  //         await profile.updateProfileWithQueries({
+  //           profileID: myUserProfile?.$id,
+  //           likedQuestionsInContext,
+  //           dislikedQuestions: dislikedQuestions,
+  //           bookmarks: bookmarksInContext,
+  //         });
+
+  //       setMyUserProfile((prev) => updateDislikeArr_In_MyProfile);
+  //     } else {
+  //       if (likedQuestionsInContext?.includes(post?.$id)) {
+  //         // Update in Query
+  //         const increaseDislike =
+  //           await appwriteService.updatePost_Like_DisLike({
+  //             postId: post?.$id,
+  //             like: previousLike - 1,
+  //             dislike: previousDislike + 1,
+  //           });
+  //         dispatch(
+  //           getAllVisitedQuestionsInViewPost({ questions: increaseDislike })
+  //         );
+  //         setPost((prev) => increaseDislike);
+
+  //         //Update In Profile
+  //         let dislikedQuestions = [...dislikedQuestionsInContext];
+  //         dislikedQuestions?.push(post?.$id);
+
+  //         let likedQuestions = likedQuestionsInContext?.filter(
+  //           (likedPostIDs) => likedPostIDs !== post?.$id
+  //         );
+  //         const updateLikeArr_In_MyProfile =
+  //           await profile.updateProfileWithQueries({
+  //             profileID: myUserProfile?.$id,
+  //             likedQuestions,
+  //             dislikedQuestions,
+  //             bookmarks: bookmarksInContext,
+  //           });
+
+  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+  //       } else {
+  //         const increaseDisLike =
+  //           await appwriteService.updatePost_Like_DisLike({
+  //             postId: post?.$id,
+  //             like: previousLike,
+  //             dislike: previousDislike + 1,
+  //           });
+
+  //         dispatch(
+  //           getAllVisitedQuestionsInViewPost({ questions: increaseDisLike })
+  //         );
+  //         setPost((prev) => increaseDisLike);
+
+  //         //Update In Profile
+  //         let dislikedQuestions = [...dislikedQuestionsInContext];
+  //         dislikedQuestions.push(post?.$id);
+
+  //         const updateLikeArr_In_MyProfile =
+  //           await profile.updateProfileWithQueries({
+  //             profileID: myUserProfile?.$id,
+  //             likedQuestionsInContext,
+  //             dislikedQuestions: dislikedQuestions,
+  //             bookmarks: bookmarksInContext,
+  //           });
+
+  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // } else {
+  //   if (bookmarksInContext?.includes(post?.$id)) {
+  //     const removeBookmark = bookmarksInContext?.filter(
+  //       (bookmarkPostID) => bookmarkPostID !== post?.$id
+  //     );
+
+  //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
+  //       profileID: myProfileID_In_Context,
+  //       likedQuestions: likedQuestionsInContext,
+  //       dislikedQuestions: dislikedQuestionsInContext,
+  //       bookmarks: removeBookmark,
+  //     });
+  //     setMyUserProfile((prev) => updateBookMarkInProfile);
+  //   } else {
+  //     let addBookmark = [...bookmarksInContext];
+  //     addBookmark?.push(post?.$id);
+
+  //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
+  //       profileID: myProfileID_In_Context,
+  //       likedQuestions: likedQuestionsInContext,
+  //       dislikedQuestions: dislikedQuestionsInContext,
+  //       bookmarks: addBookmark,
+  //     });
+  //     setMyUserProfile((prev) => updateBookMarkInProfile);
+  //   }
+  // }
 
   return (
     <div className="flex justify-between gap-10 my-3">
