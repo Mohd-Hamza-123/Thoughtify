@@ -22,6 +22,7 @@ import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
 import { useGetProfileData } from "@/lib/profile";
 
 const ViewPost = () => {
+
   let client = new Client()
     .setEndpoint(conf.appwriteURL)
     .setProject(conf.appwriteProjectId);
@@ -57,8 +58,6 @@ const ViewPost = () => {
 
   const [isBookMarked, setIsBookMarked] = useState(false);
 
-  const [profileImgURL, setprofileImgURL] = useState("");
-
   // useState for views,comments,date
   const [postdate, setpostdate] = useState("");
   const [postViews, setpostViews] = useState(0);
@@ -72,9 +71,7 @@ const ViewPost = () => {
   // update UI for Pole Percentage
   const [selectedIndex, setselectedIndex] = useState(0);
   // update LikeDislike UI
-  const [Like_Dislike, setLike_Dislike] = useState(null);
-  const [likeCount, setlikeCount] = useState(0);
-  const [disLikeCount, setdisLikeCount] = useState(0);
+
 
   const navigateToRelatedPost = (postId) => {
     navigate(`/post/${postId}/${null}`);
@@ -140,8 +137,6 @@ const ViewPost = () => {
     }
   }, [slug, initialPost]);
 
-
-
   useEffect(() => {
     if (post) {
       setTotalPollVotes((prev) => post?.totalPollVotes);
@@ -155,58 +150,8 @@ const ViewPost = () => {
       });
     }
   }, [post]);
-  // UseEffect For bookMark
-  useEffect(() => {
-    if (myUserProfile?.bookmarks?.includes(post?.$id)) {
-      setIsBookMarked(true);
-    } else {
-      setIsBookMarked(false);
-    }
 
-    if (post) {
-      if (post?.pollVotersID.length === 0) {
-        setselectedIndex((prev) => null);
-      } else {
-        let parseArr = post?.pollVotersID?.map((obj) => JSON.parse(obj));
-        let myPollIndex = parseArr?.filter(
-          (obj) => obj?.pollVoterID === userData?.$id
-        );
-        if (myPollIndex?.length === 0) {
-          setselectedIndex(null);
-        } else {
-          setselectedIndex((prev) => myPollIndex[0]?.optionNum);
-        }
-      }
 
-      setlikeCount((prev) => post?.like);
-      setdisLikeCount((prev) => post?.dislike);
-    }
-
-    if (post === undefined) {
-      let postObject = initialPost.find((obj) => obj.$id === slug);
-      setPost((prev) => postObject);
-    }
-  }, [post]);
-  +(
-    // UseEffect For bookMark
-    useEffect(() => {
-      if (myUserProfile?.bookmarks?.includes(post?.$id)) {
-        setIsBookMarked(true);
-      } else {
-        setIsBookMarked(false);
-      }
-
-      if (myUserProfile) {
-        if (myUserProfile?.likedQuestions?.includes(slug)) {
-          setLike_Dislike((prev) => "liked");
-        } else if (myUserProfile?.dislikedQuestions?.includes(slug)) {
-          setLike_Dislike((prev) => "disliked");
-        } else {
-          setLike_Dislike((prev) => "none");
-        }
-      }
-    }, [myUserProfile])
-  );
   // Update Post in RealTime
   useEffect(() => {
     const realtime = client.subscribe(
@@ -698,18 +643,18 @@ const ViewPost = () => {
   const { getProfileImageURLFromID } = useGetProfileData();
 
   const getProfileImage = async (profileImageID) => {
-    console.log(profileImageID)
-    return profileImageID
+    try {
+      const url = await getProfileImageURLFromID(profileImageID)
+      return url
+    } catch (error) {
+      return null
+    }
   }
 
   useEffect(() => {
     if (post) {
       console.log(post)
       getProfileImage(post?.profileImgID)
-      // const ProfileURLIndex = postProfilesPic?.findIndex(
-      //   (obj) => obj?.userId === post?.userId
-      // );
-      // setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic);
     }
   }, [post]);
 
@@ -801,9 +746,7 @@ const ViewPost = () => {
 
 
   ) : (
-
-    <p className="text-3xl text-black">Post is Not Available</p>
-
+    <p className="text-3xl text-black text-center">Post is Not Available</p>
   );
 };
 

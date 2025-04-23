@@ -1,16 +1,14 @@
-import { useRef } from "react";
-import { useEffect } from "react";
-import { useState } from "react";
-import { HomeLeft, HomeRight} from "../components/index";
-import { Button } from "@/components/ui/button";
 import "./Home.css";
+import { useRef } from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { useAskContext } from "../context/AskContext";
+import { HomeLeft, HomeRight} from "../components/index";
 
 const Home = () => {
+
   const { isDarkModeOn } = useAskContext();
-
-  const [posts, setPosts] = useState([]);
-
   const homeRight = useRef();
   const homeLeft = useRef();
 
@@ -27,7 +25,6 @@ const Home = () => {
     } else {
       setisNavbarHidden(false);
     }
-
     lastScrollY.current = position;
   };
 
@@ -38,7 +35,7 @@ const Home = () => {
 
       HomePageRef.current.scrollTop = parsedScrollPosition;
     }
-  }, [HomePageRef.current, posts]);
+  }, [HomePageRef.current]);
 
   const toggleGridButton = () => {
     if (homeLeft.current && homeRight.current) {
