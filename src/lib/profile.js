@@ -1,5 +1,6 @@
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
+import appwriteService from "@/appwrite/config";
 
 export function useGetProfileData() {
 
@@ -16,7 +17,15 @@ export function useGetProfileData() {
     }
 
     async function getProfileImageURLFromID(profileImageID) {
-        return profileImageID
+        // console.log(profileImageID)
+        try {
+            if (!profileImageID) return null
+            
+            const res = await appwriteService.getThumbnailPreview(profileImageID)
+            return res.href
+        } catch (error) {
+            return null
+        }
     }
     return { getProfileData, getProfileImageURLFromID }
 }

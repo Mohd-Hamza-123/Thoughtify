@@ -10,6 +10,7 @@ import { SecondLoader } from "..";
 import { Button } from "../ui/button";
 
 const HomeLeft = () => {
+
   const dispatch = useDispatch();
 
   const homeLeft = useRef(null);
@@ -18,11 +19,10 @@ const HomeLeft = () => {
   const { increaseViews,
     hasMorePostsInHome,
     sethasMorePostsInHome,
-    isDarkModeOn
   } =
     useAskContext();
 
-  const initialPost = useSelector((state) => state.postsSlice?.initialPosts);
+  // const initialPost = useSelector((state) => state.postsSlice?.initialPosts);
 
   const [isLoading, setIsLoading] = useState(false);
   const [lastPostID, setLastPostID] = useState(null);
@@ -31,27 +31,27 @@ const HomeLeft = () => {
   const getAllPosts = async () => {
     setIsLoading(true);
     try {
-      if (initialPost?.length === 0) {
-        const posts = await appwriteService.getPosts({ lastPostID });
-        console.log(posts);
-        return posts;
-
-        if (posts === false) {
-          setPosts(false);
-        }
-
-        if (initialPost?.length < posts.total) {
-          sethasMorePostsInHome(true);
-        } else {
-          sethasMorePostsInHome(false);
-        }
-        if (posts) {
-          setPosts(posts?.documents);
-          let lastID = posts?.documents[posts?.documents.length - 1]?.$id;
-          setLastPostID(lastID);
-          dispatch(getInitialPost({ initialPosts: posts?.documents }));
-        }
+      // if (initialPost?.length === 0) {
+      const posts = await appwriteService.getPosts({ lastPostID });
+      // console.log(posts);
+      return posts;
+      return
+      if (posts === false) {
+        setPosts(false);
       }
+
+      if (initialPost?.length < posts.total) {
+        sethasMorePostsInHome(true);
+      } else {
+        sethasMorePostsInHome(false);
+      }
+      if (posts) {
+        setPosts(posts?.documents);
+        let lastID = posts?.documents[posts?.documents.length - 1]?.$id;
+        setLastPostID(lastID);
+        dispatch(getInitialPost({ initialPosts: posts?.documents }));
+      }
+      // }
     } catch (error) {
       setIsLoading(false);
     }
@@ -89,27 +89,27 @@ const HomeLeft = () => {
   }, [spinnerRef.current]);
 
   useEffect(() => {
-    if (isIntersecting && hasMorePostsInHome) {
-      const getAllPosts = async () => {
-        let LastID = initialPost[initialPost?.length - 1]?.$id;
-        const posts = await appwriteService.getPosts({ lastPostID: LastID });
+    // if (isIntersecting && hasMorePostsInHome) {
+    //   const getAllPosts = async () => {
+    //     let LastID = initialPost[initialPost?.length - 1]?.$id;
+    //     const posts = await appwriteService.getPosts({ lastPostID: LastID });
 
-        if (initialPost.length < posts?.total) {
-          sethasMorePostsInHome(true);
-        } else {
-          sethasMorePostsInHome(false);
-        }
+    //     if (initialPost.length < posts?.total) {
+    //       sethasMorePostsInHome(true);
+    //     } else {
+    //       sethasMorePostsInHome(false);
+    //     }
 
-        if (posts?.documents?.length === 0) {
-          setIsLoading(false);
-          return;
-        }
-        let lastID = posts?.documents[posts?.documents?.length - 1]?.$id;
-        setLastPostID(lastID);
-        dispatch(getInitialPost({ initialPosts: posts?.documents }));
-      };
-      getAllPosts();
-    }
+    //     if (posts?.documents?.length === 0) {
+    //       setIsLoading(false);
+    //       return;
+    //     }
+    //     let lastID = posts?.documents[posts?.documents?.length - 1]?.$id;
+    //     setLastPostID(lastID);
+    //     dispatch(getInitialPost({ initialPosts: posts?.documents }));
+    //   };
+    //   getAllPosts();
+    // }
   }, [isIntersecting, hasMorePostsInHome]);
 
 
@@ -118,7 +118,7 @@ const HomeLeft = () => {
       <div className="w-[65%] relative Home_Left flex justify-center items-center h-full">
         <SecondLoader />
       </div>
-    );
+    )
   else if (isError) {
     return <div className="w-[65%] h-full flex flex-col items-center justify-center gap-2">
       <p className="select-none dark:text-white">

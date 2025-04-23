@@ -14,8 +14,8 @@ const appWriteErrors = [
 ]
 
 export const checkAppWriteError = (errorMessage) => {
-    console.log(errorMessage)
-    
+    // console.log(errorMessage)
+
     const error = appWriteErrors?.map((errorObject) => {
         if (errorMessage?.includes(errorObject?.error)) {
             return errorObject?.message

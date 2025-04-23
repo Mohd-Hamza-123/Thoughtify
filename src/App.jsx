@@ -37,7 +37,7 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth?.userData);
-  console.log(userData)
+  // console.log(userData)
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);

@@ -1,10 +1,11 @@
-import React from "react";
-import { UpperNavigationBar, MyProfile } from "../components/index";
 import './Profile.css'
+import React from "react";
+import { MyProfile } from "../components/index";
+
 const Profile = () => {
   return (
     <div className="Profile">
-        <MyProfile />
+      <MyProfile />
     </div>
   );
 };

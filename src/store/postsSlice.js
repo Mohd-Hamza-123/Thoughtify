@@ -43,7 +43,7 @@ const postSlice = createSlice({
           
                 array = [...state.initialPosts, ...action.payload.initialPosts]
 
-                let uniqueArray = Array.from(new Map(array.map(obj => [obj.$id, obj])).values());
+                let uniqueArray = Array.from(new Map(array.map(obj => [obj?.$id, obj])).values());
                 state.initialPosts = uniqueArray
             }
 
