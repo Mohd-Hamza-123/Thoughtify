@@ -30,7 +30,7 @@ const ViewPostMainContent = ({ post }) => {
     staleTime: Infinity,
   });
 
-  console.log(profileImgURL)
+  // console.log(profileImgURL)
 
   return (
     <div className="p-2 shadow-lg">
@@ -137,7 +137,7 @@ const ViewPostMainContent = ({ post }) => {
 
         <div className="px-3 py-3">{parse(post?.content)}</div>
         <Prism />
-        
+
         {post?.pollQuestion && (
           <div id="ViewPost_Poll_Div">
             <h5>Poll </h5>

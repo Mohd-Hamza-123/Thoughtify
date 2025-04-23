@@ -42,7 +42,6 @@ const Login = () => {
       setNotification({ message: error.message, type: 'error' })
       setIsWaiting(false)
     }
-    
   };
 
   return (

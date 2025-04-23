@@ -1,13 +1,19 @@
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
+import { FaThumbsUp } from "react-icons/fa6";
+import { FaThumbsDown } from "react-icons/fa";
+import { FaRegBookmark } from "react-icons/fa6";
 import React, { useState, useEffect } from 'react'
 import { useNotificationContext } from '@/context/NotificationContext';
+import { updateLikeCount } from '@/lib/posts';
 
+const ViewPostLikeDislikeBookmark = ({ post }) => {
+  const { $id, like, dislike } = post
+  // console.log($id, like, dislike)
 
-const ViewPostLikeDislikeBookmark = () => {
-
-  const authStatus = useSelector((state) => state.auth.userStatus)
-
+  const authStatus = useSelector((state) => state.auth.status)
+  const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
+  // console.log(myUserProfile)
   const [isBookMarked, setIsBookMarked] = useState(false);
   const [Like_Dislike, setLike_Dislike] = useState(null);
   const [disLikeCount, setDisLikeCount] = useState(0);
@@ -71,45 +77,59 @@ const ViewPostLikeDislikeBookmark = () => {
   //   }, [myUserProfile])
   // );
 
+  const like_func = async () => {
+
+    if (pauseLikeDisLike) {
+      setNotification({ message: "wait...", type: "success" });
+      return
+    }
+
+    if (!authStatus) {
+      setNotification({ message: "Please Login", type: "error" });
+      return undefined
+    }
+
+    // like_dislike_BookMark("Like");
+    // setLike_Dislike("liked");
+    if (myUserProfile?.likedQuestions?.includes(post?.$id)) {
+      console.log("already liked")
+      console.log(post)
+      //   setlikeCount((prev) => {
+      //     if (prev === 0) return prev;
+      //     return prev - 1;
+      //   });
+    }
+    else {
+      console.log("not liked")
+      console.log(post)
+      await updateLikeCount(post?.$id, like, dislike)
+      //   setlikeCount((prev) => prev + 1);
+      //   if (myUserProfile?.dislikedQuestions?.includes(slug)) {
+      //     setdisLikeCount((prev) => {
+      //       if (prev === 0) return prev;
+      //       return prev - 1;
+      //     });
+      //   }
+
+    }
+  }
+
+  const dislike_func = () => {
+
+  }
+
+  const bookMark_func = () => {
+  }
+
   return (
     <div className="flex justify-between gap-10 my-3">
       <Button
         variant='outline'
         className="flex-1"
-        onClick={() => {
-          if (pauseLikeDisLike) {
-            setNotification({ message: "wait...", type: "success" });
-            return
-          }
-
-          if (!authStatus) {
-            setNotification({ message: "Please Login", type: "error" });
-            return;
-          }
-
-          like_dislike_BookMark("Like");
-          setLike_Dislike("liked");
-          // if (myUserProfile?.likedQuestions?.includes(slug)) {
-          //   setlikeCount((prev) => {
-          //     if (prev === 0) return prev;
-          //     return prev - 1;
-          //   });
-          // } else {
-          //   setlikeCount((prev) => prev + 1);
-          //   if (myUserProfile?.dislikedQuestions?.includes(slug)) {
-          //     setdisLikeCount((prev) => {
-          //       if (prev === 0) return prev;
-          //       return prev - 1;
-          //     });
-          //   }
-          // }
-        }}
+        onClick={like_func}
       >
         <span>{likeCount}</span>
-        <i
-          className={`fa-${Like_Dislike === "liked" ? "solid" : "regular"
-            } fa-thumbs-up`}
-        ></i>
+        <FaThumbsUp className={`${Like_Dislike ? "font-bold" : "font-normal"}`} />
       </Button>
 
       <Button
@@ -146,11 +166,7 @@ const ViewPostLikeDislikeBookmark = () => {
       >
 
         <span>{disLikeCount}</span>
-        <i
-          className={`fa-${Like_Dislike === "disliked" ? "solid" : "regular"
-            } fa-thumbs-down`}
-        ></i>
-
+        <FaThumbsDown className={`${Like_Dislike ? "font-bold" : "font-normal"}`} />
       </Button>
 
       <Button
@@ -170,10 +186,7 @@ const ViewPostLikeDislikeBookmark = () => {
           // setIsBookMarked((prev) => !prev);
         }}
       >
-        <i
-          className={`fa-${isBookMarked ? "solid" : "regular"
-            } fa-bookmark`}
-        ></i>
+        <FaRegBookmark className={`${isBookMarked ? "font-bold fill-black" : "font-normal"}`} />
       </Button>
     </div>
   )

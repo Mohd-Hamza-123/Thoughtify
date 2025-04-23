@@ -25,8 +25,6 @@ const PostCard = ({
   trustedResponderPost
 }) => {
 
-  console.log("user : ", name)
-
   const { isDarkModeOn } = useAskContext()
 
   const { getProfileImageURLFromID } = useGetProfileData()

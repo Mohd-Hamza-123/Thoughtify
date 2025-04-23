@@ -653,7 +653,6 @@ const ViewPost = () => {
 
   useEffect(() => {
     if (post) {
-      console.log(post)
       getProfileImage(post?.profileImgID)
     }
   }, [post]);
@@ -664,8 +663,6 @@ const ViewPost = () => {
       className="w-full relative flex"
       onScroll={handleScroll}
     >
-
-
       <Button
         variant="outline"
         className="flex justify-center items-center md:hidden"
@@ -676,10 +673,9 @@ const ViewPost = () => {
       >
         <i className="bx bxs-grid-alt"></i>
       </Button>
-
       <section ref={viewPostLeft} className="p-3 w-[70%]">
         <ViewPostMainContent post={post} />
-        <ViewPostLikeDislikeBookmark />
+        <ViewPostLikeDislikeBookmark post={post} />
       </section>
 
       <section
@@ -740,11 +736,7 @@ const ViewPost = () => {
           </div>
         )}
       </section>
-
-
     </div>
-
-
   ) : (
     <p className="text-3xl text-black text-center">Post is Not Available</p>
   );
