@@ -1,5 +1,5 @@
 import Prism from "../Prism";
-import React, { useRef } from "react";
+import React, { useRef ,useEffect} from "react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,15 +7,18 @@ import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import NoProfile from "../../assets/NoProfile.png";
 import { dateFormatFunc } from "@/helpers/format-dates";
+import conf from "@/conf/conf";
 
 const ViewPostMainContent = ({ post }) => {
-    console.log(post);
+    // console.log(post);
     const ellipsis_Vertical = useRef();
     const ViewPost_ellipsis_Vertical = useRef();
 
     const userData = useSelector((state) => state?.auth?.userData);
-    const isAuther = post && userData ? post.userId === userData.$id : false;
+    // console.log(userData);
+    const isAuthor = post && userData ? post.userId === userData.$id : false;
 
+  
 
     return (
         <div className="p-2 shadow-lg">
@@ -51,12 +54,12 @@ const ViewPostMainContent = ({ post }) => {
                         ViewPost_ellipsis_Vertical.current.classList.toggle("block");
                     }}
                 >
-                    {(isAuther || userData?.$id === conf?.myPrivateUserID) && (
+                    {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
                         <div className="relative">
                             <div>
                                 <div ref={ViewPost_ellipsis_Vertical}>
                                     <ul>
-                                        {(isAuther || userData?.$id === conf?.myPrivateUserID) && (
+                                        {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
                                             <li
                                                 onClick={() => {
                                                     navigate(`/EditQuestion/${post?.$id}`);
@@ -67,7 +70,7 @@ const ViewPostMainContent = ({ post }) => {
                                                 </Button>
                                             </li>
                                         )}
-                                        {(isAuther || userData?.$id === conf?.myPrivateUserID) && (
+                                        {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
                                             <li>
                                                 <Button
                                                     onClick={() => {
@@ -163,8 +166,8 @@ const ViewPostMainContent = ({ post }) => {
                                                 width: `${percentage}%`,
                                             }}
                                             className={`${index === selectedIndex
-                                                ? `PollPercentageMeter active`
-                                                : "PollPercentageMeter"
+                                                    ? `PollPercentageMeter active`
+                                                    : "PollPercentageMeter"
                                                 }`}
                                         ></div>
                                     </li>

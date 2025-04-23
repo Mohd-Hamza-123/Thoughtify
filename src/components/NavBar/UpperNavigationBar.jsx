@@ -1,8 +1,8 @@
 import "../../index.css";
 import "./UpperNavigationBar.css";
 import React from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useAskContext } from "../../context/AskContext";
+import { useSelector } from "react-redux/es/hooks/useSelector";
 import {
   Logo,
   UserCircle,
@@ -11,12 +11,10 @@ import {
   UpperNavigationBarBtns,
 } from "..";
 
-import { useAskContext } from "../../context/AskContext";
-import { useSelector } from "react-redux/es/hooks/useSelector";
+
 
 const NavigationBar = () => {
   const authStatus = useSelector((state) => state.auth.status);
-
   const { setIsOpen, myUserProfile, setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {

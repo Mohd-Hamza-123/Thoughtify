@@ -16,7 +16,7 @@ export function useGetProfileData() {
     }
 
     async function getProfileImageURLFromID(profileImageID) {
-        return null
+        return profileImageID
     }
     return { getProfileData, getProfileImageURLFromID }
 }

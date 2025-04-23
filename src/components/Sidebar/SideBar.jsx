@@ -27,7 +27,6 @@ const SideBar = () => {
     isDarkModeOn,
     onInstallApp,
     isAppInstalled,
-    setnotifications,
     setMyUserProfile,
     setisOverlayBoolean,
   } = useAskContext();
@@ -52,10 +51,10 @@ const SideBar = () => {
   const logoutHandle = async () => {
     try {
       const res = await authService.logout();
+      console.log(res);
       if (res) {
         dispatch(logout());
         setMyUserProfile(null);
-        setnotifications(null);
         closeSideBarAndOverlay();
         navigate("/");
       }

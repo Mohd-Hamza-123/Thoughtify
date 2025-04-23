@@ -19,6 +19,7 @@ import conf from "../../conf/conf";
 import { Client } from "appwrite";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
+import { useGetProfileData } from "@/lib/profile";
 
 const ViewPost = () => {
   let client = new Client()
@@ -139,14 +140,7 @@ const ViewPost = () => {
     }
   }, [slug, initialPost]);
 
-  useEffect(() => {
-    if (post) {
-      const ProfileURLIndex = postProfilesPic?.findIndex(
-        (obj) => obj?.userId === post?.userId
-      );
-      setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic);
-    }
-  }, [post]);
+
 
   useEffect(() => {
     if (post) {
@@ -698,6 +692,26 @@ const ViewPost = () => {
   useEffect(() => {
     makeCodeBlock()
   }, [post?.content])
+
+
+
+  const { getProfileImageURLFromID } = useGetProfileData();
+
+  const getProfileImage = async (profileImageID) => {
+    console.log(profileImageID)
+    return profileImageID
+  }
+
+  useEffect(() => {
+    if (post) {
+      console.log(post)
+      getProfileImage(post?.profileImgID)
+      // const ProfileURLIndex = postProfilesPic?.findIndex(
+      //   (obj) => obj?.userId === post?.userId
+      // );
+      // setprofileImgURL(postProfilesPic[ProfileURLIndex]?.profilePic);
+    }
+  }, [post]);
 
   return post ? (
     <div

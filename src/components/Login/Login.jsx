@@ -1,58 +1,58 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
-import { useForm } from "react-hook-form";
-import authService from "../../appwrite/auth";
-import { useDispatch } from "react-redux";
-import { login as authLogin } from "../../store/authSlice";
-import QueryFlow from '../../assets/QueryFlow.png'
 import './Login.css'
+import { Button } from "../ui/button";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import goBack from '../../assets/goBack.png'
+import authService from "../../appwrite/auth";
+import { checkAppWriteError } from '@/messages';
+import QueryFlow from '../../assets/QueryFlow.png'
+import { Link, useNavigate } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
+import { login as authLogin } from "../../store/authSlice";
+import { useNotificationContext } from "@/context/NotificationContext";
+
 const Login = () => {
-  const [isWaiting, setIsWaiting] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+
+  const [isWaiting, setIsWaiting] = useState(false);
+
   const { register, handleSubmit } = useForm();
-  const {
-    isDarkModeOn,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature } = useAskContext()
+
+  const { isDarkModeOn } = useAskContext()
+  const { setNotification } = useNotificationContext()
 
 
   const login = async (data) => {
-    setError(null);
     try {
-      setIsWaiting((prev) => true)
+      setIsWaiting(true)
       const session = await authService.login({ ...data });
-      console.log(session)
-      if (session) {
+      if (session?.success) {
         const userData = await authService.getCurrentUser();
         if (userData) dispatch(authLogin({ userData }));
         navigate("/");
-        setNotificationPopMsgNature((prev) => true)
-        setnotificationPopMsg((prev) => 'You are Logged In')
+        setNotification({ message: 'You are Logged In', type: 'success' })
       } else {
-        setError("Invalid Credential");
-        setNotificationPopMsgNature((prev) => false)
-        setnotificationPopMsg((prev) => 'Invalid Credential')
+        setNotification({ message: checkAppWriteError(session?.error) , type: 'error' })
       }
+      setIsWaiting(false)
     } catch (error) {
-      setError(error.message);
+      setNotification({ message: error.message, type: 'error' })
+      setIsWaiting(false)
     }
-    setIsWaiting((prev) => false)
+    
   };
 
   return (
-    <>
       <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         <section onClick={() => navigate("/")} className="GoToHomePageDiv">
-          <div><img src={goBack} alt="" /></div>
+          <div><img src={goBack} alt="Go Back" /></div>
           <span>Home</span>
         </section>
         <div
-          className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg`}
+          className="flex items-center justify-center flex-col mx-auto w-full max-w-lg"
         >
           <div className="flex justify-center items-center">
             <img className="Login_signup_Logo" src={QueryFlow} alt="" />
@@ -61,8 +61,8 @@ const Login = () => {
             <h1 className={`Login_Login font-bold text-3xl mt-3 text-center text-black ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
               Login
             </h1>
-            <div className="Login_dont_have_acc mx-auto mt-2">
-              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>
+            <div className="Login_dont_have_acc mx-auto my-2">
+              <p>
                 Don't have an Account ?&nbsp;
                 <Link
                   className="font-medium text-primary transition-all duration-200 hover:underline"
@@ -72,8 +72,6 @@ const Login = () => {
                 </Link>
               </p>
             </div>
-
-            {error && <p className="text-red-600 mt-2 text-center">{error}</p>}
 
             <form
               className="max-w-full flex flex-col justify-center items-center"
@@ -132,7 +130,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };
 
