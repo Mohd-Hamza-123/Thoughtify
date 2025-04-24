@@ -6,23 +6,24 @@ import { FaRegBookmark } from "react-icons/fa6";
 import React, { useState, useEffect } from 'react'
 import { useNotificationContext } from '@/context/NotificationContext';
 import { updateLikeCount } from '@/lib/posts';
+import { useMutation } from '@tanstack/react-query';
+import { useDispatch } from 'react-redux';
+import { userProfile } from '@/store/profileSlice';
 
 const ViewPostLikeDislikeBookmark = ({ post }) => {
+
+  const dispatch = useDispatch()
   const { $id, like, dislike } = post
-  // console.log($id, like, dislike)
+
 
   const authStatus = useSelector((state) => state.auth.status)
   const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
   // console.log(myUserProfile)
   const [isBookMarked, setIsBookMarked] = useState(false);
-  const [Like_Dislike, setLike_Dislike] = useState(null);
-  const [disLikeCount, setDisLikeCount] = useState(0);
-  const [likeCount, setLikeCount] = useState(0);
 
 
   const { setNotification } = useNotificationContext()
 
-  const [pauseLikeDisLike, setPauseLikeDisLike] = useState(false);
 
   // UseEffect For bookMark
   // useEffect(() => {
@@ -78,288 +79,208 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   // );
 
 
+  const mutationLike = useMutation({
+    mutationFn: async (data) => {
+      const { post, myUserProfile } = data
+      return await updateLikeCount(post, myUserProfile)
+    },
+    onMutate: (variables) => {
+
+    },
+    onError: (error, variables, context) => {
+      console.log(error)
+    },
+    onSuccess: (data, variables, context) => {
+      console.log(data)
+      dispatch(userProfile({ userProfile: data?.profile }))
+    },
+    onSettled: (data, error, variables, context) => {
+
+    },
+  })
+
 
   const like_func = async () => {
-
-    if (pauseLikeDisLike) {
-      setNotification({ message: "wait...", type: "success" });
-      return
-    }
-
     if (!authStatus) {
       setNotification({ message: "Please Login", type: "error" });
       return undefined
     }
-
-    // like_dislike_BookMark("Like");
-    // setLike_Dislike("liked");
-    if (myUserProfile?.likedQuestions?.includes(post?.$id)) {
-      console.log("already liked")
-      console.log(post)
-      //   setlikeCount((prev) => {
-      //     if (prev === 0) return prev;
-      //     return prev - 1;
-      //   });
-    }
-    else {
-      console.log("not liked")
-      console.log(post)
-      await updateLikeCount($id, like, dislike)
-      //   setlikeCount((prev) => prev + 1);
-      //   if (myUserProfile?.dislikedQuestions?.includes(slug)) {
-      //     setdisLikeCount((prev) => {
-      //       if (prev === 0) return prev;
-      //       return prev - 1;
-      //     });
-      //   }
-
-    }
+    mutationLike.mutate({ post, myUserProfile })
   }
 
   const dislike_func = () => {
-
+    if (!authStatus) {
+      setNotification({ message: "Please Login", type: "error" });
+      return;
+    }
   }
 
   const bookMark_func = () => {
+    if (!authStatus) {
+      setNotification({ message: "Please Login", type: "error" });
+      return;
+    }
   }
 
-  // if (flag === "Like") {
-  //   try {
-  //     if (likedQuestionsInContext.includes(post?.$id)) {
-  //       // update in Query
-  //       const increaseLike = await appwriteService.updatePost_Like_DisLike({
-  //         postId: post?.$id,
-  //         like: previousLike - 1,
-  //         dislike: previousDislike,
-  //       });
-  //       setPost((prev) => increaseLike);
-  //       dispatch(
-  //         getAllVisitedQuestionsInViewPost({ questions: increaseLike })
-  //       );
+  const isPostLiked = () => {
+    if (myUserProfile?.likedQuestions?.includes(post?.$id))
+      return true
+  }
 
-  //       //Update In Profile
-  //       let likedQuestions = likedQuestionsInContext.filter(
-  //         (likedPostIDs) => likedPostIDs !== post?.$id
-  //       );
+  const isPostDisliked = () => {
+    if (myUserProfile?.dislikedQuestions?.includes(post?.$id))
+      return true
+  }
 
-  //       const updateLikeArr_In_MyProfile =
-  //         await profile.updateProfileWithQueries({
-  //           profileID: myUserProfile?.$id,
-  //           likedQuestions,
-  //           dislikedQuestions: dislikedQuestionsInContext,
-  //           bookmarks: bookmarksInContext,
-  //         });
+  const like_dislike_BookMark = async (flag) => {
 
-  //       setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
-  //     } else {
-  //       if (dislikedQuestionsInContext.includes(post?.$id)) {
-  //         // Update in Query
-  //         const increaseLike = await appwriteService.updatePost_Like_DisLike({
-  //           postId: post?.$id,
-  //           like: previousLike + 1,
-  //           dislike: previousDislike - 1,
-  //         });
-  //         dispatch(
-  //           getAllVisitedQuestionsInViewPost({ questions: increaseLike })
-  //         );
-  //         setPost((prev) => increaseLike);
+    // if (flag === "Like") {
+    //   try {
+    //       }
 
-  //         //Update In Profile
-  //         let likedQuestions = [...likedQuestionsInContext];
-  //         likedQuestions.push(post?.$id);
+    //           const isNotificationSend = followersArr?.findIndex(
+    //             (profile) => profile?.profileID === userData?.$id
+    //           );
 
-  //         let dislikedQuestions = dislikedQuestionsInContext.filter(
-  //           (dislikedPostIDs) => dislikedPostIDs !== post?.$id
-  //         );
-  //         const updateLikeArr_In_MyProfile =
-  //           await profile.updateProfileWithQueries({
-  //             profileID: myUserProfile?.$id,
-  //             likedQuestions,
-  //             dislikedQuestions,
-  //             bookmarks: bookmarksInContext,
-  //           });
+    //           if (isNotificationSend !== -1) {
+    //             const createNotification =
+    //               await notification.createNotification({
+    //                 content: `${userData.name} has liked your post`,
+    //                 isRead: false,
+    //                 slug: `/post/${slug}/null`,
+    //                 name: userData?.name,
+    //                 userID: userData.$id,
+    //                 userIDofReceiver: post.userId,
+    //                 userProfilePic: myUserProfile?.profileImgURL,
+    //               });
+    //           }
+    //         }
+    //       } catch (error) {
+    //         return null;
+    //       }
+    //     }
+    //   } catch (error) {
+    //     return null;
+    //   }
+    // } else if (flag === "Dislike") {
+    //   try {
+    //     if (dislikedQuestionsInContext.includes(post?.$id)) {
+    //       // update in Query
+    //       const decreaseDislike = await appwriteService.updatePost_Like_DisLike(
+    //         {
+    //           postId: post?.$id,
+    //           like: previousLike,
+    //           dislike: previousDislike - 1,
+    //         }
+    //       );
+    //       setPost((prev) => decreaseDislike);
+    //       dispatch(
+    //         getAllVisitedQuestionsInViewPost({ questions: decreaseDislike })
+    //       );
 
-  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
-  //       } else {
-  //         // Update in Query
-  //         const increaseLike = await appwriteService.updatePost_Like_DisLike({
-  //           postId: post?.$id,
-  //           like: previousLike + 1,
-  //           dislike: previousDislike,
-  //         });
+    //       //Update In Profile
+    //       let dislikedQuestions = dislikedQuestionsInContext.filter(
+    //         (dislikedPostIDs) => dislikedPostIDs !== post?.$id
+    //       );
 
-  //         dispatch(
-  //           getAllVisitedQuestionsInViewPost({ questions: increaseLike })
-  //         );
-  //         setPost((prev) => increaseLike);
+    //       const updateDislikeArr_In_MyProfile =
+    //         await profile.updateProfileWithQueries({
+    //           profileID: myUserProfile?.$id,
+    //           likedQuestionsInContext,
+    //           dislikedQuestions: dislikedQuestions,
+    //           bookmarks: bookmarksInContext,
+    //         });
 
-  //         //Update In Profile
-  //         let likedQuestions = [...likedQuestionsInContext];
-  //         likedQuestions.push(post?.$id);
+    //       setMyUserProfile((prev) => updateDislikeArr_In_MyProfile);
+    //     } else {
+    //       if (likedQuestionsInContext?.includes(post?.$id)) {
+    //         // Update in Query
+    //         const increaseDislike =
+    //           await appwriteService.updatePost_Like_DisLike({
+    //             postId: post?.$id,
+    //             like: previousLike - 1,
+    //             dislike: previousDislike + 1,
+    //           });
+    //         dispatch(
+    //           getAllVisitedQuestionsInViewPost({ questions: increaseDislike })
+    //         );
+    //         setPost((prev) => increaseDislike);
 
-  //         const updateLikeArr_In_MyProfile =
-  //           await profile.updateProfileWithQueries({
-  //             profileID: myUserProfile?.$id,
-  //             likedQuestions,
-  //             dislikedQuestions: dislikedQuestionsInContext,
-  //             bookmarks: bookmarksInContext,
-  //           });
+    //         //Update In Profile
+    //         let dislikedQuestions = [...dislikedQuestionsInContext];
+    //         dislikedQuestions?.push(post?.$id);
 
-  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
-  //       }
+    //         let likedQuestions = likedQuestionsInContext?.filter(
+    //           (likedPostIDs) => likedPostIDs !== post?.$id
+    //         );
+    //         const updateLikeArr_In_MyProfile =
+    //           await profile.updateProfileWithQueries({
+    //             profileID: myUserProfile?.$id,
+    //             likedQuestions,
+    //             dislikedQuestions,
+    //             bookmarks: bookmarksInContext,
+    //           });
 
-  //       try {
-  //         if (userData?.$id !== post?.userId) {
-  //           // Getting Post Uploader profile to know whether he follows you or not.
-  //           const getPostUploaderProfile = await profile?.listProfile({
-  //             slug: post?.userId,
-  //           });
+    //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+    //       } else {
+    //         const increaseDisLike =
+    //           await appwriteService.updatePost_Like_DisLike({
+    //             postId: post?.$id,
+    //             like: previousLike,
+    //             dislike: previousDislike + 1,
+    //           });
 
-  //           let followersArr =
-  //             getPostUploaderProfile?.documents[0]?.followers;
-  //           followersArr = followersArr?.map((obj) => JSON.parse(obj));
+    //         dispatch(
+    //           getAllVisitedQuestionsInViewPost({ questions: increaseDisLike })
+    //         );
+    //         setPost((prev) => increaseDisLike);
 
-  //           const isNotificationSend = followersArr?.findIndex(
-  //             (profile) => profile?.profileID === userData?.$id
-  //           );
+    //         //Update In Profile
+    //         let dislikedQuestions = [...dislikedQuestionsInContext];
+    //         dislikedQuestions.push(post?.$id);
 
-  //           if (isNotificationSend !== -1) {
-  //             const createNotification =
-  //               await notification.createNotification({
-  //                 content: `${userData.name} has liked your post`,
-  //                 isRead: false,
-  //                 slug: `/post/${slug}/null`,
-  //                 name: userData?.name,
-  //                 userID: userData.$id,
-  //                 userIDofReceiver: post.userId,
-  //                 userProfilePic: myUserProfile?.profileImgURL,
-  //               });
-  //           }
-  //         }
-  //       } catch (error) {
-  //         return null;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // } else if (flag === "Dislike") {
-  //   try {
-  //     if (dislikedQuestionsInContext.includes(post?.$id)) {
-  //       // update in Query
-  //       const decreaseDislike = await appwriteService.updatePost_Like_DisLike(
-  //         {
-  //           postId: post?.$id,
-  //           like: previousLike,
-  //           dislike: previousDislike - 1,
-  //         }
-  //       );
-  //       setPost((prev) => decreaseDislike);
-  //       dispatch(
-  //         getAllVisitedQuestionsInViewPost({ questions: decreaseDislike })
-  //       );
+    //         const updateLikeArr_In_MyProfile =
+    //           await profile.updateProfileWithQueries({
+    //             profileID: myUserProfile?.$id,
+    //             likedQuestionsInContext,
+    //             dislikedQuestions: dislikedQuestions,
+    //             bookmarks: bookmarksInContext,
+    //           });
 
-  //       //Update In Profile
-  //       let dislikedQuestions = dislikedQuestionsInContext.filter(
-  //         (dislikedPostIDs) => dislikedPostIDs !== post?.$id
-  //       );
+    //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
+    //       }
+    //     }
+    //   } catch (error) {
+    //     return null;
+    //   }
+    // } else {
+    //   if (bookmarksInContext?.includes(post?.$id)) {
+    //     const removeBookmark = bookmarksInContext?.filter(
+    //       (bookmarkPostID) => bookmarkPostID !== post?.$id
+    //     );
 
-  //       const updateDislikeArr_In_MyProfile =
-  //         await profile.updateProfileWithQueries({
-  //           profileID: myUserProfile?.$id,
-  //           likedQuestionsInContext,
-  //           dislikedQuestions: dislikedQuestions,
-  //           bookmarks: bookmarksInContext,
-  //         });
+    //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
+    //       profileID: myProfileID_In_Context,
+    //       likedQuestions: likedQuestionsInContext,
+    //       dislikedQuestions: dislikedQuestionsInContext,
+    //       bookmarks: removeBookmark,
+    //     });
+    //     setMyUserProfile((prev) => updateBookMarkInProfile);
+    //   } else {
+    //     let addBookmark = [...bookmarksInContext];
+    //     addBookmark?.push(post?.$id);
 
-  //       setMyUserProfile((prev) => updateDislikeArr_In_MyProfile);
-  //     } else {
-  //       if (likedQuestionsInContext?.includes(post?.$id)) {
-  //         // Update in Query
-  //         const increaseDislike =
-  //           await appwriteService.updatePost_Like_DisLike({
-  //             postId: post?.$id,
-  //             like: previousLike - 1,
-  //             dislike: previousDislike + 1,
-  //           });
-  //         dispatch(
-  //           getAllVisitedQuestionsInViewPost({ questions: increaseDislike })
-  //         );
-  //         setPost((prev) => increaseDislike);
+    //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
+    //       profileID: myProfileID_In_Context,
+    //       likedQuestions: likedQuestionsInContext,
+    //       dislikedQuestions: dislikedQuestionsInContext,
+    //       bookmarks: addBookmark,
+    //     });
+    //     setMyUserProfile((prev) => updateBookMarkInProfile);
+    //   }
+    // }
+  };
 
-  //         //Update In Profile
-  //         let dislikedQuestions = [...dislikedQuestionsInContext];
-  //         dislikedQuestions?.push(post?.$id);
-
-  //         let likedQuestions = likedQuestionsInContext?.filter(
-  //           (likedPostIDs) => likedPostIDs !== post?.$id
-  //         );
-  //         const updateLikeArr_In_MyProfile =
-  //           await profile.updateProfileWithQueries({
-  //             profileID: myUserProfile?.$id,
-  //             likedQuestions,
-  //             dislikedQuestions,
-  //             bookmarks: bookmarksInContext,
-  //           });
-
-  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
-  //       } else {
-  //         const increaseDisLike =
-  //           await appwriteService.updatePost_Like_DisLike({
-  //             postId: post?.$id,
-  //             like: previousLike,
-  //             dislike: previousDislike + 1,
-  //           });
-
-  //         dispatch(
-  //           getAllVisitedQuestionsInViewPost({ questions: increaseDisLike })
-  //         );
-  //         setPost((prev) => increaseDisLike);
-
-  //         //Update In Profile
-  //         let dislikedQuestions = [...dislikedQuestionsInContext];
-  //         dislikedQuestions.push(post?.$id);
-
-  //         const updateLikeArr_In_MyProfile =
-  //           await profile.updateProfileWithQueries({
-  //             profileID: myUserProfile?.$id,
-  //             likedQuestionsInContext,
-  //             dislikedQuestions: dislikedQuestions,
-  //             bookmarks: bookmarksInContext,
-  //           });
-
-  //         setMyUserProfile((prev) => updateLikeArr_In_MyProfile);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // } else {
-  //   if (bookmarksInContext?.includes(post?.$id)) {
-  //     const removeBookmark = bookmarksInContext?.filter(
-  //       (bookmarkPostID) => bookmarkPostID !== post?.$id
-  //     );
-
-  //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
-  //       profileID: myProfileID_In_Context,
-  //       likedQuestions: likedQuestionsInContext,
-  //       dislikedQuestions: dislikedQuestionsInContext,
-  //       bookmarks: removeBookmark,
-  //     });
-  //     setMyUserProfile((prev) => updateBookMarkInProfile);
-  //   } else {
-  //     let addBookmark = [...bookmarksInContext];
-  //     addBookmark?.push(post?.$id);
-
-  //     const updateBookMarkInProfile = await profile.updateProfileWithQueries({
-  //       profileID: myProfileID_In_Context,
-  //       likedQuestions: likedQuestionsInContext,
-  //       dislikedQuestions: dislikedQuestionsInContext,
-  //       bookmarks: addBookmark,
-  //     });
-  //     setMyUserProfile((prev) => updateBookMarkInProfile);
-  //   }
-  // }
 
   return (
     <div className="flex justify-between gap-10 my-3">
@@ -368,63 +289,22 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
         className="flex-1"
         onClick={like_func}
       >
-        <span>{likeCount}</span>
-        <FaThumbsUp className={`${Like_Dislike ? "font-bold" : "font-normal"}`} />
+        <span className={`${isPostLiked() ? "text-blue-500" : "text-black"}`}>{post?.like}</span>
+        <FaThumbsUp className={`${isPostLiked() ? "fill-blue-500" : "fill-black"}`} />
       </Button>
 
       <Button
         variant='outline'
         className="flex-1"
-        onClick={() => {
-          if (pauseLikeDisLike) {
-            setNotification({ message: "wait...", type: "success" });
-            return;
-          }
-          if (!authStatus) {
-            setNotification({ message: "Please Login", type: "error" });
-            return;
-          }
-
-          like_dislike_BookMark("Dislike");
-          setLike_Dislike("disliked");
-          // if (myUserProfile?.dislikedQuestions?.includes(slug)) {
-          //   setdisLikeCount((prev) => {
-          //     if (prev === 0) return prev;
-          //     return prev - 1;
-          //   });
-          // } else {
-          //   setdisLikeCount((prev) => prev + 1);
-
-          //   if (myUserProfile?.likedQuestions?.includes(slug)) {
-          //     setlikeCount((prev) => {
-          //       if (prev === 0) return prev;
-          //       return prev - 1;
-          //     });
-          //   }
-          // }
-        }}
-      >
-
-        <span>{disLikeCount}</span>
-        <FaThumbsDown className={`${Like_Dislike ? "font-bold" : "font-normal"}`} />
+        onClick={dislike_func}>
+        <span className={`${isPostDisliked() ? "text-blue-500" : "text-black"}`}>{post?.dislike}</span>
+        <FaThumbsDown className={`${isPostDisliked() ? "fill-blue-500" : "fill-black"}`} />
       </Button>
 
       <Button
         className="flex-1"
         variant='outline'
-        onClick={() => {
-          if (pauseLikeDisLike) {
-            setNotification({ message: "wait...", type: "success" });
-            return;
-          }
-
-          if (!authStatus) {
-            setNotification({ message: "Please Login", type: "error" });
-            return;
-          }
-          like_dislike_BookMark("BooKMark");
-          // setIsBookMarked((prev) => !prev);
-        }}
+        onClick={bookMark_func}
       >
         <FaRegBookmark className={`${isBookMarked ? "font-bold fill-black" : "font-normal"}`} />
       </Button>
