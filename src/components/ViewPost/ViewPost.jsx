@@ -325,28 +325,8 @@ const ViewPost = () => {
     }
   };
 
-  const [pauseLikeDisLike, setpauseLikeDisLike] = useState(false);
 
-  const like_dislike_BookMark = async (flag) => {
-    if (pauseLikeDisLike === true) return;
-    if (!userAuthStatus) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => "Please Login");
-      return;
-    }
-    setpauseLikeDisLike((prev) => true);
-    const likedQuestionsInContext = myUserProfile?.likedQuestions;
-    const dislikedQuestionsInContext = myUserProfile?.dislikedQuestions;
-    const bookmarksInContext = myUserProfile?.bookmarks;
-    const myProfileID_In_Context = myUserProfile?.$id;
 
-    const previousLike = post?.like;
-    const previousDislike = post?.dislike;
-
-    
-
-    setpauseLikeDisLike((prev) => false);
-  };
 
   const ViewPostRef = useRef();
   const lastScrollY = useRef(window.scrollY);
@@ -367,8 +347,8 @@ const ViewPost = () => {
   };
   const deletePostComments = async () => {
     if (!userAuthStatus) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => "Please Login");
+      // setNotificationPopMsgNature((prev) => false);
+      // setnotificationPopMsg((prev) => "Please Login");
       return;
     }
     try {
@@ -401,8 +381,6 @@ const ViewPost = () => {
   useEffect(() => {
     makeCodeBlock()
   }, [post?.content])
-
-
 
   const { getProfileImageURLFromID } = useGetProfileData();
 
@@ -437,6 +415,8 @@ const ViewPost = () => {
       >
         <i className="bx bxs-grid-alt"></i>
       </Button>
+
+
       <section ref={viewPostLeft} className="p-3 w-[70%]">
         <ViewPostMainContent post={post} />
         <ViewPostLikeDislikeBookmark post={post} />

@@ -79,8 +79,8 @@ export class Service {
     }
     async updatePost_Like_DisLike({ postId, like, dislike }) {
 
-        if (like === -1) return
-        if (dislike === -1) return
+        if (like < 0 || dislike < 0) return
+
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
                 like,
@@ -94,7 +94,7 @@ export class Service {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-           
+
             return false
         }
     }
@@ -133,7 +133,7 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-        
+
             return false
         }
     }
@@ -216,7 +216,7 @@ export class Service {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
         } catch (error) {
-   
+
             return false
         }
     }

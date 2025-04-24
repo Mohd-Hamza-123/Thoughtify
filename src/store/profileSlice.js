@@ -14,9 +14,9 @@ const profileSlice = createSlice({
     initialState,
     reducers: {
         userProfile: (state, action) => {
-            const { userProfile, userProfileImgURL } = action.payload
-            state.userProfile = userProfile
-            state.userProfileImgURL = userProfileImgURL
+            // const { userProfile, userProfileImgURL } = action.payload
+            state.userProfile = action.payload?.userProfile
+            // state.userProfileImgURL = userProfileImgURL
         },
         getTotalPostByMe: (state, action) => {
             state.totalPostsbyMe = action.payload.totalPostsbyMe

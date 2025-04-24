@@ -38,7 +38,7 @@ function App() {
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth?.userData);
   const myUserProfile = useSelector((state) => state.profileSlice?.userProfile);
-  console.log(myUserProfile)
+  // console.log(myUserProfile)
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
