@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
-import QueryFlow from '../../assets/QueryFlow.png'
 import profile from "../../appwrite/profile";
 import { useAskContext } from "../../context/AskContext";
 import goBack from '../../assets/goBack.png'
@@ -108,7 +107,7 @@ const Signup = () => {
         <div>
           <div className="flex justify-center items-center">
             {/* <Logo /> */}
-            <img className="Login_signup_Logo" src={QueryFlow} alt="" />
+            <img className="Login_signup_Logo" src="Thoughtify.webp" alt="Logo" />
           </div>
           <div className="Signup_Signup_div flex flex-col w-full">
             <h1 className="font-bold text-2xl mt-2 text-center">
