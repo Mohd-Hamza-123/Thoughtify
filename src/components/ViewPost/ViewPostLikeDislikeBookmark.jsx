@@ -1,14 +1,15 @@
+import React, { memo } from 'react';
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { FaThumbsUp } from "react-icons/fa6";
 import { FaThumbsDown } from "react-icons/fa";
-import { FaRegBookmark } from "react-icons/fa6";
-import React, { memo } from 'react'
 import { updateLikeCount } from '@/lib/posts';
-import { useMutation } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
+import { FaRegBookmark } from "react-icons/fa6";
 import { userProfile } from '@/store/profileSlice';
+import { useMutation } from '@tanstack/react-query';
 import { useNotificationContext } from '@/context/NotificationContext';
+
 
 const ViewPostLikeDislikeBookmark = ({ post }) => {
 
@@ -40,7 +41,6 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
 
     },
   })
-
 
   const like_func = async () => {
     if (!authStatus) {
@@ -79,8 +79,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       <Button
         variant='outline'
         className="flex-1"
-        onClick={like_func}
-      >
+        onClick={like_func}>
         <span className={`${isPostLiked() ? "text-blue-500" : "text-black"}`}>{post?.like}</span>
         <FaThumbsUp className={`${isPostLiked() ? "fill-blue-500" : "fill-black"}`} />
       </Button>

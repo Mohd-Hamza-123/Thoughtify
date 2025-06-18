@@ -1,7 +1,6 @@
 import React from "react";
 import './ResetPassword.css'
 import { useForm } from "react-hook-form";
-import QueryFlow from '../assets/QueryFlow.png'
 import { Button } from "@/components/ui/button";
 import authService from "../appwrite/auth";
 import { useNavigate } from 'react-router-dom'
@@ -45,7 +44,7 @@ const ResetPassword = () => {
                 className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
             >
                 <div className="flex justify-center items-center">
-                    <img className="Login_signup_Logo" src={QueryFlow} alt="" />
+                    <img className="Login_signup_Logo" src="Thoughtify.webp" alt="Logo" />
                 </div>
                 <div className="ResetPassword_ResetPassword flex flex-col w-full">
                     <h2 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>

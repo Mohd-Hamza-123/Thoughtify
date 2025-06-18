@@ -1,6 +1,5 @@
 import React from 'react'
 import './ForgetPassword.css'
-import QueryFlow from '../assets/QueryFlow.png'
 import { Button } from '@/components/ui/button';
 import { useForm } from "react-hook-form";
 import authService from '../appwrite/auth'
@@ -31,9 +30,10 @@ const ForgetPassword = () => {
         className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
       >
         <div className="flex justify-center items-center">
-          <img className="Login_signup_Logo" src={QueryFlow} alt="" />
+          <img className="Login_signup_Logo" src='Thoughtify.webp' alt="Logo" />
         </div>
         <div className="forgetPassword_Recovery_Heading flex flex-col w-full">
+          
           <h1 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
             Password Recovery
           </h1>
