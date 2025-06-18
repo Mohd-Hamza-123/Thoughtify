@@ -1,6 +1,6 @@
 import "../../index.css";
-import "./UpperNavigationBar.css";
 import React from "react";
+import "./UpperNavigationBar.css";
 import { useAskContext } from "../../context/AskContext";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import {
@@ -10,8 +10,6 @@ import {
   UpperNavigationBarSearch,
   UpperNavigationBarBtns,
 } from "..";
-
-
 
 const NavigationBar = () => {
   const authStatus = useSelector((state) => state.auth.status);
@@ -31,7 +29,7 @@ const NavigationBar = () => {
       <div className="UpperNavigationBar_Nav_Right_Items">
         <UpperNavigationBarSearch />
         <UpperNavigationBarNotification />
-        {authStatus && myUserProfile && (
+        {authStatus && (
           <div id="upperNavbar_svg_div" onClick={toggleSideBar}>
             <UserCircle />
           </div>

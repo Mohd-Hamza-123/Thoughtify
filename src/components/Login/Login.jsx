@@ -3,7 +3,6 @@ import { Button } from "../ui/button";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import goBack from '../../assets/goBack.png'
 import authService from "../../appwrite/auth";
 import { checkAppWriteError } from '@/messages';
 import { Link, useNavigate } from "react-router-dom";
@@ -47,7 +46,7 @@ const Login = () => {
   return (
     <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <section onClick={() => navigate("/")} className="GoToHomePageDiv">
-        <div><img src={goBack} alt="Go Back" /></div>
+        <div><img src="goBack.png" alt="Go Back" /></div>
         <span>Home</span>
       </section>
       <div

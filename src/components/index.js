@@ -38,5 +38,6 @@ import UpperNavigationBarBtns from "./NavBar/UpperNavigationBarBtns";
 import ViewPostMainContent from "./ViewPost/ViewPostMainContent";
 import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark";
 import HomeLeft from "./Home/HomeLeft";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar,Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft,ViewPostMainContent,ViewPostLikeDislikeBookmark }
+import GoBackHome from "./GoBackHome";
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar,Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft,ViewPostMainContent,ViewPostLikeDislikeBookmark , GoBackHome}
 

@@ -271,7 +271,7 @@ function App() {
     // authService.logout().then((res) => console.log(res))
   }, []);
 
-  
+
 
   useEffect(() => {
     if (!myUserProfile && userData) {
@@ -302,8 +302,8 @@ function App() {
           sethasMoreComments,
           hasMorePostsInHome,
           sethasMorePostsInHome,
-          notificationPopUp,
-          setnotificationPopUp,
+          // notificationPopUp,
+          // setnotificationPopUp,
           notificationShow,
           setNotificationShow,
           increaseViews,
@@ -331,6 +331,11 @@ function App() {
         }}
       >
         <NavBar />
+        <SideBar />
+        <Overlay />
+        <Setting />
+        <Feedback />
+        <NotificationPop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="login" element={<LoginPage />} />
@@ -357,15 +362,7 @@ function App() {
           <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
           <Route path="Responders-Section" element={<RespondersSectionPage />} />
         </Routes>
-        <SideBar />
-        <Overlay />
-        <Setting />
-        <Feedback />
 
-        <NotificationPop
-        // notificationPopMsg={notificationPopMsg}
-        // notificationPopMsgNature={notificationPopMsgNature}
-        />
       </AskProvider>
     </NotificationProviders>
   ) : (
