@@ -2,7 +2,6 @@ import "./PostCard.css";
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import NoProfile from '../../assets/NoProfile.png'
 import { useGetProfileData } from "@/lib/profile";
 import { useAskContext } from "../../context/AskContext";
 import { FaComment } from "react-icons/fa";
@@ -57,7 +56,7 @@ const PostCard = ({
             <Link to={`/profile/${userId}`}>
               <div className="rounded-full">
                 <img
-                  src={`${profileImgURL ? profileImgURL : NoProfile}`}
+                  src={`${profileImgURL}`}
                   id="PostCard-profile-pic"
                   className="rounded-full"
                 />

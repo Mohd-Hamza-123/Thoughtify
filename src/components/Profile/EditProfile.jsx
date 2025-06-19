@@ -11,7 +11,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { getCanvasPreview } from "./getCanvasPreview";
 import { useAskContext } from "../../context/AskContext";
-import NoProfile from '../../assets/NoProfile.png'
 import * as imageConversion from 'image-conversion'
 
 
@@ -443,8 +442,7 @@ const EditProfile = ({
               {prevFileURL &&
                 <div id="EditProfile-Prev-active">
                   <div className="" id="EditProfile-PrevImage">
-                    <img src={prevFileURL}
-                      onError={(e) => { e.target.src = NoProfile }}
+                    <img src={prevFileURL || "NoProfile.png"}
                       className={`rounded-ful bg-white`} />
                   </div>
                   <label

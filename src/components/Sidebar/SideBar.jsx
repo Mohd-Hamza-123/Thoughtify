@@ -7,12 +7,13 @@ import authService from "../../appwrite/auth";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/authSlice";
 import React, { useRef, useEffect } from "react";
-import { DarkModeToggle, UserCircle } from "../";
+import { DarkModeToggle } from "../";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
+import { ProfileImage } from "../Logo";
 
 const SideBar = () => {
-  
+
   const SideBar = useRef();
 
   const navigate = useNavigate();
@@ -94,15 +95,14 @@ const SideBar = () => {
             onClick={closeSideBarAndOverlay}
             className="SideBarCross flex gap-3 justify-start items-center"
           >
-            <UserCircle />
+            <ProfileImage />
             <p>{name}</p>
           </div>
         </Link>
 
         <SvgIcons.cross
-          className={`${
-            isDarkModeOn ? "fill-white" : "fill-black"
-          } transfrom scale-150 mr-3 cursor-pointer`}
+          className={`${isDarkModeOn ? "fill-white" : "fill-black"
+            } transfrom scale-150 mr-3 cursor-pointer`}
           onClick={closeSideBarAndOverlay}
         />
       </div>

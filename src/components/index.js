@@ -5,7 +5,6 @@ import NavBar from "./NavBar/NavBar";
 import AskQue from "./AskQue/AskQue";
 import Signup from "./Signup/Signup";
 import Login from "./Login/Login";
-import UserCircle from "./UserCircle";
 import AuthLayout from "./AuthLayout";
 import RTE from "./RTE";
 import PostCard from "./Post-Card/PostCard";
@@ -39,5 +38,6 @@ import ViewPostMainContent from "./ViewPost/ViewPostMainContent";
 import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark";
 import HomeLeft from "./Home/HomeLeft";
 import GoBackHome from "./GoBackHome";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar,Signup, Login, UserCircle, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft,ViewPostMainContent,ViewPostLikeDislikeBookmark , GoBackHome}
+
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, SvgIcons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome }
 

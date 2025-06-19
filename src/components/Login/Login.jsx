@@ -79,7 +79,7 @@ const Login = () => {
         </p>
 
         <form
-          className="max-w-full flex flex-col justify-center items-center gap-5"
+          className="max-w-full flex flex-col justify-center items-center gap-6"
           onSubmit={handleSubmit(login)}
         >
           <div className="relative flex flex-col">

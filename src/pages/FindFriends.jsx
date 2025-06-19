@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { NavBar } from "../components";
-import NoProfile from "../assets/NoProfile.png";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import profile from "../appwrite/profile";
@@ -147,7 +145,7 @@ const FindFriends = () => {
                 >
                   <div className="flex gap-3 items-center">
                     <div>
-                      <img src={persons?.profileImgURL || NoProfile} />
+                      <img src={persons?.profileImgURL} />
                     </div>
                     <p>{persons?.name}</p>
                   </div>

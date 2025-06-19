@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
-import NoProfile from "../../assets/NoProfile.png";
 import { dateFormatFunc } from "@/helpers/format-dates";
 import conf from "@/conf/conf";
 import { useQuery } from "@tanstack/react-query";
@@ -114,7 +113,7 @@ const ViewPostMainContent = ({ post }) => {
           <div className="flex gap-2 items-center cursor-pointer">
             <div className="rounded-full">
               <img
-                src={`${profileImgURL ? profileImgURL : NoProfile}`}
+                src={`${profileImgURL}`}
                 id="PostCard-profile-pic"
                 className="rounded-full"
               />
