@@ -16,8 +16,8 @@ const NavigationBar = () => {
   const { setIsOpen, myUserProfile, setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {
-    setIsOpen(true);
     setisOverlayBoolean(true);
+    setIsOpen(true);
   };
 
   return (

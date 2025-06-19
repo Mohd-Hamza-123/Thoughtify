@@ -1,5 +1,4 @@
 import { PostCard } from "..";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import appwriteService from "@/appwrite/config";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +7,7 @@ import { useAskContext } from "@/context/AskContext";
 import React, { useRef, useEffect, useState } from "react";
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
+import increaseViews from "@/services/IncreasePostView";
 
 const HomeLeft = () => {
 
@@ -16,7 +16,7 @@ const HomeLeft = () => {
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
-  const { increaseViews,
+  const {
     hasMorePostsInHome,
     sethasMorePostsInHome,
   } =
@@ -136,7 +136,9 @@ const HomeLeft = () => {
     return (
       <div ref={homeLeft} className="w-[65%] flex flex-col gap-4">
         {data?.documents?.map((post) => (
-          <div key={post?.$id} onClick={() => increaseViews(post?.$id)}>
+          <div
+            key={post?.$id}
+            onClick={() => increaseViews(post?.$id)}>
             <PostCard {...post} />
           </div>
         ))}

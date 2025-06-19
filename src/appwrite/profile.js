@@ -14,16 +14,26 @@ export class Profile {
         this.storage = new Storage(this.client)
     }
 
-    async createProfile({ userIdAuth, gender, name, profileImgID, profileImgURL }) {
+    async createProfile({
+        name,
+        userIdAuth,
+        profileImgID,
+        profileImgURL
+    }) {
+        console.log(userIdAuth, name)
         try {
-            return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, ID.unique(), {
-                userIdAuth,
-                gender,
-                name,
-                profileImgID,
-                profileImgURL
-            })
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                ID.unique(),
+                {
+                    userIdAuth,
+                    name,
+                    profileImgID,
+                    profileImgURL
+                })
         } catch (error) {
+            console.log(error)
             return null
         }
     }
