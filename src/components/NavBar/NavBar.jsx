@@ -1,12 +1,9 @@
 import React from "react";
-import { UpperNavigationBar, LowerNavigationBar } from "../";
 import { useLocation } from "react-router-dom";
+import { UpperNavigationBar, LowerNavigationBar } from "../";
 const NavBar = () => {
   const location = useLocation();
-  // console.log(location)
-
   const hide = location.pathname === "/login" || location.pathname === "/signup";
-
   if (hide) return null
 
   return (

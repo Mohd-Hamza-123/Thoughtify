@@ -1,18 +1,16 @@
-import React from "react";
 import "./Signup.css";
-import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
+import React from "react";
+import { GoBackHome } from "..";
 import { Input } from "../ui/input";
-import { userProfile } from "../../store/profileSlice";
+import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import authService from "../../appwrite/auth";
-import { useDispatch } from "react-redux";
 import { login } from "../../store/authSlice";
-import profile from "../../appwrite/profile";
-import { useNotificationContext } from "@/context/NotificationContext";
-import { appWriteErrors, checkAppWriteError } from "@/messages";
+import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
-import { GoBackHome } from "..";
+import { Link, useNavigate } from "react-router-dom";
+import { useNotificationContext } from "@/context/NotificationContext";
 
 const Signup = () => {
 
@@ -29,22 +27,28 @@ const Signup = () => {
         await authService.createAccount({ ...data })
       },
       onSuccess: async (data, variables, context) => {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-          const avatar_URL_API = await fetch(`api.dicebear.com/6.x/initials/svg?seed=${userData?.name}`)
-          const avatar_url = await avatar_URL_API.text()
-          const profile = await profile.createProfile({
-            name: userData?.name,
-            userIdAuth: userData?.$id,
-            profileImgID: null,
-            profileImgURL: avatar_url,
-          });
-          dispatch(login({ userData }));
-          dispatch(userProfile({ profile }))
-          navigate("/");
-        }
-        if (!userData) {
-          setNotification({ message: "User not found", type: "error" })
+        try {
+          const userData = await authService.getCurrentUser();
+          console.log(userData)
+          if (userData) {
+            // const avatar_url = avatarService.createAvatar({ name: userData?.name })
+            // console.log(avatar_url)
+            // const profile = await profile.createProfile({
+            //   name: userData?.name,
+            //   userIdAuth: userData?.$id,
+            //   profileImgID: null,
+            //   profileImgURL: avatar_url?.href || avatar_url,
+            // });
+            // console.log(profile)
+            dispatch(login({ userData }));
+            // dispatch(userProfile({ profile }))
+            navigate("/");
+          }
+          if (!userData) {
+            setNotification({ message: "User not found", type: "error" })
+          }
+        } catch (error) {
+          console.log(error)
         }
       },
       onError: (error, variables, context) => {
@@ -54,15 +58,14 @@ const Signup = () => {
   )
 
   const create = async (data) => {
-    // Checking if username already exists 
-    const isProfileAlreadyExist = await profile.listProfile({ name: data?.name })
+    // // Checking if username already exists
+    // const isProfileAlreadyExist = await profile.listProfile({ name: data?.name })
 
-    if (isProfileAlreadyExist?.total > 0) {
-      setNotification({ message: "Username already exists", type: "error" })
-      return
-    }
-
-    mutate({...data})
+    // if (isProfileAlreadyExist?.total > 0) {
+    //   setNotification({ message: "Username already exists", type: "error" })
+    //   return
+    // }
+    mutate({ ...data })
   }
 
 
@@ -74,6 +77,7 @@ const Signup = () => {
         id="Signup"
         className="flex items-center justify-center flex-col mx-auto rounded-lg h-[90%] gap-2"
       >
+        
         <img className="Login_signup_Logo flex justify-center items-center" src="Thoughtify.webp" alt="Logo" />
 
         <h2 className="font-bold text-2xl mt-2 text-center">

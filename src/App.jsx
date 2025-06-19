@@ -44,7 +44,6 @@ function App() {
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
-  const [notificationPopUp, setnotificationPopUp] = useState(false);
   const [notificationShow, setNotificationShow] = useState(null);
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
   const [hasMoreComments, sethasMoreComments] = useState(true);
@@ -157,16 +156,6 @@ function App() {
     }
   };
 
-  const increaseViews = async (PostId) => {
-    const previesViews = await appwriteService.getPost(PostId);
-    const updateViews = await appwriteService.updatePostViews(
-      PostId,
-      previesViews.views + 1,
-      previesViews.commentCount
-    );
-    dispatch(getInitialPost({ initialPosts: [updateViews] }));
-  };
-
   const verifyEmail = () => {
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret).then((res) => {
@@ -267,11 +256,7 @@ function App() {
     authService.getCurrentUser().then((res) => {
       dispatch(login({ userData: res }))
     })
-
-    // authService.logout().then((res) => console.log(res))
   }, []);
-
-
 
   useEffect(() => {
     if (!myUserProfile && userData) {
@@ -302,11 +287,8 @@ function App() {
           sethasMoreComments,
           hasMorePostsInHome,
           sethasMorePostsInHome,
-          // notificationPopUp,
-          // setnotificationPopUp,
           notificationShow,
           setNotificationShow,
-          increaseViews,
           feedbackPopUp,
           setfeedbackPopUp,
           SettingPopUp,

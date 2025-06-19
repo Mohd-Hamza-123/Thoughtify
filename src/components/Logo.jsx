@@ -19,3 +19,13 @@ const Logo = () => {
 };
 
 export default Logo;
+
+
+export const ThoughtifyLogo = ({className = ''}) => {
+  return <img
+    className={`w-[38px] h-[50px] filter brightness-200 dark:invert ${className}`}
+    src="Thoughtify.webp"
+    alt="Logo"
+    loading="lazy"
+  />
+}
