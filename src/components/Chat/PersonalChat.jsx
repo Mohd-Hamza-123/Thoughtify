@@ -3,7 +3,6 @@ import "./PersonalChat.css";
 import { TextArea, UpperNavigationBar } from "../../components/index";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import NoProfile from "../../assets/NoProfile.png";
 import { Link } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
 import {
@@ -123,7 +122,7 @@ const PersonalChat = ({ receiverDetails, ChatRoomID }) => {
                     src={
                       receiverDetails
                         ? receiverDetails[0]?.profileImgURL
-                        : NoProfile
+                        : "NoProfile.png"
                     }
                   />
                 </div>

@@ -11,12 +11,6 @@
 
 @media only screen and (max-width: 500px) {
 
-    .UpperNavigationBar_Nav_Right_Items {
-        width: 100vw !important;
-        margin-top: 10px;
-        padding: 0px 5px;
-    }
-
     .search_Form {
         margin-right: 0px !important;
     }
@@ -26,10 +20,7 @@
         width: 50% !important;
     }
 
-    #UpperNavigationBar_search_Input {
-        padding: 0px 0px 0px 5px !important;
-        font-size: 12px !important;
-    }
+
 
     #UpperNavigationBar_Bell_Div section {
         top: 98px !important;
@@ -66,12 +57,7 @@ body.darkMode #nav {
     color: white !important;
 }
 
-.UpperNavigationBar_Nav_Right_Items {
-    display: flex;
-    align-items: center;
-    gap: 25px;
-    justify-content: space-between;
-}
+
 
 .logo_div {
     align-items: center;
@@ -141,12 +127,7 @@ body.darkMode #nav {
     background-color: white;
 }
 
-#UpperNavigationBar_search_Input {
-    width: 100%;
-    height: 100%;
-    font-family: 'Poppins', sans-serif;
-    font-size: 15px;
-}
+
 
 .search_div_input {
     display: flex;
@@ -156,9 +137,7 @@ body.darkMode #nav {
     padding: 0px 0px 0px 10px;
 }
 
-#UpperNavigationBar_search_Input.darkMode {
-    border: 2px solid white;
-}
+
 
 .UpperNavigationBar_Notification_DropDown_Section {
     background-color: rgb(255, 255, 255) !important;

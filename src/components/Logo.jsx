@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { getAvatar } from "@/services/getAvatar";
+
 const Logo = () => {
   return (
     <Link to="/">
@@ -21,11 +23,21 @@ const Logo = () => {
 export default Logo;
 
 
-export const ThoughtifyLogo = ({className = ''}) => {
+export const ThoughtifyLogo = ({ className = '' }) => {
   return <img
     className={`w-[38px] h-[50px] filter brightness-200 dark:invert ${className}`}
     src="Thoughtify.webp"
     alt="Logo"
     loading="lazy"
+  />
+}
+
+
+export const ProfileImage = ({ className = '', ...props }) => {
+  return <img
+    {...props}
+    src={getAvatar()}
+    alt="Profile Pic"
+    className={`w-[35px] h-[35px] rounded-full ${className}`}
   />
 }

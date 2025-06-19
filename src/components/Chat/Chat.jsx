@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import "./Chat.css";
-import NoProfile from '../../assets/NoProfile.png'
 import { ChatRTE, Spinner } from "../index";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
@@ -355,8 +354,8 @@ const Chat = ({ post, slug }) => {
                   <div className="flex gap-2 cursor-pointer">
                     <img
                       className="Chat_Comment_Div_img"
-                      src={`${profilePicURL ? profilePicURL : NoProfile}`}
-                      alt=""
+                      src={`${profilePicURL}`}
+                      alt="profilePic"
                     />
                     <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
                   </div>
