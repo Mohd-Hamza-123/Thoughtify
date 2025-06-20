@@ -51,10 +51,11 @@ const LowerNavigationBar = () => {
             to={nav.slug}
             className={({ isActive }) => `${isActive ? "active" : ""}`}
           >
-            <li className="LowerNavigationBar_Navlinks">{nav.NavName}</li>
+            <li>{nav.NavName}</li>
           </NavLink>
         ))}
       </nav>
+
       <div className="LowerNavigationBar_Three_Bars_Div">
         <Button
           varient="default"

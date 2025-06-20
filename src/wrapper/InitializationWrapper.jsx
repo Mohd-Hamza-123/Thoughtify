@@ -10,7 +10,7 @@ const InitializationWrapper = ({ children }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    
+
     const loggedIn = async () => {
         const userData = await authService.getCurrentUser();
         if (userData) {
@@ -18,13 +18,12 @@ const InitializationWrapper = ({ children }) => {
             navigate("/");
             setLoading(false)
         } else {
+            setLoading(false)
             navigate("/login")
         }
     }
 
-    useEffect(() => {
-        loggedIn()
-    }, [])
+    useEffect(() => { loggedIn() }, [])
 
     return (loading ? <Loader /> : <>{children}</>)
 }

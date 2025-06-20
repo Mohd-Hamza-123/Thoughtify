@@ -7,87 +7,16 @@
     justify-content: space-between;
     width: 100%;
     padding: 8px;
-    border-radius: 5px;
+    border-radius: 10px;
     text-align: left;
     overflow: hidden;
-    background-color: whitesmoke;
+    background-color: white;
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     transition: background-color 1s ease;
 }
 
-@media only screen and (max-width: 500px) {
-
-
-    #PostCard_left {
-        width: 100% !important;
-        height: 50% !important;
-    }
-
-    #PostCard_left a {
-        padding-top: 10px !important;
-        width: 100% !important;
-        height: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        overflow: hidden !important;
-    }
-
-    #Post-Card-img {
-        width: auto !important;
-        /* Let the browser calculate the width */
-        height: 100% !important;
-        /* Ensuring the image fills the container vertically */
-        object-fit: cover !important;
-        border-radius: 5px 5px 0px 0px !important;
-        box-shadow: none !important;
-    }
-
-
-    .PostCard_Details {
-        flex-wrap: wrap !important;
-        gap: 6px !important;
-    }
-
-    .PostCard_category {
-        padding: 3px 7px !important;
-        font-size: 10px !important;
-    }
-
-    .PostCard_Date {
-        font-size: 13px !important;
-    }
-
-    #PostCard_MaleComments {
-        height: 14px !important;
-        margin-top: 0px !important;
-    }
-}
-
 .PostCard.trusted {
     box-shadow: 0 0 10px rgb(4, 201, 255);
-}
-
-body.darkMode .PostCard.trusted {
-    box-shadow: 0 0 7px rgb(255, 4, 4);
-}
-
-body.darkMode .PostCard {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    color: white;
-}
-
-#PostCard_title.darkMode {
-    color: rgb(224, 224, 224);
-}
-
-#PostCard_title:hover {
-    color: #11161a;
-}
-
-#PostCard_title.darkMode:hover {
-    color: white;
 }
 
 #Post-Card-img {
@@ -104,32 +33,6 @@ body.darkMode .PostCard {
 
 #PostCard-profile-name {
     font-family: 'Gabarito', sans-serif;
-}
-
-.PostCard_category {
-    background-color: rgb(242, 242, 242);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 3px 6px;
-    color: rgb(68, 68, 68);
-    border-radius: 10px;
-    font-size: 13px;
-    font-family: 'Gabarito', sans-serif;
-    border: 1px solid rgba(38, 37, 37, 0.171);
-}
-
-.PostCard_Date {
-    font-family: 'Gabarito', sans-serif;
-}
-
-.PostCard_Views {
-    font-size: 12px;
-    font-family: 'Gabarito', sans-serif;
-}
-
-.PostCard_Views i {
-    margin-top: 3px;
 }
 
 

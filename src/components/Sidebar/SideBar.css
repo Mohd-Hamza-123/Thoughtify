@@ -7,11 +7,9 @@
     width: 23%;
     height: 100%;
     color: rgb(0, 0, 0);
-    background-color: ghostwhite;
+    background-color: var(--secondaryWhite);
     transition: transform 200ms ease-in-out, right 200ms ease;
-    z-index: 30;
-    border-bottom-left-radius: 20px;
-    border-top-left-radius: 20px;
+    z-index: 11;
 }
 
 .SideBar.Active {
@@ -49,15 +47,6 @@
     }
 }
 
-
-.SideBarContent p {
-    font-weight: 500 !important;
-}
-
-body.darkMode .SideBar {
-    background-color: black;
-    color: white;
-}
 
 .SideBar::-webkit-scrollbar {
     display: none;
