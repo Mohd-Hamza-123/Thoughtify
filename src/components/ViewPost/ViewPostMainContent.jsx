@@ -1,5 +1,5 @@
 import Prism from "../Prism";
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -18,7 +18,7 @@ const ViewPostMainContent = ({ post }) => {
   const ViewPost_ellipsis_Vertical = useRef();
 
   const userData = useSelector((state) => state?.auth?.userData);
-  // console.log(userData);
+  console.log(userData);
   const isAuthor = post && userData ? post.userId === userData.$id : false;
 
   const { getProfileImageURLFromID } = useGetProfileData();
@@ -32,25 +32,21 @@ const ViewPostMainContent = ({ post }) => {
   // console.log(profileImgURL)
 
   return (
-    <div className="p-2 shadow-lg">
+    <section className="p-2 shadow-lg">
       <div className="flex justify-between mx-3 mt-1 relative items-center">
+
+        {/* Below div contains category, date, views, comment count */}
         <div className="flex gap-3">
-          {/* this is category */}
-          <span className="rounded-md px-2 bg-gray-200">{post?.category}</span>
-          <div className="flex gap-3">
-            {/* this is date */}
-            <span>{dateFormatFunc(post?.date) || ""}</span>
-            {/* this is views count */}
-            <div className="flex gap-1 items-center">
-              <span>{post?.views}</span>
-              <IoEyeSharp />
-            </div>
-            {/* this is comment count */}
-            <div className="flex gap-2 items-center">
-              <span>{post?.commentCount}</span>
-              <FaComment />
-            </div>
-          </div>
+          <span className="tag-style">{post?.category}</span>
+          <span className="tag-style">{dateFormatFunc(post?.date) || ""}</span>
+          <span className="flex gap-1 items-center tag-style">
+            <span>{post?.views}</span>
+            <IoEyeSharp />
+          </span>
+          <span className="flex gap-2 items-center tag-style">
+            <span>{post?.commentCount}</span>
+            <FaComment />
+          </span>
         </div>
 
         <div
@@ -108,31 +104,29 @@ const ViewPostMainContent = ({ post }) => {
           )}
         </div>
       </div>
+
+
       <div className="mt-3">
+
         <Link to={`/profile/${post?.userId}`}>
           <div className="flex gap-2 items-center cursor-pointer">
-            <div className="rounded-full">
-              <img
-                src={`${profileImgURL}`}
-                id="PostCard-profile-pic"
-                className="rounded-full"
-              />
-            </div>
-            <div id="ViewPostName">
-              <h5>{post?.name}</h5>
-            </div>
+
+            <img
+              src={`${profileImgURL || "NoProfile.png"}`}
+              id="PostCard-profile-pic"
+              className="rounded-full" />
+
+            <h5>{post?.name}</h5>
+
             {post?.trustedResponderPost && (
-              <div>
-                <span className="ViewPost-Category">Responder</span>
-              </div>
+              <span className="ViewPost-Category">Responder</span>
             )}
           </div>
         </Link>
-        <div className="mt-3 mb-2">
-          <h2 id="ViewPost-Title" className="text-3xl font-bold">
-            {post?.title}
-          </h2>
-        </div>
+
+        <h2 className="text-2xl font-bold">
+          {post?.title}
+        </h2>
 
         <div className="px-3 py-3">{parse(post?.content)}</div>
         <Prism />
@@ -157,9 +151,8 @@ const ViewPostMainContent = ({ post }) => {
 
                 return (
                   <li
-                    className={`${
-                      index === selectedIndex ? "active" : ""
-                    } cursor-pointer`}
+                    className={`${index === selectedIndex ? "active" : ""
+                      } cursor-pointer`}
                     onClick={() => {
                       updatePoll(
                         post.$id,
@@ -178,11 +171,10 @@ const ViewPostMainContent = ({ post }) => {
                       style={{
                         width: `${percentage}%`,
                       }}
-                      className={`${
-                        index === selectedIndex
-                          ? `PollPercentageMeter active`
-                          : "PollPercentageMeter"
-                      }`}
+                      className={`${index === selectedIndex
+                        ? `PollPercentageMeter active`
+                        : "PollPercentageMeter"
+                        }`}
                     ></div>
                   </li>
                 );
@@ -201,7 +193,7 @@ const ViewPostMainContent = ({ post }) => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -39,8 +39,7 @@ const LowerNavigationBar = () => {
         id="LowerNavigationBar"
         className={`${isOpen ? "lightdark" : ""} ${
           isDarkModeOn ? "darkMode" : ""
-        }`}
-      >
+        }`}>
         {arr?.map((nav) => (
           <NavLink
             onClick={() => {

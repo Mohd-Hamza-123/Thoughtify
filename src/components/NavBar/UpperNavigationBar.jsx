@@ -14,7 +14,7 @@ import { ProfileImage } from "../Logo";
 const NavigationBar = () => {
   const authStatus = useSelector((state) => state.auth.status);
   console.log(authStatus)
-  const { setIsOpen, myUserProfile, setisOverlayBoolean } = useAskContext();
+  const { setIsOpen,setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {
     setisOverlayBoolean(true);

@@ -7,7 +7,7 @@ import { useAskContext } from "@/context/AskContext";
 import React, { useRef, useEffect, useState } from "react";
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
-import increaseViews from "@/services/IncreasePostView";
+import increaseViews from "@/services/increasePostView";
 
 const HomeLeft = () => {
 
@@ -134,7 +134,7 @@ const HomeLeft = () => {
   }
   else
     return (
-      <div ref={homeLeft} className="w-[65%] flex flex-col gap-4">
+      <div ref={homeLeft} className="w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4">
         {data?.documents?.map((post) => (
           <div
             key={post?.$id}
