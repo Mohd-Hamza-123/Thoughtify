@@ -37,7 +37,7 @@ const PostCard = ({
   return (
     <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full">
 
-      <div className="h-[45%] lg:h-full flex flex-col justify-between lg:w-[70%] lg:py-3">
+      <div className="h-[45%] p-2 lg:h-full flex flex-col justify-between lg:w-[70%] lg:py-3">
         <div className="flex gap-2">
           <Link to={`/profile/${userId}`}>
             <div className="rounded-full">
@@ -49,7 +49,7 @@ const PostCard = ({
             </div>
           </Link>
           <Link to={`/profile/${userId}`}>
-            <h4 id="PostCard-profile-name" className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>
+            <h4 id="PostCard-profile-name">
               {name}
             </h4>
           </Link>
@@ -58,18 +58,18 @@ const PostCard = ({
           </div>}
         </div>
         <Link to={`/post/${$id}/${null}`}>
-          <h3 id="PostCard_title">{title ? title : pollQuestion}</h3>
+          <h3 className="poppins text-lg font-bold">{title ? title : pollQuestion}</h3>
         </Link>
         <div className="PostCard_Details flex gap-4 items-center my-1">
-          <span className="PostCard_Date hidden md:block">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-          <span className="PostCard_category">{category}</span>
-          <span className="PostCard_category">{opinionsFrom}</span>
-          <span className="PostCard_Views flex gap-2 items-center">
+          <span className="PostCard_Date hidden md:block tag-style">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="tag-style">{category}</span>
+          <span className="tag-style">{opinionsFrom}</span>
+          <span className="flex gap-2 items-center tag-style">
             <span>{views}</span>
             <IoEyeSharp />
           </span>
-          <span id="PostCard_Comments_Icon" className="flex gap-2  items-center">
-            <span id='PostCard_MaleComments_p' className={`${isDarkModeOn ? "text-white" : 'text-black'}`} >{commentCount}</span>
+          <span className="flex gap-2 items-center tag-style">
+            <span>{commentCount}</span>
             <FaComment />
           </span>
         </div>

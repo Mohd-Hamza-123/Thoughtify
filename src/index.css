@@ -13,11 +13,11 @@
 
 html,
 body {
-    background-color: #FFFFFF;
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
-    transition: background-color 1s ease !important;
+    /* background-color: #FFFFFF; */
+    height: 100dvh;
+    width: 100dvw;
+    overflow: hidden;
+    /* transition: background-color 1s ease !important; */
 }
 
 #root {
@@ -29,18 +29,6 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-body.darkMode {
-    background-color: #131315 !important;
-}
-
-h1 {
-    font-size: 2rem;
-}
-
-.block {
-    display: block !important;
-}
-
 .lightdark {
     top: -80vh;
 }
@@ -48,6 +36,10 @@ h1 {
 /* utility Classes  */
 .secondaryBlue {
     background-color: var(--secondryBlue);
+}
+
+.bg-white-secondary {
+    background-color: var(--secondaryWhite);
 }
 
 .font_bold_500 {
@@ -73,6 +65,10 @@ h1 {
     font-size: 13px;
     font-family: 'Gabarito', sans-serif;
     border: 1px solid rgba(38, 37, 37, 0.171);
+}
+
+.poppins {
+    font-family: 'Poppins', sans-serif !important;
 }
 
 @layer base {

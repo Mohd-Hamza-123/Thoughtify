@@ -68,27 +68,33 @@ const SideBar = () => {
     {
       name: "My Profile",
       slug: `/profile/${userData?.$id}`,
-      icon: <SvgIcons.myProfile />,
+      icon: <SvgIcons.profile />,
     },
     {
       name: "Edit Profile",
       slug: `/EditProfile/${userData?.$id}`,
-      icon: <SvgIcons.editProfile />,
+      icon: <SvgIcons.edit />,
+    },
+    {
+      name: "Chat",
+      slug: `/chat/${userData?.$id}`,
+      icon: <SvgIcons.chats />
+
     },
     {
       name: "About Creater",
       slug: `/profile/${conf.myPrivateUserID}`,
-      icon: <SvgIcons.aboutCreater />,
+      icon: <SvgIcons.special />,
     },
     {
       name: "Trusted Responders",
       slug: `/trustedResponders`,
-      icon: <i className="fa-solid fa-people-line"></i>,
+      icon: <SvgIcons.trusted />,
     },
   ];
 
   return (
-    <div className="SideBar" ref={SideBar}>
+    <div className="SideBar poppins" ref={SideBar}>
       <div className="flex justify-between items-center px-1">
         <Link to={`/profile/${userData?.$id}`}>
           <div
@@ -96,13 +102,12 @@ const SideBar = () => {
             className="SideBarCross flex gap-3 justify-start items-center"
           >
             <ProfileImage />
-            <p>{name}</p>
+            <p className="poppins">{name}</p>
           </div>
         </Link>
 
         <SvgIcons.cross
-          className={`${isDarkModeOn ? "fill-white" : "fill-black"
-            } transfrom scale-150 mr-3 cursor-pointer`}
+          className="mr-3 cursor-pointer hover:scale-110 transition-all duration-75"
           onClick={closeSideBarAndOverlay}
         />
       </div>
