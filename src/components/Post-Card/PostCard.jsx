@@ -35,61 +35,57 @@ const PostCard = ({
   });
 
   return (
-    <div className={`PostCard ${isDarkModeOn ? 'darkMode' : ''}`}>
-      <div id="PostCard_left" className="" >
-        <Link to={`/post/${$id}/${null}`}>
-          <img
-            id="Post-Card-img"
-            src={`${queImage}`}
-            alt="Image"
-            className="w-full"
-          />
-        </Link>
-      </div>
+    <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full">
 
-      <div
-        id="PostCard_right"
-        className="flex flex-col w-full justify-left align-center mb-4 px-3 pt-2"
-      >
-        <div>
-          <div className="flex gap-2">
-            <Link to={`/profile/${userId}`}>
-              <div className="rounded-full">
-                <img
-                  src={`${profileImgURL}`}
-                  id="PostCard-profile-pic"
-                  className="rounded-full"
-                />
-              </div>
-            </Link>
-            <Link to={`/profile/${userId}`}>
-              <h4 id="PostCard-profile-name" className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>
-                {name}
-              </h4>
-            </Link>
-            {trustedResponderPost && <div>
-              <span className="PostCard_category">{'Responder'}</span>
-            </div>}
-          </div>
-          <Link to={`/post/${$id}/${null}`}>
-            <h3 id="PostCard_title">{title ? title : pollQuestion}</h3>
+      <div className="h-[45%] lg:h-full flex flex-col justify-between lg:w-[70%] lg:py-3">
+        <div className="flex gap-2">
+          <Link to={`/profile/${userId}`}>
+            <div className="rounded-full">
+              <img
+                src={`${profileImgURL || 'NoProfile.png'}`}
+                id="PostCard-profile-pic"
+                className="rounded-full"
+              />
+            </div>
           </Link>
+          <Link to={`/profile/${userId}`}>
+            <h4 id="PostCard-profile-name" className={`${isDarkModeOn ? "text-white" : 'text-black'}`}>
+              {name}
+            </h4>
+          </Link>
+          {trustedResponderPost && <div>
+            <span className="PostCard_category">{'Responder'}</span>
+          </div>}
         </div>
+        <Link to={`/post/${$id}/${null}`}>
+          <h3 id="PostCard_title">{title ? title : pollQuestion}</h3>
+        </Link>
         <div className="PostCard_Details flex gap-4 items-center my-1">
-          <span className="PostCard_Date">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <span className="PostCard_Date hidden md:block">{new Date($createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
           <span className="PostCard_category">{category}</span>
           <span className="PostCard_category">{opinionsFrom}</span>
           <span className="PostCard_Views flex gap-2 items-center">
             <span>{views}</span>
             <IoEyeSharp />
           </span>
-        </div>
-        <div id="PostCard_Comments_Icon" className="flex gap-2  items-center">
-          <p id='PostCard_MaleComments_p' className={`${isDarkModeOn ? "text-white" : 'text-black'}`} >{commentCount}</p>
-          <FaComment />
+          <span id="PostCard_Comments_Icon" className="flex gap-2  items-center">
+            <span id='PostCard_MaleComments_p' className={`${isDarkModeOn ? "text-white" : 'text-black'}`} >{commentCount}</span>
+            <FaComment />
+          </span>
         </div>
       </div>
-    </div>
+
+      <figure className="h-1/2 lg:h-full lg:w-[30%]">
+        <Link to={`/post/${$id}/${null}`}>
+          <img
+            src={`${queImage}`}
+            alt="Image"
+            className="w-full rounded-sm object-cover h-full"
+          />
+        </Link>
+      </figure>
+
+    </section>
   );
 };
 

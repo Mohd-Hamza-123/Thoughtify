@@ -1,8 +1,6 @@
 #LowerNavigationBar {
-    background: rgb(233 233 233 / 70%);
     background-color: rgb(22, 190, 246);
-    transition: background-color 1s ease;
-    width: 100vw;
+    width: 100dvw;
     font-family: 'Gabarito', sans-serif;
     display: flex;
     width: 100%;
@@ -69,9 +67,11 @@ body.darkMode #LowerNavigationBar li {
     background-color: rgb(255, 255, 255);
     transition: background-color 0.2s ease;
     color: black;
-    border-width: 1px 1px 1px 1px;
+    border-width: 2px 0px 2px 0px;
     border-color: rgb(22, 190, 246);
     border-style: solid;
+    border-radius: 3px;
+   
 }
 
 body.darkMode #LowerNavigationBar a.active li {

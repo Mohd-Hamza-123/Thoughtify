@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Routes, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "./store/authSlice";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
 import { NavBar, NotificationPop, SideBar } from "./components";
@@ -27,7 +26,6 @@ import ResetPassword from "./pages/ResetPassword";
 import FindFriends from "./pages/FindFriends";
 import RespondersSectionPage from "./pages/RespondersSectionPage";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage";
-import NotificationProviders from "./Providers/NotificationProvider";
 import InitializationWrapper from "./wrapper/InitializationWrapper";
 
 function App() {
@@ -39,13 +37,16 @@ function App() {
   // console.log(myUserProfile)
   const [isOpen, setIsOpen] = useState(false);
 
+
+  const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
+  const [notificationShow, setNotificationShow] = useState(null);
+  const [hasMoreComments, sethasMoreComments] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
-  const [notificationShow, setNotificationShow] = useState(null);
-  const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
-  const [hasMoreComments, sethasMoreComments] = useState(true);
-  const [hasMorePostsInBrowseQuestions, sethasMorePostsInBrowseQuestions] =
+  const [
+    hasMorePostsInBrowseQuestions,
+    sethasMorePostsInBrowseQuestions] =
     useState(true);
   const [
     hasMorePostsInProfileFilterQuestions,
@@ -74,8 +75,6 @@ function App() {
   const [savedMyProfileComments, setsavedMyProfileComments] = useState(null);
 
   const [mainResponder, setmainResponder] = useState(null);
-
-  const indicator = useRef(true);
 
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");

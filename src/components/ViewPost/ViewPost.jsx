@@ -6,6 +6,7 @@ import parse from "html-react-parser";
 import { useSelector, useDispatch } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import "../../index.css";
+import { SecondLoader } from "..";
 import profile from "../../appwrite/profile";
 import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 import {
@@ -398,13 +399,14 @@ const ViewPost = () => {
       getProfileImage(post?.profileImgID)
     }
   }, [post]);
-
+console.log(post)
   return post ? (
     <div
       ref={ViewPostRef}
       className="w-full relative flex"
       onScroll={handleScroll}
     >
+
       <Button
         variant="outline"
         className="flex justify-center items-center md:hidden"
@@ -482,7 +484,9 @@ const ViewPost = () => {
       </section>
     </div>
   ) : (
-    <p className="text-3xl text-black text-center">Post is Not Available</p>
+    <div className="w-full flex justify-center items-center h-[80dvh]">
+      <SecondLoader />
+    </div>
   );
 };
 

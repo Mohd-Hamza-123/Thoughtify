@@ -62,19 +62,21 @@ h1 {
     width: inherit;
 }
 
-/* .none {
-    display: none !important;
+.tag-style {
+    background-color: rgb(242, 242, 242);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3px 6px;
+    color: rgb(68, 68, 68);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Gabarito', sans-serif;
+    border: 1px solid rgba(38, 37, 37, 0.171);
 }
 
-.block {
-    display: block !important;
-    width: 100% !important;
-} */
-
-/* ---break---  */
-
 @layer base {
-  :root {
+    :root {
         --background: 0 0% 100%;
         --foreground: 0 0% 3.9%;
         --card: 0 0% 100%;
@@ -101,7 +103,8 @@ h1 {
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
     }
-  .dark {
+
+    .dark {
         --background: 0 0% 3.9%;
         --foreground: 0 0% 98%;
         --card: 0 0% 3.9%;
@@ -132,10 +135,11 @@ h1 {
 /* ---break---  */
 
 @layer base {
-  * {
-    @apply border-border;
+    * {
+        @apply border-border;
     }
-  body {
-    @apply bg-background text-foreground;
+
+    body {
+        @apply bg-background text-foreground;
     }
 }
