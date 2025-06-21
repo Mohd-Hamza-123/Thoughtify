@@ -29,12 +29,12 @@ export default function UpperNavigationBarBtns() {
       {navbarBtn.map((Item) =>
         Item.active ? (
           <li key={Item?.name}>
-            <Button
-              variant="default"
-              className="md:px-5 px-2 py-0 md:py-2 duration-200 rounded-lg md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm"
+            <button
+              // variant="default"
+              className="md:px-5 px-3 py-1 md:py-2 duration-200 rounded-full md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm text-white"
               onClick={() => navigate(Item?.slug)}>
               {Item?.name}
-            </Button>
+            </button>
           </li>
         ) : null
       )}

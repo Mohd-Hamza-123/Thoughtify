@@ -7,7 +7,7 @@ const NavBar = () => {
   if (hide) return null
 
   return (
-    <header className="z-5 relative h-[15dvh] lg:h-[20dvh] flex flex-col gap-3 bg-white border border-red-500 overflow-hidden">
+    <header className="z-5 relative h-[15dvh] lg:h-[20dvh] flex flex-col gap-3 bg-white border overflow-hidden">
       <UpperNavigationBar />
       <LowerNavigationBar />
     </header>
