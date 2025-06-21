@@ -25,7 +25,7 @@ export default Logo;
 
 export const ThoughtifyLogo = ({ className = '' }) => {
   return <img
-    className={`w-[38px] h-[50px] filter brightness-200 dark:invert ${className}`}
+    className={`h-[50px] filter brightness-200 dark:invert ${className}`}
     src="Thoughtify.webp"
     alt="Logo"
     loading="lazy"
@@ -38,6 +38,6 @@ export const ProfileImage = ({ className = '', ...props }) => {
     {...props}
     src={getAvatar()}
     alt="Profile Pic"
-    className={`w-[35px] h-[35px] rounded-full ${className}`}
+    className={`w-[30px] md:w-[35px] h-[30px] md:h-[35px] rounded-full ${className}`}
   />
 }

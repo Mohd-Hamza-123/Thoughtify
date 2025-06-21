@@ -74,10 +74,6 @@ body.darkMode #Signup>div {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
-#Signup img {
-    height: 50px;
-    filter: brightness(200%);
-}
 
 body.darkMode #Signup img {
     filter: brightness(200%) invert(100%);

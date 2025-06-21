@@ -22,9 +22,9 @@ const NavigationBar = () => {
   };
 
   return (
-    <nav className="w-full relative flex flex-col md:flex-row justify-between items-center px-1 md:px-4 py-2 shadow-md transition-all gap-2">
+    <nav className="w-full relative flex flex-col md:flex-row justify-between items-center p-1 md:px-4 shadow-md transition-all gap-1">
       <Logo />
-      <div className="flex items-center gap-2 justify-between">
+      <div className="flex items-center gap-2 justify-between w-full">
         <UpperNavigationBarSearch />
         <UpperNavigationBarNotification />
         {authStatus && <ProfileImage onClick={toggleSideBar} />}

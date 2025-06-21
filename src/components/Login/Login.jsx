@@ -59,10 +59,10 @@ const Login = () => {
   }, [errors])
 
   return (
-    <div id="Login_Container" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex-col">
+    <div id="Login_Container" className="flex items-center justify-center w-full flex-col">
       <GoBackHome />
 
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col items-center justify-center w-full gap-2">
         <ThoughtifyLogo className='mx-auto' />
         <h2 className="font-bold text-2xl mt-3 text-center dark:text-white text-black">
           Login
@@ -131,7 +131,8 @@ const Login = () => {
         <Button
           variant="destructive"
           onClick={() => authService.googleAuth()}
-          type="button" className="w-1/2 lg:w-1/5 mx-auto" >
+          type="button" 
+          className="lg:w-1/5 mx-auto px-2" >
           Sign in with Google
         </Button>
       </div>

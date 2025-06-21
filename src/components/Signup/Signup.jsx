@@ -11,6 +11,7 @@ import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { useNotificationContext } from "@/context/NotificationContext";
+import { ThoughtifyLogo } from "../Logo";
 
 const Signup = () => {
 
@@ -73,12 +74,9 @@ const Signup = () => {
 
     <div id="Signup_container">
       <GoBackHome />
-      <div
-        id="Signup"
-        className="flex items-center justify-center flex-col mx-auto rounded-lg h-[90%] gap-2"
-      >
-        
-        <img className="Login_signup_Logo flex justify-center items-center" src="Thoughtify.webp" alt="Logo" />
+      <div className="flex items-center justify-center flex-col mx-auto rounded-lg h-[90%] gap-2 w-full">
+
+        <ThoughtifyLogo className="mx-auto" />
 
         <h2 className="font-bold text-2xl mt-2 text-center">
           Sign-In
@@ -149,7 +147,7 @@ const Signup = () => {
         <Button
           variant="destructive"
           onClick={() => authService.googleAuth()}
-          type="button" className="mx-auto" >
+          type="button" className="lg:w-1/5 mx-auto" >
           Sign in with Google
         </Button>
       </div>
