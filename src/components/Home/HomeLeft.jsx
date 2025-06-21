@@ -9,7 +9,7 @@ import { SecondLoader } from "..";
 import { Button } from "../ui/button";
 import increaseViews from "@/services/increasePostView";
 
-const HomeLeft = () => {
+const HomeLeft = ({ className }) => {
 
   const dispatch = useDispatch();
 
@@ -115,12 +115,12 @@ const HomeLeft = () => {
 
   if (isPending)
     return (
-      <div className="w-[65%] relative Home_Left flex justify-center items-center">
+      <div className={`w-[65%] relative Home_Left flex justify-center items-center`}>
         <SecondLoader />
       </div>
     )
   else if (isError) {
-    return <div className="w-[65%] flex flex-col items-center justify-center gap-2">
+    return <div className={`w-[65%] flex flex-col items-center justify-center gap-2`}>
       <p className="select-none dark:text-white">
         Internet Connection Error
       </p>
@@ -134,7 +134,7 @@ const HomeLeft = () => {
   }
   else
     return (
-      <div ref={homeLeft} className="w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4">
+      <div ref={homeLeft} className={`w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4`}>
         {data?.documents?.map((post) => (
           <div
             key={post?.$id}

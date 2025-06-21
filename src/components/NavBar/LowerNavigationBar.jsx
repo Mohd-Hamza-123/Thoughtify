@@ -3,9 +3,10 @@ import React, { useRef } from "react";
 import { Button } from "../ui/button";
 import { NavLink } from "react-router-dom";
 import { useAskContext } from "../../context/AskContext";
+import { Icons } from "..";
 
 const LowerNavigationBar = () => {
-  
+
   const lowerNavBarRef = useRef();
   const { isOpen, isDarkModeOn } = useAskContext();
 
@@ -23,7 +24,7 @@ const LowerNavigationBar = () => {
       slug: "/Find-People",
     },
     {
-      NavName: "Got a Question",
+      NavName: "Have a Query ?",
       slug: `/AskQuestion`,
     },
     {
@@ -37,9 +38,8 @@ const LowerNavigationBar = () => {
       <nav
         ref={lowerNavBarRef}
         id="LowerNavigationBar"
-        className={`${isOpen ? "lightdark" : ""} ${
-          isDarkModeOn ? "darkMode" : ""
-        }`}>
+        className={`${isOpen ? "lightdark" : ""} ${isDarkModeOn ? "darkMode" : ""
+          }`}>
         {arr?.map((nav) => (
           <NavLink
             onClick={() => {
@@ -55,19 +55,7 @@ const LowerNavigationBar = () => {
           </NavLink>
         ))}
       </nav>
-
-      <div className="LowerNavigationBar_Three_Bars_Div">
-        <Button
-          varient="default"
-          onClick={() => {
-            if (lowerNavBarRef.current) {
-              lowerNavBarRef.current.classList.toggle("active");
-            }
-          }}
-        >
-          <i className={`fa-solid fa-bars`}></i>
-        </Button>
-      </div>
+     
     </div>
   );
 };

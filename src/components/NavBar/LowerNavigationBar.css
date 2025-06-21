@@ -23,24 +23,14 @@
         left: 0vw;
     }
 
-    .LowerNavigationBar_Three_Bars_Div {
-        width: 100vw !important;
-        display: flex !important;
-        justify-content: flex-end;
-        margin-right: 20px;
-        padding: 0px 8px 0px 0px !important;
-        font-size: 25px;
-        margin-bottom: 10px;
-    }
+ 
 }
 
 #LowerNavigationBar.darkMode {
     background-color: #FF3500;
 }
 
-.LowerNavigationBar_Three_Bars_Div {
-    display: none;
-}
+
 
 #LowerNavigationBar a {
     flex-grow: 1;
@@ -78,12 +68,3 @@ body.darkMode #LowerNavigationBar a.active li {
     border-color: #FF3500;
 }
 
-body.darkMode .LowerNavigationBar_Three_Bars_Div {
-    color: white;
-}
-
-.LowerNavigationBar_Three_Bars_Div button {
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-    padding: 0px 10px;
-    border-radius: 5px;
-}
