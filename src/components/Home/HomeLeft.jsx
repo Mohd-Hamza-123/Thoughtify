@@ -115,12 +115,12 @@ const HomeLeft = () => {
 
   if (isPending)
     return (
-      <div className="w-[65%] relative Home_Left flex justify-center items-center h-full">
+      <div className="w-[65%] relative Home_Left flex justify-center items-center">
         <SecondLoader />
       </div>
     )
   else if (isError) {
-    return <div className="w-[65%] h-full flex flex-col items-center justify-center gap-2">
+    return <div className="w-[65%] flex flex-col items-center justify-center gap-2">
       <p className="select-none dark:text-white">
         Internet Connection Error
       </p>

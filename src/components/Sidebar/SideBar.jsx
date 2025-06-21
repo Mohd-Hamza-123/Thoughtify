@@ -1,6 +1,6 @@
 import "./SideBar.css";
 import { useState } from "react";
-import SvgIcons from "../SvgIcons";
+import Icons from "../Icons";
 import conf from "../../conf/conf";
 import { Link } from "react-router-dom";
 import authService from "../../appwrite/auth";
@@ -25,7 +25,6 @@ const SideBar = () => {
   const {
     isOpen,
     setIsOpen,
-    isDarkModeOn,
     onInstallApp,
     isAppInstalled,
     setMyUserProfile,
@@ -68,28 +67,28 @@ const SideBar = () => {
     {
       name: "My Profile",
       slug: `/profile/${userData?.$id}`,
-      icon: <SvgIcons.profile />,
+      icon: <Icons.profile />,
     },
     {
       name: "Edit Profile",
       slug: `/EditProfile/${userData?.$id}`,
-      icon: <SvgIcons.edit />,
+      icon: <Icons.edit />,
     },
     {
       name: "Chat",
       slug: `/chat/${userData?.$id}`,
-      icon: <SvgIcons.chats />
+      icon: <Icons.chats />
 
     },
     {
       name: "About Creater",
       slug: `/profile/${conf.myPrivateUserID}`,
-      icon: <SvgIcons.special />,
+      icon: <Icons.special />,
     },
     {
       name: "Trusted Responders",
       slug: `/trustedResponders`,
-      icon: <SvgIcons.trusted />,
+      icon: <Icons.trusted />,
     },
   ];
 
@@ -106,12 +105,12 @@ const SideBar = () => {
           </div>
         </Link>
 
-        <SvgIcons.cross
+        <Icons.cross
           className="mr-3 cursor-pointer hover:scale-110 transition-all duration-75"
           onClick={closeSideBarAndOverlay}
         />
       </div>
-
+    
       <div className="SideBarContent">
         {sideBarLinks?.map((option) => (
           <Link to={option?.slug} key={option?.name}>
@@ -125,7 +124,7 @@ const SideBar = () => {
           </Link>
         ))}
 
-        {!isAppInstalled && (
+        {isAppInstalled && (
           <div
             className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center"
             onClick={(e) => {
@@ -133,7 +132,7 @@ const SideBar = () => {
               onInstallApp();
             }}
           >
-            <i className="fa-solid fa-download"></i>
+            <Icons.download />
             <p>Download App</p>
           </div>
         )}
@@ -148,12 +147,13 @@ const SideBar = () => {
               closeSideBarAndOverlay();
             }}
           >
-            <SvgIcons.logout />
+            <Icons.logout />
             <p>LogOut</p>
           </div>
         )}
         <hr />
         <DarkModeToggle />
+
       </div>
     </div>
   );

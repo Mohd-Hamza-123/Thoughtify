@@ -1,5 +1,5 @@
 import React from "react";
-import { SvgIcons } from "..";
+import { Icons } from "..";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
@@ -13,19 +13,19 @@ const UpperNavigationBarSearch = () => {
   };
   
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex bg-white-secondary border p-2 rounded-xl">
+    <form onSubmit={handleSubmit(submit)} className="flex bg-white-secondary border p-1 md:p-2 rounded-xl overflow-hidden w-1/2 md:w-full">
 
       <input
         {...register("searchQuestion", {
           required: true,
         })}
-        className="text-black text-md outline-none bg-transparent poppins"
+        className="text-black text-sm md:text-md outline-none bg-transparent poppins w-full px-1"
         type="search"
         placeholder="Search Title"
       />
 
-      <button type="submit" className="px-3">
-        <SvgIcons.search className="text-bold text-lg" />
+      <button type="submit" className="px-1 md:px-3">
+        <Icons.search className="text-bold text-sm md:text-lg" />
       </button>
     </form>
 

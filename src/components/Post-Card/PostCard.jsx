@@ -53,9 +53,7 @@ const PostCard = ({
               {name}
             </h4>
           </Link>
-          {trustedResponderPost && <div>
-            <span className="PostCard_category">{'Responder'}</span>
-          </div>}
+          {trustedResponderPost && <span className="tag-style">Responder</span>}
         </div>
         <Link to={`/post/${$id}/${null}`}>
           <h3 className="poppins text-lg font-bold">{title ? title : pollQuestion}</h3>

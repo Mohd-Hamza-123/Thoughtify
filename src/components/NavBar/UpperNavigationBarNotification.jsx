@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useAskContext } from "@/context/AskContext";
 import { updateNotification } from "@/lib/notifications";
+import { Icons } from "..";
 
 const UpperNavigationBarNotification = () => {
 
@@ -50,16 +51,10 @@ const UpperNavigationBarNotification = () => {
         {isUnreadNotificationExist && (
           <span onClick={() => setnotificationPopUp((prev) => !prev)}>!</span>
         )}
-        <i
-          onClick={() => setnotificationPopUp((prev) => !prev)}
-          className={`fa-regular fa-bell cursor-pointer ${
-            isDarkModeOn ? "text-white" : "text-black"
-          }`}
-        ></i>
+        <Icons.bell onClick={() => setnotificationPopUp((prev) => !prev)} />
         <section
-          className={`UpperNavigationBar_Notification_DropDown_Section ${
-            notificationPopUp ? "active" : ""
-          }`}
+          className={`UpperNavigationBar_Notification_DropDown_Section ${notificationPopUp ? "active" : ""
+            }`}
         >
           <ul className="UpperNavigationBarNotificationUL">
             {notificationShow &&
@@ -67,9 +62,8 @@ const UpperNavigationBarNotification = () => {
                 return (
                   <li
                     key={note?.$id}
-                    className={`${
-                      note.isRead ? "Read" : "unRead"
-                    } flex gap-1 items-center`}
+                    className={`${note.isRead ? "Read" : "unRead"
+                      } flex gap-1 items-center`}
                   >
                     <div className="flex items-center gap-2">
                       <img

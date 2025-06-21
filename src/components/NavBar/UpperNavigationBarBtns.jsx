@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAskContext } from "@/context/AskContext";
 
 export default function UpperNavigationBarBtns() {
-  
+
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
 
@@ -23,23 +23,21 @@ export default function UpperNavigationBarBtns() {
     },
   ];
 
+
   return (
-    (!authStatus || !myUserProfile) && (
-      <ul className="flex items-center gap-2">
-        {navbarBtn.map((Item) =>
-          Item.active ? (
-            <li key={Item?.name}>
-              <Button
-                variant="default"
-                className="inline-bock md:px-6 px-4 md:py-2 py-1 duration-200 rounded-full bg-[#16BEF6] hover:bg-[#17A3E8]"
-                onClick={() => navigate(Item?.slug)}
-              >
-                {Item?.name}
-              </Button>
-            </li>
-          ) : null
-        )}
-      </ul>
-    )
-  );
+    <ul className={`${authStatus ? "hidden" : ""} flex items-center gap-2`}>
+      {navbarBtn.map((Item) =>
+        Item.active ? (
+          <li key={Item?.name}>
+            <Button
+              variant="default"
+              className="md:px-5 px-2 py-0 md:py-2 duration-200 rounded-lg md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm"
+              onClick={() => navigate(Item?.slug)}>
+              {Item?.name}
+            </Button>
+          </li>
+        ) : null
+      )}
+    </ul>
+  )
 }

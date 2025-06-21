@@ -7,12 +7,12 @@ const Logo = () => {
     <Link to="/">
       <figure className="logo_div flex justify-around cursor-pointer gap-2 items-center">
         <img
-          className="w-7 md:w-8 filter brightness-200 dark:invert"
+          className="w-5 md:w-8 filter brightness-200 dark:invert"
           src="Thoughtify.webp"
           alt="Logo"
           loading="lazy"
         />
-        <h1 className="md:text-2xl text-xl font-semibold dark:text-white">
+        <h1 className="md:text-2xl text-md font-semibold dark:text-white">
           Thoughtify
         </h1>
       </figure>

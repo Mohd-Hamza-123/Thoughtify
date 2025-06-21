@@ -17,9 +17,7 @@ const Home = () => {
 
   return (
 
-    <div
-      className="h-[80dvw] w-full relative flex md:flex-row flex-col gap-5 px-3 lg:my-4"
-    >
+    <div className="w-full relative flex md:flex-row flex-col gap-5 px-3 lg:my-4">
       <Button
         onClick={toggleGridButton}
         className="flex justify-center items-center w-8 md:hidden"
