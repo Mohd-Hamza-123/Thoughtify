@@ -30,7 +30,6 @@ export default function UpperNavigationBarBtns() {
         Item.active ? (
           <li key={Item?.name}>
             <button
-              // variant="default"
               className="md:px-5 px-3 py-1 md:py-2 duration-200 rounded-full md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm text-white"
               onClick={() => navigate(Item?.slug)}>
               {Item?.name}

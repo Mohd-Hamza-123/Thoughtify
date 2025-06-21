@@ -10,7 +10,15 @@ import { PiChatsCircleLight } from "react-icons/pi";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { MdOutlineNightlight } from "react-icons/md";
 import { IoNotificationsOutline } from "react-icons/io5";
+import { IoIosArrowDropdown } from "react-icons/io";
+import { IoIosArrowDropright } from "react-icons/io";
+import { IoIosSwitch } from "react-icons/io";
+import { AiOutlineLeftCircle } from "react-icons/ai";
 const Icons = {
+  switch : (props) => (<IoIosSwitch {...props} />),
+  dropdownleft : (props) => (<AiOutlineLeftCircle {...props} />),
+  dropdownright : (props) => (<IoIosArrowDropright {...props} />),
+  dropdown : (props) => (<IoIosArrowDropdown {...props} />),
   bell : (props) => (<IoNotificationsOutline {...props} />),
   edit: (props) => (<CiEdit {...props} />),
   profile: (props) => (<CiUser {...props} />),

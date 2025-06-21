@@ -38,6 +38,8 @@ body::-webkit-scrollbar {
     background-color: var(--secondryBlue);
 }
 
+
+
 .bg-white-secondary {
     background-color: var(--secondaryWhite);
 }
@@ -62,7 +64,6 @@ body::-webkit-scrollbar {
     padding: 3px 6px;
     color: rgb(68, 68, 68);
     border-radius: 10px;
-    font-size: 13px;
     font-family: 'Gabarito', sans-serif;
     border: 1px solid rgba(38, 37, 37, 0.171);
 }
