@@ -16,7 +16,7 @@ body {
     /* background-color: #FFFFFF; */
     height: 100dvh;
     width: 100dvw;
-    overflow: hidden;
+    overflow-x: hidden;
     /* transition: background-color 1s ease !important; */
 }
 

@@ -14,7 +14,7 @@ import { ProfileImage } from "../Logo";
 const NavigationBar = () => {
   const authStatus = useSelector((state) => state.auth.status);
   console.log(authStatus)
-  const { setIsOpen,setisOverlayBoolean } = useAskContext();
+  const { setIsOpen, setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {
     setisOverlayBoolean(true);
@@ -22,17 +22,12 @@ const NavigationBar = () => {
   };
 
   return (
-    <nav
-      className="w-full relative flex flex-col md:flex-row justify-between items-center px-4 py-2 shadow-md transition-all gap-2"
-    >
+    <nav className="w-full relative flex flex-col md:flex-row justify-between items-center px-1 md:px-4 py-2 shadow-md transition-all gap-2">
       <Logo />
-
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 justify-between">
         <UpperNavigationBarSearch />
         <UpperNavigationBarNotification />
-        {authStatus && (
-          <ProfileImage onClick={toggleSideBar} />
-        )}
+        {authStatus && <ProfileImage onClick={toggleSideBar} />}
         <UpperNavigationBarBtns />
       </div>
     </nav>
