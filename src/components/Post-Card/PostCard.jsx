@@ -21,7 +21,8 @@ const PostCard = ({
   commentCount,
   pollQuestion,
   opinionsFrom,
-  trustedResponderPost
+  trustedResponderPost,
+  isTrustedResponder
 }) => {
 
   const { isDarkModeOn } = useAskContext()
@@ -35,7 +36,7 @@ const PostCard = ({
   });
 
   return (
-    <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full">
+    <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full mt-3">
 
       <div className="h-[45%] p-0 md:p-2 lg:h-full flex flex-col justify-between lg:w-[70%] lg:py-3">
         <div className="flex gap-2 items-center">

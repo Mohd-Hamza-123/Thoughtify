@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import authService from '../../appwrite/auth'
 
 
-const HomeRight = () => {
+const HomeRight = ({ switchTrigger }) => {
     const userData = useSelector((state) => state.auth.userData)
 
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false
@@ -51,7 +51,7 @@ const HomeRight = () => {
     }
 
     return (
-        <section className='w-full md:w-[35%] hidden md:block'>
+        <section className={`w-full md:w-[35%] ${switchTrigger === false ? "block" : "hidden"} md:block`}>
             <div className={`HomeRight_Category my-4 ${isDarkModeOn ? "darkMode" : ''}`}>
                 <p className={`${isDarkModeOn ? "text-white" : ''}`}>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>

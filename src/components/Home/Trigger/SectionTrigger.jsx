@@ -46,14 +46,13 @@ const SectionTrigger = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="mr-4">
-                <DropdownMenuLabel>Sections</DropdownMenuLabel>
+                <DropdownMenuLabel>Section</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {sections?.map((section) => (
-                    <DropdownMenuItem>
+                    <DropdownMenuItem key={section.NavName}>
                         <NavLink
                             className={({ isActive }) => `${isActive ? "font-bold underline" : ""}`}
                             to={section.slug}
-                            key={section.NavName}
                         >{section.NavName}</NavLink>
                     </DropdownMenuItem>
                 ))}

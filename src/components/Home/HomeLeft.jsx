@@ -1,18 +1,18 @@
 import { PostCard } from "..";
+import { SecondLoader } from "..";
+import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import appwriteService from "@/appwrite/config";
 import { useQuery } from "@tanstack/react-query";
 import { getInitialPost } from "@/store/postsSlice";
 import { useAskContext } from "@/context/AskContext";
-import React, { useRef, useEffect, useState } from "react";
-import { SecondLoader } from "..";
-import { Button } from "../ui/button";
 import increaseViews from "@/services/increasePostView";
+import React, { useRef, useEffect, useState } from "react";
 
-const HomeLeft = ({ className }) => {
-
+const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
+  console.log(switchTrigger)
+  console.log(isTrustedResponder)
   const dispatch = useDispatch();
-
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
@@ -21,8 +21,6 @@ const HomeLeft = ({ className }) => {
     sethasMorePostsInHome,
   } =
     useAskContext();
-
-  // const initialPost = useSelector((state) => state.postsSlice?.initialPosts);
 
   const [isLoading, setIsLoading] = useState(false);
   const [lastPostID, setLastPostID] = useState(null);
@@ -62,7 +60,6 @@ const HomeLeft = ({ className }) => {
     queryFn: getAllPosts,
     staleTime: Infinity,
   });
-  // console.log(data);
 
   useEffect(() => {
     getAllPosts();
@@ -115,33 +112,41 @@ const HomeLeft = ({ className }) => {
 
   if (isPending)
     return (
-      <div className={`w-[65%] relative Home_Left flex justify-center items-center`}>
+      <div className={`w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
         <SecondLoader />
       </div>
     )
   else if (isError) {
-    return <div className={`w-[65%] flex flex-col items-center justify-center gap-2`}>
+    return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
       <p className="select-none dark:text-white">
         Internet Connection Error
       </p>
       <Button
         variant="destructive"
-        onClick={() => location.reload()}
-      >
+        onClick={() => location.reload()}>
         Reload
       </Button>
     </div>
   }
   else
     return (
-      <div ref={homeLeft} className={`w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4`}>
-        {data?.documents?.map((post) => (
-          <div
+      <div
+        ref={homeLeft}
+        className={`w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+
+        {data?.documents?.map((post) => {
+          // console.log(isTrustedResponder)
+          if (isTrustedResponder === false) return <PostCard
             key={post?.$id}
-            onClick={() => increaseViews(post?.$id)}>
-            <PostCard {...post} />
-          </div>
-        ))}
+            onClick={() => increaseViews(post?.$id)}
+            {...post}
+          />
+          else if (post?.trustedResponderPost) return <PostCard
+            key={post?.$id}
+            onClick={() => increaseViews(post?.$id)}
+            {...post}
+          />
+        })}
 
         {isLoading && hasMorePostsInHome && (
           <div ref={spinnerRef} className="flex justify-center">
