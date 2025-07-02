@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components';
 
-const SectionTrigger = () => {
+const SectionTrigger = ({className}) => {
 
     const sections = [
         {
@@ -37,7 +37,7 @@ const SectionTrigger = () => {
     ];
 
     return (
-        <DropdownMenu>
+        <DropdownMenu className={`${className}`}>
             <DropdownMenuTrigger>
                 <Button
                     variant='outline'

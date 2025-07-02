@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
 import { useAskContext } from "../../context/AskContext";
-import { RTE,TextArea} from "../";
+import { RTE, TextArea } from "../";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import conf from "../../conf/conf";
@@ -32,7 +32,11 @@ const AskQue = ({ post }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
-  const { setnotificationPopMsg, setNotificationPopMsgNature, isDarkModeOn } = useAskContext()
+  const {
+    setnotificationPopMsg,
+    setNotificationPopMsgNature,
+    isDarkModeOn
+  } = useAskContext()
 
   // Thumbnail 
   const [thumbnailFile, setthumbnailFile] = useState(null)
@@ -182,7 +186,7 @@ const AskQue = ({ post }) => {
 
           const randomIndex = Math.floor(Math.random() * 10);
 
-          const ImgURL = ImgArrUnsplash[randomIndex].urls.full
+          const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.raw
 
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
@@ -330,329 +334,292 @@ const AskQue = ({ post }) => {
             setThumbailURL(res.href)
           })
       } else {
-        setThumbailURL((prev) => post.queImage)
+        setThumbailURL(post.queImage)
       }
 
     }
   }, [])
-  useEffect(() => {
-    const subscription = watch((value, { name }) => {
-      if (name === "title") {
-        setValue("slug", slugTransform(value.title), {
-          shouldValidate: true,
-        });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [slugTransform, setValue, watch])
+
+  const deleteThumbnail = async () => {
+    setThumbailURL('')
+    setthumbnailFile(null)
+    try {
+      const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
+    } catch (error) {
+      console.log("AskQue delete Img error.")
+    }
+  }
+
 
   return (
-    <>
-      <div
-        className={`ask_Que_Container ${isDarkModeOn ? 'darkMode' : ''}`}
-      >
-        <h3 className={`AskQue_Heading text-center text-4xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>"Got a Question? Ask Away!"</h3>
 
-        <form id="AskQue_Form" onSubmit={handleSubmit(submit)} className="flex">
-          <div id="AskQue_InsideFormLeft">
-            <div className="Question_Title flex gap-3">
-              <h4 className={`my-4 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Title</h4>
-              <TextArea
-                className={`${isDarkModeOn ? 'darkMode' : ''}`}
-                maxLength="250"
-                id="Que_Title"
-                placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
-                {...register("title", {
-                  required: false,
-                })}
-              />
-              <Input
-                className="text-black hidden"
-                placeholder="slug"
-                {...register("slug", {
-                  required: false,
-                })}
-                onInput={(e) => {
-                  setValue("slug", slugTransform(e.current.target.value), {
-                    shouldValidate: true,
-                  });
-                }}
+    <div className="poppins py-3 px-3">
+
+      <h3 className="text-center text-2xl lg:text-3xl mt-2">Got a Question? Ask Away!</h3>
+
+      <form onSubmit={handleSubmit(submit)} className="flex flex-col lg:flex-row gap-3 mt-4">
+
+
+        <section className="flex flex-col gap-6 w-full md:w-[70%]">
+          {/* title */}
+          <div className="flex flex-col gap-3">
+            <label htmlFor="Que_Title" className="font-bold">Title</label>
+            <TextArea
+              maxLength="250"
+              id="Que_Title"
+              placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
+              {...register("title", {
+                required: false,
+              })} />
+          </div>
+          {/* description */}
+          <div className="flex flex-col gap-3">
+            <label className="font-bold">Addtional Details (Optional)</label>
+            <div className="Description_div">
+              <RTE
+                name="content"
+                defaultValue={getValues("content")}
+                control={control}
               />
             </div>
-            <div className="Descripton flex flex-col gap-3">
-              <h4 className={`my-3 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Additional Details (Optional)</h4>
-              <div className="Description_div">
-                <RTE
-                  name="content"
-                  defaultValue={getValues("content")}
-                  control={control}
+          </div>
+          {/* opinion from */}
+          <div className="flex flex-col gap-3">
+            <label className="font-bold">Whom Opinion are You interested ?</label>
+            <div className="flex justify-around">
+              <div className="flex gap-3 items-center">
+                <Input
+                  {...register("opinionsFrom", {
+                    required: false
+                  })}
+                  defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
+                  type="radio"
+                  value="Everyone"
+                  name='opinionsFrom'
+                  id="Id1"
+                  className='cursor-pointer'
                 />
+                <label htmlFor="Id1" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Everyone</label>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Input
+                  {...register('opinionsFrom')}
+                  type="radio"
+                  value="Responders"
+                  defaultChecked={post && post?.opinionsFrom === 'Responders' ? true : false}
+                  id="Id3"
+                  name='opinionsFrom'
+                  className='cursor-pointer'
+                />
+                <label htmlFor="Id3" className="cursor-pointer">Responders</label>
               </div>
             </div>
-            <div className="Opinions">
-              <h4 className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
-                Whom Opinion are You interested ?
-              </h4>
-              <div className="AskQue_Opinions_From_Div flex justify-between items-center ">
-                <div className="w-1/5  text-center text-xl">
-                  <span className={`my-4 mb-6 mt-5 text-xl ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Opinions From :</span>
-                </div>
-
-
-                <div className="flex pl-6 justify-around w-4/5 text-xl">
-                  <div className="flex-1 flex gap-3 items-center">
-                    <Input
-                      {...register("opinionsFrom", {
-                        required: false
-                      })}
-
-                      defaultChecked={post && post?.opinionsFrom === 'Everyone' ? true : post ? false : true}
-                      type="radio"
-                      value="Everyone"
-                      name='opinionsFrom'
-                      id="Id1"
-                      className='cursor-pointer'
-                    />
-                    <label htmlFor="Id1" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Everyone</label>
-                  </div>
-
-
-                  <div className="flex-1 flex gap-3 items-center text-xl">
-                    <Input
-                      {...register('opinionsFrom')}
-                      type="radio"
-                      value="Responders"
-                      defaultChecked={post && post?.opinionsFrom === 'Responders' ? true : false}
-                      id="Id3"
-                      name='opinionsFrom'
-                      className='cursor-pointer'
-                    />
-                    <label htmlFor="Id3" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Responders</label>
-                    <i className="fa-solid fa-mars-stroke text-red-600"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <hr className="mt-5" />
 
           </div>
 
-          <div id="AskQue_insideForm_right">
+        </section>
 
-            <div id="AskQue_Thumbnail_preview">
-              <div id="AskQue_Thumbnail" className={`${isDarkModeOn ? 'text-white border-white' : 'text-black border-black'}`}>
-                {!thumbailURL && <p className="text-center">Add Thumbail for Your Question
-                  <br />
-                  or thumbnail will be set according to category
-                </p>}
-                {thumbailURL && <div>
-                  <img src={thumbailURL} alt="" />
-                </div>}
-              </div>
+        <section className="flex flex-col w-full md:w-[30%]">
+          {/* thumbnail */}
+          <div className="flex flex-col justify-center items-center">
+            <div id="AskQue_Thumbnail">
+              {!thumbailURL && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
+              </p>}
+              {thumbailURL && <img src={thumbailURL} alt="thumbnail" />}
+            </div>
 
-              <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
-                <label className={`AskQue_BrowseThumbnail ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
-                <input className="hidden" type="file"
-                  name="thumbnailImage"
-                  accept="image/*"
-                  id="BrowseThumbnail"
-                  onChange={selectThumbnail}
+            <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
+              <label className={`AskQue_BrowseThumbnail ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
+
+              <input className="hidden" type="file"
+                name="thumbnailImage"
+                accept="image/*"
+                id="BrowseThumbnail"
+                onChange={selectThumbnail} />
+
+              {thumbailURL && <span onClick={deleteThumbnail}>Remove Image</span>}
+            </div>
+          </div>
+          {/* post type */}
+          <div id="AskQue_PostType">
+            <p className="cursor-pointer" >Select Post Type:</p>
+            <div className="flex justify-start gap-6">
+              <div>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="public">Public</label>
+                <input
+                  className="cursor-pointer"
+                  {...register("status")}
+                  type="radio"
+                  name='status'
+                  value={'Public'}
+                  id="public"
+                  defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
                 />
-                {thumbailURL && <span onClick={async () => {
-                  setThumbailURL('')
-                  setthumbnailFile(null)
-                  try {
-                    const deleteprevThumbnail = await appwriteService.deleteThumbnail(post.queImageID)
-                  } catch (error) {
-                    console.log("AskQue delete Img error.")
-                  }
-
-                }}>Remove Image</span>}
+              </div>
+              <div>
+                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="private">Private</label>
+                <input
+                  className="cursor-pointer"
+                  {...register("status", {
+                    required: false
+                  })}
+                  type="radio"
+                  name="status"
+                  id="private"
+                  value={'Private'}
+                  defaultChecked={post && post?.status === "Private" ? true : false}
+                />
               </div>
             </div>
-
-
-            <div id="AskQue_PostType" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-              <p className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} >Select Post Type:</p>
-              <div className="flex justify-start gap-6">
-                <div>
-                  <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="public">Public</label>
-                  <input
-                    className="cursor-pointer"
-                    {...register("status")}
-                    type="radio"
-                    name='status'
-                    value={'Public'}
-                    id="public"
-                    defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
-                  />
-                </div>
-                <div>
-                  <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="private">Private</label>
-                  <input
-                    className="cursor-pointer"
-                    {...register("status", {
-                      required: false
-                    })}
-                    type="radio"
-                    name="status"
-                    id="private"
-                    value={'Private'}
-                    defaultChecked={post && post?.status === "Private" ? true : false}
-                  />
-                </div>
-              </div>
-            </div>
-
-
-            <div id="AskQue_SelectCategory" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-              <p className={`mb-3 ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Select Category : </p>
-              <div className="dropdown">
-                <div
-                  className="dropdown-header flex items-center justify-between"
-                  onClick={() => {
-                    setselectCategoryVisible((prev) => !prev)
-                  }}
-                >
-                  < span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{categoryValue ? categoryValue : `Select Item`}</span>
-                  <i className="fa-solid fa-caret-down"></i>
-                </div>
-
-                {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col ${isDarkModeOn ? 'darkMode' : ''}`}>
-                  {categoriesArr?.map((object, index) => (
-                    <li key={object.category + index} className="dropdown-item" onClick={
-                      () => {
-                        setselectCategoryVisible(false)
-                        setcategoryValue(object.category)
-                      }
-                    }>{object.category}</li>
-                  ))}
-                </ul>}
+          </div>
+          {/* select category */}
+          <div id="AskQue_SelectCategory" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+            <p className={`mb-3 ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Select Category : </p>
+            <div className="dropdown">
+              <div
+                className="dropdown-header flex items-center justify-between"
+                onClick={() => {
+                  setselectCategoryVisible((prev) => !prev)
+                }}
+              >
+                < span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{categoryValue ? categoryValue : `Select Item`}</span>
+                <i className="fa-solid fa-caret-down"></i>
               </div>
 
-            </div>
-
-            {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
-              <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Add Pole : (Optional) </p>
-
-              <div id="AskQue_Pole_Options">
-                <TextArea
-                  placeholder='Ask Pole' className={`AskQue_Pole_TextArea ${isDarkModeOn ? 'darkMode' : ''}`}
-                  maxLength={110}
-                  value={`${post ? post.pollQuestion : pollQuestion}`}
-                  onChange={(e) => {
-                    if (e.currentTarget.value !== '') {
-                      setpollTextAreaEmpty(false)
-                      setPollQuestion(e.currentTarget.value)
-                    } else {
-                      setpollTextAreaEmpty(true)
-                      setTotalPollOptions((prev) => [])
-                      setPollQuestion('')
+              {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col ${isDarkModeOn ? 'darkMode' : ''}`}>
+                {categoriesArr?.map((object, index) => (
+                  <li key={object.category + index} className="dropdown-item" onClick={
+                    () => {
+                      setselectCategoryVisible(false)
+                      setcategoryValue(object.category)
                     }
-                  }}
-                >
-                </TextArea>
+                  }>{object.category}</li>
+                ))}
+              </ul>}
+            </div>
 
-                <div>
+          </div>
+          {/* pole */}
+          {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
+            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Add Pole : (Optional) </p>
 
-                  <div className="w-full flex flex-col gap-1 mt-1">
+            <div id="AskQue_Pole_Options">
+              <TextArea
+                placeholder='Ask Pole' className={`AskQue_Pole_TextArea ${isDarkModeOn ? 'darkMode' : ''}`}
+                maxLength={110}
+                value={`${post ? post.pollQuestion : pollQuestion}`}
+                onChange={(e) => {
+                  if (e.currentTarget.value !== '') {
+                    setpollTextAreaEmpty(false)
+                    setPollQuestion(e.currentTarget.value)
+                  } else {
+                    setpollTextAreaEmpty(true)
+                    setTotalPollOptions((prev) => [])
+                    setPollQuestion('')
+                  }
+                }}
+              >
+              </TextArea>
 
-                    <div className="flex gap-3 h-8">
-                      <input type="text" name="" id="" className="border outline-none px-2 text-sm w-3/5"
-                        value={options}
-                        placeholder="options"
-                        onChange={(e) => {
-                          setoptions((e.currentTarget.value))
-                        }} />
-                      <Button
-                        onClick={() => {
-                          if (post) {
-                            setNotificationPopMsgNature((prev) => false)
-                            setnotificationPopMsg((prev) => "You cannot edit Poll")
+              <div>
+
+                <div className="w-full flex flex-col gap-1 mt-1">
+
+                  <div className="flex gap-3 h-8">
+                    <input type="text" name="" id="" className="border outline-none px-2 text-sm w-3/5"
+                      value={options}
+                      placeholder="options"
+                      onChange={(e) => {
+                        setoptions((e.currentTarget.value))
+                      }} />
+                    <Button
+                      onClick={() => {
+                        if (post) {
+                          setNotificationPopMsgNature((prev) => false)
+                          setnotificationPopMsg((prev) => "You cannot edit Poll")
+                          setoptions("")
+                          return
+                        }
+
+                        for (let i = 0; i < TotalPollOptions.length; i++) {
+                          if (TotalPollOptions[i].option === options) {
                             setoptions("")
                             return
                           }
+                        }
+                        if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
+                          setTotalPollOptions((prev) => {
+                            let arr = [...prev, { option: options, vote: 0 }]
 
-                          for (let i = 0; i < TotalPollOptions.length; i++) {
-                            if (TotalPollOptions[i].option === options) {
-                              setoptions("")
-                              return
-                            }
-                          }
-                          if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
-                            setTotalPollOptions((prev) => {
-                              let arr = [...prev, { option: options, vote: 0 }]
-
-                              return [...arr]
-                            })
-                          } else {
-                            if (!pollQuestion) {
-                              setNotificationPopMsgNature((prev) => false)
-                              setnotificationPopMsg((prev) => "Write a Poll")
-                              setoptions("")
-                              return
-                            }
+                            return [...arr]
+                          })
+                        } else {
+                          if (!pollQuestion) {
                             setNotificationPopMsgNature((prev) => false)
-                            setnotificationPopMsg((prev) => "Maximum 4 Options Allowed")
+                            setnotificationPopMsg((prev) => "Write a Poll")
+                            setoptions("")
+                            return
                           }
-                          setoptions("")
-                        }}
+                          setNotificationPopMsgNature((prev) => false)
+                          setnotificationPopMsg((prev) => "Maximum 4 Options Allowed")
+                        }
+                        setoptions("")
+                      }}
 
-                        className={`AskQue_AddOption_btn border text-sm p-1 ${isDarkModeOn ? 'darkMode' : ''}`}>
-                        Add options
-                      </Button>
+                      className={`AskQue_AddOption_btn border text-sm p-1 ${isDarkModeOn ? 'darkMode' : ''}`}>
+                      Add options
+                    </Button>
+                  </div>
+
+                  {TotalPollOptions?.map((options, index) => {
+                    // console.log(options)
+                    return <div className="w-full flex justify-start items-center" key={options.option}>
+
+                      <span className={`w-3/4 ${isDarkModeOn ? 'text-white' : 'text-black'}`} >{`${index + 1} ) ${options.option}`}</span>
+
+                      <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
+                        () => {
+                          setTotalPollOptions((prev) => {
+                            let arr = [...prev]
+                            arr.splice(index, 1)
+                            return [...arr]
+                          })
+                        }}></i></span>
                     </div>
+                  })}
+                  <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
+                  {!(TotalPollOptions.length >= 2) && <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+                </div>
 
-                    {TotalPollOptions?.map((options, index) => {
-                      // console.log(options)
-                      return <div className="w-full flex justify-start items-center" key={options.option}>
-
-                        <span className={`w-3/4 ${isDarkModeOn ? 'text-white' : 'text-black'}`} >{`${index + 1} ) ${options.option}`}</span>
-
-                        <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
-                          () => {
-                            setTotalPollOptions((prev) => {
-                              let arr = [...prev]
-                              arr.splice(index, 1)
-                              return [...arr]
-                            })
-                          }}></i></span>
-                      </div>
+                <div className="flex gap-3 h-8 mt-3 items-center">
+                  <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="">Opinion : </label>
+                  <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
+                    {...register('pollAnswer', {
+                      required: false
                     })}
-                    <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-                    {!(TotalPollOptions.length >= 2) && <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
-                  </div>
-
-                  <div className="flex gap-3 h-8 mt-3 items-center">
-                    <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="">Opinion : </label>
-                    <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
-                      {...register('pollAnswer', {
-                        required: false
-                      })}
-                    />
-                  </div>
-
+                  />
                 </div>
 
               </div>
 
-            </div>}
-            <div className={`buttons flex justify - end items - center mt - 14`}>
+            </div>
 
-              {!isUploading && <Button type="submit" className={`askque_btn ${isDarkModeOn ? 'darkMode' : ''}`}>
+          </div>}
+          {/* buttons */}
+          <div>
+            {isUploading ?
+              <Button type="submit" className="askque_btn">
+                {post ? "Updating..." : "Uploading..."}
+              </Button>
+              :
+              <Button type="submit" className="askque_btn">
                 {post ? "Update Your Question" : "Post Question"}
               </Button>}
-              {isUploading && <Button type="submit" className={`askque_btn ${isDarkModeOn ? 'darkMode' : ''}`}>
-                {post ? "Updating..." : "Uploading..."}
-              </Button>}
-
-            </div>
           </div>
+        </section>
 
-        </form >
-      </div >
-    </>
+      </form >
+    </div>
   );
 };
 
