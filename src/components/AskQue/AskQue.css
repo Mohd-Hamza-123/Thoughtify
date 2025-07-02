@@ -3,64 +3,11 @@
 
 
 @media only screen and (max-width: 500px) {
-    .AskQue_Heading {
-        font-size: 25px !important;
-    }
-
-    .ask_Que_Container {
-        padding: 0px 8px 15px 10px !important;
-        overflow-x: hidden;
-        overflow-y: scroll;
-    }
-
-    #AskQue_Form {
-        flex-direction: column;
-    }
 
 
-    #AskQue_InsideFormLeft {
-        width: 100% !important;
-        padding: 0px 0px 10px 0px !important;
-    }
 
     #Que_Title {
         font-size: 15px !important;
-    }
-
-    #AskQue_InsideFormLeft h4 {
-        font-weight: 600;
-        font-size: 17px;
-        margin: 10px 0px 0px 0px;
-    }
-
-    .AskQue_Opinions_From_Div {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 10px;
-    }
-
-    .AskQue_Opinions_From_Div>div:nth-child(1) {
-        width: 100% !important;
-        text-align: left;
-    }
-
-    .AskQue_Opinions_From_Div>div:nth-child(2) {
-        width: 100% !important;
-        text-align: left;
-        padding: 0px !important;
-    }
-
-    .AskQue_Opinions_From_Div span {
-        font-size: 16px !important;
-    }
-
-    .AskQue_Opinions_From_Div label {
-        font-size: 16px !important;
-    }
-
-
-    #AskQue_insideForm_right {
-        width: 100% !important;
     }
 
     #AskQue_Thumbnail {
@@ -71,51 +18,7 @@
 
 }
 
-.ask_Que_Container {
-    padding: 14px;
-    width: 100%;
-    color: black;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    font-family: 'Gabarito', sans-serif;
-    scroll-behavior: smooth;
-}
 
-.ask_Que_Container::-webkit-scrollbar {
-    display: none;
-}
-
-#AskQue_Form {
-    gap: 10px;
-}
-
-#AskQue_InsideFormLeft {
-    width: 70%;
-    padding: 10px;
-
-}
-
-#AskQue_InsideFormLeft textarea.darkMode {
-    background-color: white;
-}
-
-#AskQue_InsideFormLeft h4 {
-    font-weight: 600;
-}
-
-#AskQue_insideForm_right {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-
-.Question_Title {
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-}
 
 #Que_Title {
     outline: none;
@@ -165,19 +68,11 @@
     background-color: #FF3500;
 }
 
-#AskQue_Thumbnail_preview {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
 #AskQue_Thumbnail {
     height: 250px;
     width: 90%;
-    margin-top: 80px;
-    border-width: 2px;
-    border-style: dotted;
+    margin-top: 40px;
+    border: 2px dotted black;
     display: flex;
     justify-content: center;
     align-items: center;

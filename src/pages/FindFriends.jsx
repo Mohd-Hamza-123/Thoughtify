@@ -6,6 +6,8 @@ import { useSelector, useDispatch } from "react-redux";
 import "./FindFriends.css";
 import { getOtherUserProfile } from "../store/usersProfileSlice";
 import { useAskContext } from "../context/AskContext";
+import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
+import { Icons } from "@/components";
 
 const FindFriends = () => {
   const navigate = useNavigate();
@@ -49,27 +51,17 @@ const FindFriends = () => {
     } catch (error) {
       return null;
     }
-    setisSearching((prev) => false);
+    setisSearching(false);
   };
-  const nav = (slug) => {
-    navigate(slug);
-  };
+  const nav = (slug) => navigate(slug)
 
   return (
-    <div id="FindFriendsPage">
-      
-      <h3
-        className={`FindFirendsPage_Heading text-center ${
-          isDarkModeOn ? "text-white" : "text-black"
-        }`}
-      >
-        Explore New Connections{" "}
-      </h3>
-      <main className="FindFriendsPage_Main">
-        <section className="p-3">
-          <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
-            Searched
-          </p>
+    <main className="relative">
+      <div className="w-full flex justify-end px-3"><SectionTrigger /></div>
+      <h3 className="text-center md:text-lg mt-4">Explore New Connections</h3>
+      <div className="FindFriendsPage_Main">
+        <section className="px-3">
+          <p>Searched</p>
           <div>
             {othersUserProfile?.map((profile) => (
               <div
@@ -94,7 +86,7 @@ const FindFriends = () => {
             )}
           </div>
         </section>
-        <section>
+        <section className="p-2">
           <div className="Find_Friends_wrapper">
             <form
               className="Find_Friends_wrapper_searchBar"
@@ -109,44 +101,25 @@ const FindFriends = () => {
                 placeholder="Enter Full Name"
               />
               <button className="searchQuerySubmit" type="submit">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    fill="#666666"
-                    d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
-                  />
-                </svg>
+                <Icons.search />
               </button>
             </form>
           </div>
 
           <div>
-            {isSearching && (
-              <div
-                className={`flex justify-center ${
-                  isDarkModeOn ? "text-white" : "text-black"
-                }`}
-              >
-                Searching...
-              </div>
-            )}
+            {isSearching && <div className="flex justify-center">searching...</div>}
 
             {searchedPerson?.map((persons, index) => (
               <div
                 key={persons?.userIdAuth}
-                className={`cursor-pointer FindFriends_Profile_Details ${
-                  isDarkModeOn ? "darkMode" : ""
-                }`}
-                onClick={() => nav(`/profile/${persons?.userIdAuth}`)}
-              >
-                <div
-                  className={`FindFriendsPage_ListFriends_Searched_Person ${
-                    isDarkModeOn ? "darkMode" : ""
-                  }`}
-                >
+                className="cursor-pointer FindFriends_Profile_Details"
+                onClick={() => nav(`/profile/${persons?.userIdAuth}`)}>
+
+                <div className="FindFriendsPage_ListFriends_Searched_Person">
+
                   <div className="flex gap-3 items-center">
-                    <div>
-                      <img src={persons?.profileImgURL} />
-                    </div>
+                    <img src={persons?.profileImgURL || "NoProfile.png"}
+                      alt="NoProfile" />
                     <p>{persons?.name}</p>
                   </div>
 
@@ -160,21 +133,21 @@ const FindFriends = () => {
                     <b>EducationLvl : </b> {persons?.educationLvl}
                   </div>
 
-                  <div className="flex gap-1 flex-wrap">
+                  {persons?.interestedIn > 0 && <div className="flex gap-1 flex-wrap">
                     <b>Interested In : </b>
                     <div className="flex gap-3">
-                      {persons?.interestedIn.map((interest) => (
+                      {persons?.interestedIn?.map((interest) => (
                         <span key={interest}>{interest}</span>
                       ))}
                     </div>
-                  </div>
+                  </div>}
                 </div>
               </div>
             ))}
           </div>
         </section>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 };
 

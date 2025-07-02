@@ -175,12 +175,12 @@ const BrowseQuestions = () => {
             <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
               Filter by Post Title :
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <label
                 className={`${isDarkModeOn ? "text-white" : "text-black"}`}
                 htmlFor="BrowseQuestions_PostTitle_Filter"
               >
-                Title :{" "}
+                Title:
               </label>
               <Input
                 {...register("Title", {
