@@ -21,13 +21,12 @@ export class AuthService {
                 password,
                 name
             );
-            console.log(userAccount)
             if (userAccount) {
                 const login = await this.login({
                     email,
                     password
                 })
-                console.log(login)
+                // console.log(login)
                 return login
             } else { return undefined }
         } catch (error) {
@@ -95,14 +94,13 @@ export class AuthService {
         }
     }
 
-
     async getCurrentUser() {
         try {
             return await this.account.get()
         } catch (error) {
+            console.error(error?.message)
             return null
         }
-
     }
 
     async logout() {

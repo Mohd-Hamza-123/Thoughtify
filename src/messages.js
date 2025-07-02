@@ -14,11 +14,15 @@ export const appWriteErrors = [
     {
         error: `Missing required parameter: "email"`,
         message: "Please enter your email"
+    },
+    {
+        error: "Network request failed",
+        message: "Check your internet connection"
     }
 ]
 
 export const checkAppWriteError = (errMsg) => {
-
+    if (!errMsg) return ""
     const error = appWriteErrors?.map((errorObject) => {
         if (errMsg?.includes(errorObject?.error)) {
             return errorObject?.message

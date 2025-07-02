@@ -16,21 +16,18 @@ export class Profile {
 
     async createProfile({
         name,
-        userIdAuth,
-        profileImgID,
-        profileImgURL
+        userId,
+        profileImage
     }) {
-        console.log(userIdAuth, name)
+
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                ID.unique(),
+                userId,
                 {
-                    userIdAuth,
                     name,
-                    profileImgID,
-                    profileImgURL
+                    profileImage
                 })
         } catch (error) {
             console.log(error)
@@ -47,7 +44,8 @@ export class Profile {
         othersCanFilterYourPosts = null,
         othersSeeYourFollowers_Following = null,
         whoCanMsgYou = null,
-        trustedResponder = null
+        trustedResponder = null,
+        bookmarks = null
     }) {
         let updateObj = {}
         if (following) updateObj.following = following
@@ -61,36 +59,55 @@ export class Profile {
         if (trustedResponder || trustedResponder === false) {
             updateObj.trustedResponder = trustedResponder
         }
+        if (bookmarks) updateObj.bookmarks = bookmarks
+        console.log(bookmarks)
+        try {
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId, 
+                conf.appwriteProfileCollectionId, 
+                profileID,
+                updateObj
+            )
+        } catch (error) {
+            console.log(error?.message)
+            return null
+        }
+    }
+
+    async updateProfile(id, {
+        bio,
+        links,
+        occupation,
+        educationLvl,
+        interestedIn,
+        profileImage,
+    }) {
+
+        let payload = {}
+        if (bio) payload.bio = bio
+        if (links) payload.links = links
+        if (occupation) payload.occupation = occupation
+        if (educationLvl) payload.educationLvl = educationLvl
+        if (profileImage) payload.profileImage = profileImage
+        if (interestedIn) payload.interestedIn = interestedIn
 
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
-                updateObj
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                id,
+                payload
             )
         } catch (error) {
             return null
         }
     }
 
-
-    async updateProfile(id, { bio, educationLvl, occupation,
-        profileImgID, profileImgURL
-    }, links, interestedIn) {
-
-        try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, id, {
-                bio,
-                links,
-                educationLvl,
-                occupation,
-                interestedIn,
-                profileImgID,
-                profileImgURL
-            })
-        } catch (error) {
-            return null
-        }
-    }
-    async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
+    async updateProfileWithQueries({
+        profileID,
+        likedQuestions,
+        dislikedQuestions,
+        bookmarks }) {
         let obj = {}
         if (likedQuestions) obj.likedQuestions = likedQuestions
         if (dislikedQuestions) obj.dislikedQuestions = dislikedQuestions
@@ -115,10 +132,11 @@ export class Profile {
         }
 
         try {
-            const res = await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+            const res = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
                 QueryArr
             )
-            // console.log(res)
             return res
         } catch (error) {
             return null
@@ -134,18 +152,22 @@ export class Profile {
             return null
         }
     }
+
     async listProfilesWithQueries({ listResponders }) {
         let QueryArr = []
         if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
 
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
                 QueryArr
             )
         } catch (error) {
             return null
         }
     }
+
     async listSingleProfile(slug) {
         try {
             return await this.databases.getDocument(
@@ -154,6 +176,7 @@ export class Profile {
                 slug
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

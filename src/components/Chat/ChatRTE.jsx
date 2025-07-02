@@ -1,8 +1,9 @@
-import React from "react";
 import "./ChatRTE.css";
-import { Editor, } from "@tinymce/tinymce-react";
-import { Controller } from "react-hook-form";
+import React from "react";
 import conf from "../../conf/conf";
+import { Controller } from "react-hook-form";
+import { Editor, } from "@tinymce/tinymce-react";
+
 const ChatRTE = ({ name, control, editorRef }) => {
 
   return (
@@ -15,7 +16,7 @@ const ChatRTE = ({ name, control, editorRef }) => {
           <Editor
             init={{
               height: 200,
-              autoresize_max_height: 400, //
+              autoresize_max_height: 400, 
               menubar: false,
               plugins: ["lists", "image", "wordcount"],
               toolbar:
@@ -29,9 +30,9 @@ const ChatRTE = ({ name, control, editorRef }) => {
                   input.setAttribute("accept", "image/*");
                   input.onchange = function (e) {
                     const file = input.files[0];
-                    const MAX_FILE_SIZE = 1 * 1024 * 1024;
+                    const MAX_FILE_SIZE = 1 * 1024 * 100;
                     if (file.size > MAX_FILE_SIZE) {
-                      console.log("Image Must be Less then and Equal to 1 MB ")
+                      console.log("Image Must be Less then and Equal to 100kb")
                       return
                     }
                     const reader = new FileReader();

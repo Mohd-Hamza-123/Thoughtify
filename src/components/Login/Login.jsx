@@ -1,16 +1,19 @@
 import './Login.css'
+import { GoBackHome } from '..';
+import { Input } from '../ui/input';
 import { Button } from "../ui/button";
-import React, { useEffect, useState } from "react";
+import { ThoughtifyLogo } from '../Logo';
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import authService from "../../appwrite/auth";
 import { checkAppWriteError } from '@/messages';
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../../store/authSlice";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { Input } from '../ui/input';
-import { GoBackHome } from '..';
-import { ThoughtifyLogo } from '../Logo';
+import profile from '@/appwrite/profile';
+import { userProfile } from '@/store/profileSlice';
+import { homePageLoading } from '@/store/loadingSlice';
 
 const Login = () => {
 
@@ -27,12 +30,17 @@ const Login = () => {
       const session = await authService.login({ ...data });
       if (session?.success) {
         const userData = await authService.getCurrentUser();
-        if (userData) dispatch(authLogin({ userData }));
-        navigate("/");
-        setNotification({
-          message: 'You are Logged In',
-          type: 'success'
-        })
+        if (userData) {
+          dispatch(authLogin({ userData }));
+          const profileData = await profile.listSingleProfile(userData?.$id)
+          dispatch(userProfile({ userProfile: profileData }))
+          dispatch(homePageLoading({ homePageLoading: false }))
+          navigate("/");
+          setNotification({
+            message: 'You are Logged In',
+            type: 'success'
+          })
+        }
       } else {
         setNotification({
           message: checkAppWriteError(session?.error),
@@ -80,8 +88,8 @@ const Login = () => {
 
         <form
           className="max-w-full flex flex-col justify-center items-center gap-6"
-          onSubmit={handleSubmit(login)}
-        >
+          onSubmit={handleSubmit(login)}>
+            
           <div className="relative flex flex-col">
             <Input
               required
@@ -131,7 +139,7 @@ const Login = () => {
         <Button
           variant="destructive"
           onClick={() => authService.googleAuth()}
-          type="button" 
+          type="button"
           className="lg:w-1/5 mx-auto px-2" >
           Sign in with Google
         </Button>

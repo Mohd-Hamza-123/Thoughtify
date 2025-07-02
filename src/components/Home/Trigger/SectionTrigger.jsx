@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components';
 
-const SectionTrigger = () => {
+const SectionTrigger = ({ className }) => {
 
     const sections = [
         {
@@ -37,13 +37,9 @@ const SectionTrigger = () => {
     ];
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger>
-                <Button
-                    variant='outline'
-                    className="md:hidden w-10 text-slate-600">
-                    <Icons.dropdownleft className="text-lg" />
-                </Button>
+        <DropdownMenu className={`${className}`}>
+            <DropdownMenuTrigger className='md:hidden w-10 text-slate-600 border rounded-sm flex justify-center items-center'>
+                <Icons.dropdownleft className="text-lg" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="mr-4">
                 <DropdownMenuLabel>Section</DropdownMenuLabel>

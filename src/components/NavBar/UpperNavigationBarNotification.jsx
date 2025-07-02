@@ -1,54 +1,15 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useAskContext } from "@/context/AskContext";
-import { updateNotification } from "@/lib/notifications";
 import { Icons } from "..";
 
 const UpperNavigationBarNotification = () => {
 
   const authStatus = useSelector((state) => state.auth.status);
 
-  const {
-    isDarkModeOn,
-    notifications,
-    notificationShow,
-    setnotifications,
-    deleteNotication,
-    notificationPopUp,
-    setNotificationShow,
-    setnotificationPopUp,
-    setnotificationPopMsg,
-    isUnreadNotificationExist,
-    setNotificationPopMsgNature,
-    setIsUnreadNotificationExist,
-  } = useAskContext();
-
-  useEffect(() => {
-    setNotificationShow(notifications);
-    const notificationBoolean = notifications?.some(
-      (note) => note?.isRead === false
-    );
-
-    if (notificationBoolean) {
-      setIsUnreadNotificationExist(true);
-    } else {
-      setIsUnreadNotificationExist(false);
-    }
-  }, [notifications]);
-
-  const Notification = async (notificationID) => {
-    try {
-      const newNotificationArr = await updateNotification(notificationID);
-      setnotifications(newNotificationArr);
-    } catch (error) {
-      setnotifications([]);
-    }
-  };
-
   return (
     authStatus && (
       <div id="UpperNavigationBar_Bell_Div">
-        {isUnreadNotificationExist && (
+        {/* {isUnreadNotificationExist && (
           <span onClick={() => setnotificationPopUp((prev) => !prev)}>!</span>
         )}
         <Icons.bell onClick={() => setnotificationPopUp((prev) => !prev)} />
@@ -136,7 +97,7 @@ const UpperNavigationBarNotification = () => {
           onClick={() => setnotificationPopUp((prev) => false)}
           className={`${notificationPopUp ? "active" : ""}`}
           id="UpperNavigationBar_Notificaton_PopUp_overlay"
-        ></div>
+        ></div> */}
       </div>
     )
   );

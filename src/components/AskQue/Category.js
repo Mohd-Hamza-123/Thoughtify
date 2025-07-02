@@ -1,5 +1,8 @@
 const categoriesArr = [
     { category: 'General', slug: '/SearchQuestion/General' },
+    {category : 'Artificial Intelligence' , slug : '/SearchQuestion/ArtificialIntelligence'},
+    { category: 'React.js', slug: '/SearchQuestion/ReactJS' },
+    { category: 'Next.js', slug: '/SearchQuestion/NextJS' },
     { category: 'Science & Technology', slug: '/SearchQuestion/ScienceTechnology' },
     { category: 'Programming', slug: '/SearchQuestion/Programming' },
     { category: 'Web Development', slug: '/SearchQuestion/WebDevelopment' },
@@ -17,7 +20,6 @@ const categoriesArr = [
     { category: 'Fashion', slug: '/SearchQuestion/Fashion' },
     { category: 'Frontend', slug: '/SearchQuestion/Frontend' },
     { category: 'Python', slug: '/SearchQuestion/Python' },
-    { category: 'Relationships', slug: '/SearchQuestion/Relationships' },
     { category: 'Java', slug: '/SearchQuestion/Java' },
     { category: 'Django', slug: '/SearchQuestion/Django' },
     { category: 'Funny', slug: '/SearchQuestion/Funny' },

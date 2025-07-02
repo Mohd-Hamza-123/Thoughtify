@@ -1,10 +1,15 @@
-import React from 'react'
-import { BrowseQuestions } from '../components'
-
+import React, { useState } from 'react'
+import { BrowseQuestions, Trigger } from '../components'
 const SearchPage = () => {
+  
+  const [switchTrigger, setSwitchTrigger] = useState(true);
+
   return (
     <>
-      <BrowseQuestions />
+      <Trigger setSwitchTrigger={setSwitchTrigger} />
+      <BrowseQuestions
+        switchTrigger={switchTrigger}
+        setSwitchTrigger={setSwitchTrigger} />
     </>
   )
 }

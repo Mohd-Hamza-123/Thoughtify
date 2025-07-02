@@ -12,7 +12,12 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({ postid, commentContent, authid, name, date, category
+    async createComment({
+        postId,
+        commentContent,
+        authId,
+        name,
+        category
     }) {
         try {
             return await this.database.createDocument(
@@ -20,33 +25,35 @@ export class RealTime {
                 conf.appwriteNewCollectionId,
                 ID.unique(),
                 {
-                    postid,
-                    commentContent,
-                    authid,
-                    subComment: [],
                     name,
-                    date,
+                    postId,
+                    authId,
                     category,
+                    commentContent,
+                    subComment: [],
                 }
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }
 
-    async updateComment({ messageid, postid, commentContent, authid }, subComment) {
+    async updateComment({
+        commentId,
+        subComment,
+    }) {
+        const payload = {}
+        if (subComment) payload.subComment = subComment
         try {
             return await this.database.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteNewCollectionId,
-                messageid,
-                {
-                    postid,
-                    commentContent,
-                    subComment,
-                    authid
-                })
+                commentId,
+                payload
+            )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }
@@ -66,18 +73,35 @@ export class RealTime {
             return null
         }
     }
-    async listComment(postid, lastid) {
-        let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
-        if (lastid) {
-            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
+
+    async listComment(postId, lastId) {
+
+        console.log(lastId)
+        
+        let QueryArr = [
+            Query.limit(4),
+            Query.equal("postId", [`${postId}`]),
+            Query.orderDesc("$createdAt")
+        ]
+
+        if (lastId) {
+            QueryArr = [
+                Query.limit(4),
+                Query.cursorAfter(lastId),
+                Query.equal("postId", [`${postId}`]),
+                Query.orderDesc("$createdAt")
+            ]
         }
 
         try {
-            return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
+            return await this.database.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteNewCollectionId,
                 QueryArr
             )
         } catch (error) {
-            return false
+            console.log(error?.message)
+            return null
         }
     }
 
@@ -94,9 +118,9 @@ export class RealTime {
     }
 
     async getCommentsWithQueries({ Title, category,
-        BeforeDate, AfterDate, PostAge, UserID, lastPostID
+        BeforeDate, AfterDate, PostAge, userID, lastPostID
     }) {
-    
+
         let QueryArr = [Query.limit(5)];
         if (lastPostID) {
             QueryArr.push(Query.cursorAfter(lastPostID))
@@ -112,8 +136,8 @@ export class RealTime {
         }
 
 
-        if (UserID) {
-            QueryArr.push(Query.equal("authid", [UserID]))
+        if (userID) {
+            QueryArr.push(Query.equal("authId", [userID]))
         }
 
         try {
@@ -125,6 +149,7 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

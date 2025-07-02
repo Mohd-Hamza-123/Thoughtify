@@ -55,6 +55,7 @@ export class Notification {
             )
             return notifications
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

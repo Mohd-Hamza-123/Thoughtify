@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import QueryProvider from "./Providers/QueryProvider.jsx";
+import BooleanProvider from "./Providers/BooleanProvider.jsx";
 import NotificationProviders from "./Providers/NotificationProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -13,9 +14,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <QueryProvider>
       <BrowserRouter>
         <Provider store={store}>
-          <NotificationProviders>
-            <App />
-          </NotificationProviders>
+          <BooleanProvider>
+            <NotificationProviders>
+              <App />
+            </NotificationProviders>
+          </BooleanProvider>
         </Provider>
       </BrowserRouter>
     </QueryProvider>

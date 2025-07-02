@@ -14,47 +14,47 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, date, trustedResponderPost }, category) {
+    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, trustedResponderPost }, category) {
         try {
-            return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
-                title,
-                content,
-                userId,
-                queImage,
+            const payload = {
                 name,
-                category,
-                opinionsFrom,
-                status,
-                queImageID,
-                pollOptions,
-                pollQuestion,
-                pollAnswer,
-                profileImgID,
-                date,
-                trustedResponderPost
-            })
-        } catch (error) {
-            return null
-        }
-    }
-    async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage }, category) {
-        try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
                 title,
-                content,
-                category,
-                queImageID,
-                pollOptions,
-                pollQuestion,
-                opinionsFrom,
                 status,
+                userId,
+                content,
+                queImage,
+                category,
                 pollAnswer,
-                queImage
-            })
+                pollOptions,
+                opinionsFrom,
+                pollQuestion,
+                profileImgID,
+                trustedResponderPost,
+            }
+            // console.log(payload)
+
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                ID.unique(),
+                payload
+            )
         } catch (error) {
+            console.log("Appwrite serive :: createPost :: error", error);
             return null
         }
     }
+
+    async updatePost(slug, postObject) {
+
+        try {
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
+
     async updatePostViews(postId, views, commentCount) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
@@ -65,6 +65,7 @@ export class Service {
             return null
         }
     }
+
     async updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID }) {
 
         try {
@@ -90,58 +91,89 @@ export class Service {
             return null
         }
     }
+
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-
             return false
         }
     }
-    async getPost(slug) {
 
+    async getPost(slug) {
+        // console.log(slug)
         try {
-            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
+            const data = await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug)
+            // console.log(data)
+            return data
         } catch (error) {
             console.log("Appwrite serive :: getPost :: error", error);
-            return false
+            return null
         }
     }
-    // Infinte Scroll
-    async getPosts({ lastPostID = null, TrustedResponders }) {
 
-        let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
+    async getPosts({ lastPostID = null, TrustedResponders = false }) {
 
+        let QueryArr = [
+            Query.limit(4),
+            Query.orderDesc(`$createdAt`),
+            Query.equal("status", ['public'])
+        ]
 
         if (TrustedResponders) {
             if (lastPostID) {
-                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+                QueryArr = [
+                    ...QueryArr,
+
+                    Query.cursorAfter(lastPostID),
+                ]
             }
             QueryArr.push(Query.equal("trustedResponderPost", [true]))
             QueryArr.push(Query.isNotNull("trustedResponderPost"))
 
         } else {
             if (lastPostID) {
-                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+                // console.log(lastPostID)
+                QueryArr = [
+                    ...QueryArr,
+                    Query.cursorAfter(lastPostID),
+                    Query.equal("status", ['public']),
+                    // Query.isNotNull("trustedResponderPost"),
+                    // Query.equal("trustedResponderPost", [false])
+                ]
             }
         }
 
-
-
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 QueryArr
             )
         } catch (error) {
-
-            return false
+            // console.log(error)
+            throw new Error(error)
         }
     }
+
     async getPostsWithQueries({
-        Title, category,
-        BeforeDate, AfterDate, From, To, PostAge, Viewed,
-        Commented, UserID, Like_Dislike, lastPostID, PostFrom
-    }) {
+        To,
+        From,
+        Title,
+        Viewed,
+        userID,
+        PostAge,
+        PostFrom,
+        category,
+        AfterDate,
+        Commented,
+        BeforeDate,
+        Like_Dislike,
+    }, lastPostID) {
+
 
         let QueryArr = [Query.limit(5)]
         if (lastPostID) {
@@ -153,7 +185,7 @@ export class Service {
             QueryArr.push(Query.orderDesc("dislike"))
         }
         if (Title) QueryArr.push(Query.startsWith("title", Title))
-        if (category !== 'All Category') { QueryArr.push(Query.equal('category', [`${category}`])) }
+        if (category && category !== 'All Category') { QueryArr.push(Query.equal('category', [`${category}`])) }
 
         if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
         if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
@@ -175,8 +207,8 @@ export class Service {
         } else if (Commented === 'Least Commented') {
             QueryArr.push(Query.orderAsc('commentCount'))
         }
-        if (UserID) {
-            QueryArr.push(Query.equal("userId", [UserID]))
+        if (userID) {
+            QueryArr.push(Query.equal("userId", [userID]))
         }
         if (PostFrom === 'Responders') {
             QueryArr.push(Query.equal("trustedResponderPost", true))
@@ -184,10 +216,13 @@ export class Service {
             QueryArr.push(Query.equal("trustedResponderPost", false))
         }
 
+
         try {
 
-            if (QueryArr.length < 1) return []
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+            // if (QueryArr.length < 1) return []
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 QueryArr
             )
         } catch (error) {
@@ -200,7 +235,7 @@ export class Service {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
+            console.log("Appwrite service :: getPosts :: error", error);
             return false
         }
     }
@@ -208,7 +243,7 @@ export class Service {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
         } catch (error) {
-
+            console.log("Appwrite service :: createThumbnail :: error", error);
             return false
         }
     }
@@ -225,12 +260,19 @@ export class Service {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-
             return false
         }
     }
-    async getThumbnailPreview(fileid) {
-        return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
+
+    async getThumbnailPreview(fileId) {
+        return this.storage.getFilePreview(
+            conf.appwriteBucketIdThumbnail,
+            fileId,
+            undefined,
+            undefined,
+            undefined,
+            50,
+        )
     }
 }
 

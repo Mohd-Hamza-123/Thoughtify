@@ -1,9 +1,11 @@
 import "./Home.css";
 import { useState } from "react";
 import { HomeLeft, HomeRight, Trigger } from "../components/index";
+import InitializationWrapper from "@/components/Initialization";
 
 const Home = () => {
   const [switchTrigger, setSwitchTrigger] = useState(true);
+
   return (
     <div>
       <Trigger setSwitchTrigger={setSwitchTrigger} />

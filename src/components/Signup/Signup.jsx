@@ -3,72 +3,39 @@ import React from "react";
 import { GoBackHome } from "..";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { ThoughtifyLogo } from "../Logo";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import useProfile from "@/hooks/useProfile";
 import authService from "../../appwrite/auth";
-import { login } from "../../store/authSlice";
 import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { login, logout } from "../../store/authSlice";
+import { homePageLoading } from "@/store/loadingSlice";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { ThoughtifyLogo } from "../Logo";
 
 const Signup = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const { createProfile } = useProfile()
+  const { register, handleSubmit } = useForm();
   const { setNotification } = useNotificationContext()
 
-  const { register, handleSubmit } = useForm();
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data) => await authService.createAccount({ ...data }),
+    onSuccess: async (data, variables, context) => {
+      const userData = await authService.getCurrentUser()
+      await createProfile({ userId: userData?.$id, name: userData?.name })
+      dispatch(login({ userData }));
+      dispatch(homePageLoading({ homePageLoading: false }))
+      navigate('/')
+    },
+    onError: (error, variables, context) => setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
+  })
 
-  const { mutate, isPending } = useMutation(
-    {
-      mutationFn: async (data) => {
-        await authService.createAccount({ ...data })
-      },
-      onSuccess: async (data, variables, context) => {
-        try {
-          const userData = await authService.getCurrentUser();
-          console.log(userData)
-          if (userData) {
-            // const avatar_url = avatarService.createAvatar({ name: userData?.name })
-            // console.log(avatar_url)
-            // const profile = await profile.createProfile({
-            //   name: userData?.name,
-            //   userIdAuth: userData?.$id,
-            //   profileImgID: null,
-            //   profileImgURL: avatar_url?.href || avatar_url,
-            // });
-            // console.log(profile)
-            dispatch(login({ userData }));
-            // dispatch(userProfile({ profile }))
-            navigate("/");
-          }
-          if (!userData) {
-            setNotification({ message: "User not found", type: "error" })
-          }
-        } catch (error) {
-          console.log(error)
-        }
-      },
-      onError: (error, variables, context) => {
-        setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
-      },
-    }
-  )
-
-  const create = async (data) => {
-    // // Checking if username already exists
-    // const isProfileAlreadyExist = await profile.listProfile({ name: data?.name })
-
-    // if (isProfileAlreadyExist?.total > 0) {
-    //   setNotification({ message: "Username already exists", type: "error" })
-    //   return
-    // }
-    mutate({ ...data })
-  }
-
+  const create = (data) => mutate({ ...data })
 
   return (
 
@@ -78,24 +45,21 @@ const Signup = () => {
 
         <ThoughtifyLogo className="mx-auto" />
 
-        <h2 className="font-bold text-2xl mt-2 text-center">
-          Sign-In
-        </h2>
+        <h2 className="font-bold text-2xl mt-2 text-center"> Sign-In</h2>
 
         <p className="text-center">
           Already have an Account ?&nbsp;
           <Link
             className="text-primary hover:underline font-bold"
-            to={"/login"}
-          >
+            to={"/login"}>
             Login
           </Link>
         </p>
 
         <form
           className="max-w-full flex flex-col justify-center items-center mb-2"
-          onSubmit={handleSubmit(create)}
-        >
+          onSubmit={handleSubmit(create)}>
+
           <div className="signup_insideForm_div w-full flex flex-col justify-center items-center mt-5 gap-8">
             <div className='relative inputTransition flex flex-col'>
               <Input
