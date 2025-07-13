@@ -14,7 +14,7 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, slug, userId, queImage, name, opinionsFrom, status, queImageID, pollQuestion, pollOptions, pollAnswer, profileImgID, date, trustedResponderPost }, category) {
+    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, date, trustedResponderPost }, category) {
         try {
             return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
                 title,
@@ -25,7 +25,6 @@ export class Service {
                 category,
                 opinionsFrom,
                 status,
-                queImageID,
                 pollOptions,
                 pollQuestion,
                 pollAnswer,
@@ -34,6 +33,7 @@ export class Service {
                 trustedResponderPost
             })
         } catch (error) {
+            console.log("Appwrite serive :: createPost :: error", error);
             return null
         }
     }
@@ -90,14 +90,15 @@ export class Service {
             return null
         }
     }
+
     async deletePost(slug) {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-
             return false
         }
     }
+    
     async getPost(slug) {
 
         try {
@@ -109,10 +110,7 @@ export class Service {
     }
     // Infinte Scroll
     async getPosts({ lastPostID = null, TrustedResponders }) {
-
         let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
-
-
         if (TrustedResponders) {
             if (lastPostID) {
                 QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
@@ -125,16 +123,15 @@ export class Service {
                 QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
             }
         }
-
-
-
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 QueryArr
             )
         } catch (error) {
-
-            return false
+            // console.log(error)
+            throw new Error(error)
         }
     }
     async getPostsWithQueries({

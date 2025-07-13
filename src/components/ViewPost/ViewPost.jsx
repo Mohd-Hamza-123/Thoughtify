@@ -48,12 +48,7 @@ const ViewPost = () => {
     (state) => state.postsSlice.initialResponderPosts
   );
 
-  const {
-    myUserProfile,
-    setMyUserProfile,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature,
-  } = useAskContext();
+ 
 
 
 
@@ -399,7 +394,7 @@ const ViewPost = () => {
       getProfileImage(post?.profileImgID)
     }
   }, [post]);
-console.log(post)
+  
   return post ? (
     <div
       ref={ViewPostRef}
@@ -417,7 +412,6 @@ console.log(post)
       >
         <i className="bx bxs-grid-alt"></i>
       </Button>
-
 
       <section ref={viewPostLeft} className="p-3 w-[70%]">
         <ViewPostMainContent post={post} />

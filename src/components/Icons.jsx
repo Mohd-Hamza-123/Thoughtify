@@ -1,6 +1,6 @@
 import React from "react";
 import { CiUser } from "react-icons/ci";
-import { CiEdit } from "react-icons/ci";
+import { MdEdit } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 import { GrSystem } from "react-icons/gr";
 import { BsDownload } from "react-icons/bs";
@@ -14,13 +14,15 @@ import { IoIosArrowDropdown } from "react-icons/io";
 import { IoIosArrowDropright } from "react-icons/io";
 import { IoIosSwitch } from "react-icons/io";
 import { AiOutlineLeftCircle } from "react-icons/ai";
+import { FaRegTrashCan } from "react-icons/fa6";
 const Icons = {
+  trashcan : (props) => (<FaRegTrashCan {...props} />),
   switch : (props) => (<IoIosSwitch {...props} />),
   dropdownleft : (props) => (<AiOutlineLeftCircle {...props} />),
   dropdownright : (props) => (<IoIosArrowDropright {...props} />),
   dropdown : (props) => (<IoIosArrowDropdown {...props} />),
   bell : (props) => (<IoNotificationsOutline {...props} />),
-  edit: (props) => (<CiEdit {...props} />),
+  edit: (props) => (<MdEdit {...props} />),
   profile: (props) => (<CiUser {...props} />),
   day: (props) => (<WiDaySunny {...props} />),
   logout: (props) => (<CiLogout {...props} />),

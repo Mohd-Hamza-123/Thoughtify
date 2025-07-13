@@ -3,6 +3,7 @@ import { SecondLoader } from "..";
 import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import appwriteService from "@/appwrite/config";
+import { checkAppWriteError } from "@/messages";
 import { useQuery } from "@tanstack/react-query";
 import { getInitialPost } from "@/store/postsSlice";
 import { useAskContext } from "@/context/AskContext";
@@ -10,8 +11,7 @@ import increaseViews from "@/services/increasePostView";
 import React, { useRef, useEffect, useState } from "react";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
-  console.log(switchTrigger)
-  console.log(isTrustedResponder)
+
   const dispatch = useDispatch();
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
@@ -28,42 +28,17 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   const getAllPosts = async () => {
     setIsLoading(true);
-    try {
-      // if (initialPost?.length === 0) {
-      const posts = await appwriteService.getPosts({ lastPostID });
-      // console.log(posts);
-      return posts;
-      return
-      if (posts === false) {
-        setPosts(false);
-      }
+    const posts = await appwriteService.getPosts({ lastPostID });
+    setIsLoading(false);
+    return posts
+  }
 
-      if (initialPost?.length < posts.total) {
-        sethasMorePostsInHome(true);
-      } else {
-        sethasMorePostsInHome(false);
-      }
-      if (posts) {
-        setPosts(posts?.documents);
-        let lastID = posts?.documents[posts?.documents.length - 1]?.$id;
-        setLastPostID(lastID);
-        dispatch(getInitialPost({ initialPosts: posts?.documents }));
-      }
-      // }
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
 
-  const { data, isPending, isError } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryKey: ["posts"],
     queryFn: getAllPosts,
     staleTime: Infinity,
   });
-
-  useEffect(() => {
-    getAllPosts();
-  }, []);
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -118,9 +93,8 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     )
   else if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
-      <p className="select-none dark:text-white">
-        Internet Connection Error
-      </p>
+      <span>{checkAppWriteError(error?.message)}</span>
+      {!error?.message && <p className="select-none dark:text-white">Something went wrong !</p>}
       <Button
         variant="destructive"
         onClick={() => location.reload()}>
@@ -135,7 +109,6 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
         className={`w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
 
         {data?.documents?.map((post) => {
-          // console.log(isTrustedResponder)
           if (isTrustedResponder === false) return <PostCard
             key={post?.$id}
             onClick={() => increaseViews(post?.$id)}

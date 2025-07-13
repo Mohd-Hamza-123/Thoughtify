@@ -13,7 +13,7 @@ import { ProfileImage } from "../Logo";
 
 const NavigationBar = () => {
   const authStatus = useSelector((state) => state.auth.status);
-  console.log(authStatus)
+  // console.log(authStatus)
   const { setIsOpen, setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {

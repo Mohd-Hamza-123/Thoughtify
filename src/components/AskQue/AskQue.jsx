@@ -1,24 +1,29 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import "./AskQue.css";
-import { useAskContext } from "../../context/AskContext";
+import conf from "../../conf/conf";
+import { Input } from "../ui/input";
 import { RTE, TextArea } from "../";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import conf from "../../conf/conf";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import appwriteService from "../../appwrite/config";
 import { categoriesArr } from "./Category";
+import { MAX_IMAGE_SIZE } from "@/constant";
 import profile from "../../appwrite/profile";
-import { getInitialPost, getResponderInitialPosts } from "../../store/postsSlice";
-
+import { useNavigate } from "react-router-dom";
+import appwriteService from "../../appwrite/config";
+import uploadPostWithUnsplashAPI from "./uploadPost";
+import { uploadQuestionWithImage } from "@/lib/posts";
+import { useSelector, useDispatch } from "react-redux";
+import { getInitialPost } from "../../store/postsSlice";
+import React, { useEffect, useState, memo } from "react";
+import { useNotificationContext } from "@/context/NotificationContext";
 
 const AskQue = ({ post }) => {
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const userData = useSelector((state) => state.auth.userData);
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
-  const { handleSubmit, register, control, watch, setValue, getValues } =
+  const { handleSubmit, register, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
@@ -29,97 +34,87 @@ const AskQue = ({ post }) => {
       },
     });
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const userData = useSelector((state) => state.auth.userData);
+  const [initialPostData, setInitialPostData] = useState({
+    options: '',
+    thumbnailURL: '',
+    pollQuestion: '',
+    isUploading: false,
+    categoryValue: '',
+    thumbnailFile: null,
+    TotalPollOptions: [],
+    pollTextAreaEmpty: true,
+    selectCategoryVisible: false,
+  })
+
   const {
-    setnotificationPopMsg,
-    setNotificationPopMsgNature,
-    isDarkModeOn
-  } = useAskContext()
+    thumbnailFile,
+    thumbnailURL,
+    selectCategoryVisible,
+    categoryValue,
+    pollQuestion,
+    TotalPollOptions,
+    pollTextAreaEmpty,
+    options,
+    isUploading,
+  } = initialPostData
 
-  // Thumbnail 
-  const [thumbnailFile, setthumbnailFile] = useState(null)
-  const [thumbailURL, setThumbailURL] = useState('')
-
-  // Category State
-  const [selectCategoryVisible, setselectCategoryVisible] = useState(false)
-  const [categoryValue, setcategoryValue] = useState('');
-
-  // Poll State
-  const [TotalPollOptions, setTotalPollOptions] = useState([]);
-
-  const [pollQuestion, setPollQuestion] = useState('')
-  const [options, setoptions] = useState('')
-
-  const [pollTextAreaEmpty, setpollTextAreaEmpty] = useState(true)
-  const slugForNotification = useRef(null)
-  //
-  const [isUploading, setIsUploading] = useState(false)
-
+  const { setNotification } = useNotificationContext()
 
   const selectThumbnail = async (e) => {
 
     const file = e.currentTarget.files[0]
 
-    const MAX_FILE_SIZE = 1 * 1024 * 1024;
-    if (file.size > MAX_FILE_SIZE) {
-      setnotificationPopMsg((prev) => "Image Must be Less then and Equal to 1 MB ")
+    if (file.size > MAX_IMAGE_SIZE) {
+      setNotification({ message: "Image Must be Less then and Equal to 512kb", type: "error" })
       e.currentTarget.value = ''
       return
     }
-    setthumbnailFile(file)
+
+    setInitialPostData((prev) => ({ ...prev, thumbnailFile: file }))
     const reader = new FileReader()
     reader.onload = () => {
-      setThumbailURL(reader.result)
+      setInitialPostData((prev) => ({ ...prev, thumbnailURL: reader.result }))
     }
     reader.readAsDataURL(file)
   }
 
+
   const submit = async (data) => {
+
     if (!UserAuthStatus) {
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => 'You are not logged In');
+      setNotification({ message: "You are not logged In", type: "error" })
       return
     }
 
     const pollOptions = TotalPollOptions.map((obj) => JSON.stringify(obj))
     data.pollQuestion = pollQuestion
 
-    let date = new Date()
-    let year = date.getFullYear();
-    let month = String(date.getMonth() + 1).padStart(2, '0');
-    let day = String(date.getDate()).padStart(2, '0');
-    let formattedDate = `${year}-${month}-${day}`
-
-
     if (pollQuestion && TotalPollOptions.length <= 1) {
-
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => 'There must be 2 Poll options')
+      setNotification({ message: "There must be 2 Poll options", type: "error" })
       return
     }
 
-    if (!categoryValue) {
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => 'Select a Category. Choose General If not Specific')
+    console.log(initialPostData?.categoryValue)
+    if (!initialPostData?.categoryValue) {
+      setNotification({ message: "Select a Category. Choose General If not Specific", type: "error" })
       return
     }
 
     if (!data.title && !pollQuestion) {
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => 'Title is Empty')
+      setNotification({ message: "Title is Empty", type: "error" })
       return
     }
 
-    setIsUploading((prev) => true)
+    setIsUploading(true)
     if (post) {
 
       if (thumbnailFile) {
         try {
-          const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
-          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile });
-
+          const isDeleted = await appwriteService.deleteThumbnail(post?.queImageID)
+          console.log(isDeleted)
+          const dbThumbnail = await appwriteService.createThumbnail({ file: data.thumbnailFile });
+          console.log(dbThumbnail)
+          return
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
             queImageID: dbThumbnail.$id,
@@ -129,12 +124,9 @@ const AskQue = ({ post }) => {
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Updated')
+          setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
-          setNotificationPopMsgNature((prev) => false)
-          setnotificationPopMsg((prev) => 'Post is Not Updated')
+          setNotification({ message: "Post is Not Updated", type: "error" })
         }
 
       } else if (thumbailURL && !post?.queImageID) {
@@ -149,11 +141,9 @@ const AskQue = ({ post }) => {
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Updated')
+          setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
-          setNotificationPopMsgNature((prev) => false)
-          setnotificationPopMsg((prev) => 'Post is Not Updated')
+          setNotification({ message: "Post is Not Updated", type: "error" })
         }
 
 
@@ -169,11 +159,9 @@ const AskQue = ({ post }) => {
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Updated')
+          setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
-          setNotificationPopMsgNature((prev) => false)
-          setnotificationPopMsg((prev) => 'Post is Not Updated')
+          setNotification({ message: "Post is Not Updated", type: "error" })
         }
 
       } else {
@@ -197,8 +185,7 @@ const AskQue = ({ post }) => {
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Updated')
+          setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
 
           const dbPost = await appwriteService.updatePost(post.$id, {
@@ -216,88 +203,36 @@ const AskQue = ({ post }) => {
 
       navigate("/");
     } else {
-      const UploaderResponder = await profile.listProfile({ slug: userData?.$id });
 
-      const trustedResponderPost = UploaderResponder?.documents[0].trustedResponder;
+      const uploaderProfile = await profile.listProfile({ slug: userData?.$id });
 
-      if (thumbnailFile) {
+      if (uploaderProfile?.total === 0) {
+        setNotification({ message: "Your Profile is not Verified", type: "error" })
+        return
+      }
+
+      if (initialPostData?.thumbnailFile) {
+
         try {
-          const dbThumbnail = await appwriteService.createThumbnail({ file: thumbnailFile })
-
-          const dbPost = await appwriteService.createPost({
-            ...data,
-            queImageID: dbThumbnail?.$id,
-            userId: userData?.$id,
-            pollQuestion,
-            queImage: null,
-            pollOptions,
-            name: userData?.name,
-            date: formattedDate,
-            trustedResponderPost,
-          }, categoryValue);
-
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Created')
-
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-          slugForNotification.current = `post/${dbPost?.$id}/null`
-          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
+          const thumbnailFile = initialPostData.thumbnailFile
+          const dbPost = await uploadQuestionWithImage(thumbnailFile, data, userData, uploaderProfile)
+          setNotification({ message: "Post Created", type: "success" })
+          navigate(`/post/${dbPost?.$id}/null`)
+          return
         } catch (error) {
-          setNotificationPopMsgNature((prev) => false)
-          setnotificationPopMsg((prev) => 'Post is not Created')
+          console.log(error)
+          setNotification({ message: "Post is not Created", type: "error" })
         }
-
-
-
 
       } else {
-
-        try {
-          const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-          const UnsplashRes = await unsplashImg.json();
-          const ImgArrUnsplash = UnsplashRes.results
-          const randomIndex = Math.floor(Math.random() * 10);
-          const ImgURL = ImgArrUnsplash[randomIndex].urls.full
-
-          const dbPost = await appwriteService.createPost({
-            ...data,
-            userId: userData.$id,
-            queImage: ImgURL,
-            queImageID: null,
-            pollQuestion,
-            pollOptions,
-            name: userData?.name,
-            date: formattedDate,
-            trustedResponderPost
-          }, categoryValue);
-
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => 'Post Created')
-
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
-
-          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
-
-          slugForNotification.current = `post/${dbPost?.$id}/null`
-        } catch (error) {
-          const dbPost = await appwriteService.createPost({
-            ...data,
-            userId: userData.$id,
-            queImage: null,
-            queImageID: null,
-            pollQuestion,
-            pollOptions,
-            name: userData?.name,
-            date: formattedDate,
-            trustedResponderPost
-          }, categoryValue);
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }));
-
-          if (trustedResponderPost) dispatch(getResponderInitialPosts({ initialResponderPosts: [dbPost], initialPostsFlag: true }))
-
-          slugForNotification.current = `post/${dbPost?.$id}/null`
+        const dbPost = await uploadPostWithUnsplashAPI(initialPostData, data, userData, uploaderProfile)
+        if (dbPost) {
+          setNotification({ message: "Post Created", type: "success" })
+          navigate(`/post/${dbPost?.$id}/null`)
+          return
+        } else {
+          setNotification({ message: "Post is not Created", type: "error" })
         }
-        navigate("/");
       }
     }
 
@@ -305,16 +240,7 @@ const AskQue = ({ post }) => {
     setIsUploading((prev) => false)
   }
 
-  const slugTransform = useCallback((value) => {
-    if (value && typeof value === "string") {
-      return value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-zA-Z\d\s]+/g, "-")
-        .replace(/\s/g, "-");
-    }
-    return "";
-  }, []);
+
 
   useEffect(() => {
     if (post) {
@@ -350,6 +276,11 @@ const AskQue = ({ post }) => {
     }
   }
 
+  const selectPostCategory = (category) => {
+    console.log(category)
+    setselectCategoryVisible(false)
+    setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
+  }
 
   return (
 
@@ -399,7 +330,7 @@ const AskQue = ({ post }) => {
                   id="Id1"
                   className='cursor-pointer'
                 />
-                <label htmlFor="Id1" className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Everyone</label>
+                <label htmlFor="Id1" className="cursor-pointer">Everyone</label>
               </div>
               <div className="flex gap-3 items-center">
                 <Input
@@ -423,13 +354,13 @@ const AskQue = ({ post }) => {
           {/* thumbnail */}
           <div className="flex flex-col justify-center items-center">
             <div id="AskQue_Thumbnail">
-              {!thumbailURL && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
+              {!thumbnailURL && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
               </p>}
-              {thumbailURL && <img src={thumbailURL} alt="thumbnail" />}
+              {thumbnailURL && <img src={thumbnailURL} alt="thumbnail" />}
             </div>
 
             <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
-              <label className={`AskQue_BrowseThumbnail ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="BrowseThumbnail">{thumbailURL ? `Change Image` : 'Browse Image'}</label>
+              <label className={`AskQue_BrowseThumbnail`} htmlFor="BrowseThumbnail">{thumbnailURL ? `Change Image` : 'Browse Image'}</label>
 
               <input className="hidden" type="file"
                 name="thumbnailImage"
@@ -437,7 +368,7 @@ const AskQue = ({ post }) => {
                 id="BrowseThumbnail"
                 onChange={selectThumbnail} />
 
-              {thumbailURL && <span onClick={deleteThumbnail}>Remove Image</span>}
+              {thumbnailURL && <span onClick={deleteThumbnail}>Remove Image</span>}
             </div>
           </div>
           {/* post type */}
@@ -445,7 +376,7 @@ const AskQue = ({ post }) => {
             <p className="cursor-pointer" >Select Post Type:</p>
             <div className="flex justify-start gap-6">
               <div>
-                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="public">Public</label>
+                <label className={`cursor-pointer`} htmlFor="public">Public</label>
                 <input
                   className="cursor-pointer"
                   {...register("status")}
@@ -457,7 +388,7 @@ const AskQue = ({ post }) => {
                 />
               </div>
               <div>
-                <label className={`cursor-pointer ${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="private">Private</label>
+                <label className={`cursor-pointer`} htmlFor="private">Private</label>
                 <input
                   className="cursor-pointer"
                   {...register("status", {
@@ -473,27 +404,20 @@ const AskQue = ({ post }) => {
             </div>
           </div>
           {/* select category */}
-          <div id="AskQue_SelectCategory" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
-            <p className={`mb-3 ${isDarkModeOn ? 'text-white' : 'text-black'}`}>Select Category : </p>
+          <div id="AskQue_SelectCategory">
+            <p className={`mb-3`}>Select Category : </p>
             <div className="dropdown">
               <div
                 className="dropdown-header flex items-center justify-between"
-                onClick={() => {
-                  setselectCategoryVisible((prev) => !prev)
-                }}
+                onClick={() => { setselectCategoryVisible((prev) => !prev) }}
               >
-                < span className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>{categoryValue ? categoryValue : `Select Item`}</span>
+                <span>{initialPostData?.categoryValue ? initialPostData?.categoryValue : `Select Item`}</span>
                 <i className="fa-solid fa-caret-down"></i>
               </div>
 
-              {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col ${isDarkModeOn ? 'darkMode' : ''}`}>
+              {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col`}>
                 {categoriesArr?.map((object, index) => (
-                  <li key={object.category + index} className="dropdown-item" onClick={
-                    () => {
-                      setselectCategoryVisible(false)
-                      setcategoryValue(object.category)
-                    }
-                  }>{object.category}</li>
+                  <li key={object.category + index} className="dropdown-item" onClick={() => selectPostCategory(object.category)}>{object.category}</li>
                 ))}
               </ul>}
             </div>
@@ -501,21 +425,21 @@ const AskQue = ({ post }) => {
           </div>
           {/* pole */}
           {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
-            <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Add Pole : (Optional) </p>
+            <p>Add Pole : (Optional) </p>
 
             <div id="AskQue_Pole_Options">
               <TextArea
-                placeholder='Ask Pole' className={`AskQue_Pole_TextArea ${isDarkModeOn ? 'darkMode' : ''}`}
+                placeholder='Ask Pole' className={`AskQue_Pole_TextArea`}
                 maxLength={110}
                 value={`${post ? post.pollQuestion : pollQuestion}`}
                 onChange={(e) => {
                   if (e.currentTarget.value !== '') {
                     setpollTextAreaEmpty(false)
-                    setPollQuestion(e.currentTarget.value)
+                    setInitialPostData((prev) => ({ ...prev, pollQuestion: e.currentTarget.value }))
                   } else {
                     setpollTextAreaEmpty(true)
                     setTotalPollOptions((prev) => [])
-                    setPollQuestion('')
+                    setInitialPostData((prev) => ({ ...prev, pollQuestion: '' }))
                   }
                 }}
               >
@@ -566,7 +490,7 @@ const AskQue = ({ post }) => {
                         setoptions("")
                       }}
 
-                      className={`AskQue_AddOption_btn border text-sm p-1 ${isDarkModeOn ? 'darkMode' : ''}`}>
+                      className={`AskQue_AddOption_btn border text-sm p-1`}>
                       Add options
                     </Button>
                   </div>
@@ -575,7 +499,7 @@ const AskQue = ({ post }) => {
                     // console.log(options)
                     return <div className="w-full flex justify-start items-center" key={options.option}>
 
-                      <span className={`w-3/4 ${isDarkModeOn ? 'text-white' : 'text-black'}`} >{`${index + 1} ) ${options.option}`}</span>
+                      <span className={`w-3/4`} >{`${index + 1} ) ${options.option}`}</span>
 
                       <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
                         () => {
@@ -587,12 +511,12 @@ const AskQue = ({ post }) => {
                         }}></i></span>
                     </div>
                   })}
-                  <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-                  {!(TotalPollOptions.length >= 2) && <span className={`${isDarkModeOn ? 'text-white' : 'text-black'} text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+                  <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
+                  {!(TotalPollOptions.length >= 2) && <span className={`text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
                 </div>
 
                 <div className="flex gap-3 h-8 mt-3 items-center">
-                  <label className={`${isDarkModeOn ? 'text-white' : 'text-black'}`} htmlFor="">Opinion : </label>
+                  <label htmlFor="">Opinion : </label>
                   <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
                     {...register('pollAnswer', {
                       required: false
@@ -623,4 +547,4 @@ const AskQue = ({ post }) => {
   );
 };
 
-export default AskQue;
+export default memo(AskQue);
