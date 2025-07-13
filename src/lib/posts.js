@@ -66,9 +66,14 @@ export const updateLikeCount = async (post, myUserProfile) => {
     }
 }
 
-export const uploadQuestionWithImage = async (thumbnailFile,data,userData,uploaderProfile) => {
+export const uploadQuestionWithImage = async (
+    data,
+    userData,
+    initialPostData,
+    uploaderProfile,
+) => {
     try {
-       
+        const { categoryValue, thumbnailFile } = initialPostData
         const webpFile = await convertToWebPFile(thumbnailFile)
         const queCreatedImage = await appwriteService.createThumbnail({ file: webpFile })
         const imageURL = await appwriteService.getThumbnailPreview(queCreatedImage?.$id)
@@ -78,23 +83,28 @@ export const uploadQuestionWithImage = async (thumbnailFile,data,userData,upload
             ...data,
             queImage: JSON.stringify(queImage),
             userId: userData?.$id,
-            pollQuestion : uploaderProfile?.pollQuestion,
-            pollOptions : uploaderProfile?.pollOptions,
+            pollQuestion: uploaderProfile?.pollQuestion,
+            pollOptions: uploaderProfile?.pollOptions,
             name: userData?.name,
             date: currentFormattedDate(),
             trustedResponderPost: uploaderProfile?.documents[0].trustedResponder,
         }, categoryValue);
+
         return dbPost
+
     } catch (error) {
         throw new Error(error)
     }
 }
 
-export const deleteQuestion = async (post_id, image_id = null) => {
+export const deleteQuestion = async (post) => {
+    const post_id = post?.$id
+    const { imageID } = JSON.parse(JSON.parse(post?.queImage))
     try {
+        if (imageID) await appwriteService.deleteThumbnail(imageID)
         await appwriteService.deletePost(post_id)
         return true
     } catch (error) {
-        throw new Error(error)
+        return false
     }
 }

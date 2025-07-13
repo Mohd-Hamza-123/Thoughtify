@@ -20,6 +20,7 @@ const PostCard = ({
   isTrustedResponder
 }) => {
   const {imageURL,imageID} = JSON.parse(JSON.parse(queImage))
+  const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL
 
   return (
     <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full mt-3">
@@ -56,7 +57,7 @@ const PostCard = ({
       <figure className="h-1/2 lg:h-full lg:w-[30%]">
         <Link to={`/post/${$id}/${null}`}>
           <img
-            src={`${imageURL}`}
+            src={`${imageView}`}
             alt="Image"
             className="w-full rounded-sm object-cover h-full"
           />

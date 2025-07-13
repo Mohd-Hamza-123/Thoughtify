@@ -1,7 +1,7 @@
 import "./AskQue.css";
 import conf from "../../conf/conf";
 import { Input } from "../ui/input";
-import { RTE, TextArea } from "../";
+import { Icons, RTE, TextArea } from "../";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { categoriesArr } from "./Category";
@@ -43,13 +43,13 @@ const AskQue = ({ post }) => {
     thumbnailFile: null,
     TotalPollOptions: [],
     pollTextAreaEmpty: true,
-    selectCategoryVisible: false,
+    categoryFlag: false,
   })
 
   const {
     thumbnailFile,
     thumbnailURL,
-    selectCategoryVisible,
+    categoryFlag,
     categoryValue,
     pollQuestion,
     TotalPollOptions,
@@ -79,6 +79,53 @@ const AskQue = ({ post }) => {
   }
 
 
+
+
+
+
+  useEffect(() => {
+    if (post) {
+
+      setcategoryValue(post.category)
+
+      if (post.pollQuestion) {
+        setPollQuestion(post.pollQuestion)
+        setpollTextAreaEmpty(false)
+      }
+      const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
+      setTotalPollOptions((prev) => pollOptionsArray)
+
+      if (post.queImageID) {
+        appwriteService.getThumbnailPreview(post.queImageID)
+          .then((res) => {
+            setThumbailURL(res.href)
+          })
+      } else {
+        setThumbailURL(post.queImage)
+      }
+
+    }
+  }, [])
+
+  const deleteThumbnail = async () => {
+    setThumbailURL('')
+    setthumbnailFile(null)
+    try {
+      const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
+    } catch (error) {
+      console.log("AskQue delete Img error.")
+    }
+  }
+
+  const categoryDropdownTrigger = () => setInitialPostData((prev) => ({ ...prev, categoryFlag: !prev.categoryFlag }))
+
+  const selectPostCategory = (category) => {
+    categoryDropdownTrigger()
+    setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
+  }
+
+
+
   const submit = async (data) => {
 
     if (!UserAuthStatus) {
@@ -94,7 +141,6 @@ const AskQue = ({ post }) => {
       return
     }
 
-    console.log(initialPostData?.categoryValue)
     if (!initialPostData?.categoryValue) {
       setNotification({ message: "Select a Category. Choose General If not Specific", type: "error" })
       return
@@ -105,15 +151,14 @@ const AskQue = ({ post }) => {
       return
     }
 
-    setIsUploading(true)
+    setInitialPostData((prev) => ({ ...prev, isUploading: true }))
+
     if (post) {
 
       if (thumbnailFile) {
         try {
           const isDeleted = await appwriteService.deleteThumbnail(post?.queImageID)
-          console.log(isDeleted)
           const dbThumbnail = await appwriteService.createThumbnail({ file: data.thumbnailFile });
-          console.log(dbThumbnail)
           return
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
@@ -212,13 +257,15 @@ const AskQue = ({ post }) => {
       }
 
       if (initialPostData?.thumbnailFile) {
-
         try {
-          const thumbnailFile = initialPostData.thumbnailFile
-          const dbPost = await uploadQuestionWithImage(thumbnailFile, data, userData, uploaderProfile)
+          const dbPost = await uploadQuestionWithImage(
+            data,
+            userData,
+            initialPostData,
+            uploaderProfile,
+          )
           setNotification({ message: "Post Created", type: "success" })
           navigate(`/post/${dbPost?.$id}/null`)
-          return
         } catch (error) {
           console.log(error)
           setNotification({ message: "Post is not Created", type: "error" })
@@ -235,52 +282,9 @@ const AskQue = ({ post }) => {
         }
       }
     }
-
-    navigate("/")
-    setIsUploading((prev) => false)
+    setInitialPostData((prev) => ({ ...prev, isUploading: false }))
   }
 
-
-
-  useEffect(() => {
-    if (post) {
-
-      setcategoryValue(post.category)
-
-      if (post.pollQuestion) {
-        setPollQuestion(post.pollQuestion)
-        setpollTextAreaEmpty(false)
-      }
-      const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
-      setTotalPollOptions((prev) => pollOptionsArray)
-
-      if (post.queImageID) {
-        appwriteService.getThumbnailPreview(post.queImageID)
-          .then((res) => {
-            setThumbailURL(res.href)
-          })
-      } else {
-        setThumbailURL(post.queImage)
-      }
-
-    }
-  }, [])
-
-  const deleteThumbnail = async () => {
-    setThumbailURL('')
-    setthumbnailFile(null)
-    try {
-      const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
-    } catch (error) {
-      console.log("AskQue delete Img error.")
-    }
-  }
-
-  const selectPostCategory = (category) => {
-    console.log(category)
-    setselectCategoryVisible(false)
-    setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
-  }
 
   return (
 
@@ -407,15 +411,13 @@ const AskQue = ({ post }) => {
           <div id="AskQue_SelectCategory">
             <p className={`mb-3`}>Select Category : </p>
             <div className="dropdown">
-              <div
-                className="dropdown-header flex items-center justify-between"
-                onClick={() => { setselectCategoryVisible((prev) => !prev) }}
-              >
+              <div className="dropdown-header flex items-center justify-between"
+                onClick={categoryDropdownTrigger}>
                 <span>{initialPostData?.categoryValue ? initialPostData?.categoryValue : `Select Item`}</span>
-                <i className="fa-solid fa-caret-down"></i>
+                <Icons.dropdown />
               </div>
 
-              {selectCategoryVisible && <ul className={`AskQue-dropdown-list flex flex-col`}>
+              {categoryFlag && <ul className={`AskQue-dropdown-list flex flex-col`}>
                 {categoriesArr?.map((object, index) => (
                   <li key={object.category + index} className="dropdown-item" onClick={() => selectPostCategory(object.category)}>{object.category}</li>
                 ))}
@@ -457,6 +459,7 @@ const AskQue = ({ post }) => {
                         setoptions((e.currentTarget.value))
                       }} />
                     <Button
+                      variant="outline"
                       onClick={() => {
                         if (post) {
                           setNotificationPopMsgNature((prev) => false)
@@ -490,7 +493,7 @@ const AskQue = ({ post }) => {
                         setoptions("")
                       }}
 
-                      className={`AskQue_AddOption_btn border text-sm p-1`}>
+                      className="border text-sm p-1">
                       Add options
                     </Button>
                   </div>
