@@ -1,9 +1,6 @@
 import "./PostCard.css";
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { useGetProfileData } from "@/lib/profile";
-import { useAskContext } from "../../context/AskContext";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 
@@ -14,8 +11,6 @@ const PostCard = ({
   name = "Name",
   userId,
   category,
-  queImageID,
-  profileImgID,
   $createdAt,
   views,
   commentCount,
@@ -24,16 +19,7 @@ const PostCard = ({
   trustedResponderPost,
   isTrustedResponder
 }) => {
-
-  const { isDarkModeOn } = useAskContext()
-
-  const { getProfileImageURLFromID } = useGetProfileData()
-
-  const { data: profileImgURL, isPending, isError } = useQuery({
-    queryKey: ["profileImages", profileImgID],
-    queryFn: async () => await getProfileImageURLFromID(profileImgID),
-    staleTime: Infinity,
-  });
+  const {imageURL,imageID} = JSON.parse(JSON.parse(queImage))
 
   return (
     <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full mt-3">
@@ -42,7 +28,7 @@ const PostCard = ({
         <div className="flex gap-2 items-center">
           <Link to={`/profile/${userId}`}>
             <img
-              src={`${profileImgURL || 'NoProfile.png'}`}
+              src={`${'NoProfile.png'}`}
               id="PostCard-profile-pic"
               className="rounded-full" />
           </Link>
@@ -70,7 +56,7 @@ const PostCard = ({
       <figure className="h-1/2 lg:h-full lg:w-[30%]">
         <Link to={`/post/${$id}/${null}`}>
           <img
-            src={`${queImage}`}
+            src={`${imageURL}`}
             alt="Image"
             className="w-full rounded-sm object-cover h-full"
           />
@@ -82,3 +68,4 @@ const PostCard = ({
 };
 
 export default memo(PostCard);
+

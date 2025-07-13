@@ -34,7 +34,7 @@ const LowerNavigationBar = () => {
   ];
 
   return (
-    <div className="relative">
+   
       <nav
         ref={lowerNavBarRef}
         id="LowerNavigationBar"
@@ -56,7 +56,6 @@ const LowerNavigationBar = () => {
         ))}
       </nav>
      
-    </div>
   );
 };
 
