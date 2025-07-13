@@ -222,7 +222,6 @@ export class Service {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-
             return false
         }
     }

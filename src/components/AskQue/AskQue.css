@@ -222,14 +222,3 @@ body.darkMode .dropdown-item:hover {
 .AskQue_Pole_TextArea.darkMode {
     border: 2px solid white;
 }
-
-.AskQue_AddOption_btn {
-    background-color: white;
-    color: black;
-}
-
-.AskQue_AddOption_btn.darkMode {
-    background-color: rgba(0, 0, 0, 0.84);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.57);
-}
