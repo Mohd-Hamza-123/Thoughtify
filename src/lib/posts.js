@@ -1,7 +1,6 @@
-import appwriteService from "@/appwrite/config";
 import profile from "@/appwrite/profile";
+import appwriteService from "@/appwrite/config";
 import convertToWebPFile from "@/helpers/convert-image-into-webp";
-import { currentFormattedDate } from "@/helpers/format-dates";
 
 export const updateLikeCount = async (post, myUserProfile) => {
     console.log(post)
@@ -72,25 +71,41 @@ export const uploadQuestionWithImage = async (
     initialPostData,
     uploaderProfile,
 ) => {
+    let imageId = null
+
     try {
-        const { categoryValue, thumbnailFile } = initialPostData
-        const webpFile = await convertToWebPFile(thumbnailFile)
+
+        const {
+            categoryValue,
+            thumbnailFile,
+            pollQuestion,
+            pollOptions,
+        } = initialPostData
+
+        const webpFile = await convertToWebPFile(thumbnailFile);
         const queCreatedImage = await appwriteService.createThumbnail({ file: webpFile })
+        imageId = queCreatedImage?.$id
+
         const imageURL = await appwriteService.getThumbnailPreview(queCreatedImage?.$id)
         const queImage = JSON.stringify({ imageURL: imageURL, imageID: queCreatedImage?.$id })
+
 
         const dbPost = await appwriteService.createPost({
             ...data,
             queImage: JSON.stringify(queImage),
             userId: userData?.$id,
-            pollQuestion: uploaderProfile?.pollQuestion,
-            pollOptions: uploaderProfile?.pollOptions,
+            pollQuestion,
+            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)) || [],
             name: userData?.name,
-            date: currentFormattedDate(),
-            trustedResponderPost: uploaderProfile?.documents[0].trustedResponder,
+            trustedResponderPost: uploaderProfile?.documents[0]?.trustedResponder,
         }, categoryValue);
 
-        return dbPost
+        if (dbPost) {
+            return dbPost
+        } else {
+            if (imageId) await appwriteService.deleteThumbnail(imageId)
+            return null
+        }
 
     } catch (error) {
         throw new Error(error)
@@ -107,4 +122,80 @@ export const deleteQuestion = async (post) => {
     } catch (error) {
         return false
     }
+}
+
+export const updatePoll = async ({ post, userData, choice }) => {
+
+    try {
+
+        const { $id: postId, pollVotersID, pollOptions } = post
+        const { $id: userId } = userData
+
+        const voters = pollVotersID?.map((obj) => JSON.parse(obj))
+        const parsedPollOptions = pollOptions.map((obj) => JSON.parse(obj))
+
+        let myVote = voters?.map((obj) => obj?.userId === userId ? obj : null)
+        myVote = myVote?.length > 0 ? myVote[0] : null
+        const previous_choice = myVote?.choice
+
+        let voters_array = [];
+        let updated_pollOptions = [];
+
+
+
+
+        if (!myVote) {
+
+            voters_array = [...pollVotersID, { userId, choice }].map((obj) => JSON.stringify(obj))
+            updated_pollOptions = parsedPollOptions.map((obj) =>
+                obj.option === choice ? { ...obj, vote: obj.vote + 1 } : obj)
+        } else {
+            if (previous_choice === choice) {
+
+                voters_array = voters.filter((obj) => obj.userId !== userId)
+                voters_array = voters_array.map((obj) => JSON.stringify(obj))
+
+                updated_pollOptions = parsedPollOptions?.map((obj) => {
+                    if (obj.option === choice) {
+                        if (obj.vote <= 0) return { ...obj, vote: 0 }
+                        return { ...obj, vote: obj.vote - 1 }
+                    }
+                    return obj
+                })
+            } else {
+
+                voters_array = voters?.map((obj) => {
+                    if (obj.userId === userId) {
+                        return JSON.stringify({ ...obj, choice: choice })
+                    }
+                    return JSON.stringify(obj)
+                })
+
+                updated_pollOptions = parsedPollOptions?.map((obj) => {
+                    if (obj.option === previous_choice) {
+                        let vote = obj.vote - 1
+                        if (vote < 0) vote = 0
+                        return { ...obj, vote }
+                    }
+                    if (obj.option === choice) {
+                        let vote = obj.vote + 1
+                        return { ...obj, vote }
+                    }
+                    return obj
+                })
+            }
+        }
+
+        updated_pollOptions = updated_pollOptions?.map((obj) => JSON.stringify(obj))
+    
+        const response = await appwriteService.updatePost(postId, {
+            pollVotersID: voters_array,
+            pollOptions: updated_pollOptions
+        })
+
+        return response
+    } catch (error) {
+        throw new Error(error)
+    }
+
 }

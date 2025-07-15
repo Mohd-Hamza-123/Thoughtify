@@ -1,18 +1,15 @@
 import { PostCard } from "..";
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
-import { useDispatch } from "react-redux";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useQuery } from "@tanstack/react-query";
-import { getInitialPost } from "@/store/postsSlice";
 import { useAskContext } from "@/context/AskContext";
-import increaseViews from "@/services/increasePostView";
+
 import React, { useRef, useEffect, useState } from "react";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
-  const dispatch = useDispatch();
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
@@ -111,12 +108,10 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
         {data?.documents?.map((post) => {
           if (isTrustedResponder === false) return <PostCard
             key={post?.$id}
-            onClick={() => increaseViews(post?.$id)}
             {...post}
           />
           else if (post?.trustedResponderPost) return <PostCard
             key={post?.$id}
-            onClick={() => increaseViews(post?.$id)}
             {...post}
           />
         })}

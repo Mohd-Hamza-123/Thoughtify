@@ -1,81 +1,68 @@
-import React from 'react'
 import Prism from "../Prism";
-import parse from "html-react-parser"
+import parse from "html-react-parser";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { updatePoll } from "@/lib/posts";
 
 const ViewPostMain = ({ post }) => {
+    console.log(post)
+    const isPollOpinionVisible = true;
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const userData = useSelector((state) => state?.auth?.userData);
+
+    const update = async (choice) => {
+        await updatePoll({ post, userData, choice })
+    };
+
     return (
         <div className="mt-3">
 
             <Link to={`/profile/${post?.userId}`}>
                 <div className="flex gap-2 items-center cursor-pointer">
-
-                    <img
-                        src={`${"NoProfile.png"}`}
-                        id="PostCard-profile-pic"
-                        className="rounded-full" />
-
+                    <img src="NoProfile.png" className="rounded-full" />
                     <h5>{post?.name}</h5>
-
-                    {post?.trustedResponderPost && (
-                        <span className="ViewPost-Category">Responder</span>
-                    )}
+                    {post?.trustedResponderPost && <span className="ViewPost-Category">Responder</span>}
                 </div>
             </Link>
 
-            <h2 className="text-2xl font-bold">
-                {post?.title}
-            </h2>
-
+            <h2 className="text-2xl font-bold">{post?.title}</h2>
             <div className="px-3 py-3">{parse(post?.content)}</div>
+
             <Prism />
 
             {post?.pollQuestion && (
-                <div id="ViewPost_Poll_Div">
-                    <h5>Poll </h5>
-                    <p>{post?.pollQuestion}</p>
-                    <ul>
+                <div>
+                    <h5 className="text-center">Poll</h5>
+                    <h4 className="text-xl font-semibold">{post?.pollQuestion}</h4>
+                    <ul className="my-3 flex flex-col gap-3">
                         {post?.pollOptions?.map((option, index) => {
-                            let parsedOption = JSON.parse(option).option;
-                            let parsedVote = JSON.parse(option).vote;
-                            let individualPollVote = Math.floor(
-                                Number(JSON.parse(option).vote)
-                            );
-
-                            let percentage = (individualPollVote / totalPollVotes) * 100;
+                            const { option: choice, vote } = JSON.parse(option);
+                            const totalVotes = post?.pollVotersID?.length;
+                            console.log(vote,totalVotes)
+                            let percentage = (vote / totalVotes) * 100;
                             percentage = percentage.toFixed(0);
-                            if (isNaN(percentage)) {
-                                percentage = 0;
-                            }
-
+                            if (isNaN(percentage)) percentage = 0;
                             return (
                                 <li
+                                    key={choice}
                                     className={`${index === selectedIndex ? "active" : ""
                                         } cursor-pointer`}
-                                    onClick={() => {
-                                        updatePoll(
-                                            post.$id,
-                                            index,
-                                            parsedOption,
-                                            parsedVote,
-                                            userData.$id
-                                        );
-                                        setselectedIndex(index);
-                                    }}
-                                    key={parsedOption}
-                                >
-                                    <div className="ViewPost_Poll_Option">{parsedOption}</div>
-                                    <div className="ViewPost_Overlay_Poll">{percentage}%</div>
+                                    onClick={() => update(choice)}>
+                                    <div className="flex justify-between px-2 relative w-full">
+                                        <span className="text-lg z-10">{choice}</span>
+                                        <span className="z-10">{percentage}%</span>
+                                        <span
+                                            style={{ width: `${percentage}%` }}
+                                            className="absolute left-0 top-0 h-full bg-blue-400/40 border border-blue-600 z-0 transition-all"
+                                        ></span>
+                                    </div>
+
                                     <div
-                                        style={{
-                                            width: `${percentage}%`,
-                                        }}
                                         className={`${index === selectedIndex
                                             ? `PollPercentageMeter active`
                                             : "PollPercentageMeter"
-                                            }`}
+                                            } ${percentage}`}
                                     ></div>
                                 </li>
                             );
@@ -87,14 +74,16 @@ const ViewPostMain = ({ post }) => {
                             <span>{post?.pollAnswer}</span>
                         </div>
                     )}
-                    <div className="flex gap-3 ViewPost_Total_Poll_Votes">
+
+                    <div className="flex gap-3">
                         <span>Total Votes :</span>
-                        <span>{totalPollVotes}</span>
+                        <span>{post?.pollVotersID?.length}</span>
                     </div>
+
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default ViewPostMain
+export default ViewPostMain;

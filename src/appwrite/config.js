@@ -14,47 +14,58 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, date, trustedResponderPost }, category) {
+    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, trustedResponderPost }, category) {
         try {
-            return await this.databases.createDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, ID.unique(), {
-                title,
-                content,
-                userId,
-                queImage,
+
+            const payload = {
                 name,
-                category,
-                opinionsFrom,
+                title,
                 status,
-                pollOptions,
-                pollQuestion,
+                userId,
+                content,
+                queImage,
+                category,
                 pollAnswer,
+                pollOptions,
+                opinionsFrom,
+                pollQuestion,
                 profileImgID,
-                date,
-                trustedResponderPost
-            })
+                trustedResponderPost,
+            }
+            console.log(payload)
+        
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                ID.unique(),
+                payload
+            )
         } catch (error) {
             console.log("Appwrite serive :: createPost :: error", error);
             return null
         }
     }
-    async updatePost(slug, { title, content, queImageID, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage }, category) {
+
+    async updatePost(slug, postObject) {
+        console.log(postObject)
+        // const payload = {}
+        // for (let key in postObject) {
+        //     if (postObject[key]) {
+        //         update[key] = postObject[key]
+        //     }
+        // }
+
+        // console.log(payload)
+        // { title, content, queImage, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage, category }
+
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, {
-                title,
-                content,
-                category,
-                queImageID,
-                pollOptions,
-                pollQuestion,
-                opinionsFrom,
-                status,
-                pollAnswer,
-                queImage
-            })
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
         } catch (error) {
+            console.log(error)
             return null
         }
     }
+
     async updatePostViews(postId, views, commentCount) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postId, {
@@ -65,6 +76,7 @@ export class Service {
             return null
         }
     }
+
     async updatePostWithQueries({ pollOptions, postId, totalPollVotes, pollVotersID }) {
 
         try {
@@ -98,9 +110,8 @@ export class Service {
             return false
         }
     }
-    
-    async getPost(slug) {
 
+    async getPost(slug) {
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {

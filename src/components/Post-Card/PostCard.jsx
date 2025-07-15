@@ -3,6 +3,8 @@ import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
+import increaseViews from "@/services/increasePostView";
+
 
 const PostCard = ({
   $id,
@@ -19,11 +21,14 @@ const PostCard = ({
   trustedResponderPost,
   isTrustedResponder
 }) => {
-  const {imageURL,imageID} = JSON.parse(JSON.parse(queImage))
+
+  const { imageURL, imageID } = JSON.parse(JSON.parse(queImage))
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL
 
   return (
-    <section className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full mt-3">
+    <section
+      onClick={() => increaseViews($id)}
+      className="PostCard flex flex-col-reverse h-[350px] lg:h-[200px] lg:flex-row p-2 w-full mt-3">
 
       <div className="h-[45%] p-0 md:p-2 lg:h-full flex flex-col justify-between lg:w-[70%] lg:py-3">
         <div className="flex gap-2 items-center">
