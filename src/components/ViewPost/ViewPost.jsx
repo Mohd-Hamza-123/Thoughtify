@@ -1,26 +1,19 @@
-import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import appwriteService from "../../appwrite/config";
-import { Button } from "../ui/button";
-import parse from "html-react-parser";
-import { useSelector, useDispatch } from "react-redux";
-import { useAskContext } from "../../context/AskContext";
 import "../../index.css";
 import { SecondLoader } from "..";
-import profile from "../../appwrite/profile";
-import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
-import {
-  getInitialPost,
-  getResponderInitialPosts,
-} from "../../store/postsSlice";
-import realTime from "../../appwrite/realTime";
-import { getCommentsInRedux } from "../../store/commentsSlice";
-import notification from "../../appwrite/notification";
-import conf from "../../conf/conf";
 import { Client } from "appwrite";
+import conf from "../../conf/conf";
+import parse from "html-react-parser";
+import { Button } from "../ui/button";
+import realTime from "../../appwrite/realTime";
+import { useEffect, useState, useRef } from "react";
+import appwriteService from "../../appwrite/config";
+import { useSelector, useDispatch } from "react-redux";
+import { getInitialPost } from "../../store/postsSlice";
+import { useParams, useNavigate } from "react-router-dom";
+import { getCommentsInRedux } from "../../store/commentsSlice";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
-import { useGetProfileData } from "@/lib/profile";
+import { getAllVisitedQuestionsInViewPost } from "../../store/ViewPostsSlice";
 
 const ViewPost = () => {
 
@@ -36,23 +29,11 @@ const ViewPost = () => {
   const viewPostLeft = useRef();
   const viewPostRight = useRef();
 
-  //Data from Redux
-  const postProfilesPic = useSelector(
-    (state) => state.postsSlice?.postUploaderProfilePic
-  );
   const commentsInRedux = useSelector((state) => state.commentsSlice.comments);
   const userData = useSelector((state) => state?.auth?.userData);
   const userAuthStatus = useSelector((state) => state?.auth?.status);
   const initialPost = useSelector((state) => state.postsSlice.initialPosts);
-  const initialTrustedPosts = useSelector(
-    (state) => state.postsSlice.initialResponderPosts
-  );
 
- 
-
-
-
-  const [isBookMarked, setIsBookMarked] = useState(false);
 
   // useState for views,comments,date
   const [postdate, setpostdate] = useState("");
@@ -63,10 +44,6 @@ const ViewPost = () => {
   const [pollVotersAuthIDsAndVote, setpollVotersAuthIDsAndVote] = useState([]);
   const [isPollOpinionVisible, setIsPollOpinionVisible] = useState(false);
   const [filteredComment, setfilteredComment] = useState(null);
-
-  // update UI for Pole Percentage
-  const [selectedIndex, setselectedIndex] = useState(0);
-  // update LikeDislike UI
 
 
   const navigateToRelatedPost = (postId) => {
@@ -133,19 +110,19 @@ const ViewPost = () => {
     }
   }, [slug, initialPost]);
 
-  useEffect(() => {
-    if (post) {
-      setTotalPollVotes((prev) => post?.totalPollVotes);
-      setpollVotersAuthIDsAndVote((prev) => {
-        return post?.pollVotersID?.filter((obj) => {
-          if (JSON.parse(obj)?.pollVoterID === userData?.$id) {
-            setIsPollOpinionVisible(true);
-            return obj;
-          }
-        });
-      });
-    }
-  }, [post]);
+  // useEffect(() => {
+  //   if (post) {
+  //     setTotalPollVotes((prev) => post?.totalPollVotes);
+  //     setpollVotersAuthIDsAndVote((prev) => {
+  //       return post?.pollVotersID?.filter((obj) => {
+  //         if (JSON.parse(obj)?.pollVoterID === userData?.$id) {
+  //           setIsPollOpinionVisible(true);
+  //           return obj;
+  //         }
+  //       });
+  //     });
+  //   }
+  // }, [post]);
 
 
   // Update Post in RealTime
@@ -202,50 +179,6 @@ const ViewPost = () => {
     if (initialPost.length > 0) getDate_Views_Comments_Details();
   }, [post, initialPost]);
 
-  const deletePost = () => {
-    if (!userAuthStatus) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => "Please Login");
-      return;
-    }
-
-    appwriteService
-      .deletePost(post.$id)
-      .then(() => {
-        setNotificationPopMsgNature((prev) => true);
-        setnotificationPopMsg((prev) => "Post Deleted");
-
-        const newInitialPost = initialPost?.filter(
-          (prevPosts) => prevPosts?.$id !== post?.$id
-        );
-        dispatch(
-          getInitialPost({
-            initialPosts: [...newInitialPost],
-            initialPostsFlag: false,
-          })
-        );
-
-        const newRespondersPost = initialTrustedPosts?.filter(
-          (prevPosts) => prevPosts?.$id !== post?.$id
-        );
-        dispatch(
-          getResponderInitialPosts({
-            initialResponderPosts: [...newRespondersPost],
-            initialPostsFlag: false,
-          })
-        );
-      })
-      .catch(() => {
-        setNotificationPopMsgNature((prev) => false);
-        setnotificationPopMsg((prev) => "Post is not Deleted");
-      });
-    navigate("/");
-  };
-  const deleteThumbnail = async () => {
-    if (post.queImageID) {
-      let deletedImg = await appwriteService.deleteThumbnail(post.queImageID);
-    }
-  };
   const updatePoll = async (postId, index, option, vote, pollVoterID) => {
     if (!userAuthStatus) {
       setNotificationPopMsgNature((prev) => false);
@@ -321,9 +254,6 @@ const ViewPost = () => {
     }
   };
 
-
-
-
   const ViewPostRef = useRef();
   const lastScrollY = useRef(window.scrollY);
 
@@ -365,11 +295,8 @@ const ViewPost = () => {
 
   useEffect(() => {
     if (ViewPostRef.current) {
-      const storedScrollPosition = sessionStorage.getItem(
-        "scrollPositionofViewPost"
-      );
+      const storedScrollPosition = sessionStorage.getItem("scrollPositionofViewPost");
       const parsedScrollPosition = parseInt(storedScrollPosition, 10);
-
       ViewPostRef.current.scrollTop = parsedScrollPosition;
     }
   }, [ViewPostRef.current]);
@@ -378,23 +305,6 @@ const ViewPost = () => {
     makeCodeBlock()
   }, [post?.content])
 
-  const { getProfileImageURLFromID } = useGetProfileData();
-
-  const getProfileImage = async (profileImageID) => {
-    try {
-      const url = await getProfileImageURLFromID(profileImageID)
-      return url
-    } catch (error) {
-      return null
-    }
-  }
-
-  useEffect(() => {
-    if (post) {
-      getProfileImage(post?.profileImgID)
-    }
-  }, [post]);
-  
   return post ? (
     <div
       ref={ViewPostRef}

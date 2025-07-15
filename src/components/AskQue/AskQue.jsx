@@ -1,10 +1,10 @@
 import "./AskQue.css";
 import conf from "../../conf/conf";
 import { Input } from "../ui/input";
-import { Icons, RTE, TextArea } from "../";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { categoriesArr } from "./Category";
+import { Icons, RTE, TextArea } from "../";
 import { MAX_IMAGE_SIZE } from "@/constant";
 import profile from "../../appwrite/profile";
 import { useNavigate } from "react-router-dom";
@@ -41,10 +41,12 @@ const AskQue = ({ post }) => {
     isUploading: false,
     categoryValue: '',
     thumbnailFile: null,
-    TotalPollOptions: [],
+    pollOptions: [],
     pollTextAreaEmpty: true,
     categoryFlag: false,
   })
+
+  console.log(initialPostData)
 
   const {
     thumbnailFile,
@@ -52,7 +54,7 @@ const AskQue = ({ post }) => {
     categoryFlag,
     categoryValue,
     pollQuestion,
-    TotalPollOptions,
+    pollOptions,
     pollTextAreaEmpty,
     options,
     isUploading,
@@ -79,10 +81,6 @@ const AskQue = ({ post }) => {
   }
 
 
-
-
-
-
   useEffect(() => {
     if (post) {
 
@@ -93,7 +91,7 @@ const AskQue = ({ post }) => {
         setpollTextAreaEmpty(false)
       }
       const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
-      setTotalPollOptions((prev) => pollOptionsArray)
+      setpollOptions((prev) => pollOptionsArray)
 
       if (post.queImageID) {
         appwriteService.getThumbnailPreview(post.queImageID)
@@ -124,6 +122,59 @@ const AskQue = ({ post }) => {
     setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
   }
 
+  const poolQuestionChange = (e) => {
+
+    if (e.target?.value !== '') {
+      setInitialPostData((prev) => ({
+        ...prev,
+        pollQuestion: e.target?.value,
+        pollTextAreaEmpty: false
+      }))
+    } else {
+      setInitialPostData((prev) => ({
+        ...prev,
+        pollQuestion: "",
+        pollTextAreaEmpty: true,
+        pollOptions: []
+      }))
+    }
+  }
+
+  const addPollOptions = (e) => {
+
+    if (post) {
+      setNotification({ message: "You cannot edit Poll", type: "error" })
+      setInitialPostData((prev) => ({ ...prev, options: "" }))
+      return
+    }
+
+    for (let i = 0; i < pollOptions.length; i++) {
+      if (pollOptions[i].option === options) {
+        setInitialPostData((prev) => ({ ...prev, options: "" }))
+        return
+      }
+    }
+
+    if (pollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
+      // setpollOptions((prev) => {
+      //   let arr = [...prev, { option: options, vote: 0 }]
+
+      //   return [...arr]
+      // })
+      setInitialPostData((prev) => {
+        let arr = [...prev.pollOptions, { option: options, vote: 0 }]
+        return { ...prev, pollOptions: arr }
+      })
+    } else {
+      if (!pollQuestion) {
+        setNotification({ message: "Write a Poll", type: "error" })
+        setInitialPostData((prev) => ({ ...prev, options: "" }))
+        return
+      }
+      setNotification({ message: "Maximum 4 Options Allowed", type: "error" })
+    }
+    setInitialPostData((prev) => ({ ...prev, options: "" }))
+  }
 
 
   const submit = async (data) => {
@@ -133,10 +184,9 @@ const AskQue = ({ post }) => {
       return
     }
 
-    const pollOptions = TotalPollOptions.map((obj) => JSON.stringify(obj))
-    data.pollQuestion = pollQuestion
+    
 
-    if (pollQuestion && TotalPollOptions.length <= 1) {
+    if (pollQuestion && pollOptions.length <= 1) {
       setNotification({ message: "There must be 2 Poll options", type: "error" })
       return
     }
@@ -288,12 +338,13 @@ const AskQue = ({ post }) => {
 
   return (
 
-    <div className="poppins py-3 px-3">
+    <div className="py-3 px-3">
 
       <h3 className="text-center text-2xl lg:text-3xl mt-2">Got a Question? Ask Away!</h3>
 
-      <form onSubmit={handleSubmit(submit)} className="flex flex-col lg:flex-row gap-3 mt-4">
-
+      <form
+        onSubmit={handleSubmit(submit)}
+        className="flex flex-col lg:flex-row gap-3 mt-4">
 
         <section className="flex flex-col gap-6 w-full md:w-[70%]">
           {/* title */}
@@ -366,7 +417,7 @@ const AskQue = ({ post }) => {
             <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
               <label className={`AskQue_BrowseThumbnail`} htmlFor="BrowseThumbnail">{thumbnailURL ? `Change Image` : 'Browse Image'}</label>
 
-              <input className="hidden" type="file"
+              <Input className="hidden" type="file"
                 name="thumbnailImage"
                 accept="image/*"
                 id="BrowseThumbnail"
@@ -386,13 +437,13 @@ const AskQue = ({ post }) => {
                   {...register("status")}
                   type="radio"
                   name='status'
-                  value={'Public'}
+                  value="Public"
                   id="public"
                   defaultChecked={post ? (post?.status === 'Public' ? true : false) : true}
                 />
               </div>
               <div>
-                <label className={`cursor-pointer`} htmlFor="private">Private</label>
+                <label className="cursor-pointer" htmlFor="private">Private</label>
                 <input
                   className="cursor-pointer"
                   {...register("status", {
@@ -426,109 +477,62 @@ const AskQue = ({ post }) => {
 
           </div>
           {/* pole */}
-          {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : " "}`}>
-            <p>Add Pole : (Optional) </p>
+          {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : ""}`}>
+            <span>Add Pole : (Optional) </span>
 
-            <div id="AskQue_Pole_Options">
-              <TextArea
-                placeholder='Ask Pole' className={`AskQue_Pole_TextArea`}
-                maxLength={110}
-                value={`${post ? post.pollQuestion : pollQuestion}`}
-                onChange={(e) => {
-                  if (e.currentTarget.value !== '') {
-                    setpollTextAreaEmpty(false)
-                    setInitialPostData((prev) => ({ ...prev, pollQuestion: e.currentTarget.value }))
-                  } else {
-                    setpollTextAreaEmpty(true)
-                    setTotalPollOptions((prev) => [])
-                    setInitialPostData((prev) => ({ ...prev, pollQuestion: '' }))
-                  }
-                }}
-              >
-              </TextArea>
+            <TextArea
+              maxLength={100}
+              placeholder='Ask Pole'
+              className={`AskQue_Pole_TextArea`}
+              value={`${post ? post?.pollQuestion : pollQuestion}`}
+              onChange={poolQuestionChange}>
+            </TextArea>
 
-              <div>
+            <div className="w-full flex flex-col gap-1 mt-1">
 
-                <div className="w-full flex flex-col gap-1 mt-1">
-
-                  <div className="flex gap-3 h-8">
-                    <input type="text" name="" id="" className="border outline-none px-2 text-sm w-3/5"
-                      value={options}
-                      placeholder="options"
-                      onChange={(e) => {
-                        setoptions((e.currentTarget.value))
-                      }} />
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        if (post) {
-                          setNotificationPopMsgNature((prev) => false)
-                          setnotificationPopMsg((prev) => "You cannot edit Poll")
-                          setoptions("")
-                          return
-                        }
-
-                        for (let i = 0; i < TotalPollOptions.length; i++) {
-                          if (TotalPollOptions[i].option === options) {
-                            setoptions("")
-                            return
-                          }
-                        }
-                        if (TotalPollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
-                          setTotalPollOptions((prev) => {
-                            let arr = [...prev, { option: options, vote: 0 }]
-
-                            return [...arr]
-                          })
-                        } else {
-                          if (!pollQuestion) {
-                            setNotificationPopMsgNature((prev) => false)
-                            setnotificationPopMsg((prev) => "Write a Poll")
-                            setoptions("")
-                            return
-                          }
-                          setNotificationPopMsgNature((prev) => false)
-                          setnotificationPopMsg((prev) => "Maximum 4 Options Allowed")
-                        }
-                        setoptions("")
-                      }}
-
-                      className="border text-sm p-1">
-                      Add options
-                    </Button>
-                  </div>
-
-                  {TotalPollOptions?.map((options, index) => {
-                    // console.log(options)
-                    return <div className="w-full flex justify-start items-center" key={options.option}>
-
-                      <span className={`w-3/4`} >{`${index + 1} ) ${options.option}`}</span>
-
-                      <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
-                        () => {
-                          setTotalPollOptions((prev) => {
-                            let arr = [...prev]
-                            arr.splice(index, 1)
-                            return [...arr]
-                          })
-                        }}></i></span>
-                    </div>
-                  })}
-                  <span className={`text - gray - 500 ${TotalPollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-                  {!(TotalPollOptions.length >= 2) && <span className={`text - gray - 500 ${TotalPollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
-                </div>
-
-                <div className="flex gap-3 h-8 mt-3 items-center">
-                  <label htmlFor="">Opinion : </label>
-                  <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
-                    {...register('pollAnswer', {
-                      required: false
-                    })}
-                  />
-                </div>
-
+              <div className="flex gap-3 h-8">
+                <input
+                  type="text"
+                  className="border outline-none px-2 text-sm w-3/5"
+                  value={options}
+                  placeholder="options"
+                  onChange={(e) => setInitialPostData((prev) => ({ ...prev, options: e.target?.value }))} />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addPollOptions}
+                  className="border p-1">
+                  Add options
+                </Button>
               </div>
 
+              {pollOptions?.map((options, index) => {
+
+                return <div className="w-full flex justify-start items-center" key={options.option}>
+
+                  <span className={`w-3/4`} >{`${index + 1} ) ${options.option}`}</span>
+
+                  <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
+                    () => {
+                      setpollOptions((prev) => {
+                        let arr = [...prev]
+                        arr.splice(index, 1)
+                        return [...arr]
+                      })
+                    }}></i></span>
+                </div>
+              })}
+              <span className={`text-gray-500 ${pollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
+              {!(pollOptions.length >= 2) && <span className={`text - gray - 500 ${pollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+            </div>
+
+            <div className="flex gap-3 h-8 mt-3 items-center">
+              <label htmlFor="">Opinion : </label>
+              <input type="text" name="" id="" className="border outline-none px-2 py-1 text-sm w-4/6" placeholder="Poll Answer /  Opinion"
+                {...register('pollAnswer', {
+                  required: false
+                })}
+              />
             </div>
 
           </div>}

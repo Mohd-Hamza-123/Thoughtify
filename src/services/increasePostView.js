@@ -1,15 +1,23 @@
 import appwriteService from "@/appwrite/config";
-import { getInitialPost } from "@/store/postsSlice";
-import { useDispatch } from "react-redux";
+
 const increaseViews = async (PostId) => {
-    const dispatch = useDispatch();
-    const previesViews = await appwriteService.getPost(PostId);
-    const updateViews = await appwriteService.updatePostViews(
-        PostId,
-        previesViews.views + 1,
-        previesViews.commentCount
-    );
-    dispatch(getInitialPost({ initialPosts: [updateViews] }));
+    try {
+        const previesViews = await appwriteService.getPost(PostId);
+        const updateViews = await appwriteService.updatePostViews(
+            PostId,
+            previesViews.views + 1,
+            previesViews.commentCount
+        );
+        if (updateViews) {
+            return updateViews
+        } else {
+            return false
+        }
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+
 };
 
 export default increaseViews;
