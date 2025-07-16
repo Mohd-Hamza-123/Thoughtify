@@ -47,7 +47,7 @@ export class Service {
     }
 
     async updatePost(slug, postObject) {
-        console.log(postObject)
+        // console.log(postObject)
         // const payload = {}
         // for (let key in postObject) {
         //     if (postObject[key]) {

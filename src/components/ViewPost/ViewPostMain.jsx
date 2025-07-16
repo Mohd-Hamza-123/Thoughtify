@@ -1,19 +1,27 @@
 import Prism from "../Prism";
 import parse from "html-react-parser";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { updatePoll } from "@/lib/posts";
 
 const ViewPostMain = ({ post }) => {
-    console.log(post)
-    const isPollOpinionVisible = true;
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const userData = useSelector((state) => state?.auth?.userData);
 
+    const isPollOpinionVisible = true;
+    const [selectedChoice, setSelectedChoice] = useState(null);
+    const userData = useSelector((state) => state?.auth?.userData);
+    console.log(selectedChoice)
     const update = async (choice) => {
         await updatePoll({ post, userData, choice })
     };
+
+    useEffect(() => {
+        const voters = post?.pollVotersID?.map((obj) => JSON.parse(obj));
+        const myVote = voters?.find((obj) => obj?.userId === userData?.$id);
+        if (myVote) {
+            setSelectedChoice(myVote?.choice);
+        }
+    }, [post])
 
     return (
         <div className="mt-3">
@@ -39,31 +47,21 @@ const ViewPostMain = ({ post }) => {
                         {post?.pollOptions?.map((option, index) => {
                             const { option: choice, vote } = JSON.parse(option);
                             const totalVotes = post?.pollVotersID?.length;
-                            console.log(vote,totalVotes)
                             let percentage = (vote / totalVotes) * 100;
                             percentage = percentage.toFixed(0);
                             if (isNaN(percentage)) percentage = 0;
                             return (
                                 <li
                                     key={choice}
-                                    className={`${index === selectedIndex ? "active" : ""
-                                        } cursor-pointer`}
+                                    className={`cursor-pointer`}
                                     onClick={() => update(choice)}>
-                                    <div className="flex justify-between px-2 relative w-full">
+                                    <div className={`flex justify-between px-2 relative w-full bg-slate-400/20 border  rounded-sm ${choice === selectedChoice ? "border-blue-500" : "border-slate-600"}`}>
                                         <span className="text-lg z-10">{choice}</span>
                                         <span className="z-10">{percentage}%</span>
-                                        <span
-                                            style={{ width: `${percentage}%` }}
-                                            className="absolute left-0 top-0 h-full bg-blue-400/40 border border-blue-600 z-0 transition-all"
+                                        <span style={{ width: `${percentage}%` }}
+                                            className={`absolute left-0 top-0 h-full ${choice === selectedChoice ? "bg-blue-400" : "bg-gray-300"} border z-0 transition-all`}
                                         ></span>
                                     </div>
-
-                                    <div
-                                        className={`${index === selectedIndex
-                                            ? `PollPercentageMeter active`
-                                            : "PollPercentageMeter"
-                                            } ${percentage}`}
-                                    ></div>
                                 </li>
                             );
                         })}

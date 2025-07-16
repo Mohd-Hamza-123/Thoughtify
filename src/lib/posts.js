@@ -130,30 +130,42 @@ export const updatePoll = async ({ post, userData, choice }) => {
 
         const { $id: postId, pollVotersID, pollOptions } = post
         const { $id: userId } = userData
+        console.log("My ID : ", userId)
+        // console.log(pollVotersID)
+        let voters = pollVotersID?.map((obj) => JSON.parse(obj));
 
-        const voters = pollVotersID?.map((obj) => JSON.parse(obj))
+        const uniqueVotersMap = new Map();
+        voters.forEach((voter) => {
+            uniqueVotersMap.set(voter.userId, voter);
+        });
+        voters = [...uniqueVotersMap.values()];
+        
+        console.log(voters)
         const parsedPollOptions = pollOptions.map((obj) => JSON.parse(obj))
 
-        let myVote = voters?.map((obj) => obj?.userId === userId ? obj : null)
-        myVote = myVote?.length > 0 ? myVote[0] : null
+        let myVote = voters?.find((obj) => obj?.userId === userId)
+        console.log(myVote)
+
         const previous_choice = myVote?.choice
 
         let voters_array = [];
         let updated_pollOptions = [];
 
-
-
-
+        // console.log(myVote)
         if (!myVote) {
-
-            voters_array = [...pollVotersID, { userId, choice }].map((obj) => JSON.stringify(obj))
+            console.log("I not voted")
+            // console.log(voters_array)
+            voters_array = [...voters, { userId, choice }].map((obj) => JSON.stringify(obj))
+            console.log(voters_array)
             updated_pollOptions = parsedPollOptions.map((obj) =>
                 obj.option === choice ? { ...obj, vote: obj.vote + 1 } : obj)
         } else {
+            console.log("I have already voted")
             if (previous_choice === choice) {
 
                 voters_array = voters.filter((obj) => obj.userId !== userId)
                 voters_array = voters_array.map((obj) => JSON.stringify(obj))
+                console.log(voters_array)
 
                 updated_pollOptions = parsedPollOptions?.map((obj) => {
                     if (obj.option === choice) {
@@ -171,6 +183,7 @@ export const updatePoll = async ({ post, userData, choice }) => {
                     return JSON.stringify(obj)
                 })
 
+                console.log(voters_array)
                 updated_pollOptions = parsedPollOptions?.map((obj) => {
                     if (obj.option === previous_choice) {
                         let vote = obj.vote - 1
@@ -187,7 +200,7 @@ export const updatePoll = async ({ post, userData, choice }) => {
         }
 
         updated_pollOptions = updated_pollOptions?.map((obj) => JSON.stringify(obj))
-    
+
         const response = await appwriteService.updatePost(postId, {
             pollVotersID: voters_array,
             pollOptions: updated_pollOptions
