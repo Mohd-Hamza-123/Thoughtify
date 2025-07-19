@@ -21,8 +21,6 @@
     .SideBar {
         width: 80% !important;
         padding: 17px 1px 0px 12px !important;
-        border-bottom-left-radius: 10px !important;
-        border-top-left-radius: 10px !important;
     }
 
     .SideBar.Active {
@@ -83,7 +81,7 @@ body.darkMode .SideBarContent svg {
 }
 
 .SideBar_Day_Night_Mode {
-    
+
     width: 100%;
     display: flex;
 }

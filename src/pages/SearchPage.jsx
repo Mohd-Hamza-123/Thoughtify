@@ -1,11 +1,14 @@
-import React from 'react'
-import { BrowseQuestions } from '../components'
-import SectionTrigger from '@/components/Home/Trigger/SectionTrigger'
+import React, { useState } from 'react'
+import { BrowseQuestions, Trigger } from '../components'
 const SearchPage = () => {
+  const [switchTrigger, setSwitchTrigger] = useState(true);
+
   return (
     <>
-    <div className="w-full flex justify-end px-3"><SectionTrigger /></div>
-      <BrowseQuestions />
+      <Trigger setSwitchTrigger={setSwitchTrigger} />
+      <BrowseQuestions
+        switchTrigger={switchTrigger}
+        setSwitchTrigger={setSwitchTrigger} />
     </>
   )
 }

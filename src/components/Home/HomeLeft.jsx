@@ -84,7 +84,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   if (isPending)
     return (
-      <div className={`w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
+      <div className={`h-[400px] w-full md:w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
         <SecondLoader />
       </div>
     )

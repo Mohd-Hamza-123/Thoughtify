@@ -47,17 +47,7 @@ export class Service {
     }
 
     async updatePost(slug, postObject) {
-        // console.log(postObject)
-        // const payload = {}
-        // for (let key in postObject) {
-        //     if (postObject[key]) {
-        //         update[key] = postObject[key]
-        //     }
-        // }
-
-        // console.log(payload)
-        // { title, content, queImage, pollOptions, pollQuestion, opinionsFrom, status, pollAnswer, queImage, category }
-
+        console.log(postObject)
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
         } catch (error) {

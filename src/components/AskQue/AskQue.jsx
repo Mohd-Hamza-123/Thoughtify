@@ -17,7 +17,7 @@ import React, { useEffect, useState, memo } from "react";
 import { useNotificationContext } from "@/context/NotificationContext";
 
 const AskQue = ({ post }) => {
-
+  console.log(post)
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
@@ -27,7 +27,6 @@ const AskQue = ({ post }) => {
     useForm({
       defaultValues: {
         title: post?.title || "",
-        slug: post?.slug || "slug",
         content: post?.content || "",
         pollAnswer: post?.pollAnswer || '',
         opinionsFrom: post?.opinionsFrom || '',
@@ -60,6 +59,7 @@ const AskQue = ({ post }) => {
     isUploading,
   } = initialPostData
 
+
   const { setNotification } = useNotificationContext()
 
   const selectThumbnail = async (e) => {
@@ -83,31 +83,29 @@ const AskQue = ({ post }) => {
 
   useEffect(() => {
     if (post) {
+      const { imageURL } = JSON.parse(post?.queImage)
 
-      setcategoryValue(post.category)
+      setInitialPostData((prev) => ({
+        ...prev,
+        categoryValue: post.category,
+        thumbnailURL: imageURL,
+      }))
 
-      if (post.pollQuestion) {
-        setPollQuestion(post.pollQuestion)
-        setpollTextAreaEmpty(false)
+      if (post?.pollQuestion && post?.pollQuestion) {
+        const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
+        setInitialPostData((prev) => ({
+          ...prev,
+          pollQuestion: post.pollQuestion,
+          pollOptions: pollOptionsArray,
+          pollTextAreaEmpty: false
+        }))
       }
-      const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
-      setpollOptions((prev) => pollOptionsArray)
-
-      if (post.queImageID) {
-        appwriteService.getThumbnailPreview(post.queImageID)
-          .then((res) => {
-            setThumbailURL(res.href)
-          })
-      } else {
-        setThumbailURL(post.queImage)
-      }
-
     }
+
   }, [])
 
   const deleteThumbnail = async () => {
-    setThumbailURL('')
-    setthumbnailFile(null)
+    setInitialPostData((prev) => ({ ...prev, thumbnailURL: '', thumbnailFile: null }))
     try {
       const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
     } catch (error) {
@@ -156,11 +154,6 @@ const AskQue = ({ post }) => {
     }
 
     if (pollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
-      // setpollOptions((prev) => {
-      //   let arr = [...prev, { option: options, vote: 0 }]
-
-      //   return [...arr]
-      // })
       setInitialPostData((prev) => {
         let arr = [...prev.pollOptions, { option: options, vote: 0 }]
         return { ...prev, pollOptions: arr }
@@ -184,8 +177,6 @@ const AskQue = ({ post }) => {
       return
     }
 
-    
-
     if (pollQuestion && pollOptions.length <= 1) {
       setNotification({ message: "There must be 2 Poll options", type: "error" })
       return
@@ -205,11 +196,14 @@ const AskQue = ({ post }) => {
 
     if (post) {
 
+      const { imageURL, imageID } = JSON.parse(post?.queImage)
+
+
       if (thumbnailFile) {
         try {
           const isDeleted = await appwriteService.deleteThumbnail(post?.queImageID)
           const dbThumbnail = await appwriteService.createThumbnail({ file: data.thumbnailFile });
-          return
+
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
             queImageID: dbThumbnail.$id,
@@ -224,15 +218,14 @@ const AskQue = ({ post }) => {
           setNotification({ message: "Post is Not Updated", type: "error" })
         }
 
-      } else if (thumbailURL && !post?.queImageID) {
+      } else if (thumbnailURL && !imageID) {
 
         try {
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
-            queImage: thumbailURL,
-            queImageID: null,
-            pollQuestion,
-            pollOptions
+            queImage: JSON.stringify({ imageURL: thumbnailURL, imageID: null }),
+            pollQuestion: pollQuestion,
+            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
@@ -242,7 +235,7 @@ const AskQue = ({ post }) => {
         }
 
 
-      } else if (thumbailURL && post?.queImageID) {
+      } else if (thumbnailURL && imageID) {
 
         try {
           const dbPost = await appwriteService.updatePost(post?.$id, {
