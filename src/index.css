@@ -68,6 +68,12 @@ body::-webkit-scrollbar {
     border: 1px solid rgba(38, 37, 37, 0.171);
 }
 
+@media screen and(max-width: 480px) {
+    .tag-style {
+        padding: 3px 4px !important;
+    }
+}
+
 .poppins {
     font-family: 'Poppins', sans-serif !important;
 }

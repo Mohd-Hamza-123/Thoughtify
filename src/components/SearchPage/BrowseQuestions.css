@@ -1,26 +1,7 @@
-#BrowseQuestions {
-    overflow-x: hidden;
-    overflow-y: scroll;
-    width: 100%;
-    height: 100%;
-}
+
 
 @media only screen and (max-width: 500px) {
-    #BrowseQuestions_SearchQuestion_Heading {
-        font-size: 22px !important;
-        margin-bottom: 10px !important;
-        margin-top: 0px !important;
-    }
-
-    .BrowseQuestions_Two_Div_Containers {
-        flex-direction: column;
-        padding: 0px 10px !important;
-    }
-
-    #BrowseQuestions_PostTitle {
-        margin-top: 50px !important;
-    }
-
+    
     #BrowseQuestions_Filters {
         width: 100% !important;
         font-size: 15px;
@@ -29,7 +10,6 @@
     }
 
     #BrowseQuestions_Filtered_Questions {
-        display: none;
         width: 100% !important;
         border-radius: 0px;
         padding: 10px 10px;
@@ -58,7 +38,7 @@
     border-radius: 6px;
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 64vh;
+    height: 80dvh;
 }
 
 #BrowseQuestions_Filters.darkMode input,
@@ -71,13 +51,7 @@
     padding: 4px 4px 10px 4px;
 }
 
-#BrowseQuestions_SearchQuestion_Heading {
-    font-size: 30px;
-    font-family: 'Gabarito', sans-serif;
-    margin-bottom: 15px;
-    margin-top: 10px;
-    text-decoration: underline;
-}
+
 
 #BrowseQuestions_Filters.darkMode>div {
     border-bottom: 1px solid rgba(255, 255, 255, 0.434);
@@ -92,10 +66,6 @@
     font-size: 17px;
     margin-bottom: 7px;
     letter-spacing: 0.5px;
-}
-
-#BrowseQuestions_PostTitle {
-    margin-top: 28px;
 }
 
 #BrowseQuestions_PostTitle input {
@@ -123,28 +93,7 @@
 }
 
 
-.BrowseQuestions_ApplyFilter {
-    padding: 5px;
-    font-size: 12px;
-    background-color: var(--secondryBlue);
-    border-radius: 4px;
-    color: white;
-    position: absolute;
-    top: 10px;
-    right: 8px;
-    transform: scale(1);
-    transition: transform 0.3s;
-}
 
-.BrowseQuestions_ApplyFilter.darkMode {
-    background-color: #FF3500;
-    color: white;
-}
-
-.BrowseQuestions_ApplyFilter:active {
-    transform: scale(1.2);
-    transition: transform 0.3s;
-}
 
 .BrowseQuestions_ResentFilter {
     padding: 5px;

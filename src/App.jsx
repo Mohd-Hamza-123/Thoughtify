@@ -157,8 +157,7 @@ function App() {
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret).then((res) => {
         if (res) {
-          setNotificationPopMsgNature(true);
-          setnotificationPopMsg("You Email is Verified");
+          
         }
       });
     }
@@ -274,8 +273,8 @@ function App() {
       setfeedbackPopUp,
       SettingPopUp,
       SetSettingPopUp,
-      isOverlayBoolean,
-      setisOverlayBoolean,
+      // isOverlayBoolean,
+      // setisOverlayBoolean,
       isOpen,
       setIsOpen,
       notifications,
@@ -291,8 +290,7 @@ function App() {
       setSavedMyProfilePosts,
       savedMyProfileComments,
       setsavedMyProfileComments,
-    }}
-  >
+    }}>
     <InitializationWrapper>
       <NavBar />
       <SideBar />

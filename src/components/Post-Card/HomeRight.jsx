@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from 'react'
 import './HomeRight.css'
-import { categoriesArr } from '../AskQue/Category'
-import { useNavigate } from 'react-router-dom'
-import { useAskContext } from '../../context/AskContext'
 import { useSelector } from 'react-redux'
 import authService from '../../appwrite/auth'
-
+import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { categoriesArr } from '../AskQue/Category'
+import { useAskContext } from '../../context/AskContext'
+import { useBooleanContext } from '@/context/BooleanContext'
+import { useNotificationContext } from '@/context/NotificationContext'
 
 const HomeRight = ({ switchTrigger }) => {
-    const userData = useSelector((state) => state.auth.userData)
 
-    const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false
-    );
-    const {
-        setfeedbackPopUp,
-        SetSettingPopUp,
-        setisOverlayBoolean,
-        isDarkModeOn,
-        setNotificationPopMsgNature,
-        setnotificationPopMsg
-    } = useAskContext()
-    const userAuthStatus = useSelector((state) => state.auth.status)
     const navigate = useNavigate();
+    const userAuthStatus = useSelector((state) => state.auth.status)
+
+    const userData = useSelector((state) => state.auth.userData)
+    const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false);
+
+    const { setfeedbackPopUp, SetSettingPopUp } = useAskContext()
+    const { setNotification } = useNotificationContext()
+    const { setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
-        if (userData) {
-            setisEmailVerified((prev) => userData?.emailVerification || false)
-        }
+        if (userData) setisEmailVerified(userData?.emailVerification || false)
     }, [userData])
 
 
@@ -35,61 +30,58 @@ const HomeRight = ({ switchTrigger }) => {
             const getVerificationDetails = await authService.emailVerification();
 
             if (getVerificationDetails) {
-                setNotificationPopMsgNature((prev) => true);
-                setnotificationPopMsg((prev) => `Message sent! Check your G-mail inbox to verify`);
+                setNotification({ message: "Message sent! Check your G-mail inbox to verify", type: "success" })
+
             } else {
-                setNotificationPopMsgNature((prev) => false);
-                setnotificationPopMsg((prev) => `Verification Failed. Try again later`);
+                setNotification({ message: "Verification Failed. Try again later", type: "error" })
             }
-            setNotificationPopMsgNature((prev) => true);
-            setnotificationPopMsg((prev) => `Message sent! Check your G-mail inbox to verify`);
+
         } catch (error) {
-            setNotificationPopMsgNature((prev) => false);
-            setnotificationPopMsg((prev) => `Verification Failed. Try again later`);
+            setNotification({ message: "Verification Failed. Try again later", type: "error" })
         }
 
+    }
+    const feedbackPopUp = () => {
+        setNotification({ message: "Feedback", type: "success" })
+        setfeedbackPopUp((prev) => !prev)
+    }
+    const settingPopUp = () => {
+        if (!userAuthStatus) {
+            setNotification({ message: "You are not Login", type: "error" })
+            return
+        }
+        SetSettingPopUp((prev) => !prev)
+        setIsOverlayVisible((prev) => !prev)
+    }
+    const trustedRespondersPopUp = () => {
+        if (!userAuthStatus) {
+            setNotification({ message: "You are not Login", type: "error" })
+            return
+        }
+        navigate(`/trustedResponders`);
     }
 
     return (
         <section className={`w-full md:w-[35%] ${switchTrigger === false ? "block" : "hidden"} md:block`}>
-            <div className={`HomeRight_Category my-4 ${isDarkModeOn ? "darkMode" : ''}`}>
-                <p className={`${isDarkModeOn ? "text-white" : ''}`}>Search What Suits You</p>
+            <div className={`HomeRight_Category my-4`}>
+                <p>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
-                    {categoriesArr?.map((category, index) => (
-                        <span onClick={() => navigate(`/BrowseQuestion/${category?.category}/${null}`)} className='cursor-pointer' key={category?.category}>{category.category}</span>
+                    {categoriesArr?.map((category) => (
+                        <span
+                            onClick={() => navigate(`/BrowseQuestion/${category?.category}/${null}`)}
+                            className='cursor-pointer'
+                            key={category?.category}>
+                            {category.category}
+                        </span>
                     ))}
                 </div>
             </div>
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
-                {userAuthStatus && <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
-                    if (!userAuthStatus) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => 'You are not Login');
-                        return
-                    }
-                    setfeedbackPopUp((prev) => !prev)
-                }}>Feedback</span>}
-                <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
-                    if (!userAuthStatus) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => 'You are not Login');
-                        return
-                    }
-                    SetSettingPopUp((prev) => !prev)
-                    setisOverlayBoolean((prev) => !prev)
-                }
-                }>Setting</span>
-                <span className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`} onClick={() => {
-                    if (!userAuthStatus) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => 'You are not Login');
-                        return
-                    }
-                    navigate(`/trustedResponders`);
-                }}>Trusted Responders</span>
-                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail}
-                    className={`cursor-pointer ${isDarkModeOn ? "text-white" : ''}`}>Verify Your Email</span>}
+                {userAuthStatus && <span className={`cursor-pointer`} onClick={feedbackPopUp}>Feedback</span>}
+                <span onClick={settingPopUp}>Setting</span>
+                <span className={`cursor-pointer`} onClick={trustedRespondersPopUp}>Trusted Responders</span>
+                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointe">Verify Your Email</span>}
             </div>
         </section>
     )

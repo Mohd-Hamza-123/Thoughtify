@@ -11,6 +11,7 @@ import { DarkModeToggle } from "../";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import { ProfileImage } from "../Logo";
+import { useBooleanContext } from "@/context/BooleanContext";
 
 const SideBar = () => {
 
@@ -28,8 +29,8 @@ const SideBar = () => {
     onInstallApp,
     isAppInstalled,
     setMyUserProfile,
-    setisOverlayBoolean,
   } = useAskContext();
+  const { setIsOverlayVisible } = useBooleanContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -45,7 +46,7 @@ const SideBar = () => {
 
   const closeSideBarAndOverlay = () => {
     setIsOpen(false);
-    setisOverlayBoolean(false);
+    setIsOverlayVisible(false);
   };
 
   const logoutHandle = async () => {

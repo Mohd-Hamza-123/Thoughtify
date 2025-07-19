@@ -20,6 +20,7 @@ import { useNotificationContext } from "@/context/NotificationContext";
 import { useSelector } from "react-redux";
 
 const ViewPostHeader = ({ post }) => {
+    console.log(post)
     const userData = useSelector((state) => state?.auth?.userData);
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const { setNotification } = useNotificationContext();
@@ -39,9 +40,9 @@ const ViewPostHeader = ({ post }) => {
     return (
         <div className="flex justify-between mx-3 mt-1 relative items-center">
             {/* Below div contains category, date, views, comment count */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-center">
                 <span className="tag-style">{post?.category}</span>
-                <span className="tag-style">{dateFormatFunc(post?.date) || ""}</span>
+                <span className="tag-style">{dateFormatFunc(post?.$createdAt) || ""}</span>
                 <span className="flex gap-1 items-center tag-style">
                     <span>{post?.views}</span>
                     <IoEyeSharp />

@@ -309,30 +309,17 @@ const ViewPost = () => {
     <div
       ref={ViewPostRef}
       className="w-full relative flex"
-      onScroll={handleScroll}
-    >
+      onScroll={handleScroll}>
 
-      <Button
-        variant="outline"
-        className="flex justify-center items-center md:hidden"
-        onClick={() => {
-          if (viewPostLeft.current && viewPostRight.current)
-            viewPostLeft.current.classList.toggle("none")
-        }}
-      >
-        <i className="bx bxs-grid-alt"></i>
-      </Button>
-
-      <section ref={viewPostLeft} className="p-3 w-[70%]">
+      <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-hidden">
         <ViewPostMainContent post={post} />
         <ViewPostLikeDislikeBookmark post={post} />
       </section>
 
-      <section
+      {/* <section
         ref={viewPostRight}
         className={`ViewPost_Related_Filter_Comment_Questions w-[30%] ${isNavbarHidden ? "" : "active"
-          }`}
-      >
+          }`}>
         <div id="ViewPost_RelatedQuestions">
           <p>{post?.category} Related :</p>
           {!isRelatedQueriesExist && (
@@ -385,7 +372,7 @@ const ViewPost = () => {
             </div>
           </div>
         )}
-      </section>
+      </section> */}
     </div>
   ) : (
     <div className="w-full flex justify-center items-center h-[80dvh]">

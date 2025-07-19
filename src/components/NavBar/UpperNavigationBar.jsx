@@ -1,6 +1,7 @@
 import "../../index.css";
 import React from "react";
 import "./UpperNavigationBar.css";
+import { ProfileImage } from "../Logo";
 import { useAskContext } from "../../context/AskContext";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import {
@@ -9,15 +10,15 @@ import {
   UpperNavigationBarSearch,
   UpperNavigationBarBtns,
 } from "..";
-import { ProfileImage } from "../Logo";
+import { useBooleanContext } from "@/context/BooleanContext";
 
 const NavigationBar = () => {
+  const { setIsOpen } = useAskContext();
+  const { setIsOverlayVisible } = useBooleanContext();
   const authStatus = useSelector((state) => state.auth.status);
-  // console.log(authStatus)
-  const { setIsOpen, setisOverlayBoolean } = useAskContext();
 
   const toggleSideBar = () => {
-    setisOverlayBoolean(true);
+    setIsOverlayVisible(true);
     setIsOpen(true);
   };
 
