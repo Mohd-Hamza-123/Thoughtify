@@ -25,9 +25,9 @@ const uploadPostWithUnsplashAPI = async (initialPostData, data, userData, upload
             const dbPost = await appwriteService.createPost({
                 ...data,
                 userId: userData.$id,
-                queImage: JSON.stringify(queImage),
+                queImage,
                 pollQuestion,
-                pollOptions : pollOptions.map((obj) => JSON.stringify(obj)),
+                pollOptions: pollOptions.map((obj) => JSON.stringify(obj)),
                 name: userData?.name,
                 trustedResponderPost
             }, categoryValue);

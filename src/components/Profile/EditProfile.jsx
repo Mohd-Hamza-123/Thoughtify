@@ -10,31 +10,15 @@ import profile from "../../appwrite/profile";
 import { useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom'
 import { getCanvasPreview } from "./getCanvasPreview";
-import { useAskContext } from "../../context/AskContext";
 import * as imageConversion from 'image-conversion'
-
+import { useNotificationContext } from "@/context/NotificationContext";
 
 const MinimumDimension = 50;
-const EditProfile = ({
-  profileData,
-}) => {
-  const {
-    bio,
-    links,
-    interestedIn,
-    profileImgID,
-    occupation,
-    educationLvl,
-    $id,
-    profileImgURL,
-  } = profileData;
 
-  const { myUserProfile,
-    setMyUserProfile,
-    setNotificationPopMsgNature,
-    setnotificationPopMsg,
-    isDarkModeOn
-  } = useAskContext()
+
+const EditProfile = () => {
+
+
   const userData = useSelector((state) => state.auth.userData);
 
   const navigate = useNavigate();
@@ -67,34 +51,8 @@ const EditProfile = ({
     },
   });
 
-  const [prevProfilePic, setprevProfilePic] = useState('');
-
-
   const [isUpdating, setisUpdating] = useState(false)
-  useEffect(() => {
 
-    if (profileImgID) {
-
-      if (myUserProfile?.profileImgURL) {
-        setprevProfilePic(myUserProfile?.profileImgURL)
-        setprevFileURL(myUserProfile?.profileImgURL)
-      } else {
-        profile.getStoragePreview(profileImgID)
-          .then((res) => {
-            setprevFileURL(res?.href);
-          })
-
-
-        const get = async (profileImgID) => {
-          const prev = await profile.getStoragePreview(profileImgID)
-          setprevProfilePic(prev?.href)
-        }
-        get(profileImgID)
-      }
-    } else {
-      setprevFileURL((prev) => "https://i.pinimg.com/736x/d2/98/4e/d2984ec4b65a8568eab3dc2b640fc58e.jpg")
-    }
-  }, [profileImgID])
 
   const addEdulvl = (e) => {
     setEducationLevel(e.currentTarget.value);
@@ -313,8 +271,7 @@ const EditProfile = ({
     const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
     if (file.size > MAX_FILE_SIZE) {
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg("Image Must be Less then and Equal to 1 MB")
+      setNotification({ message: "Image Must be Less then and Equal to 1 MB", type: "error" })
       return
     }
     const reader = new FileReader();
@@ -420,19 +377,17 @@ const EditProfile = ({
       setOccupationInput("Other");
     }
 
-
-
   }, [bio, interestedIn]);
 
+  console.log(profileData)
   return (
     profileData ?
       <>
-        <div className={`EditProfile-FormContainer ${isDarkModeOn ? 'darkMode' : ''}`}>
-          <div className={`MyProfile_HorizontalLine ${isDarkModeOn ? 'hidden' : ''}`}></div>
+        <div className={`EditProfile-FormContainer`}>
+          <div className={`MyProfile_HorizontalLine`}></div>
           <form
             className="h-full relative p-3 EditProfile_form"
-            onSubmit={handleSubmit(submit)}
-          >
+            onSubmit={handleSubmit(submit)}>
 
             <div
               id="EditProfile_EditImage_Div"
@@ -567,7 +522,7 @@ const EditProfile = ({
                 <div className="flex EditProfile_Links_Div w-full" id="">
                   <div
                     id="EditProfile_EditLinks_3inputs"
-                    className={`w-full flex flex-col gap-3 items-start ${isDarkModeOn ? 'darkMode' : ''}`}
+                    className={`w-full flex flex-col gap-3 items-start`}
                   >
                     <input
                       className="outline-none px-1"
@@ -608,8 +563,7 @@ const EditProfile = ({
                     {linksArr?.map((link, index) => (
                       <section
                         key={JSON.parse(link).URL}
-                        className="flex gap-3 p-1 items-center w-full"
-                      >
+                        className="flex gap-3 p-1 items-center w-full">
                         <span className="p-1 flex justify-center items-center link-circle">
                           <i className="fa-solid fa-link"></i>
                         </span>
@@ -649,8 +603,7 @@ const EditProfile = ({
                       name=""
                       className=""
                       value={EducationLevel}
-                      onChange={addEdulvl}
-                    >
+                      onChange={addEdulvl}>
                       <option value="" hidden>
                         Your Qualification
                       </option>
@@ -685,8 +638,7 @@ const EditProfile = ({
                       value={OccupationInput}
                       name=""
                       className=""
-                      onChange={addOccupation}
-                    >
+                      onChange={addOccupation}>
                       <option value="" hidden>
                         Your Occupation
                       </option>

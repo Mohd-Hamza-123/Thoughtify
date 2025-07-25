@@ -92,7 +92,7 @@ export const uploadQuestionWithImage = async (
 
         const dbPost = await appwriteService.createPost({
             ...data,
-            queImage: JSON.stringify(queImage),
+            queImage,
             userId: userData?.$id,
             pollQuestion,
             pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)) || [],

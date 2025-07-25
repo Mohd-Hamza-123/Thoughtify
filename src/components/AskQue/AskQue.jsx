@@ -15,9 +15,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getInitialPost } from "../../store/postsSlice";
 import React, { useEffect, useState, memo } from "react";
 import { useNotificationContext } from "@/context/NotificationContext";
+import convertToWebPFile from "@/helpers/convert-image-into-webp";
+
 
 const AskQue = ({ post }) => {
-  console.log(post)
+  // console.log(post)
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
@@ -45,7 +47,7 @@ const AskQue = ({ post }) => {
     categoryFlag: false,
   })
 
-  console.log(initialPostData)
+  // console.log(initialPostData)
 
   const {
     thumbnailFile,
@@ -88,7 +90,7 @@ const AskQue = ({ post }) => {
       setInitialPostData((prev) => ({
         ...prev,
         categoryValue: post.category,
-        thumbnailURL: imageURL,
+        thumbnailURL: imageURL?.replace("preview", "view"),
       }))
 
       if (post?.pollQuestion && post?.pollQuestion) {
@@ -196,30 +198,32 @@ const AskQue = ({ post }) => {
 
     if (post) {
 
+
       const { imageURL, imageID } = JSON.parse(post?.queImage)
 
-
+    
       if (thumbnailFile) {
+
         try {
-          const isDeleted = await appwriteService.deleteThumbnail(post?.queImageID)
-          const dbThumbnail = await appwriteService.createThumbnail({ file: data.thumbnailFile });
+          if (imageID) await appwriteService.deleteThumbnail(imageID)
+          const webpFile = await convertToWebPFile(thumbnailFile);
+          const dbThumbnail = await appwriteService.createThumbnail({ file: webpFile });
+          const imageURL = await appwriteService.getThumbnailPreview(dbThumbnail?.$id)
 
           const dbPost = await appwriteService.updatePost(post.$id, {
             ...data,
-            queImageID: dbThumbnail.$id,
-            queImage: null,
+            queImage: JSON.stringify({ imageURL, imageID: dbThumbnail.$id }),
             pollQuestion,
-            pollOptions
+            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
           }, categoryValue);
 
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
+          console.log(error)
           setNotification({ message: "Post is Not Updated", type: "error" })
         }
 
       } else if (thumbnailURL && !imageID) {
-
         try {
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
@@ -233,20 +237,13 @@ const AskQue = ({ post }) => {
         } catch (error) {
           setNotification({ message: "Post is Not Updated", type: "error" })
         }
-
-
       } else if (thumbnailURL && imageID) {
-
         try {
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
-            queImage: null,
-            queImageID: post?.queImageID,
             pollQuestion,
-            pollOptions
+            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
           }, categoryValue);
-
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
           setNotification({ message: "Post is Not Updated", type: "error" })
@@ -255,40 +252,29 @@ const AskQue = ({ post }) => {
       } else {
 
         try {
+          if (imageID) await appwriteService.deleteThumbnail(imageID)
           const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-
           const UnsplashRes = await unsplashImg.json();
           const ImgArrUnsplash = UnsplashRes.results
-
           const randomIndex = Math.floor(Math.random() * 10);
 
           const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.raw
+          const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null });
 
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
-            queImage: ImgURL,
-            queImageID: null,
+            queImage,
             pollQuestion,
-            pollOptions,
+            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
           setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
-
-          const dbPost = await appwriteService.updatePost(post.$id, {
-            ...data,
-            userId: userData.$id,
-            queImage: null,
-            queImageID: null,
-            pollQuestion,
-            pollOptions,
-          }, categoryValue);
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          setNotification({ message: "Post is Not Updated", type: "error" })
+          return
         }
-
       }
-
       navigate("/");
     } else {
 
