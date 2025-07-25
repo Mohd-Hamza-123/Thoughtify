@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from "react";
 import "./MyProfile.css";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import {
-  Favourite,
-  Opinions,
-  Questions,
-  ProfileSummary,
-  ChatInProfile,
-  SecondLoader,
-} from "../index";
-import { Button } from "../ui/button";
-import { useParams } from "react-router-dom";
-import profile from "../../appwrite/profile";
-import { useAskContext } from "../../context/AskContext";
-import { getOtherUserProfile } from "../../store/usersProfileSlice";
-import notification from "../../appwrite/notification";
 import conf from "../../conf/conf";
-
+import { Button } from "../ui/button";
+import profile from "../../appwrite/profile";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import notification from "../../appwrite/notification";
+import { useNavigate, useParams } from "react-router-dom";
+import { useNotificationContext } from "@/context/NotificationContext";
+import {
+  Opinions,
+  Favourite,
+  Questions,
+  SecondLoader,
+  ChatInProfile,
+  ProfileSummary,
+} from "../index";
 
 const MyProfile = () => {
 
@@ -25,71 +22,25 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
-
   const userData = useSelector((state) => state?.auth?.userData);
-  const UserAuthStatus = useSelector((state) => state?.auth?.status)
-  const {
-    myUserProfile,
-    setMyUserProfile,
-    isDarkModeOn,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature, } = useAskContext();
-
+  const authStatus = useSelector((state) => state?.auth?.status)
+  const profileData = useSelector((state) => state?.profileSlice?.userProfile)
+  const { profileImage } = profileData
+  const { profileImageURL } = JSON.parse(profileImage)
+  const { setNotification } = useNotificationContext()
   const realUser = userData ? slug === userData.$id : false;
 
-  const [profileData, setProfileData] = useState(null);
-  
-
-
-  const [URLimg, setURLimg] = useState('')
-  const [isFollowing, setisFollowing] = useState(false)
 
   const [isBlocked, setisBlocked] = useState(false);
+  const [isFollowing, setisFollowing] = useState(false)
   const [activeNav, setactiveNav] = useState('Profile Summary')
   const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
 
 
-  const getUserProfile = async (slug) => {
-    const isUserAlreadyInReduxState = othersUserProfile.findIndex((user) => user?.userIdAuth === slug
-    )
-
-    const index = isUserAlreadyInReduxState;
-    if (isUserAlreadyInReduxState === -1) {
-
-      const listprofileData = await profile.listProfile({ slug });
-      
-      if (listprofileData?.total === 0) {
-        setProfileData((prev) => null)
-        setnotificationPopMsg((prev) => false)
-        setnotificationPopMsg((prev) => "User not exist")
-        navigate("/")
-        return
-      }
-      if (listprofileData) {
-        setProfileData({ ...listprofileData.documents[0] });
-        dispatch(getOtherUserProfile({ userProfileArr: [listprofileData?.documents[0]] }))
-      }
-      getUserProfileImg(listprofileData?.documents[0]?.profileImgID);
-    } else {
-
-      setProfileData((prev) => othersUserProfile[index]);
-      setURLimg((prev) => othersUserProfile[index].profileImgURL)
-    }
-
-  };
-  const getUserProfileImg = async (imgID) => {
-    if (imgID) {
-      const Preview = await profile.getStoragePreview(imgID)
-      setURLimg(Preview.href)
-    }
-
-  }
   const follow_Unfollow = async () => {
 
-    if (!UserAuthStatus) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => 'You are not Login')
+    if (!authStatus) {
+      setNotification({ message: "You are not Login", type: "error" })
       return
     }
     if (!myUserProfile) return;
@@ -135,8 +86,7 @@ const MyProfile = () => {
 
     } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
 
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => "You have to Unblock to follow")
+      setNotification({ message: "You have to Unblock to follow", type: "error" })
       return;
     } else {
 
@@ -177,9 +127,8 @@ const MyProfile = () => {
 
   }
   const block_Unblock = async () => {
-    if (!UserAuthStatus) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => 'You are not Login')
+    if (!authStatus) {
+      setNotification({ message: "You are not Login", type: "error" })
       return
     }
     if (!myUserProfile) return;
@@ -198,8 +147,7 @@ const MyProfile = () => {
       console.log("unBlock");
       setisBlocked((prev) => !prev)
     } else if (isFollowing) {
-      setNotificationPopMsgNature((prev) => false)
-      setnotificationPopMsg((prev) => "You have to unfollow to Block")
+      setNotification({ message: "You have to unfollow to Block", type: "error" })
       return;
     } else {
       setisBlocked((prev) => !prev)
@@ -222,16 +170,7 @@ const MyProfile = () => {
   }
 
   useEffect(() => {
-
-    setactiveNav((prev) => 'Profile Summary')
-
-    if (slug === userData?.$id) {
-      setProfileData((prev) => myUserProfile);
-      setURLimg(myUserProfile?.profileImgURL);
-    } else {
-      getUserProfile(slug);
-    }
-  
+    setactiveNav('Profile Summary')
   }, [slug]);
 
   useEffect(() => {
@@ -250,62 +189,34 @@ const MyProfile = () => {
   }, [activeNav, profileData])
 
 
-  useEffect(() => {
-
-    if (!myUserProfile) {
-      profile
-        .listProfile({ slug })
-        .then((res) => {
-          setMyUserProfile(res?.documents[0])
-        })
-      return
-    }
-
-    if (Array.isArray(myUserProfile.following) === false) return
-
-    const parseMyUserProfile = myUserProfile.following.map(obj => JSON.parse(obj));
-    const receiverProfile = parseMyUserProfile.filter(obj => obj.profileID === slug);
-    setisFollowing(receiverProfile.length > 0);
-
-    if (myUserProfile.blockedUsers.includes(slug)) {
-      setisBlocked(true)
-    } else {
-      setisBlocked(false)
-    }
-  }, [myUserProfile, slug])
-
 
   if (profileData) {
-    return (<div id="MyProfile_Parent" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+    return (<div id="MyProfile_Parent">
       <div className="MyProfile_HorizontalLine"></div>
       <div id="MyProfile" className="">
-        <div id="MyProfile_Header" className={`w-full flex ${isDarkModeOn ? 'darkMode' : ''}`}>
+        <div id="MyProfile_Header" className={`w-full flex`}>
           <div className="w-2/3 flex">
             <div
               id="MyProfile_Img_Div"
-              className="w-1/4 h-full flex justify-center items-center"
-            >
-              <img src={URLimg} />
+              className="w-1/4 h-full flex justify-center items-center">
+              <img src={profileImageURL} alt="profileImage" />
             </div>
             <div
               id="MyProfile_Name_Div"
-              className="w-3/4 h-full flex flex-col justify-center gap-3"
-            >
+              className="w-3/4 h-full flex flex-col justify-center gap-3">
               <section className="flex flex-col items-left">
                 <h6>{profileData?.name}</h6>
               </section>
               <div id="MyProfile_3Buttons" className="flex gap-3">
                 {!realUser && (
                   <Button onClick={() => {
-                    if (!UserAuthStatus) {
-                      setNotificationPopMsgNature((prev) => false);
-                      setnotificationPopMsg((prev) => 'You are not Login')
+                    if (!authStatus) {
+                      setNotification({ message: "You are not Login", type: "error" })
                       return
                     }
 
                     if (profileData.whoCanMsgYou === "None") {
-                      setNotificationPopMsgNature((prev) => false);
-                      setnotificationPopMsg((prev) => "You can't Message");
+                      setNotification({ message: "You can't Message", type: "error" })
                       return
                     } else if (profileData.whoCanMsgYou === "My Following") {
                       const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
@@ -313,15 +224,13 @@ const MyProfile = () => {
                       const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
 
                       if (!isHeFollowsYou) {
-                        setNotificationPopMsgNature((prev) => false);
-                        setnotificationPopMsg((prev) => "You can't Message");
+                        setNotification({ message: "You can't Message", type: "error" })
                         return
                       }
                     }
 
                     if (profileData?.blockedUsers?.includes(userData?.$id)) {
-                      setNotificationPopMsgNature((prev) => false);
-                      setnotificationPopMsg((prev) => "You are Blocked");
+                      setNotification({ message: "You are Blocked", type: "error" })
                       return
                     }
 
@@ -343,9 +252,7 @@ const MyProfile = () => {
                     className="p-2 rounded-sm"
                     onClick={() => {
                       navigate(`/EditProfile/${slug}`)
-                    }}
-
-                  >
+                    }}>
                     Edit Profile
                   </Button>
                 )}
@@ -369,7 +276,7 @@ const MyProfile = () => {
             id="MyProfile_Header_Right"
             className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
           >
-        
+
 
             <div className="flex w-full">
               <p className="w-1/2">Followers :</p>
@@ -394,7 +301,7 @@ const MyProfile = () => {
 
 
         <div id="MyProfile_Data" className="flex mt-3">
-          <section id="MyProfile_Data_section" className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+          <section id="MyProfile_Data_section">
             <ul className="flex justify-between">
               <li
                 onClick={() => {

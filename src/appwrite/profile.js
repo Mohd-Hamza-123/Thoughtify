@@ -16,21 +16,18 @@ export class Profile {
 
     async createProfile({
         name,
-        userIdAuth,
-        profileImgID,
-        profileImgURL
+        userId,
+        profileImage
     }) {
-        console.log(userIdAuth, name)
+       
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                ID.unique(),
+                userId,
                 {
-                    userIdAuth,
                     name,
-                    profileImgID,
-                    profileImgURL
+                    profileImage
                 })
         } catch (error) {
             console.log(error)
@@ -146,14 +143,15 @@ export class Profile {
             return null
         }
     }
+    
     async listSingleProfile(slug) {
         try {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                slug
-            )
+                slug)
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

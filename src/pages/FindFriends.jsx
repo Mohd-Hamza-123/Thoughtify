@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import profile from "../appwrite/profile";
 import { useSelector, useDispatch } from "react-redux";
 import "./FindFriends.css";
-import { getOtherUserProfile } from "../store/usersProfileSlice";
 import { useAskContext } from "../context/AskContext";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 import { Icons } from "@/components";

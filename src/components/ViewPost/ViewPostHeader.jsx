@@ -20,7 +20,7 @@ import { useNotificationContext } from "@/context/NotificationContext";
 import { useSelector } from "react-redux";
 
 const ViewPostHeader = ({ post }) => {
-    console.log(post)
+    // console.log(post)
     const userData = useSelector((state) => state?.auth?.userData);
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const { setNotification } = useNotificationContext();

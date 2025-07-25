@@ -33,13 +33,11 @@ function App() {
   const dispatch = useDispatch();
 
   const userData = useSelector((state) => state.auth?.userData);
-  const myUserProfile = useSelector((state) => state.profileSlice?.userProfile);
-  // console.log(myUserProfile)
+
   const [isOpen, setIsOpen] = useState(false);
 
-
   const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
-  const [isOverlayBoolean, setisOverlayBoolean] = useState(false);
+
   const [notificationShow, setNotificationShow] = useState(null);
   const [hasMoreComments, sethasMoreComments] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
@@ -80,63 +78,7 @@ function App() {
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
 
-  const [isDarkModeOn, setisDarkModeOn] = useState(
-    localStorage.getItem("isDarkModeOn") === "true"
-  );
-
   const { getProfileData } = useGetProfileData()
-
-  // const fetchData = async () => {
-  //   try {
-  //     const userData = await authService.getCurrentUser();
-  //     if (userData) {
-  //       dispatch(login({ userData }));
-  //       const response = await profile.listProfile({ slug: userData?.$id });
-  //       console.log(response)
-  //       if (response?.documents?.length === 0 || response?.total === 0) {
-  //         const response = await profile.createProfile({
-  //           name: userData?.name,
-  //           userIdAuth: userData?.$id,
-  //           profileImgID: null,
-  //           profileImgURL:
-  //             "https://cdn.pixabay.com/photo/2014/04/02/10/25/man-303792_1280.png",
-  //         });
-  //         dispatch(userProfile({ userProfile: response?.documents[0] }));
-  //         if (response) {
-  //           navigate("/");
-  //         } else {
-  //           navigate("/signup");
-  //         }
-  //       } else {
-  //         dispatch(userProfile({ userProfile: response?.documents[0] }));
-  //         const profileImageID = response?.documents[0]?.profileImgID;
-  //         const URL = await profile.getStoragePreview(profileImageID);
-
-  //         if (URL) {
-  //           dispatch(
-  //             userProfile({
-  //               userProfile: userProfile?.documents[0],
-  //               userProfileImgURL: URL?.href,
-  //             })
-  //           );
-  //         } else {
-  //           dispatch(
-  //             userProfile({
-  //               userProfile: userProfile?.documents[0],
-  //               userProfileImgURL: "",
-  //             })
-  //           );
-  //         }
-  //         navigate("/");
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.log("error", err)
-  //     navigate("/signup");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   // getting notifications
   const [notifications, setnotifications] = useState(null);
@@ -157,7 +99,7 @@ function App() {
     if (userId && secret) {
       authService.verifyWithUserId_secret(userId, secret).then((res) => {
         if (res) {
-          
+
         }
       });
     }
@@ -240,12 +182,6 @@ function App() {
     getNotification();
   }, []);
 
-  useEffect(() => {
-    if (!myUserProfile && userData) {
-      const profileData = getProfileData();
-      dispatch(userProfile({ userProfile: profileData }));
-    }
-  }, [userData]);
 
   return <AskProvider
     value={{
@@ -273,8 +209,6 @@ function App() {
       setfeedbackPopUp,
       SettingPopUp,
       SetSettingPopUp,
-      // isOverlayBoolean,
-      // setisOverlayBoolean,
       isOpen,
       setIsOpen,
       notifications,
@@ -282,8 +216,6 @@ function App() {
       deleteNotication,
       isUnreadNotificationExist,
       setIsUnreadNotificationExist,
-      isDarkModeOn,
-      setisDarkModeOn,
       mainResponder,
       setmainResponder,
       savedMyProfilePosts,
@@ -310,7 +242,7 @@ function App() {
         <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
         <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
         <Route
-          path="EditProfile/:editProfileSlug"
+          path="EditProfile/:slug"
           element={<EditProfilePage />}
         />
         <Route
