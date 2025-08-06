@@ -25,6 +25,7 @@ const MyProfile = () => {
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status)
   const profileData = useSelector((state) => state?.profileSlice?.userProfile)
+  console.log(profileData)
   const { profileImage } = profileData
   const { profileImageURL } = JSON.parse(profileImage)
   const { setNotification } = useNotificationContext()

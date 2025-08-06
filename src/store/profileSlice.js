@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+    myPosts: 0,
     userProfile: {},
-    userProfileImgURL: '',
-    totalPostsbyMe: 0,
-    totalCommentsbyMe: 0,
-    filteredBookmarkPosts: [],
     flagForBookmark: false,
+    filteredBookmarkPosts: [],
 }
 
 const profileSlice = createSlice({
@@ -18,9 +16,6 @@ const profileSlice = createSlice({
         },
         getTotalPostByMe: (state, action) => {
             state.totalPostsbyMe = action.payload.totalPostsbyMe
-        },
-        getTotalCommentsByMe: (state, action) => {
-            state.totalCommentsbyMe = action.payload.totalCommentsbyMe
         },
         getFilteredBookmarkPosts: (state, action) => {
             const { flagForBookmark, filteredBookmarkPosts } = action.payload;
@@ -35,8 +30,8 @@ const profileSlice = createSlice({
 export const {
     userProfile,
     getTotalPostByMe,
-    getTotalCommentsByMe,
     getFilteredBookmarkPosts
 } = profileSlice.actions;
+
 export default profileSlice.reducer
 

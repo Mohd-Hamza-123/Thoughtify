@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
 
-.EditProfile-FormContainer {
-    background-color: rgb(242, 242, 242);
-    font-family: 'Nunito', sans-serif;
-}
+
 
 @media only screen and (max-width: 500px) {
 
@@ -113,23 +110,6 @@
     }
 }
 
-.EditProfile-FormContainer.darkMode {
-    background-color: black;
-}
-
-.EditProfile-FormContainer.darkMode .MyProfile_HorizontalLine {
-    display: none;
-}
-
-.EditProfile-FormContainer.darkMode button {
-    background-color: #FF3500 !important;
-    border: none !important;
-}
-
-.EditProfile-FormContainer.darkMode input {
-    border: 1px solid #FF3500;
-    color: black;
-}
 
 .EditProfile_form {
     width: 87%;
@@ -170,11 +150,6 @@
     border-top: 1px solid rgba(128, 128, 128, 0.463);
 }
 
-.EditProfile-FormContainer.darkMode #EditProfile_EditImage_Div {
-    background-color: black;
-    margin-bottom: 20px;
-    box-shadow: rgb(255, 0, 0) 0px 2px 8px 0px;
-}
 
 #EditProfile-Prev-active {
     width: 100%;
@@ -306,16 +281,6 @@
 #EditProfile_EditContent {
     background-color: rgb(255, 255, 255);
     padding: 5px 15px;
-}
-
-.EditProfile-FormContainer.darkMode #EditProfile_EditContent {
-    background-color: black;
-    box-shadow: rgb(255, 0, 0) 0px 2px 8px 0px;
-    color: white;
-}
-
-.EditProfile-FormContainer.darkMode #EditProfile_EditContent textarea {
-    color: black;
 }
 
 #EditProfile_EditBio {
