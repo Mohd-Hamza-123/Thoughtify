@@ -1,23 +1,21 @@
+import React from 'react'
 import "./EditProfilePage.css"
-import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { EditProfile, SecondLoader } from '../components/index'
+import { EditProfile } from '../components/index'
+import { useNavigate } from "react-router-dom"
+import { useSelector } from 'react-redux'
 
 const EditProfilePage = () => {
+    
+    const userData = useSelector((state) => state.auth.userData)
     const { slug } = useParams();
-    console.log(slug)
-    const [profileData, setProfileData] = useState(null);
+    const navigate = useNavigate()
+    const realUser = slug === userData?.$id;
 
-    return (
-        profileData ? (
-            <div className='EditProfilePage'>
-                <EditProfile
-                    profileData={profileData}
-                />
-            </div>) : <div className='EditProfilePage flex justify-center items-center'>
-            <SecondLoader />
-        </div>
-    )
+    if (!realUser) return navigate("/")
+
+    return <EditProfile />
+
 }
 
 export default EditProfilePage

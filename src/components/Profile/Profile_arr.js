@@ -35,7 +35,7 @@ const occupation_Arr = [
     "Writer",
     "Other"
 ]
-const educationLevels = [
+const EDUCTION_OPTIONS = [
     "Less than High School",
     "High School Graduate",
     "Intermediate Graduate",
@@ -55,4 +55,4 @@ const educationLevels = [
     "Other",
 ];
 
-export { educationLevels, occupation_Arr }
+export { EDUCTION_OPTIONS, occupation_Arr }

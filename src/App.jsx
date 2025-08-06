@@ -5,13 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
 import { NavBar, NotificationPop, SideBar } from "./components";
-import { userProfile } from "./store/profileSlice";
 import { Feedback } from "./components";
 import authService from "./appwrite/auth";
 import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
 import Home from "./pages/Home";
-import { useGetProfileData } from "./lib/profile";
 import LoginPage from "./pages/LoginPage";
 import ForgetPassword from "./pages/ForgetPassword";
 import SignupPage from "./pages/SignupPage";
@@ -77,8 +75,6 @@ function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
-
-  const { getProfileData } = useGetProfileData()
 
   // getting notifications
   const [notifications, setnotifications] = useState(null);
