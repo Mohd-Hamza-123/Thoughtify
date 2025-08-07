@@ -4,8 +4,7 @@ import { Button } from '../ui/button';
 const EditProfileTags = ({ interestedIn, setProfileObject }) => {
 
   const [interestedTag, setInterestedTag] = useState("");
-  const [interestedTagArr, setInterestedTagArr] = useState([]);
-
+  const [interestedTagArr, setInterestedTagArr] = useState(interestedIn || []);
 
   const addTag = (e) => {
     let tag = e.currentTarget.value.replace(/\s+/g, " ").toUpperCase();
@@ -41,17 +40,16 @@ const EditProfileTags = ({ interestedIn, setProfileObject }) => {
       setInterestedTag("");
       return;
     }
+
     setInterestedTagArr((prev) => [...prev, interestedTag]);
+
     setInterestedTag("");
   };
 
   useEffect(() => {
+    setProfileObject((prev) => ({ ...prev, interestedIn: interestedTagArr }))
+  }, [interestedTagArr])
 
-    if (interestedIn) {
-      setInterestedTagArr((prev) => [...interestedIn]);
-    }
-
-  }, []);
 
   return (
     <div className="EditProfile_Interested_div">
@@ -98,23 +96,21 @@ const EditProfileTags = ({ interestedIn, setProfileObject }) => {
           </p>
           <div className="flex gap-3">
             <Button
+              type="button"
               className="secondaryBlue font_bold_500 text-white"
-              onClick={addTags}
-            >
+              onClick={addTags}>
               Add Tag
             </Button>
             <Button
+              type='button'
               className="secondaryBlue font_bold_500 text-white"
-              onClick={() => {
-                setInterestedTagArr((prev) => []);
-              }}
-            >
+              onClick={() => setInterestedTagArr([])}>
               Remove all
             </Button>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

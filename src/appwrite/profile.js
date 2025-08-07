@@ -19,7 +19,7 @@ export class Profile {
         userId,
         profileImage
     }) {
-       
+
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -69,24 +69,36 @@ export class Profile {
     }
 
 
-    async updateProfile(id, { bio, educationLvl, occupation,
-        profileImgID, profileImgURL
-    }, links, interestedIn) {
+    async updateProfile(id, {
+        bio,
+        links,
+        occupation,
+        educationLvl,
+        interestedIn,
+        profileImage,
+    }) {
+        
+        let payload = {}
+        if (bio) payload.bio = bio
+        if (links) payload.links = links
+        if (occupation) payload.occupation = occupation
+        if (educationLvl) payload.educationLvl = educationLvl
+        if (profileImage) payload.profileImage = profileImage
+        if (interestedIn) payload.interestedIn = interestedIn
 
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, id, {
-                bio,
-                links,
-                educationLvl,
-                occupation,
-                interestedIn,
-                profileImgID,
-                profileImgURL
-            })
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                id,
+                payload
+            )
         } catch (error) {
             return null
         }
     }
+
+
     async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
         let obj = {}
         if (likedQuestions) obj.likedQuestions = likedQuestions
@@ -143,7 +155,7 @@ export class Profile {
             return null
         }
     }
-    
+
     async listSingleProfile(slug) {
         try {
             return await this.databases.getDocument(

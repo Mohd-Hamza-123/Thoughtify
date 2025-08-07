@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react'
 import { TextArea } from '..'
 
 const EditProfileBio = ({ bio, setProfileObject }) => {
-
+  
   const [newBio, setNewBio] = useState(bio || '')
   
   const onChange = (e) => {
