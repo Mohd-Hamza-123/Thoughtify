@@ -8,8 +8,8 @@ const EditProfileLinks = ({ links, setProfileObject }) => {
   const [URL, setURL] = useState("");
   const [Title, setTitle] = useState("");
   const [URLerror, setURLerror] = useState("");
-  const [linksArr, setLinksArr] = useState([]);
-  
+  const [linksArr, setLinksArr] = useState(links || []);
+
   // console.log(linksArr)
   const url = useRef();
   const title = useRef();
@@ -62,8 +62,11 @@ const EditProfileLinks = ({ links, setProfileObject }) => {
         return [];
       }
     });
-
   }, []);
+
+  useEffect(() => {
+    setProfileObject((prev) => ({ ...prev, links: linksArr }))
+  }, [linksArr])
 
   return (
     <div id="EditProfile_EditLinks">

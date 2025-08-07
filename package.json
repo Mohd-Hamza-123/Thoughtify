@@ -1,5 +1,5 @@
 {
-  "name": "queryflow",
+  "name": "thoughtify",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -26,7 +26,6 @@
     "clsx": "^2.1.1",
     "firebase": "^10.11.1",
     "html-react-parser": "^5.0.6",
-    "image-conversion": "^2.1.1",
     "lucide-react": "^0.487.0",
     "prismjs": "^1.29.0",
     "react": "^18.2.0",

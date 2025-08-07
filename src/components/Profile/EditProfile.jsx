@@ -1,5 +1,6 @@
 import "./EditProfile.css";
 import { Button } from "../ui/button";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import profile from "../../appwrite/profile";
 import "react-image-crop/dist/ReactCrop.css";
@@ -8,8 +9,6 @@ import EditProfileBio from "./EditProfileBio";
 import EditProfileTags from "./EditProfileTags";
 import EditProfileImage from "./EditProfileImage";
 import EditProfileLinks from "./EditProfileLinks";
-import * as imageConversion from 'image-conversion'
-import React, { useState } from "react";
 import EditProfileOccupation from "./EditProfileOccupation";
 import EditProfileEducationLvl from "./EditProfileEducationLvl";
 import { useNotificationContext } from "@/context/NotificationContext";
@@ -19,9 +18,9 @@ const EditProfile = () => {
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
   const profileData = useSelector((state) => state.profileSlice.userProfile);
-
-
+  console.log(profileData)
   const {
+    $id: profileId,
     bio,
     interestedIn,
     profileImage,
@@ -30,112 +29,91 @@ const EditProfile = () => {
     links,
   } = profileData
 
-
   const { profileImageURL, profileImageID } = JSON.parse(profileImage)
-
 
   const { setNotification } = useNotificationContext();
 
+
+  const [isUpdating, setIsUpdating] = useState(false)
   const [profileObject, setProfileObject] = useState({
     profileImage: null,
     bio: '',
     links: [],
     educationLvl: '',
+    interestedIn: [],
+    occupation : '',
   })
-  console.log(profileObject)
 
-  const [isUpdating, setIsUpdating] = useState(false)
 
-  const submit = async (data) => {
 
-    setIsUpdating((prev) => true)
+  const submit = async (e) => {
 
-    if (!prevFileURL && !file) {
-      setSeePreviewBefore('Make sure to see preview before uploading image')
-      setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
-      return
-    }
-    if (seePreviewBefore !== '') {
-      setSeePreviewBefore('Make sure to see preview before uploading image')
-      setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
-      return
-    }
+    e.preventDefault()
 
-    if (file) {
+    if (isUpdating) return
+
+    const {
+      profileImage,
+      bio,
+      links,
+      educationLvl,
+      interestedIn,
+      occupation,
+    } = profileObject
+
+
+    console.log(profileObject)
+    // return
+    setIsUpdating(true)
+
+    // if (!prevFileURL && !file) {
+    //   setSeePreviewBefore('Make sure to see preview before uploading image')
+    //   setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
+    //   return
+    // }
+    // if (seePreviewBefore !== '') {
+    //   setSeePreviewBefore('Make sure to see preview before uploading image')
+    //   setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
+    //   return
+    // }
+
+    try {
 
       if (profileImageID) await profile.deleteStorage(profileImageID)
-
-      let blob = await imageConversion.compressAccurately(file, 200)
-
-      let uploadFile = new File([blob], userData?.name, { type: blob.type });
-
-      if (!uploadFile) return
-      let uploadedPic = await profile.createBucket({ file: uploadFile });
-      if (!uploadedPic) {
-        setNotification({ message: "Profile Updation failed", type: "error" })
-        setIsUpdating((prev) => false)
-        return
-      }
-
-      const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id)
-      if (profileImgURL) {
-        data.profileImgURL = profileImgURL?.href
-        data.profileImgID = `${uploadedPic?.$id}`
+      let profileImageObject = null;
+      if (profileImage) {
+        let uploadedPic = await profile.createBucket({ file: profileImage });
+        const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id);
+        profileImageObject = JSON.stringify({
+          profileImageID: uploadedPic?.$id,
+          profileImageURL: profileImgURL?.href
+        })
       }
 
 
-    } else {
-      data.profileImgID = profileImgID
-    }
-
-    if (data) {
-      if (data.educationLvl) {
-        if (data.occupation) {
-          let profileData = await profile.updateProfile(
-            $id,
-            { ...data },
-            linksArr,
-            interestedTagArr,
-          );
-          setMyUserProfile(profileData)
-        } else {
-          let profileData = await profile.updateProfile(
-            $id,
-            { ...data, occupation: OccupationInput },
-            linksArr,
-            interestedTagArr,
-          );
-          setMyUserProfile(profileData)
+      let profileData = await profile.updateProfile(
+        profileId,
+        {
+          occupation,
+          interestedIn,
+          educationLvl,
+          links,
+          bio,
+          profileImage: profileImageObject
         }
-      } else {
-        if (data.occupation) {
-          let profileData = await profile.updateProfile(
-            $id,
-            { ...data, educationLvl: EducationLevel },
-            linksArr,
-            interestedTagArr,
-          );
-          setMyUserProfile(profileData)
-        } else {
-          let profileData = await profile.updateProfile(
-            $id,
-            {
-              ...data,
-              occupation: OccupationInput,
-              educationLvl: EducationLevel,
-            },
-            linksArr,
-            interestedTagArr,
-          );
-          setMyUserProfile(profileData);
-        }
-      }
+      );
+
+      console.log(profileData)
       navigate(`/profile/${userData?.$id}`);
-      setSeePreviewBefore('')
       setNotification({ message: "Profile Updated", type: "success" })
-      setIsUpdating((prev) => false)
+      setIsUpdating(false)
+    } catch (error) {
+      setNotification({ message: "Profile not updated", type: "error" })
+      console.log(error)
     }
-  };
+
+  }
+
 
   return (
     <form

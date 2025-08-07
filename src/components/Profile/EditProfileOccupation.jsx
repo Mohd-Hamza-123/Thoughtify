@@ -5,14 +5,14 @@ import { set } from 'react-hook-form';
 
 const EditProfileOccupation = ({ occupation,setProfileObject }) => {
 
-  const [OccupationInput, setOccupationInput] = useState(occupation === "Not Set" ? "" : occupation);
+  console.log(occupation)
+  const [OccupationInput, setOccupationInput] = useState(occupation || "");
   // console.log(OccupationInput)
 
 
   useEffect(() => {
     setProfileObject((prev) => ({ ...prev, occupation: OccupationInput }))
-  }, []);
-
+  }, [OccupationInput]);
 
   return (
     <div className="EditProfile_Occupation_div">
