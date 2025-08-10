@@ -4,11 +4,13 @@ import React, { useRef, useState, memo } from "react";
 import { getCanvasPreview } from "./getCanvasPreview";
 import { useNotificationContext } from "@/context/NotificationContext";
 import { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
+import profile from "@/appwrite/profile";
 
 const MINIMUM_DIMENSION = 50;
 
 const EditProfileImage = ({ profileImageURL, setProfileObject }) => {
 
+    console.log(profileImageURL)
     const imgRef = useRef(null)
     const canvasRef = useRef(null)
 
@@ -82,19 +84,19 @@ const EditProfileImage = ({ profileImageURL, setProfileObject }) => {
             id="EditProfile_EditImage_Div"
             className="w-full flex items-center overflow-hidden justify-start gap-5">
 
-            {(profileImageURL && !imageURL) && (
+            {!imageURL && (
                 <div id="EditProfile-Prev-active">
                     <div className="" id="EditProfile-PrevImage">
                         <img
-                            src={profileImageURL}
+                            src={profileImageURL?.replace("/preview", "/view")}
                             className="rounded-ful bg-white"
+                            alt="Profile Image"
                         />
                     </div>
                     <label
                         htmlFor="editProfileImg"
                         className="EditProfile_ChooseImg flex gap-2 items-center cursor-pointer mr-3">
                         <span> Update </span>
-                        <i className="fa-solid fa-upload"></i>
                     </label>
                 </div>
             )}

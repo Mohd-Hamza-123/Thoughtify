@@ -1,7 +1,7 @@
 import "./EditProfile.css";
 import { Button } from "../ui/button";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import profile from "../../appwrite/profile";
 import "react-image-crop/dist/ReactCrop.css";
 import { useNavigate } from 'react-router-dom'
@@ -12,10 +12,12 @@ import EditProfileLinks from "./EditProfileLinks";
 import EditProfileOccupation from "./EditProfileOccupation";
 import EditProfileEducationLvl from "./EditProfileEducationLvl";
 import { useNotificationContext } from "@/context/NotificationContext";
+import { userProfile } from "@/store/profileSlice";
 
 const EditProfile = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
   const profileData = useSelector((state) => state.profileSlice.userProfile);
   console.log(profileData)
@@ -41,7 +43,7 @@ const EditProfile = () => {
     links: [],
     educationLvl: '',
     interestedIn: [],
-    occupation : '',
+    occupation: '',
   })
 
 
@@ -63,7 +65,7 @@ const EditProfile = () => {
 
 
     console.log(profileObject)
-    // return
+
     setIsUpdating(true)
 
     // if (!prevFileURL && !file) {
@@ -83,6 +85,7 @@ const EditProfile = () => {
       let profileImageObject = null;
       if (profileImage) {
         let uploadedPic = await profile.createBucket({ file: profileImage });
+        console.log(uploadedPic)
         const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id);
         profileImageObject = JSON.stringify({
           profileImageID: uploadedPic?.$id,
@@ -90,6 +93,7 @@ const EditProfile = () => {
         })
       }
 
+      console.log(profileImageObject)
 
       let profileData = await profile.updateProfile(
         profileId,
@@ -102,7 +106,7 @@ const EditProfile = () => {
           profileImage: profileImageObject
         }
       );
-
+      dispatch(userProfile({ userProfile: profileData }))
       console.log(profileData)
       navigate(`/profile/${userData?.$id}`);
       setNotification({ message: "Profile Updated", type: "success" })
@@ -110,6 +114,7 @@ const EditProfile = () => {
     } catch (error) {
       setNotification({ message: "Profile not updated", type: "error" })
       console.log(error)
+      setIsUpdating(false)
     }
 
   }
