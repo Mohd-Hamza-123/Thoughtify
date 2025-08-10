@@ -1,13 +1,13 @@
 import React, { useEffect, useState, memo } from 'react'
 import { occupation_Arr } from './Profile_arr';
-import { set } from 'react-hook-form';
 
 
-const EditProfileOccupation = ({ occupation,setProfileObject }) => {
 
-  console.log(occupation)
+const EditProfileOccupation = ({ occupation, setProfileObject }) => {
+
+
   const [OccupationInput, setOccupationInput] = useState(occupation || "");
-  // console.log(OccupationInput)
+
 
 
   useEffect(() => {
@@ -37,13 +37,14 @@ const EditProfileOccupation = ({ occupation,setProfileObject }) => {
           </select>
         </div>
 
-        {OccupationInput === "Other" && <div className="w-1/2">
+        {(OccupationInput === "Other" || !occupation_Arr.includes(OccupationInput)) && <div className="w-1/2">
           <input
+            value={OccupationInput}
             type="text"
             placeholder="Enter Your Occupation"
             className="outline-none"
             maxLength={50}
-            onChange={(e) => setProfileObject((prev) => ({ ...prev, occupation: e.target?.value }))}
+            onChange={(e) => setOccupationInput(e?.target?.value)}
           />
         </div>}
 
@@ -52,4 +53,4 @@ const EditProfileOccupation = ({ occupation,setProfileObject }) => {
   )
 }
 
-export default EditProfileOccupation
+export default memo(EditProfileOccupation)

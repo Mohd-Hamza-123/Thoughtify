@@ -15,21 +15,27 @@ const InitializationWrapper = ({ children }) => {
     const userData = useSelector((state) => state.auth.userData)
 
     const loggedIn = async () => {
-        const userData = await authService.getCurrentUser();
-        if (userData) {
-            dispatch(login({ userData }));
-            getMyProfile(userData?.$id)
-            navigate("/");
-            setLoading(false)
-        } else {
+        try {
+            const userData = await authService.getCurrentUser();
+            if (userData) {
+                dispatch(login({ userData }));
+                getMyProfile(userData?.$id)
+                navigate("/");
+            } else {
+                setLoading(false)
+                navigate("/login")
+            }
+        } catch (error) {
             setLoading(false)
             navigate("/login")
         }
+
     }
 
     async function getMyProfile(profileID) {
         const myProfile = await profile.listSingleProfile(profileID)
         dispatch(userProfile({ userProfile: { ...myProfile } }))
+        setLoading(false)
     }
 
     useEffect(() => { loggedIn() }, [])

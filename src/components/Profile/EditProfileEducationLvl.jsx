@@ -2,9 +2,12 @@ import React, { useState, memo, useEffect } from 'react'
 import { EDUCTION_OPTIONS } from './Profile_arr';
 
 
-const EditProfileEducationLvl = ({ educationLevel, setProfileObject }) => {
+const EditProfileEducationLvl = ({
+  educationLevel,
+  setProfileObject
+}) => {
 
-
+  
   const [EducationLevel, setEducationLevel] = useState(educationLevel);
 
 
@@ -34,13 +37,14 @@ const EditProfileEducationLvl = ({ educationLevel, setProfileObject }) => {
           </select>
         </div>
 
-        {EducationLevel === "Other" && <div className="w-1/2">
+        {(EducationLevel === "Other" || !EDUCTION_OPTIONS.includes(EducationLevel)) && <div className="w-1/2">
           <input
+            value={EducationLevel}
             type="text"
             placeholder="Enter Your Qualification"
             className="outline-none"
             maxLength={50}
-            onChange={(e) => setProfileObject((prev) => ({ ...prev, educationLvl: e?.target?.value }))}
+            onChange={(e) => setEducationLevel(e?.target?.value)}
           />
         </div>}
 

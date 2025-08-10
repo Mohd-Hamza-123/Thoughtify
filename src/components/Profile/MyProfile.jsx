@@ -25,9 +25,9 @@ const MyProfile = () => {
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status)
   const profileData = useSelector((state) => state?.profileSlice?.userProfile)
-  console.log(profileData)
   const { profileImage } = profileData
   const { profileImageURL } = JSON.parse(profileImage)
+  console.log(profileImageURL)
   const { setNotification } = useNotificationContext()
   const realUser = userData ? slug === userData.$id : false;
 
@@ -200,7 +200,7 @@ const MyProfile = () => {
             <div
               id="MyProfile_Img_Div"
               className="w-1/4 h-full flex justify-center items-center">
-              <img src={profileImageURL} alt="profileImage" />
+              <img src={profileImageURL?.replace("/preview", "/view")} alt="profileImage" />
             </div>
             <div
               id="MyProfile_Name_Div"
