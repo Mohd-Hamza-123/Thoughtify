@@ -12,7 +12,12 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({ postid, commentContent, authid, name, date, category
+    async createComment({
+        postId,
+        commentContent,
+        authId,
+        name,
+        category
     }) {
         try {
             return await this.database.createDocument(
@@ -20,16 +25,16 @@ export class RealTime {
                 conf.appwriteNewCollectionId,
                 ID.unique(),
                 {
-                    postid,
-                    commentContent,
-                    authid,
-                    subComment: [],
                     name,
-                    date,
+                    postId,
+                    authId,
                     category,
+                    commentContent,
+                    subComment: [],
                 }
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }
@@ -67,13 +72,15 @@ export class RealTime {
         }
     }
     async listComment(postid, lastid) {
-        let QueryArr = [Query.limit(4), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
+        let QueryArr = [Query.limit(4), Query.equal("postId", [`${postid}`]), Query.orderDesc('$createdAt')]
         if (lastid) {
-            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postid", [`${postid}`]), Query.orderDesc('$createdAt')]
+            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postId", [`${postid}`]), Query.orderDesc('$createdAt')]
         }
 
         try {
-            return await this.database.listDocuments(conf.appwriteDatabaseId, conf.appwriteNewCollectionId,
+            return await this.database.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteNewCollectionId,
                 QueryArr
             )
         } catch (error) {
@@ -96,7 +103,7 @@ export class RealTime {
     async getCommentsWithQueries({ Title, category,
         BeforeDate, AfterDate, PostAge, UserID, lastPostID
     }) {
-    
+
         let QueryArr = [Query.limit(5)];
         if (lastPostID) {
             QueryArr.push(Query.cursorAfter(lastPostID))
