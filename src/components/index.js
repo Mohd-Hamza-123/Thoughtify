@@ -1,17 +1,17 @@
-import UpperNavigationBar from "./NavBar/UpperNavigationBar";
-import LowerNavigationBar from "./NavBar/LowerNavigationBar";
-import SideBar from "./Sidebar/SideBar";
+import RTE from "./RTE";
+import Login from "./Login/Login";
+import TextArea from "./TextArea";
 import NavBar from "./NavBar/NavBar";
 import AskQue from "./AskQue/AskQue";
 import Signup from "./Signup/Signup";
-import Login from "./Login/Login";
 import AuthLayout from "./AuthLayout";
-import RTE from "./RTE";
-import PostCard from "./Post-Card/PostCard";
-import TextArea from "./TextArea";
+import SideBar from "./Sidebar/SideBar";
 import ViewPost from "./ViewPost/ViewPost";
 import MyProfile from "./Profile/MyProfile";
-import Chat from "./Chat/Chat";
+import PostCard from "./Post-Card/PostCard";
+import UpperNavigationBar from "./NavBar/UpperNavigationBar";
+import LowerNavigationBar from "./NavBar/LowerNavigationBar";
+import Comments from "./Chat/Comments";
 import ChatRTE from "./Chat/ChatRTE";
 import ProfileSummary from "./Profile/ProfileSummary";
 import Favourite from "./Profile/Favourite";
@@ -39,5 +39,7 @@ import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark"
 import HomeLeft from "./Home/HomeLeft";
 import GoBackHome from "./GoBackHome";
 import Trigger from "./Home/Trigger/Trigger";
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, TextArea, ViewPost, Chat, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
+
+
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, TextArea, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
 
