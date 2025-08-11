@@ -12,7 +12,6 @@ import appwriteService from "../../appwrite/config";
 import uploadPostWithUnsplashAPI from "./uploadPost";
 import { uploadQuestionWithImage } from "@/lib/posts";
 import { useSelector, useDispatch } from "react-redux";
-import { getInitialPost } from "../../store/postsSlice";
 import React, { useEffect, useState, memo } from "react";
 import { useNotificationContext } from "@/context/NotificationContext";
 import convertToWebPFile from "@/helpers/convert-image-into-webp";

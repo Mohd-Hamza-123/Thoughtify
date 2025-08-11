@@ -1,7 +1,13 @@
 import React from "react";
-import { ViewPost } from "../components";
+import { ViewPost, Chat } from "../components";
+
 const ViewPostPage = () => {
-  return <ViewPost />;
+  return (
+    <>
+      <ViewPost />
+      <Chat />
+    </>
+  )
 };
 
 export default ViewPostPage;

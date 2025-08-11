@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { getAvatar } from "@/services/getAvatar";
 import { useSelector } from "react-redux";
 const Logo = () => {
   return (
@@ -36,7 +35,7 @@ export const ThoughtifyLogo = ({ className = '' }) => {
 export const ProfileImage = ({ className = '', ...props }) => {
 
   const myProfile = useSelector((state) => state.profileSlice.userProfile)
-  console.log(myProfile)
+
   const { profileImageURL, profileImageID } = myProfile?.profileImage ? JSON.parse(myProfile?.profileImage) : "No Image"
 
   return <img

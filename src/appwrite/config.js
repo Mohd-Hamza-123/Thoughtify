@@ -33,7 +33,7 @@ export class Service {
                 trustedResponderPost,
             }
             console.log(payload)
-        
+
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
@@ -102,11 +102,18 @@ export class Service {
     }
 
     async getPost(slug) {
+        console.log(slug)
         try {
-            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
+            const data = await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug)
+
+            console.log(data)
+            return data
         } catch (error) {
             console.log("Appwrite serive :: getPost :: error", error);
-            return false
+            return null
         }
     }
     // Infinte Scroll

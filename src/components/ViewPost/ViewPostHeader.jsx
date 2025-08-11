@@ -12,15 +12,15 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Icons } from "..";
+import { useSelector } from "react-redux";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
-import { dateFormatFunc } from "@/helpers/format-dates";
 import { deleteQuestion } from "@/lib/posts";
+import { dateFormatFunc } from "@/helpers/format-dates";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { useSelector } from "react-redux";
 
 const ViewPostHeader = ({ post }) => {
-    // console.log(post)
+
     const userData = useSelector((state) => state?.auth?.userData);
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const { setNotification } = useNotificationContext();
