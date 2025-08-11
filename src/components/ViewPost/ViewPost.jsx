@@ -28,7 +28,7 @@ const ViewPost = () => {
     }
   })
 
-  console.log(post)
+  // console.log(post)
 
 
   useEffect(() => {

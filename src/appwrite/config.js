@@ -102,14 +102,14 @@ export class Service {
     }
 
     async getPost(slug) {
-        console.log(slug)
+        // console.log(slug)
         try {
             const data = await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug)
 
-            console.log(data)
+            // console.log(data)
             return data
         } catch (error) {
             console.log("Appwrite serive :: getPost :: error", error);

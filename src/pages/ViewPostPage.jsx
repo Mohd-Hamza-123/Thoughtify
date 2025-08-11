@@ -1,11 +1,11 @@
 import React from "react";
-import { ViewPost, Chat } from "../components";
+import { ViewPost, Comments } from "../components";
 
 const ViewPostPage = () => {
   return (
     <>
       <ViewPost />
-      <Chat />
+      <Comments />
     </>
   )
 };

@@ -39,19 +39,21 @@ export class RealTime {
         }
     }
 
-    async updateComment({ messageid, postid, commentContent, authid }, subComment) {
+    async updateComment({
+        commentId,
+        subComment,
+    }) {
+        const payload = {}
+        if (subComment) payload.subComment = subComment
         try {
             return await this.database.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteNewCollectionId,
-                messageid,
-                {
-                    postid,
-                    commentContent,
-                    subComment,
-                    authid
-                })
+                commentId,
+                payload
+            )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }
