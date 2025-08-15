@@ -9,19 +9,20 @@ import { MAX_IMAGE_SIZE } from "@/constant";
 import profile from "../../appwrite/profile";
 import { useNavigate } from "react-router-dom";
 import appwriteService from "../../appwrite/config";
-import uploadPostWithUnsplashAPI from "./uploadPost";
-import { uploadQuestionWithImage } from "@/lib/posts";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useState, memo } from "react";
-import { useNotificationContext } from "@/context/NotificationContext";
 import convertToWebPFile from "@/helpers/convert-image-into-webp";
+import { useNotificationContext } from "@/context/NotificationContext";
+import { uploadQuestionWithImage ,uploadPostWithUnsplashAPI } from "@/lib/posts";
 
 
 const AskQue = ({ post }) => {
-  // console.log(post)
+ 
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
+  
+  const isAdmin = userData.labels.includes("admin") ? true : false
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
   const { handleSubmit, register, control, getValues } =
@@ -60,7 +61,6 @@ const AskQue = ({ post }) => {
     isUploading,
   } = initialPostData
 
-
   const { setNotification } = useNotificationContext()
 
   const selectThumbnail = async (e) => {
@@ -80,7 +80,6 @@ const AskQue = ({ post }) => {
     }
     reader.readAsDataURL(file)
   }
-
 
   useEffect(() => {
     if (post) {
@@ -138,7 +137,6 @@ const AskQue = ({ post }) => {
       }))
     }
   }
-
   const addPollOptions = (e) => {
 
     if (post) {
@@ -169,8 +167,6 @@ const AskQue = ({ post }) => {
     }
     setInitialPostData((prev) => ({ ...prev, options: "" }))
   }
-
-
   const submit = async (data) => {
 
     if (!UserAuthStatus) {
@@ -197,10 +193,8 @@ const AskQue = ({ post }) => {
 
     if (post) {
 
-
       const { imageURL, imageID } = JSON.parse(post?.queImage)
 
-    
       if (thumbnailFile) {
 
         try {
@@ -214,6 +208,7 @@ const AskQue = ({ post }) => {
             queImage: JSON.stringify({ imageURL, imageID: dbThumbnail.$id }),
             pollQuestion,
             pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
+            trustedResponderPost: isAdmin
           }, categoryValue);
 
           setNotification({ message: "Post Updated", type: "success" })
@@ -229,6 +224,7 @@ const AskQue = ({ post }) => {
             queImage: JSON.stringify({ imageURL: thumbnailURL, imageID: null }),
             pollQuestion: pollQuestion,
             pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
+            trustedResponderPost: isAdmin
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
@@ -242,6 +238,7 @@ const AskQue = ({ post }) => {
             ...data,
             pollQuestion,
             pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
+            trustedResponderPost: isAdmin
           }, categoryValue);
           setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
@@ -265,6 +262,7 @@ const AskQue = ({ post }) => {
             queImage,
             pollQuestion,
             pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
+            trustedResponderPost: isAdmin
           }, categoryValue);
 
           dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))

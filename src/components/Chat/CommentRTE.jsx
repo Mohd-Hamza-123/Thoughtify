@@ -31,8 +31,6 @@ const CommentRTE = ({slug}) => {
         }
 
         try {
-
-
             const post = await appwriteService.getPost(slug)
 
             if (post?.opinionsFrom === 'Responders' && profileData?.trustedResponder && post?.userId !== userData?.$id) {

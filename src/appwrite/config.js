@@ -16,7 +16,6 @@ export class Service {
 
     async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, trustedResponderPost }, category) {
         try {
-
             const payload = {
                 name,
                 title,
@@ -108,7 +107,6 @@ export class Service {
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
                 slug)
-
             // console.log(data)
             return data
         } catch (error) {
@@ -117,18 +115,35 @@ export class Service {
         }
     }
     // Infinte Scroll
-    async getPosts({ lastPostID = null, TrustedResponders }) {
-        let QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.equal("status", ['public'])]
+    async getPosts({ lastPostID = null, TrustedResponders = false }) {
+        console.log("appwriteLastpostid", lastPostID)
+        let QueryArr = [
+            Query.limit(4),
+            // Query.orderDesc(`$createdAt`),
+            Query.equal("status", ['public'])
+        ]
+
         if (TrustedResponders) {
             if (lastPostID) {
-                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+                QueryArr = [
+                    Query.limit(4),
+                    Query.cursorAfter(lastPostID),
+                    Query.equal("status", ['public'])]
             }
             QueryArr.push(Query.equal("trustedResponderPost", [true]))
             QueryArr.push(Query.isNotNull("trustedResponderPost"))
 
         } else {
             if (lastPostID) {
-                QueryArr = [Query.limit(4), Query.orderDesc(`$createdAt`), Query.cursorAfter(lastPostID), Query.equal("status", ['public'])]
+                console.log(lastPostID)
+                QueryArr = [
+                    Query.limit(4),
+                    // Query.orderDesc(`$createdAt`), 
+                    Query.cursorAfter(lastPostID),
+                    Query.equal("status", ['public']),
+                    // Query.isNotNull("trustedResponderPost"),
+                    // Query.equal("trustedResponderPost", [false])
+                ]
             }
         }
         try {
