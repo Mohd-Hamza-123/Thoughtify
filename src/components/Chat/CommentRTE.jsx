@@ -1,13 +1,18 @@
-import React, { useRef } from 'react'
-import { useForm } from "react-hook-form";
 import { ChatRTE } from '..';
+import React, { useRef } from 'react'
 import { Button } from '../ui/button';
+import { useForm } from "react-hook-form";
+import { useSelector } from 'react-redux';
+import { useNotificationContext } from '@/context/NotificationContext';
+import appwriteService from '@/appwrite/config';
+import realTime from '@/appwrite/realTime';
 
-
-const CommentRTE = () => {
-
+const CommentRTE = ({slug}) => {
 
     const editorRef = useRef(null)
+    const { setNotification } = useNotificationContext()
+    const authStatus = useSelector((state) => state?.auth?.status)
+    const userData = useSelector((state) => state?.auth?.userData)
     const { control, handleSubmit, getValues } =
         useForm();
 
@@ -41,8 +46,8 @@ const CommentRTE = () => {
             const dbCommnet = await realTime.createComment({
                 ...data,
                 postId: post?.$id,
-                authId,
-                name,
+                authId: userData?.$id,
+                name : userData?.name,
                 category: post?.category,
             });
             console.log(dbCommnet)
