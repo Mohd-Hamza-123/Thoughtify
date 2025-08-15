@@ -33,12 +33,11 @@ function App() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [hasMorePostsInHome, sethasMorePostsInHome] = useState(true);
-
   const [notificationShow, setNotificationShow] = useState(null);
-  const [hasMoreComments, sethasMoreComments] = useState(true);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
+
+
   const [
     hasMorePostsInBrowseQuestions,
     sethasMorePostsInBrowseQuestions] =
@@ -191,10 +190,6 @@ function App() {
       sethasMorePostsInBrowseQuestions,
       hasMorePostInTrustedPost,
       sethasMorePostInTrustedPost,
-      hasMoreComments,
-      sethasMoreComments,
-      hasMorePostsInHome,
-      sethasMorePostsInHome,
       notificationShow,
       setNotificationShow,
       feedbackPopUp,

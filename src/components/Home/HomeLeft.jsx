@@ -1,41 +1,49 @@
-import { PostCard } from "..";
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
+import { PostCard, Spinner } from "..";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
-import { useQuery } from "@tanstack/react-query";
-import { useAskContext } from "@/context/AskContext";
-
-import React, { useRef, useEffect, useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useRef, useEffect } from "react";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
-  const {
-    hasMorePostsInHome,
-    sethasMorePostsInHome,
-  } =
-    useAskContext();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastPostID, setLastPostID] = useState(null);
-  const [isIntersecting, setIsIntersecting] = useState(false);
-
-  const getAllPosts = async () => {
-    setIsLoading(true);
+  const getPosts = async ({ lastPostID }) => {
     const posts = await appwriteService.getPosts({ lastPostID });
-    setIsLoading(false);
-    return posts
+    console.log(posts)
+    const documents = posts?.documents
+    const documentsLength = posts?.documents.length
+    // console.log(documents[documentsLength - 1]?.$id)
+    return {
+      documents: documents,
+      nextCursor: documentsLength ? documents[documentsLength - 1]?.$id : undefined
+    }
   }
 
-
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ["posts"],
-    queryFn: getAllPosts,
+  const { data,
+    isPending,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['posts'],
+    queryFn: async ({ pageParam }) => {
+      return getPosts({ lastPostID: pageParam })
+    },
     staleTime: Infinity,
-  });
+    initialPageParam: null,
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.nextCursor
+    },
+  })
+
+  const posts = data?.pages?.flatMap(page => page.documents) ?? [];
+  // console.log(posts);
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -43,43 +51,20 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     if (ref) {
       const observer = new IntersectionObserver(
         ([entry]) => {
-          setIsIntersecting(entry.isIntersecting);
+          // console.log(entry.isIntersecting)
+          if (entry.isIntersecting) fetchNextPage()
         },
         {
           root: null,
           rootMargin: "0px",
-          threshold: 1,
+          threshold: 0.1,
         }
       );
 
       observer.observe(ref);
       return () => ref && observer.unobserve(ref);
     }
-  }, [spinnerRef.current]);
-
-  useEffect(() => {
-    // if (isIntersecting && hasMorePostsInHome) {
-    //   const getAllPosts = async () => {
-    //     let LastID = initialPost[initialPost?.length - 1]?.$id;
-    //     const posts = await appwriteService.getPosts({ lastPostID: LastID });
-
-    //     if (initialPost.length < posts?.total) {
-    //       sethasMorePostsInHome(true);
-    //     } else {
-    //       sethasMorePostsInHome(false);
-    //     }
-
-    //     if (posts?.documents?.length === 0) {
-    //       setIsLoading(false);
-    //       return;
-    //     }
-    //     let lastID = posts?.documents[posts?.documents?.length - 1]?.$id;
-    //     setLastPostID(lastID);
-    //     dispatch(getInitialPost({ initialPosts: posts?.documents }));
-    //   };
-    //   getAllPosts();
-    // }
-  }, [isIntersecting, hasMorePostsInHome]);
+  }, [fetchNextPage, hasNextPage]);
 
 
   if (isPending)
@@ -103,9 +88,9 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     return (
       <div
         ref={homeLeft}
-        className={`w-full flex-col-reverse md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+        className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
 
-        {data?.documents?.map((post) => {
+        {posts?.map((post) => {
           if (isTrustedResponder === false) return <PostCard
             key={post?.$id}
             {...post}
@@ -116,9 +101,9 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
           />
         })}
 
-        {isLoading && hasMorePostsInHome && (
+        {hasNextPage && (
           <div ref={spinnerRef} className="flex justify-center">
-            <span className="Home_loader"></span>
+            <Spinner />
           </div>
         )}
       </div>
