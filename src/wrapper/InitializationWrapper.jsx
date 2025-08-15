@@ -1,11 +1,11 @@
 import { Loader } from '@/components';
+import profile from '@/appwrite/profile';
 import { login } from '@/store/authSlice';
 import authService from '@/appwrite/auth';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import profile from '@/appwrite/profile';
 import { userProfile } from '@/store/profileSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const InitializationWrapper = ({ children }) => {
 

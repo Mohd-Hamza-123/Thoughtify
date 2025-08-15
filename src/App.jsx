@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AskProvider } from "./context/AskContext";
 import { Routes, Route } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
 import { NavBar, NotificationPop, SideBar } from "./components";
@@ -28,7 +28,6 @@ import InitializationWrapper from "./wrapper/InitializationWrapper";
 
 function App() {
 
-  const dispatch = useDispatch();
 
   const userData = useSelector((state) => state.auth?.userData);
 
@@ -58,7 +57,6 @@ function App() {
   ] = useState(true);
   const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] =
     useState(true);
-  const [queries, setQueries] = useState([]);
 
   // For notification bell icon
   const [isUnreadNotificationExist, setIsUnreadNotificationExist] =
@@ -183,8 +181,6 @@ function App() {
     value={{
       isAppInstalled,
       onInstallApp,
-      queries,
-      setQueries,
       hasMorePostsInProfileFilterBookmark,
       sethasMorePostsInProfileFilterBookmark,
       hasMorePostsInProfileFilterOpinions,

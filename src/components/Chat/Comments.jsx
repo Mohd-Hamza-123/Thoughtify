@@ -3,13 +3,13 @@ import { useState } from "react";
 import conf from "../../conf/conf";
 import { Button } from "../ui/button";
 import parse from "html-react-parser";
-import realTime from "../../appwrite/realTime";
-import React, { useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Icons, Spinner } from "../index";
 import CommentRTE from "./CommentRTE";
 import SubComment from "./SubComment";
 import { useSelector } from "react-redux";
+import realTime from "../../appwrite/realTime";
+import React, { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAskContext } from "../../context/AskContext";
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useNotificationContext } from "@/context/NotificationContext";
@@ -18,7 +18,6 @@ const Comments = () => {
 
   const { slug, filterCommentID } = useParams();
   // console.log(slug)
-  // console.log(filterCommentID)
 
   const {
     data: comments
@@ -37,113 +36,21 @@ const Comments = () => {
   const authStatus = useSelector((state) => state?.auth?.status)
   const userData = useSelector((state) => state?.auth?.userData)
 
-
-
   const { setNotification } = useNotificationContext()
 
   const fixedReplies = 2;
-
-  const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
-  const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
-
-  const [activeTextArea, setactiveTextArea] = useState(null)
-
-  const [replyComment, setReplyComment] = useState("");
-  const { $id: authId, name } = useSelector((state) => state.auth?.userData || {});
-
-
-  const [isLoading, setIsLoading] = useState(false)
   const { hasMoreComments, sethasMoreComments } = useAskContext()
 
-  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [lastpostId, setLastpostId] = useState(null);
+  const [replyComment, setReplyComment] = useState("");
+  const [activeTextArea, setactiveTextArea] = useState(null)
+  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
+  const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
 
 
   let spinnerRef = useRef();
-
-  // useEffect(() => {
-
-  //   const getProfilePics = async () => {
-
-  //     let array = commentArr;
-  //     let uniqueArray = Array.from(new Map(array?.map(obj => [obj?.authId
-  //       , obj])).values());
-
-  //     let wantProfileIds = uniqueArray.filter((objofUniqueArr) => {
-  //       return !postUploaderPics.some((objOfRedux) => objOfRedux?.userId === objofUniqueArr?.authId)
-  //     })
-
-  //     if (wantProfileIds.length > 0) {
-  //       for (let i = 0; i < wantProfileIds.length; i++) {
-  //         let listedProfile = await profile.listProfile({ slug: wantProfileIds[i].authId })
-
-  //         let userId = listedProfile?.documents[0]?.userIdAuth
-  //         let profilePic = listedProfile?.documents[0]?.profileImgURL
-  //         dispatch(getpostUploaderProfilePic({ userId, profilePic }))
-  //       }
-  //     }
-  //   }
-  //   if (commentArr?.length > 0) {
-  //     getProfilePics();
-  //   }
-  // }, [commentArr])
-
-  // const getComments = async (lastid = null) => {
-  //   try {
-  //     setIsLoading(true)
-  //     const comments = await realTime.listComment(post?.$id, lastid);
-
-  //     if (commentArr?.length < comments?.total) {
-  //       sethasMoreComments(true)
-  //     } else {
-  //       sethasMoreComments(false)
-  //     }
-  //     dispatch(getCommentsInRedux({ comments: comments?.documents, isMerge: true }))
-  //   } catch (error) {
-  //     setcommentArr((prev) => {
-  //       const arr = commentsInRedux?.filter((comment) => comment?.postId === post?.$id)
-
-  //       if (arr?.length !== 0) setLastpostId(arr[arr?.length - 1]?.$id)
-
-  //       if (arr?.length !== 0) {
-  //         return arr
-  //       } else {
-  //         return []
-  //       }
-  //     })
-  //     setIsLoading(false)
-  //   }
-  // };
-
-  const deletePostComments = async () => {
-    if (!authStatus) {
-      setNotification({ message: "Please Login", type: 'error' })
-      return;
-    }
-    try {
-      const listComments = await realTime.listComment(post?.$id);
-
-      let totalCommentsToDelete = listComments?.total;
-      while (totalCommentsToDelete > 0) {
-        const listComments = await realTime.listComment(post?.$id);
-        totalCommentsToDelete = listComments?.total;
-        for (let i = 0; i < listComments?.documents?.length; i++) {
-          realTime.deleteComment(listComments.documents[i].$id);
-        }
-      }
-    } catch (error) {
-      return null;
-    }
-  };
-
-  // useEffect(() => {
-  //   setcommentArr((prev) => {
-  //     const arr = commentsInRedux?.filter((comment) => comment?.postId === post?.$id)
-  //     if (arr?.length !== 0) setLastpostId(arr[arr?.length - 1]?.$id)
-  //     return arr
-  //   })
-
-  // }, [isIntersecting, slug, commentsInRedux])
 
   useEffect(() => {
 
@@ -176,7 +83,6 @@ const Comments = () => {
     realTime
       .deleteComment(documentid)
       .then(() => {
-
         setNotification({ message: "Comment Deleted", type: 'success' })
       })
       .catch((err) => console.log(err.message));
@@ -223,9 +129,10 @@ const Comments = () => {
     setloadSubComments_Five_Mul((prev) => prev + 3)
   }
 
+
   return (
     <div className="w-full md:w-[70%] px-3 py-3">
-      <CommentRTE />
+      <CommentRTE slug={slug}/>
       <div>
         {comments?.map((comment) => {
           // console.log(comment)
@@ -248,7 +155,7 @@ const Comments = () => {
                   </div>
                 </Link>
                 <div>
-                  {(authId === comment?.authId || userData?.$id === conf.myPrivateUserID || userData?.$id === post?.userId) && (
+                  {(userData?.$id === comment?.authId || userData?.$id === conf.myPrivateUserID || userData?.$id === post?.userId) && (
                     <span
                       onClick={() => deleteComments(comment?.$id)}
                       className="cursor-pointer">
@@ -272,7 +179,6 @@ const Comments = () => {
                 Reply
               </span>
             </div>
-
 
             <div className={`${activeTextArea === comment?.$id ? '' : 'hidden'}`}>
               <textarea
@@ -305,7 +211,7 @@ const Comments = () => {
               onClick={() => { loadMoreSubComments(comment) }}>
               {`${(loadSubComments_Five_Mul >= comment?.subComment?.length && comment?.$id === id_For_Five_Mul) || comment?.subComment?.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
             <div>
-              <small>{new Date(comment?.$createdAt).toLocaleString()}</small>
+              {new Date(comment?.$createdAt).toLocaleString()}
             </div>
           </div>
         })}
