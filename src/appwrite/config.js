@@ -157,12 +157,13 @@ export class Service {
             throw new Error(error)
         }
     }
+
     async getPostsWithQueries({
         Title, category,
         BeforeDate, AfterDate, From, To, PostAge, Viewed,
-        Commented, UserID, Like_Dislike, lastPostID, PostFrom
-    }) {
-
+        Commented, UserID, Like_Dislike, PostFrom
+    }, lastPostID) {
+        console.log(lastPostID)
         let QueryArr = [Query.limit(5)]
         if (lastPostID) {
             QueryArr.push(Query.cursorAfter(lastPostID))
@@ -206,8 +207,10 @@ export class Service {
 
         try {
 
-            if (QueryArr.length < 1) return []
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteCollectionId,
+            // if (QueryArr.length < 1) return []
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
                 QueryArr
             )
         } catch (error) {
@@ -220,7 +223,7 @@ export class Service {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPosts :: error", error);
+            console.log("Appwrite service :: getPosts :: error", error);
             return false
         }
     }
@@ -228,7 +231,7 @@ export class Service {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
         } catch (error) {
-
+            console.log("Appwrite service :: createThumbnail :: error", error);
             return false
         }
     }
@@ -248,7 +251,7 @@ export class Service {
             return false
         }
     }
-    
+
     async getThumbnailPreview(fileId) {
         return this.storage.getFilePreview(
             conf.appwriteBucketIdThumbnail,

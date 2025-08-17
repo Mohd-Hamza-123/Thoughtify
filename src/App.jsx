@@ -37,10 +37,7 @@ function App() {
   const [SettingPopUp, SetSettingPopUp] = useState(false);
 
 
-  const [
-    hasMorePostsInBrowseQuestions,
-    sethasMorePostsInBrowseQuestions] =
-    useState(true);
+ 
   const [
     hasMorePostsInProfileFilterQuestions,
     sethasMorePostsInProfileFilterQuestions,
@@ -185,8 +182,6 @@ function App() {
       sethasMorePostsInProfileFilterOpinions,
       hasMorePostsInProfileFilterQuestions,
       sethasMorePostsInProfileFilterQuestions,
-      hasMorePostsInBrowseQuestions,
-      sethasMorePostsInBrowseQuestions,
       hasMorePostInTrustedPost,
       sethasMorePostInTrustedPost,
       notificationShow,

@@ -6,64 +6,54 @@ import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { categoriesArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
-import { useAskContext } from "../../context/AskContext";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
+import { useNotificationContext } from "@/context/NotificationContext";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
+
+  const { setNotification } = useNotificationContext()
+
   const { category, searchInput } = useParams();
   const { register, handleSubmit, setValue, reset, getValues } = useForm({});
 
   const spinnerRef = useRef();
   const BrowseQuestionLeft = useRef();
   const BrowseQuestionRight = useRef();
+  const filters = useRef({})
 
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastPostID, setLastPostID] = useState(null);
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [totalFilteredQueries, settotalFilteredQueries] = useState(0);
+  const { data, refetch, hasNextPage, fetchNextPage, isFetching } = useInfiniteQuery({
+    queryKey: ["filteredQuestions"],
+    queryFn: async ({ pageParam }) => {
 
-  const {
-    hasMorePostsInBrowseQuestions,
-    sethasMorePostsInBrowseQuestions,
-    queries,
-    setQueries,
-    isDarkModeOn,
-  } = useAskContext();
-  const [isPostAvailable, setisPostAvailable] = useState(true);
+      const filteredQuestions = await appwriteService.getPostsWithQueries({
+        ...filters.current,
+      }, pageParam)
 
-  const [isSearching, setisSearching] = useState(false);
+      const documents = filteredQuestions.documents
+      const documentsLength = documents.length
+      return {
+        documents,
+        nextCursor: documentsLength ? documents[documentsLength - 1].$id : undefined
+      }
+    },
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    enabled: false
+  })
+
+
+  const posts = useMemo(() => {
+    return data?.pages?.flatMap((page) => page.documents)
+  }, [data])
+
+  console.log(posts)
 
   const submit = async (data) => {
 
-    setisSearching((prev) => true);
-    sethasMorePostsInBrowseQuestions(true);
-    const filteredQuestions = await appwriteService.getPostsWithQueries({
-      ...data,
-    });
-
-    const isArray = Array.isArray(filteredQuestions);
-
-    if (isArray) {
-      sethasMorePostsInBrowseQuestions(false);
-      setIsLoading(false);
-      settotalFilteredQueries(0);
-      setLastPostID(null);
-      setisPostAvailable(false);
-    } else {
-      setIsLoading(true);
-      setisPostAvailable(true);
-      if (filteredQuestions.documents.length > 0) {
-        settotalFilteredQueries(filteredQuestions.total);
-        setQueries((prev) => filteredQuestions.documents);
-      } else {
-        settotalFilteredQueries(0);
-        setQueries((prev) => []);
-        setisPostAvailable(false);
-      }
-    }
-    setisSearching((prev) => false);
-    // setSwitchTrigger((prev) => false)
+    filters.current = data
+    refetch()
     if (
       BrowseQuestionLeft.current &&
       BrowseQuestionRight.current &&
@@ -75,55 +65,23 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
   };
 
   useEffect(() => {
-    if (queries.length >= totalFilteredQueries) {
-      setIsLoading(false);
-      sethasMorePostsInBrowseQuestions(false);
-      setLastPostID((prev) => null);
-    } else {
-      setLastPostID((prev) => queries[queries.length - 1]?.$id);
-      setIsLoading(true);
-      sethasMorePostsInBrowseQuestions(true);
-    }
-  }, [queries, isIntersecting, isLoading]);
-
-  useEffect(() => {
-    const getMoreQueries = async () => {
-      const data = getValues();
-      const filteredQuestions = await appwriteService.getPostsWithQueries({
-        ...data,
-        lastPostID,
-      });
-
-      if (filteredQuestions.length !== 0) {
-        setQueries((prev) => [...prev, ...filteredQuestions.documents]);
-      }
-    };
-
-    if (isIntersecting) {
-      if (lastPostID !== null) {
-        getMoreQueries();
-      }
-    }
-  }, [isIntersecting]);
-
-  useEffect(() => {
     const ref = spinnerRef.current;
     if (ref) {
       const observer = new IntersectionObserver(
         ([entry]) => {
-          setIsIntersecting((prev) => entry.isIntersecting);
+          if (entry.isIntersecting) fetchNextPage()
         },
         {
           root: null,
           rootMargin: "0px",
-          threshold: 1,
+          threshold: 0.1,
         }
       );
 
       observer.observe(ref);
       return () => ref && observer.unobserve(ref);
     }
-  }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries]);
+  }, [hasNextPage, fetchNextPage]);
 
   useEffect(() => {
     if (category !== "null") {
@@ -139,9 +97,9 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
     }
   }, [searchInput]);
 
+
   const resetFilter = () => {
     reset();
-    sethasMorePostsInBrowseQuestions(false);
   };
 
 
@@ -155,7 +113,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
         <div className="flex justify-between">
           <Button variant='outline' type="Submit">
-            {isSearching ? "Searching..." : "Apply Filter"}
+            {isFetching ? "Searching..." : "Apply Filter"}
           </Button>
           <Button variant="destructive" onClick={resetFilter} type="reset">Reset Filter</Button>
         </div>
@@ -187,9 +145,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 id="BrowseQuestions_Most_Viewed"
                 value={"MostViewed"}
               />
-              <label
-                className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-                htmlFor="BrowseQuestions_Most_Viewed"
+              <label htmlFor="BrowseQuestions_Most_Viewed"
               >
                 Most Viewed
               </label>
@@ -202,11 +158,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 id="BrowseQuestions_Less_Viewed"
                 value={"lessViewed"}
               />
-              <label
-                className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-                htmlFor="BrowseQuestions_Less_Viewed">
-                Less Viewed
-              </label>
+              <label htmlFor="BrowseQuestions_Less_Viewed">Less Viewed</label>
             </div>
           </div>
         </div>
@@ -223,10 +175,8 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 value={"Recent"}
               />
               <label
-                className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
-                  }`}
-                htmlFor="BrowseQuestion_PostAge_Recent"
-              >
+                className="cursor-pointer"
+                htmlFor="BrowseQuestion_PostAge_Recent">
                 Recent
               </label>
             </div>
@@ -261,8 +211,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 value={"Most Commented"}
               />
               <label
-                className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                className="cursor-pointer"
                 htmlFor="BrowseQuestion_Most_Commented"
               >
                 Most Commented
@@ -277,8 +226,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 value={"Least Commented"}
               />
               <label
-                className={`cursor-pointer ${isDarkModeOn ? "text-white" : "text-black"
-                  }`}
+                className="cursor-pointer"
                 htmlFor="BrowseQuestion_Least_Commented"
               >
                 Least Commented
@@ -288,25 +236,18 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
         </div>
 
         <div>
-          <div>
-            <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
-              Favourite :{" "}
-            </p>
-          </div>
+
+          <p> Favourite :</p>
+
           <div className="flex gap-2">
             <input
               type="radio"
               {...register("Like_Dislike")}
               name="Like_Dislike"
               id="BrowseQuestion_Liked"
-              value={"Most Liked"}
+              value="Most Liked"
             />
-            <label
-              className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-              htmlFor="BrowseQuestion_Liked"
-            >
-              Most liked
-            </label>
+            <label htmlFor="BrowseQuestion_Liked"> Most liked </label>
           </div>
           <div className="flex gap-2">
             <input
@@ -316,21 +257,12 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               id="BrowseQuestion_Disliked"
               value={"Most Disliked"}
             />
-            <label
-              className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-              htmlFor="BrowseQuestion_Disliked"
-            >
-              Most disliked
-            </label>
+            <label htmlFor="BrowseQuestion_Disliked" > Most disliked </label>
           </div>
         </div>
 
         <div>
-          <div>
-            <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
-              Posts By :{" "}
-            </p>
-          </div>
+          <span>Post By :</span>
           <div className="flex gap-2">
             <input
               defaultChecked={true}
@@ -340,9 +272,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               id="BrowseQuestion_From_All"
               value={"All"}
             />
-            <label
-              className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-              htmlFor="BrowseQuestion_From_All">All</label>
+            <label htmlFor="BrowseQuestion_From_All">All</label>
           </div>
           <div className="flex gap-2">
             <input
@@ -365,7 +295,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               value={"Non Responders"}
             />
             <label
-              className={`${isDarkModeOn ? "text-white" : "text-black"}`}
+
               htmlFor="BrowseQuestion_Non-Responders">
               Non-Responders
             </label>
@@ -433,87 +363,58 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
       </form>}
       <div
         ref={BrowseQuestionRight}
-        className={`${switchTrigger ? "hidden lg:block" : "block"} h-[80dvh]`}
+        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll`}
         id="BrowseQuestions_Filtered_Questions">
-        {!isPostAvailable && <p className="text-center"> No Posts Available</p>}
-        {queries?.map((querie, index) => {
-          if (isPostAvailable !== true) {
-            return;
-          }
-          return (
-            <div key={querie.$id}>
-              <span
-                className={`BrowseQuestions_querieName`}
-              >
-                {querie.name}
-              </span>
+        {posts?.length === 0 && <p className="text-center"> No Posts Available</p>}
+        {posts?.map((post, index) => {
 
-              <Link to={`/post/${querie.$id}/${null}`}>
-                <p
-                  className={`${isDarkModeOn ? "text-white" : "text-black"}`}
-                >
-                  {querie.title}
+          return (
+            <div key={post?.$id}>
+              <span>{post.name}</span>
+
+              <Link to={`/post/${post.$id}/${null}`}>
+                <p >
+                  {post.title}
                 </p>
                 <div
                   id="BrowseQuestions_created_category_views"
-                  className="flex gap-3 flex-wrap"
-                >
+                  className="flex gap-3 flex-wrap">
                   <span>
-                    {new Date(querie.$createdAt).toLocaleDateString("en-US", {
+                    {new Date(post.$createdAt).toLocaleDateString("en-US", {
                       day: "numeric",
                       month: "long",
                       year: "numeric",
                     })}
                   </span>
-                  <span>{querie.category}</span>
+                  <span>{post.category}</span>
                   <div className="flex justify-center items-center">
-                    <span
-                      className={`${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
-                    >
-                      {querie.views}
+                    <span>
+                      {post.views}
                     </span>
                     <i
-                      className={`fa-solid fa-eye ${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                      className="fa-solid fa-eye"
                       aria-hidden="true"
                     ></i>
                   </div>
                   <div>
-                    <span
-                      className={`${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
-                    >
-                      {querie.commentCount}
-                    </span>
-                    <i
-                      className={`fa-solid fa-comment ${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                    <span>{post.commentCount}</span>
+                    <i className="fa-solid fa-comment"
                     ></i>
                   </div>
                   <div>
-                    <span
-                      className={`${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
-                    >
-                      {querie?.like}
+                    <span>
+                      {post?.like}
                     </span>
                     <i
-                      className={`fa-solid fa-thumbs-up ${isDarkModeOn ? "text-white" : "text-black"
+                      className={`fa-solid fa-thumbs-up"
                         }`}
                     ></i>
                   </div>
 
                   <div>
-                    <span
-                      className={`${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
-                    >
-                      {querie?.dislike}
-                    </span>
+                    <span> {post?.dislike} </span>
                     <i
-                      className={`fa-solid fa-thumbs-down ${isDarkModeOn ? "text-white" : "text-black"
-                        }`}
+                      className="fa-solid fa-thumbs-down"
                     ></i>
                   </div>
                 </div>
@@ -522,11 +423,11 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
           );
         })}
 
-        {isLoading && hasMorePostsInBrowseQuestions && (
+        {hasNextPage &&
           <section ref={spinnerRef} className="flex justify-center">
             <Spinner />
           </section>
-        )}
+        }
       </div>
     </div>
   );

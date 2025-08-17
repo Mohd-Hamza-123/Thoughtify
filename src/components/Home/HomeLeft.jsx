@@ -5,9 +5,12 @@ import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
+  const navigate = useNavigate()
+  
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
@@ -16,7 +19,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     const posts = await appwriteService.getPosts({ lastPostID });
     const documents = posts?.documents
     const documentsLength = posts?.documents.length
-    // console.log(documents[documentsLength - 1]?.$id)
+
     return {
       documents: documents,
       nextCursor: documentsLength ? documents[documentsLength - 1]?.$id : undefined
@@ -42,7 +45,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
   // Memoize posts to prevent unnecessary re-renders
   const posts = useMemo(() => {
     return data?.pages?.flatMap(page => page.documents) ?? [];
-    
+
   }, [data?.pages]);
 
   // Memoize filtered posts
@@ -60,7 +63,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     if (ref) {
       const observer = new IntersectionObserver(
         ([entry]) => {
-          // console.log(entry.isIntersecting)
+
           if (entry.isIntersecting && hasNextPage) {
             fetchNextPage();
           }
@@ -103,15 +106,22 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
         Reload
       </Button>
     </div>
+  } else if (filteredPosts.length === 0) {
+    return <div className="w-[65%] flex flex-col items-center justify-center gap-2 ">
+      <p>No Posts Found</p>
+      <Button
+        variant=""
+        onClick={() => navigate('/AskQuestion')}>
+        Create a Post
+      </Button>
+    </div>
   }
   else
     return (
       <div
         ref={homeLeft}
         className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
-
         {filteredPosts?.map(renderPostCard)}
-
         {hasNextPage && (
           <div ref={spinnerRef} className="flex justify-center py-4">
             <Spinner />

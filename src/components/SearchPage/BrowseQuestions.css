@@ -122,9 +122,6 @@
     border-radius: 0px;
     padding: 10px 10px;
     background-color: transparent;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    height: 66vh;
 }
 
 .BrowseQuestions_querieName.darkMode {
