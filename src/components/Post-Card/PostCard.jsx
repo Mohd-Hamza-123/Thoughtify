@@ -60,7 +60,11 @@ const PostCard = ({
 
       <figure className="h-1/2 lg:h-full lg:w-[30%]">
         <Link to={`/post/${$id}/${null}`}>
-          <img src={imageView} alt={title} className="w-full h-full object-cover" />
+          <img 
+          src={imageView} 
+          alt={title} className="w-full h-full object-cover" 
+          loading="lazy"
+          />
         </Link>
       </figure>
 

@@ -13,15 +13,15 @@ import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useState, memo } from "react";
 import convertToWebPFile from "@/helpers/convert-image-into-webp";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { uploadQuestionWithImage ,uploadPostWithUnsplashAPI } from "@/lib/posts";
+import { uploadQuestionWithImage, uploadPostWithUnsplashAPI } from "@/lib/posts";
 
 
 const AskQue = ({ post }) => {
- 
+
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
-  
+
   const isAdmin = userData.labels.includes("admin") ? true : false
   const UserAuthStatus = useSelector((state) => state.auth.status)
 
@@ -254,7 +254,9 @@ const AskQue = ({ post }) => {
           const ImgArrUnsplash = UnsplashRes.results
           const randomIndex = Math.floor(Math.random() * 10);
 
-          const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.raw
+       
+          const ImgURL =  ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
+
           const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null });
 
           const dbPost = await appwriteService.updatePost(post?.$id, {

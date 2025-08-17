@@ -68,7 +68,6 @@ export class Profile {
         }
     }
 
-
     async updateProfile(id, {
         bio,
         links,
@@ -98,7 +97,6 @@ export class Profile {
         }
     }
 
-
     async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
         let obj = {}
         if (likedQuestions) obj.likedQuestions = likedQuestions
@@ -127,7 +125,6 @@ export class Profile {
             const res = await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
                 QueryArr
             )
-            // console.log(res)
             return res
         } catch (error) {
             return null

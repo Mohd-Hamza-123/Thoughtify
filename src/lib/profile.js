@@ -2,6 +2,8 @@ import { useDispatch } from "react-redux";
 import { logout } from "@/store/authSlice";
 import appwriteService from "@/appwrite/config";
 import { useSelector } from "react-redux";
+import profile from "@/appwrite/profile";
+
 
 export function useGetProfileData() {
 
@@ -22,7 +24,7 @@ export function useGetProfileData() {
         // console.log(profileImageID)
         try {
             if (!profileImageID) return null
-            
+
             const res = await appwriteService.getThumbnailPreview(profileImageID)
             return res.href
         } catch (error) {
@@ -30,5 +32,15 @@ export function useGetProfileData() {
         }
     }
     return { getProfileData, getProfileImageURLFromID }
+}
+
+
+export const getUserByName = async (name) => {
+    try {
+        const userProfile = await profile.listProfile({ name });
+        return userProfile?.documents || null
+    } catch (error) {
+        return null
+    }
 }
 

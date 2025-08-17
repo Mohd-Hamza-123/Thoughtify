@@ -1,56 +1,51 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import profile from "../appwrite/profile";
-import { useSelector, useDispatch } from "react-redux";
 import "./FindFriends.css";
-import { useAskContext } from "../context/AskContext";
-import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
+import React from "react";
 import { Icons } from "@/components";
+import { useForm } from "react-hook-form";
+import { getUserByName } from "@/lib/profile";
+import { useNavigate } from "react-router-dom";
+import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
+import { useNotificationContext } from "@/context/NotificationContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const FindFriends = () => {
+
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient()
+  const { setNotification } = useNotificationContext()
   const { handleSubmit, reset, register } = useForm();
 
-  const othersUserProfile = useSelector(
-    (state) => state.usersProfileSlice?.userProfileArr
-  );
-  const userData = useSelector((state) => state.auth.userData);
-  const { setnotificationPopMsg, setNotificationPopMsgNature, isDarkModeOn } =
-    useAskContext();
+  const mutation = useMutation({
+    mutationFn: (username) => getUserByName(username),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(['users'], (old = []) => {
+     
+        const newUsers = Array.isArray(data) ? data : [data];
+        const merged = [...old, ...newUsers];
 
-  const [isSearching, setisSearching] = useState(false);
-  const [searchedPerson, setsearchedPerson] = useState(null);
+        // remove duplicates by $id
+        const unique = merged.filter(
+          (user, index, self) =>
+            index === self.findIndex((u) => u.$id === user.$id)
+        );
 
-  const submit = async (data) => {
-    setisSearching((prev) => true);
-    try {
-      const GettingName = await profile.listProfile({
-        name: data?.searchValue,
+        return unique;
       });
+    },
+    onError: (err) => {
+      console.log(err);
+      setNotification({ message: "Something went wrong", type: "error" });
+    },
+  });
 
-      if (GettingName?.documents?.length === 0) {
-        setNotificationPopMsgNature((prev) => false);
-        setnotificationPopMsg((prev) => "No Users Found");
-        setisSearching((prev) => false);
-        return;
-      }
+  const searchedUser = mutation.data
 
-      setsearchedPerson((prev) => [...GettingName.documents]);
-      for (let i = 0; i < GettingName.total; i++) {
-        if (GettingName?.documents[i]?.userIdAuth !== userData?.$id) {
-          dispatch(
-            getOtherUserProfile({ userProfileArr: [GettingName?.documents[i]] })
-          );
-        }
-      }
+  const allUsers = queryClient.getQueryData(['users']);
+  
+  const submit = async (data) => {
+    mutation.mutate(data.searchValue)
+    reset();
 
-      reset();
-    } catch (error) {
-      return null;
-    }
-    setisSearching(false);
   };
   const nav = (slug) => navigate(slug)
 
@@ -62,7 +57,7 @@ const FindFriends = () => {
         <section className="px-3">
           <p>Searched</p>
           <div>
-            {othersUserProfile?.map((profile) => (
+            {allUsers?.map((profile) => (
               <div
                 key={profile?.$id}
                 onClick={() => navigate(`/profile/${profile?.userIdAuth}`)}
@@ -71,14 +66,14 @@ const FindFriends = () => {
                 <div>
                   <img src={profile?.profileImgURL} />
                 </div>
-                <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
+                <p>
                   {profile?.name}
                 </p>
               </div>
             ))}
-            {othersUserProfile?.length === 0 && (
+            {allUsers?.length === 0 && (
               <div className="FindFriendsPage_ListFriends">
-                <p className={`${isDarkModeOn ? "text-white" : "text-black"}`}>
+                <p >
                   No Users are here
                 </p>
               </div>
@@ -106,13 +101,13 @@ const FindFriends = () => {
           </div>
 
           <div>
-            {isSearching && <div className="flex justify-center">searching...</div>}
+            {mutation.isPending && <div className="flex justify-center">searching...</div>}
 
-            {searchedPerson?.map((persons, index) => (
+            {searchedUser?.map((persons, index) => (
               <div
-                key={persons?.userIdAuth}
+                key={persons?.$id}
                 className="cursor-pointer FindFriends_Profile_Details"
-                onClick={() => nav(`/profile/${persons?.userIdAuth}`)}>
+                onClick={() => nav(`/profile/${persons?.$id}`)}>
 
                 <div className="FindFriendsPage_ListFriends_Searched_Person">
 

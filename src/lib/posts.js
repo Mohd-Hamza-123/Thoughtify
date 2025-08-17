@@ -233,7 +233,8 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
             const ImgArrUnsplash = UnsplashRes.results
         
             const randomIndex = Math.floor(Math.random() * 10);
-            const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.raw
+            console.log(ImgArrUnsplash[randomIndex]?.urls?.regular)
+            const ImgURL =  ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
             const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null })
 
             const dbPost = await appwriteService.createPost({

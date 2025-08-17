@@ -21,7 +21,7 @@ const Comments = () => {
     const { pageParam: lastCommentId } = object
 
     const data = await realTime.listComment(slug, lastCommentId);
-    console.log(data)
+  
     const commentsLength = data?.documents?.length
     return {
       comments: data?.documents,
@@ -68,7 +68,6 @@ const Comments = () => {
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
 
-
   let spinnerRef = useRef();
 
   useEffect(() => {
@@ -91,7 +90,6 @@ const Comments = () => {
 
   }, [hasNextPage, fetchNextPage])
 
-
   const deleteComments = async (documentid) => {
     try {
       await realTime.deleteComment(documentid);
@@ -113,7 +111,6 @@ const Comments = () => {
        setNotification({ message: "Comment not Deleted", type: "error" });
     }
   };
-
 
   const subComment = async (data) => {
 
@@ -155,7 +152,6 @@ const Comments = () => {
 
     setloadSubComments_Five_Mul((prev) => prev + 3)
   }
-
 
   return (
     <div className="w-full md:w-[70%] px-3 py-3">

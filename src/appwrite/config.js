@@ -248,8 +248,16 @@ export class Service {
             return false
         }
     }
-    async getThumbnailPreview(fileid) {
-        return this.storage.getFilePreview(conf.appwriteBucketIdThumbnail, fileid)
+    
+    async getThumbnailPreview(fileId) {
+        return this.storage.getFilePreview(
+            conf.appwriteBucketIdThumbnail,
+            fileId,
+            undefined,
+            undefined,
+            undefined,
+            50,
+        )
     }
 }
 
