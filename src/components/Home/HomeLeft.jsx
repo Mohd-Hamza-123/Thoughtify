@@ -4,17 +4,16 @@ import { PostCard, Spinner } from "..";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useMemo, useCallback } from "react";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
-
-  const getPosts = async ({ lastPostID }) => {
+  const getPosts = useCallback(async (object) => {
+    const { pageParam: lastPostID } = object
     const posts = await appwriteService.getPosts({ lastPostID });
-    console.log(posts)
     const documents = posts?.documents
     const documentsLength = posts?.documents.length
     // console.log(documents[documentsLength - 1]?.$id)
@@ -22,7 +21,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       documents: documents,
       nextCursor: documentsLength ? documents[documentsLength - 1]?.$id : undefined
     }
-  }
+  }, []);
 
   const { data,
     isPending,
@@ -32,9 +31,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     hasNextPage,
   } = useInfiniteQuery({
     queryKey: ['posts'],
-    queryFn: async ({ pageParam }) => {
-      return getPosts({ lastPostID: pageParam })
-    },
+    queryFn: getPosts,
     staleTime: Infinity,
     initialPageParam: null,
     getNextPageParam: (lastPage, pages) => {
@@ -42,8 +39,20 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     },
   })
 
-  const posts = data?.pages?.flatMap(page => page.documents) ?? [];
-  // console.log(posts);
+  // Memoize posts to prevent unnecessary re-renders
+  const posts = useMemo(() => {
+    return data?.pages?.flatMap(page => page.documents) ?? [];
+    
+  }, [data?.pages]);
+
+  // Memoize filtered posts
+  const filteredPosts = useMemo(() => {
+    if (isTrustedResponder === false) {
+      return posts;
+    } else {
+      return posts.filter(post => post?.trustedResponderPost);
+    }
+  }, [posts, isTrustedResponder]);
 
   useEffect(() => {
     const ref = spinnerRef.current;
@@ -52,11 +61,13 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       const observer = new IntersectionObserver(
         ([entry]) => {
           // console.log(entry.isIntersecting)
-          if (entry.isIntersecting) fetchNextPage()
+          if (entry.isIntersecting && hasNextPage) {
+            fetchNextPage();
+          }
         },
         {
           root: null,
-          rootMargin: "0px",
+          rootMargin: "100px", // Increased margin for better UX
           threshold: 0.1,
         }
       );
@@ -66,6 +77,15 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     }
   }, [fetchNextPage, hasNextPage]);
 
+  // Memoize the PostCard render function
+  const renderPostCard = useCallback((post) => {
+    return (
+      <PostCard
+        key={post?.$id}
+        {...post}
+      />
+    );
+  }, []);
 
   if (isPending)
     return (
@@ -90,19 +110,10 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
         ref={homeLeft}
         className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
 
-        {posts?.map((post) => {
-          if (isTrustedResponder === false) return <PostCard
-            key={post?.$id}
-            {...post}
-          />
-          else if (post?.trustedResponderPost) return <PostCard
-            key={post?.$id}
-            {...post}
-          />
-        })}
+        {filteredPosts?.map(renderPostCard)}
 
         {hasNextPage && (
-          <div ref={spinnerRef} className="flex justify-center">
+          <div ref={spinnerRef} className="flex justify-center py-4">
             <Spinner />
           </div>
         )}

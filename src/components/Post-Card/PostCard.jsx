@@ -5,7 +5,6 @@ import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import increaseViews from "@/services/increasePostView";
 
-
 const PostCard = ({
   $id,
   title = "Title",
@@ -21,7 +20,7 @@ const PostCard = ({
   trustedResponderPost,
   isTrustedResponder
 }) => {
-  // console.log(queImage)
+
   const { imageURL, imageID } = JSON.parse(queImage)
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL
 
@@ -61,11 +60,7 @@ const PostCard = ({
 
       <figure className="h-1/2 lg:h-full lg:w-[30%]">
         <Link to={`/post/${$id}/${null}`}>
-          <img
-            src={`${imageView}`}
-            alt="Image"
-            className="w-full rounded-sm object-cover h-full"
-          />
+          <img src={imageView} alt={title} className="w-full h-full object-cover" />
         </Link>
       </figure>
 

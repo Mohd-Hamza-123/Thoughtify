@@ -73,10 +73,24 @@ export class RealTime {
             return null
         }
     }
-    async listComment(postid, lastid) {
-        let QueryArr = [Query.limit(4), Query.equal("postId", [`${postid}`]), Query.orderDesc('$createdAt')]
-        if (lastid) {
-            QueryArr = [Query.limit(4), Query.cursorAfter(lastid), Query.equal("postId", [`${postid}`]), Query.orderDesc('$createdAt')]
+
+    async listComment(postId, lastId) {
+
+        console.log(lastId)
+        
+        let QueryArr = [
+            Query.limit(4),
+            Query.equal("postId", [`${postId}`]),
+            Query.orderDesc("$createdAt")
+        ]
+
+        if (lastId) {
+            QueryArr = [
+                Query.limit(4),
+                Query.cursorAfter(lastId),
+                Query.equal("postId", [`${postId}`]),
+                Query.orderDesc("$createdAt")
+            ]
         }
 
         try {
@@ -86,7 +100,8 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            return false
+            console.log(error?.message)
+            return null
         }
     }
 

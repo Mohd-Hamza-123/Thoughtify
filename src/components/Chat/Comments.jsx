@@ -8,26 +8,50 @@ import CommentRTE from "./CommentRTE";
 import SubComment from "./SubComment";
 import { useSelector } from "react-redux";
 import realTime from "../../appwrite/realTime";
-import React, { useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useAskContext } from "../../context/AskContext";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useNotificationContext } from "@/context/NotificationContext";
 
 const Comments = () => {
 
   const { slug, filterCommentID } = useParams();
-  // console.log(slug)
+  const queryClient = useQueryClient();
+  const getComments = useCallback(async (object) => {
+    const { pageParam: lastCommentId } = object
+
+    const data = await realTime.listComment(slug, lastCommentId);
+    console.log(data)
+    const commentsLength = data?.documents?.length
+    return {
+      comments: data?.documents,
+      nextCursor: commentsLength ? data.documents[commentsLength - 1]?.$id : undefined
+    }
+  }, [])
+
 
   const {
-    data: comments
-  } = useQuery({
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isPending,
+    isError,
+    error,
+  } = useInfiniteQuery({
     queryKey: ['comments', slug],
-    queryFn: async () => {
-      const data = await realTime.listComment(slug);
-      return data.documents
-    }
+    queryFn: getComments,
+    staleTime: Infinity,
+    initialPageParam: null,
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.nextCursor
+    },
+
   })
+
+  const filteredComments = useMemo(() => {
+    const comment = data?.pages?.flatMap(page => page.comments) ?? []
+    return Array.from(new Map(comment.map(c => [c.$id, c])).values())
+  }, [data?.pages])
 
   // console.log(comments)
 
@@ -39,13 +63,8 @@ const Comments = () => {
   const { setNotification } = useNotificationContext()
 
   const fixedReplies = 2;
-  const { hasMoreComments, sethasMoreComments } = useAskContext()
-
-  const [isLoading, setIsLoading] = useState(false)
-  const [lastpostId, setLastpostId] = useState(null);
   const [replyComment, setReplyComment] = useState("");
   const [activeTextArea, setactiveTextArea] = useState(null)
-  const [isIntersecting, setIsIntersecting] = useState(false)
   const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
   const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
 
@@ -53,40 +72,48 @@ const Comments = () => {
   let spinnerRef = useRef();
 
   useEffect(() => {
-
-    if (isIntersecting) {
-      getComments(lastpostId)
-    }
-  }, [isIntersecting])
-
-  useEffect(() => {
     const ref = spinnerRef.current;
 
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
-        setIsIntersecting((prev) => entry.isIntersecting)
+        if (entry.isIntersecting) {
+          fetchNextPage()
+        }
       }, {
         root: null,
         rootMargin: '0px',
-        threshold: 1
+        threshold: 0.1
       })
 
       observer.observe(ref)
       return () => ref && observer.unobserve(ref)
     }
 
-  }, [spinnerRef.current])
+  }, [hasNextPage, fetchNextPage])
 
 
   const deleteComments = async (documentid) => {
+    try {
+      await realTime.deleteComment(documentid);
+      setNotification({ message: "Comment Deleted", type: "success" });
 
-    realTime
-      .deleteComment(documentid)
-      .then(() => {
-        setNotification({ message: "Comment Deleted", type: 'success' })
-      })
-      .catch((err) => console.log(err.message));
-  }
+      // remove from query cache
+      queryClient.setQueryData(['comments', slug], (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            comments: page.comments.filter((c) => c.$id !== documentid),
+          })),
+        };
+      });
+    } catch (err) {
+      console.log(err.message);
+       setNotification({ message: "Comment not Deleted", type: "error" });
+    }
+  };
+
 
   const subComment = async (data) => {
 
@@ -132,9 +159,9 @@ const Comments = () => {
 
   return (
     <div className="w-full md:w-[70%] px-3 py-3">
-      <CommentRTE slug={slug}/>
+      <CommentRTE slug={slug} />
       <div>
-        {comments?.map((comment) => {
+        {filteredComments?.map((comment) => {
           // console.log(comment)
           const profilePicURL = 'https://images.pexels.com/photos/33029806/pexels-photo-33029806.jpeg'
 
@@ -155,7 +182,7 @@ const Comments = () => {
                   </div>
                 </Link>
                 <div>
-                  {(userData?.$id === comment?.authId || userData?.$id === conf.myPrivateUserID || userData?.$id === post?.userId) && (
+                  {(userData?.$id === comment?.authId || userData?.$id === conf.myPrivateUserID) && (
                     <span
                       onClick={() => deleteComments(comment?.$id)}
                       className="cursor-pointer">
@@ -217,7 +244,7 @@ const Comments = () => {
         })}
       </div>
 
-      {(isLoading && hasMoreComments) && < div className="flex justify-center" ref={spinnerRef}>
+      {hasNextPage && < div className="flex justify-center" ref={spinnerRef}>
         <Spinner />
       </div>}
 

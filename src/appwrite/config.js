@@ -31,7 +31,7 @@ export class Service {
                 profileImgID,
                 trustedResponderPost,
             }
-            console.log(payload)
+            // console.log(payload)
 
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -116,7 +116,7 @@ export class Service {
     }
     // Infinte Scroll
     async getPosts({ lastPostID = null, TrustedResponders = false }) {
-        console.log("appwriteLastpostid", lastPostID)
+        // console.log("appwriteLastpostid", lastPostID)
         let QueryArr = [
             Query.limit(4),
             // Query.orderDesc(`$createdAt`),
@@ -135,7 +135,7 @@ export class Service {
 
         } else {
             if (lastPostID) {
-                console.log(lastPostID)
+                // console.log(lastPostID)
                 QueryArr = [
                     Query.limit(4),
                     // Query.orderDesc(`$createdAt`), 

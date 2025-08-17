@@ -62,7 +62,7 @@ const HomeRight = ({ switchTrigger }) => {
     }
 
     return (
-        <section className={`w-full md:w-[35%] ${switchTrigger === false ? "block" : "hidden"} md:block`}>
+        <section className={`w-full md:w-[35%] sticky top-0 ${switchTrigger === false ? "block" : "hidden"} md:block`}>
             <div className={`HomeRight_Category my-4`}>
                 <p>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>

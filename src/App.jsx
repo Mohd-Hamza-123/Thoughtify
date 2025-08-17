@@ -32,7 +32,6 @@ function App() {
   const userData = useSelector((state) => state.auth?.userData);
 
   const [isOpen, setIsOpen] = useState(false);
-
   const [notificationShow, setNotificationShow] = useState(null);
   const [feedbackPopUp, setfeedbackPopUp] = useState(false);
   const [SettingPopUp, SetSettingPopUp] = useState(false);
