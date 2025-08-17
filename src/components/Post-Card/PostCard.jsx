@@ -7,20 +7,22 @@ import increaseViews from "@/services/increasePostView";
 
 const PostCard = ({
   $id,
-  title = "Title",
   queImage,
-  name = "Name",
+  views,
   userId,
   category,
   $createdAt,
-  views,
-  commentCount,
   pollQuestion,
+  title = "Title",
   opinionsFrom,
+  commentCount,
+  name = "Name",
+  isTrustedResponder,
   trustedResponderPost,
-  isTrustedResponder
+  profileImage = "",
 }) => {
 
+  profileImage = profileImage ? profileImage.replace("/preview", "/view") : null 
   const { imageURL, imageID } = JSON.parse(queImage)
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL
 
@@ -33,7 +35,7 @@ const PostCard = ({
         <div className="flex gap-2 items-center">
           <Link to={`/profile/${userId}`}>
             <img
-              src={`${'NoProfile.png'}`}
+              src={profileImage}
               id="PostCard-profile-pic"
               className="rounded-full" />
           </Link>

@@ -1,14 +1,14 @@
 import "./BrowseQuestions.css";
+import { Spinner } from "../index";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
-import { Spinner } from "../index";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { categoriesArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
 import React, { useEffect, useRef, useMemo } from "react";
-import { useNotificationContext } from "@/context/NotificationContext";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useNotificationContext } from "@/context/NotificationContext";
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
@@ -17,10 +17,10 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
   const { category, searchInput } = useParams();
   const { register, handleSubmit, setValue, reset, getValues } = useForm({});
 
+  const filters = useRef({})
   const spinnerRef = useRef();
   const BrowseQuestionLeft = useRef();
   const BrowseQuestionRight = useRef();
-  const filters = useRef({})
 
 
   const { data, refetch, hasNextPage, fetchNextPage, isFetching } = useInfiniteQuery({
@@ -42,7 +42,6 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     enabled: false
   })
-
 
   const posts = useMemo(() => {
     return data?.pages?.flatMap((page) => page.documents)

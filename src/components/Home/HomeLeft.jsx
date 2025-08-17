@@ -1,23 +1,36 @@
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
 import { PostCard, Spinner } from "..";
+import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import profile from "@/appwrite/profile";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   const navigate = useNavigate()
-  
+
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
 
   const getPosts = useCallback(async (object) => {
     const { pageParam: lastPostID } = object
     const posts = await appwriteService.getPosts({ lastPostID });
-    const documents = posts?.documents
+    let documents = posts?.documents
+
+    let x = documents.map(async (post) => {
+      const userId = post?.userId
+      const profileInfo = await profile.listSingleProfile(userId)
+      const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
+      const imageURL = profileImage ? profileImage?.profileImageURL : null
+      return {
+        ...post, profileImage: imageURL
+      }
+    })
+    documents = await Promise.all(x)
+
     const documentsLength = posts?.documents.length
 
     return {

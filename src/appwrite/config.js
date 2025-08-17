@@ -114,9 +114,9 @@ export class Service {
             return null
         }
     }
-    // Infinte Scroll
+    
     async getPosts({ lastPostID = null, TrustedResponders = false }) {
-        // console.log("appwriteLastpostid", lastPostID)
+       
         let QueryArr = [
             Query.limit(4),
             // Query.orderDesc(`$createdAt`),
