@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import './Setting.css'
 import { useForm } from 'react-hook-form'
 import profile from '../../appwrite/profile'
 import { useNotificationContext } from '@/context/NotificationContext'
