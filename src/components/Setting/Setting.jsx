@@ -8,7 +8,7 @@ import { userProfile } from '@/store/profileSlice'
 const Setting = () => {
   const { setNotification } = useNotificationContext()
   const { register, handleSubmit } = useForm();
-  const [settingPopUp, setSettingPopUp] = useState(true)
+  const [settingPopUp, setSettingPopUp] = useState(false)
   const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
   const myUserProfile = useSelector((state) => state.profileSlice.userProfile)
 
