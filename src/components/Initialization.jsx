@@ -1,47 +1,47 @@
 import { Loader } from '@/components';
+import React, { useEffect } from 'react';
 import profile from '@/appwrite/profile';
 import { login } from '@/store/authSlice';
 import authService from '@/appwrite/auth';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
 import { userProfile } from '@/store/profileSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { homePageLoading } from '@/store/loadingSlice';
 
-const InitializationWrapper = ({ children }) => {
+const Initialization = ({ children }) => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
+
     const userStatus = useSelector((state) => state.auth.status)
-    const userData = useSelector((state) => state.auth.userData)
-    const myProfile = useSelector((state) => state.profileSlice.userProfile)
-    
+    const loading = useSelector((state) => state.loadingSlice.homePageLoading)
+
+    const getMyProfile = async (profileID) => {
+        const myProfile = await profile.listSingleProfile(profileID)
+        dispatch(userProfile({ userProfile: { ...myProfile } }))
+        dispatch(homePageLoading({ homePageLoading: false }))
+    }
+
     const loggedIn = async () => {
         try {
             const userData = await authService.getCurrentUser();
-            // console.log(userData);
             if (userData) {
                 dispatch(login({ userData }));
                 await getMyProfile(userData?.$id)
                 navigate("/");
             } else {
-                setLoading(false)
+                dispatch(homePageLoading({ homePageLoading: false }))
             }
         } catch (error) {
-            setLoading(false)
+            dispatch(homePageLoading({ homePageLoading: false }))
         }
     }
 
-
-    async function getMyProfile(profileID) {
-        const myProfile = await profile.listSingleProfile(profileID)
-        dispatch(userProfile({ userProfile: { ...myProfile } }))
-        setLoading(false)
-    }
-
-    useEffect(() => { loggedIn() }, [userStatus])
+    useEffect(() => {
+        loggedIn()
+    }, [])
 
     return (loading ? <Loader /> : <>{children}</>)
 }
 
-export default InitializationWrapper
+export default Initialization

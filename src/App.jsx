@@ -24,7 +24,8 @@ import ResetPassword from "./pages/ResetPassword";
 import FindFriends from "./pages/FindFriends";
 import RespondersSectionPage from "./pages/RespondersSectionPage";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage";
-import InitializationWrapper from "./Providers/InitializationWrapper";
+import Initialization from "./components/Initialization";
+
 
 function App() {
 
@@ -148,6 +149,7 @@ function App() {
       onInstallApp,
     }}>
 
+    <Initialization/>
     <NavBar />
     <SideBar />
     <Overlay />
@@ -155,7 +157,6 @@ function App() {
     <Feedback />
     <NotificationPop />
     <Routes>
-
       <Route path="/" element={<Home />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />

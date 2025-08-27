@@ -1,207 +1,212 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Setting.css'
-import { useAskContext } from '../../context/AskContext'
 import { useForm } from 'react-hook-form'
 import profile from '../../appwrite/profile'
+import { useNotificationContext } from '@/context/NotificationContext'
+import { useSelector } from 'react-redux'
+import { userProfile } from '@/store/profileSlice'
 
 const Setting = () => {
+  const { setNotification } = useNotificationContext()
+  const { register, handleSubmit } = useForm();
+  const [settingPopUp, setSettingPopUp] = useState(true)
+  const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
+  const myUserProfile = useSelector((state) => state.profileSlice.userProfile)
 
-    const {
-        SettingPopUp,
-        SetSettingPopUp,
-        setisOverlayBoolean,
-        myUserProfile,
-        setMyUserProfile,
-        setnotificationPopMsg,
-        setNotificationPopMsgNature
-    } = useAskContext();
-  
-    const { register, handleSubmit } = useForm();
-    const submit = async (data) => {
- 
-        SetSettingPopUp((prev) => false)
-        setisOverlayBoolean((prev) => false)
-       
-        try {
-            const updateProfile = await profile.updateEveryProfileAttribute({ ...data, profileID: myUserProfile?.$id })
-        
-            setMyUserProfile((prev) => updateProfile)
-            setNotificationPopMsgNature((prev) => true)
-            setnotificationPopMsg((prev) => "Setting Changed")
-        } catch (error) {
-            setNotificationPopMsgNature((prev) => false)
-            setnotificationPopMsg((prev) => "Error ! Setting is Not Changed")
-        }
+  const submit = async (data) => {
+    try {
+      const updateProfile = await profile.updateEveryProfileAttribute({ ...data, profileID: myUserProfile?.$id })
+      dispatch(userProfile({ userProfile: updateProfile }))
+      setNotification({ type: 'success', message: 'Setting Changed' })
+    } catch (error) {
+      setNotification({ type: 'error', message: error?.message })
     }
-    return (
+  }
 
-        <form onSubmit={handleSubmit(submit)} className={`Setting ${SettingPopUp ? 'active' : ''}`}>
+  return (
+    <form 
+      onSubmit={handleSubmit(submit)} 
+      className={`fixed inset-0 z-50 flex items-center justify-center ${settingPopUp ? '' : 'hidden'}`}
+    >
+      {/* Overlay */}
+      {isOverlayBoolean && (
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+      )}
 
-            <h4 className='text-center'>Settings</h4>
+      {/* Settings Card */}
+      <div className="relative w-full max-w-2xl rounded-xl bg-white shadow-lg ring-1 ring-black/10 p-6 space-y-6 animate-in fade-in zoom-in-95">
+        <h4 className="text-lg font-semibold text-gray-800 text-center">Settings</h4>
 
-            <div className='Setting_Div'>
-                <p>Who Can Filter Your Posts :</p>
-                <div>
+        {/* Section */}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-700">Who Can Filter Your Posts :</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourPosts === 'My Following'}
+                {...register("othersCanFilterYourPosts")}
+                type="radio"
+                name="othersCanFilterYourPosts"
+                value="My Following"
+              />
+              My Following
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourPosts === 'Everyone'}
+                {...register("othersCanFilterYourPosts")}
+                type="radio"
+                name="othersCanFilterYourPosts"
+                value="Everyone"
+              />
+              Everyone
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourPosts === 'None'}
+                {...register("othersCanFilterYourPosts")}
+                type="radio"
+                name="othersCanFilterYourPosts"
+                value="None"
+              />
+              None
+            </label>
+          </div>
+        </div>
 
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === 'My Following' ? true : false}
-                            {...register("othersCanFilterYourPosts")}
-                            type="radio" name="othersCanFilterYourPosts" id="Setting_FilterPost_MyFollowing"
-                            value={"My Following"}
-                        />
-                        <label htmlFor="Setting_FilterPost_MyFollowing">My Following 😁</label>
-                    </div>
+        {/* Repeat for Opinions */}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-700">Others Can Filter Your Opinions :</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourOpinions === 'My Following'}
+                {...register("othersCanFilterYourOpinions")}
+                type="radio"
+                name="othersCanFilterYourOpinions"
+                value="My Following"
+              />
+              My Following
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourOpinions === 'Everyone'}
+                {...register("othersCanFilterYourOpinions")}
+                type="radio"
+                name="othersCanFilterYourOpinions"
+                value="Everyone"
+              />
+              Everyone
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersCanFilterYourOpinions === 'None'}
+                {...register("othersCanFilterYourOpinions")}
+                type="radio"
+                name="othersCanFilterYourOpinions"
+                value="None"
+              />
+              None
+            </label>
+          </div>
+        </div>
 
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === "Everyone" ? true : false}
-                            {...register("othersCanFilterYourPosts")}
-                            type="radio" name="othersCanFilterYourPosts" id="Setting_FilterPost_Yes"
-                            value={'Everyone'}
-                        />
-                        <label htmlFor="Setting_FilterPost_Yes">EveryOne 😁</label>
-                    </div>
+        {/* Followers/Following */}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-700">Who Can See Your Followers/Following :</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'My Following'}
+                {...register("othersSeeYourFollowers_Following")}
+                type="radio"
+                name="othersSeeYourFollowers_Following"
+                value="My Following"
+              />
+              My Following
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'Everyone'}
+                {...register("othersSeeYourFollowers_Following")}
+                type="radio"
+                name="othersSeeYourFollowers_Following"
+                value="Everyone"
+              />
+              Everyone
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'None'}
+                {...register("othersSeeYourFollowers_Following")}
+                type="radio"
+                name="othersSeeYourFollowers_Following"
+                value="None"
+              />
+              None
+            </label>
+          </div>
+        </div>
 
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourPosts === "None" ? true : false}
-                            {...register("othersCanFilterYourPosts")}
-                            type="radio"
-                            name="othersCanFilterYourPosts" id="Setting_FilterPost_No"
-                            value={"None"}
-                        />
-                        <label htmlFor="Setting_FilterPost_No">None 😡</label>
-                    </div>
+        {/* Who Can Message You */}
+        <div className="space-y-3">
+          <p className="text-sm font-medium text-gray-700">Who Can Message You :</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.whoCanMsgYou === 'My Following'}
+                {...register("whoCanMsgYou")}
+                type="radio"
+                name="whoCanMsgYou"
+                value="My Following"
+              />
+              My Following
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.whoCanMsgYou === 'Everyone'}
+                {...register("whoCanMsgYou")}
+                type="radio"
+                name="whoCanMsgYou"
+                value="Everyone"
+              />
+              Everyone
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
+              <input
+                defaultChecked={myUserProfile?.whoCanMsgYou === 'None'}
+                {...register("whoCanMsgYou")}
+                type="radio"
+                name="whoCanMsgYou"
+                value="None"
+              />
+              None
+            </label>
+          </div>
+        </div>
 
-                </div>
-
-            </div>
-
-            <div className='Setting_Div'>
-                <p>Others Can Filter Your Opinions :</p>
-                <div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "My Following" ? true : false}
-                            type="radio"
-                            value={"My Following"}
-                            name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_Yes"
-                            {...register("othersCanFilterYourOpinions")}
-                        />
-                        <label htmlFor="Setting_FilterOpinion_Yes">My Following 😏</label>
-                    </div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "Everyone" ? true : false}
-                            type="radio"
-                            value={"Everyone"}
-                            name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_No"
-                            {...register("othersCanFilterYourOpinions")}
-                        />
-                        <label htmlFor="Setting_FilterOpinion_No">Everyone 🤪</label>
-                    </div>
-
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersCanFilterYourOpinions === "None" ? true : false}
-                            type="radio"
-                            value={"None"}
-                            name="othersCanFilterYourOpinions" id="Setting_FilterOpinion_None"
-                            {...register("othersCanFilterYourOpinions")}
-                        />
-                        <label htmlFor="Setting_FilterOpinion_None">None 😝</label>
-                    </div>
-                </div>
-
-            </div>
-
-            <div className='Setting_Div'>
-                <p>Who Can See Your Followers/Following :</p>
-                <div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'My Following' ? true : false}
-                            type="radio"
-                            value={"My Following"}
-                            name="othersSeeYourFollowers_Following" id="Setting_FilterFollow_MyFollowers"
-                            {...register("othersSeeYourFollowers_Following")}
-                        />
-                        <label htmlFor="Setting_FilterFollow_MyFollowers">My Following 😄</label>
-                    </div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'Everyone' ? true : false}
-                            type="radio"
-                            value={"Everyone"}
-                            name="othersSeeYourFollowers_Following" id="Setting_FilterPost_EveryOne"
-                            {...register("othersSeeYourFollowers_Following")}
-                        />
-                        <label htmlFor="Setting_FilterPost_EveryOne">Everyone 😊</label>
-                    </div>
-
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.othersSeeYourFollowers_Following === 'None' ? true : false}
-                            type="radio"
-                            value={"None"}
-                            name="othersSeeYourFollowers_Following" id="Setting_FilterFollow_None"
-                            {...register("othersSeeYourFollowers_Following")}
-                        />
-                        <label htmlFor="Setting_FilterFollow_None">None 😤</label>
-                    </div>
-                </div>
-            </div>
-
-            <div className='Setting_Div'>
-                <p>Who Can Message You :</p>
-                <div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.whoCanMsgYou === 'My Following' ? true : false}
-                            type="radio"
-                            name="whoCanMsgYou" id="Setting_WhoCanMsg_MyFollowers"
-                            {...register("whoCanMsgYou")}
-                            value={"My Following"}
-                        />
-                        <label htmlFor="Setting_WhoCanMsg_MyFollowers">My Following 😊</label>
-                    </div>
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.whoCanMsgYou === 'Everyone' ? true : false}
-                            type="radio"
-                            name="whoCanMsgYou" id="Setting_WhoCanMsg_EveryOne"
-                            {...register("whoCanMsgYou")}
-                            value={"Everyone"}
-                        />
-                        <label htmlFor="Setting_WhoCanMsg_EveryOne">Everyone 😁</label>
-                    </div>
-
-                    <div>
-                        <input
-                            defaultChecked={myUserProfile?.whoCanMsgYou === 'None' ? true : false}
-                            type="radio"
-                            value={"None"}
-                            name="whoCanMsgYou"
-                            id="Setting_WhoCanMsg_None"
-                            {...register("whoCanMsgYou")}
-                        />
-                        <label htmlFor="Setting_WhoCanMsg_None">None 😑</label>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className='Setting_Btns'>
-                <button onClick={() => {
-                    SetSettingPopUp((prev) => false)
-                    setisOverlayBoolean((prev) => false)
-                }} type='button'>Cancel</button>
-                <button type='submit'>Update</button>
-            </div>
-        </form>
-
-    )
+        {/* Buttons */}
+        <div className="flex justify-end gap-3 border-t pt-4">
+          <button
+            onClick={() => {
+              setSettingPopUp(false)
+              setisOverlayBoolean(false)
+            }}
+            type="button"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-bluePrimary px-4 py-2 text-sm font-semibold text-white shadow hover:bg-bluePrimary/80"
+          >
+            Update
+          </button>
+        </div>
+      </div>
+    </form>
+  )
 }
 
 export default Setting

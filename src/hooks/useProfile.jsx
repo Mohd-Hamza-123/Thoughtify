@@ -1,9 +1,13 @@
 import profile from '@/appwrite/profile'
 import avatarService from '@/appwrite/avatar'
+import { useDispatch } from 'react-redux'
+import { userProfile } from '@/store/profileSlice'
+
 const useProfile = () => {
 
-    const createProfile = async (payload) => {
-        const { userId, name } = payload
+    const dispatch = useDispatch()
+    
+    const createProfile = async ({userId,name}) => {
         try {
             const profileImageURL = avatarService.createAvatar({ name })
             const profileImageId = null
@@ -13,7 +17,7 @@ const useProfile = () => {
                 userId,
                 profileImage: JSON.stringify(profileImage)
             })
- 
+             dispatch(userProfile({ userProfile: { ...response } }))
             return response
         } catch (error) {
             console.log(error)

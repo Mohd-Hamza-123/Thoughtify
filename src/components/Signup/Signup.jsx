@@ -8,12 +8,12 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import useProfile from "@/hooks/useProfile";
 import authService from "../../appwrite/auth";
-import { login, logout } from "../../store/authSlice";
 import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { login, logout } from "../../store/authSlice";
+import { homePageLoading } from "@/store/loadingSlice";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { userProfile } from "@/store/profileSlice";
 
 const Signup = () => {
 
@@ -25,7 +25,13 @@ const Signup = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data) => await authService.createAccount({ ...data }),
-    onSuccess: async (data, variables, context) => navigate('/'),
+    onSuccess: async (data, variables, context) => {
+      const userData = await authService.getCurrentUser()
+      await createProfile({ userId: userData?.$id, name: userData?.name })
+      dispatch(login({ userData }));
+      dispatch(homePageLoading({ homePageLoading: false }))
+      navigate('/')
+    },
     onError: (error, variables, context) => setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
   })
 

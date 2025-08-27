@@ -13,6 +13,7 @@ import { login as authLogin } from "../../store/authSlice";
 import { useNotificationContext } from "@/context/NotificationContext";
 import profile from '@/appwrite/profile';
 import { userProfile } from '@/store/profileSlice';
+import { homePageLoading } from '@/store/loadingSlice';
 
 const Login = () => {
 
@@ -33,6 +34,7 @@ const Login = () => {
           dispatch(authLogin({ userData }));
           const profileData = await profile.listSingleProfile(userData?.$id)
           dispatch(userProfile({ userProfile: profileData }))
+          dispatch(homePageLoading({ homePageLoading: false }))
           navigate("/");
           setNotification({
             message: 'You are Logged In',

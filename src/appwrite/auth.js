@@ -26,7 +26,7 @@ export class AuthService {
                     email,
                     password
                 })
-                console.log(login)
+                // console.log(login)
                 return login
             } else { return undefined }
         } catch (error) {
