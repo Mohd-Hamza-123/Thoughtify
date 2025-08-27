@@ -9,7 +9,6 @@ const Loader = () => {
                 <img src="Thoughtify.webp" alt="Thoughtify" />
                 <h1>Thoughtify</h1>
             </div>
-
             <div className="LoaderPage_loader"></div>
         </div>
     )

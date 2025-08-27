@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     myPosts: 0,
-    userProfile: {},
+    userProfile: null,
     flagForBookmark: false,
     filteredBookmarkPosts: [],
 }

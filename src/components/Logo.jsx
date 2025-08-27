@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import profile from "@/appwrite/profile";
+import { getAvatar } from "@/services/getAvatar";
+import authService from "@/appwrite/auth";
+
 const Logo = () => {
   return (
     <Link to="/">
@@ -23,6 +27,7 @@ export default Logo;
 
 
 export const ThoughtifyLogo = ({ className = '' }) => {
+
   return <img
     className={`h-[50px] filter brightness-200 dark:invert ${className}`}
     src="Thoughtify.webp"
@@ -31,17 +36,24 @@ export const ThoughtifyLogo = ({ className = '' }) => {
   />
 }
 
-
 export const ProfileImage = ({ className = '', ...props }) => {
 
   const myProfile = useSelector((state) => state.profileSlice.userProfile)
 
-  const { profileImageURL, profileImageID } = myProfile?.profileImage ? JSON.parse(myProfile?.profileImage) : "No Image"
+  let profileImage = myProfile?.profileImage ? JSON.parse(myProfile?.profileImage) : undefined
+  let image = profileImage?.profileImageURL
+  if (image) {
+    image = image?.replace("/preview", "/view")
+  } else {
+    image = getAvatar()
+  }
 
   return <img
     {...props}
-    src={profileImageURL?.replace("/preview", "/view")}
+    src={image}
     alt="Profile Pic"
     className={`w-[30px] md:w-[35px] h-[30px] md:h-[35px] rounded-full ${className}`}
   />
+
+
 }

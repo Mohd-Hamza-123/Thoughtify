@@ -1,6 +1,5 @@
 import profile from '@/appwrite/profile'
 import avatarService from '@/appwrite/avatar'
-
 const useProfile = () => {
 
     const createProfile = async (payload) => {
@@ -14,6 +13,7 @@ const useProfile = () => {
                 userId,
                 profileImage: JSON.stringify(profileImage)
             })
+ 
             return response
         } catch (error) {
             console.log(error)

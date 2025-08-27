@@ -6,13 +6,13 @@ import { useBooleanContext } from "@/context/BooleanContext";
 
 const Overlay = () => {
   const {
-    setIsOpen,
     SetSettingPopUp,
   } = useAskContext();
-  const { isOverlayVisible, setIsOverlayVisible } = useBooleanContext();
+
+  const { isOverlayVisible, setIsOverlayVisible,setIsSidebarVisible } = useBooleanContext();
 
   const closeOverlay = () => {
-    setIsOpen(false);
+    setIsSidebarVisible(false);
     setIsOverlayVisible(false)
     SetSettingPopUp(false)
   };

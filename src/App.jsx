@@ -24,46 +24,13 @@ import ResetPassword from "./pages/ResetPassword";
 import FindFriends from "./pages/FindFriends";
 import RespondersSectionPage from "./pages/RespondersSectionPage";
 import TrustedRespondersPage from "./pages/TrustedRespondersPage";
-import InitializationWrapper from "./wrapper/InitializationWrapper";
+import InitializationWrapper from "./Providers/InitializationWrapper";
 
 function App() {
 
 
   const userData = useSelector((state) => state.auth?.userData);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [notificationShow, setNotificationShow] = useState(null);
-  const [feedbackPopUp, setfeedbackPopUp] = useState(false);
-  const [SettingPopUp, SetSettingPopUp] = useState(false);
-
-
- 
-  const [
-    hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions,
-  ] = useState(true);
-  const [
-    hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions,
-  ] = useState(true);
-  const [
-    hasMorePostsInProfileFilterBookmark,
-    sethasMorePostsInProfileFilterBookmark,
-  ] = useState(true);
-  const [hasMorePostInTrustedPost, sethasMorePostInTrustedPost] =
-    useState(true);
-
-  // For notification bell icon
-  const [isUnreadNotificationExist, setIsUnreadNotificationExist] =
-    useState(true);
-
-  // To my Profile Posts
-  const [savedMyProfilePosts, setSavedMyProfilePosts] = useState(null);
-
-  // To save my Comments
-  const [savedMyProfileComments, setsavedMyProfileComments] = useState(null);
-
-  const [mainResponder, setmainResponder] = useState(null);
+  const authStatus = useSelector((state) => state.auth.status);
 
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
@@ -139,24 +106,24 @@ function App() {
     }
   };
 
+  const installApp = (e) => {
+    e.preventDefault();
+    setAppInstallPrompt(e);
+
+    // Optionally, you can check if the app is already installed as standalone
+    if (
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true
+    ) {
+      setisAppInstalled(true);
+    } else {
+      setisAppInstalled(false);
+    }
+  };
+
+
   useEffect(() => {
-    const installApp = (e) => {
-      e.preventDefault();
-      setAppInstallPrompt(e);
-
-      // Optionally, you can check if the app is already installed as standalone
-      if (
-        window.matchMedia("(display-mode: standalone)").matches ||
-        window.navigator.standalone === true
-      ) {
-        setisAppInstalled(true);
-      } else {
-        setisAppInstalled(false);
-      }
-    };
-
     window.addEventListener("beforeinstallprompt", installApp);
-
     return () => {
       window.removeEventListener("beforeinstallprompt", installApp);
     };
@@ -167,8 +134,11 @@ function App() {
     //   fetchData();
     //   indicator.current = false;
     // }
-    verifyEmail();
-    getNotification();
+    if (authStatus) {
+      verifyEmail();
+      getNotification();
+    }
+
   }, []);
 
 
@@ -176,68 +146,42 @@ function App() {
     value={{
       isAppInstalled,
       onInstallApp,
-      hasMorePostsInProfileFilterBookmark,
-      sethasMorePostsInProfileFilterBookmark,
-      hasMorePostsInProfileFilterOpinions,
-      sethasMorePostsInProfileFilterOpinions,
-      hasMorePostsInProfileFilterQuestions,
-      sethasMorePostsInProfileFilterQuestions,
-      hasMorePostInTrustedPost,
-      sethasMorePostInTrustedPost,
-      notificationShow,
-      setNotificationShow,
-      feedbackPopUp,
-      setfeedbackPopUp,
-      SettingPopUp,
-      SetSettingPopUp,
-      isOpen,
-      setIsOpen,
-      notifications,
-      setnotifications,
-      deleteNotication,
-      isUnreadNotificationExist,
-      setIsUnreadNotificationExist,
-      mainResponder,
-      setmainResponder,
-      savedMyProfilePosts,
-      setSavedMyProfilePosts,
-      savedMyProfileComments,
-      setsavedMyProfileComments,
     }}>
-    <InitializationWrapper>
-      <NavBar />
-      <SideBar />
-      <Overlay />
-      <Setting />
-      <Feedback />
-      <NotificationPop />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignupPage />} />
-        <Route path="profile/:slug" element={<Profile />} />
-        <Route path="Find-People" element={<FindFriends />} />
-        <Route path="AskQuestion" element={<AskQuestion />} />
-        <Route path="forgotPassword" element={<ForgetPassword />} />
-        <Route path="reset-password" element={<ResetPassword />} />
-        <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
-        <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
-        <Route
-          path="EditProfile/:slug"
-          element={<EditProfilePage />}
-        />
-        <Route
-          path="ChatRoom/:senderSlug/:receiverSlug"
-          element={<PersonalChatPage />}
-        />
-        <Route
-          path="BrowseQuestion/:category/:searchInput"
-          element={<SearchPage />}
-        />
-        <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
-        <Route path="Responders-Section" element={<RespondersSectionPage />} />
-      </Routes>
-    </InitializationWrapper>
+
+    <NavBar />
+    <SideBar />
+    <Overlay />
+    <Setting />
+    <Feedback />
+    <NotificationPop />
+    <Routes>
+
+      <Route path="/" element={<Home />} />
+      <Route path="login" element={<LoginPage />} />
+      <Route path="signup" element={<SignupPage />} />
+      <Route path="profile/:slug" element={<Profile />} />
+      <Route path="Find-People" element={<FindFriends />} />
+      <Route path="AskQuestion" element={<AskQuestion />} />
+      <Route path="forgotPassword" element={<ForgetPassword />} />
+      <Route path="reset-password" element={<ResetPassword />} />
+      <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
+      <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
+      <Route
+        path="EditProfile/:slug"
+        element={<EditProfilePage />}
+      />
+      <Route
+        path="ChatRoom/:senderSlug/:receiverSlug"
+        element={<PersonalChatPage />}
+      />
+      <Route
+        path="BrowseQuestion/:category/:searchInput"
+        element={<SearchPage />}
+      />
+      <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
+      <Route path="Responders-Section" element={<RespondersSectionPage />} />
+    </Routes>
+
   </AskProvider>
 }
 

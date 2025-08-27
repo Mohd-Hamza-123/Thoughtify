@@ -22,9 +22,10 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status)
+  const userData = useSelector((state) => state?.auth?.userData);
   const profileData = useSelector((state) => state?.profileSlice?.userProfile)
+  
   const { profileImage } = profileData
   const { profileImageURL } = JSON.parse(profileImage)
   console.log(profileImageURL)

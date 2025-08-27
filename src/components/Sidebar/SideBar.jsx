@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import { ProfileImage } from "../Logo";
 import { useBooleanContext } from "@/context/BooleanContext";
+import { userProfile } from "@/store/profileSlice";
 
 const SideBar = () => {
 
@@ -24,13 +25,11 @@ const SideBar = () => {
   const status = useSelector((state) => state.auth.status);
 
   const {
-    isOpen,
-    setIsOpen,
     onInstallApp,
     isAppInstalled,
-    setMyUserProfile,
   } = useAskContext();
-  const { setIsOverlayVisible } = useBooleanContext();
+
+  const { setIsOverlayVisible, isSidebarVisible, setIsSidebarVisible } = useBooleanContext();
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -40,12 +39,12 @@ const SideBar = () => {
   }, [status]);
 
   useEffect(() => {
-    if (isOpen) SideBar.current.classList.add("Active")
+    if (isSidebarVisible) SideBar.current.classList.add("Active")
     else SideBar.current.classList.remove("Active")
-  }, [isOpen, setIsOpen]);
+  }, [isSidebarVisible,]);
 
   const closeSideBarAndOverlay = () => {
-    setIsOpen(false);
+    setIsSidebarVisible(false)
     setIsOverlayVisible(false);
   };
 
@@ -55,7 +54,7 @@ const SideBar = () => {
       console.log(res);
       if (res) {
         dispatch(logout());
-        setMyUserProfile(null);
+        dispatch(userProfile({ userProfile: null }))
         closeSideBarAndOverlay();
         navigate("/");
       }
@@ -111,7 +110,7 @@ const SideBar = () => {
           onClick={closeSideBarAndOverlay}
         />
       </div>
-    
+
       <div className="SideBarContent">
         {sideBarLinks?.map((option) => (
           <Link to={option?.slug} key={option?.name}>
@@ -140,7 +139,7 @@ const SideBar = () => {
 
         <hr />
 
-        {isOpen && (
+        {isSidebarVisible && (
           <div
             className="SideBarItems flex gap-5 py-2 rounded-md px-6  justify-start items-center cursor-pointer"
             onClick={() => {

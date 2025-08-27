@@ -8,11 +8,12 @@ import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import useProfile from "@/hooks/useProfile";
 import authService from "../../appwrite/auth";
+import { login, logout } from "../../store/authSlice";
 import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { login, logout } from "../../store/authSlice";
 import { useNotificationContext } from "@/context/NotificationContext";
+import { userProfile } from "@/store/profileSlice";
 
 const Signup = () => {
 
@@ -22,39 +23,13 @@ const Signup = () => {
   const { register, handleSubmit } = useForm();
   const { setNotification } = useNotificationContext()
 
-  const { mutate, isPending } = useMutation(
-    {
-      mutationFn: async (data) => {
-        await authService.createAccount({ ...data })
-      },
-      onSuccess: async (data, variables, context) => {
-        onRegister()
-      },
-      onError: (error, variables, context) => {
-        setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
-      },
-    }
-  )
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data) => await authService.createAccount({ ...data }),
+    onSuccess: async (data, variables, context) => navigate('/'),
+    onError: (error, variables, context) => setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
+  })
 
   const create = (data) => mutate({ ...data })
-
-  const onRegister = async () => {
-    try {
-      const userData = await authService.getCurrentUser();
-      if (userData) {
-        dispatch(login({ userData }));
-        await createProfile({ userId: userData?.$id, name: userData?.name })
-        navigate("/");
-      } else {
-        setNotification({ message: "User not found", type: "error" })
-        dispatch(logout())
-      }
-    } catch (error) {
-      setNotification({ message: "something went wrong", type: "error" })
-      dispatch(logout())
-      console.log(error)
-    }
-  }
 
   return (
 
@@ -78,7 +53,7 @@ const Signup = () => {
         <form
           className="max-w-full flex flex-col justify-center items-center mb-2"
           onSubmit={handleSubmit(create)}>
-          
+
           <div className="signup_insideForm_div w-full flex flex-col justify-center items-center mt-5 gap-8">
             <div className='relative inputTransition flex flex-col'>
               <Input

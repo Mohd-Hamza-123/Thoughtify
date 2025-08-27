@@ -1,12 +1,12 @@
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
 import { PostCard, Spinner } from "..";
+import profile from "@/appwrite/profile";
 import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import profile from "@/appwrite/profile";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
@@ -23,7 +23,9 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     let x = documents.map(async (post) => {
       const userId = post?.userId
       const profileInfo = await profile.listSingleProfile(userId)
+  
       const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
+ 
       const imageURL = profileImage ? profileImage?.profileImageURL : null
       return {
         ...post, profileImage: imageURL

@@ -32,7 +32,6 @@ const Login = () => {
         if (userData) {
           dispatch(authLogin({ userData }));
           const profileData = await profile.listSingleProfile(userData?.$id)
-          console.log(profileData)
           dispatch(userProfile({ userProfile: profileData }))
           navigate("/");
           setNotification({
