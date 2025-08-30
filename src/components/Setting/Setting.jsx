@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import profile from '../../appwrite/profile'
-import { useNotificationContext } from '@/context/NotificationContext'
-import { useSelector } from 'react-redux'
 import { userProfile } from '@/store/profileSlice'
-
+import { useNotificationContext } from '@/context/NotificationContext'
+import { useBooleanContext } from '@/context/BooleanContext'
 const Setting = () => {
+
   const { setNotification } = useNotificationContext()
+  const { isSettingOpen, setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
   const { register, handleSubmit } = useForm();
-  const [settingPopUp, setSettingPopUp] = useState(false)
-  const [isOverlayBoolean, setisOverlayBoolean] = useState(false)
   const myUserProfile = useSelector((state) => state.profileSlice.userProfile)
 
   const submit = async (data) => {
@@ -23,12 +23,12 @@ const Setting = () => {
   }
 
   return (
-    <form 
-      onSubmit={handleSubmit(submit)} 
-      className={`fixed inset-0 z-50 flex items-center justify-center ${settingPopUp ? '' : 'hidden'}`}
+    <form
+      onSubmit={handleSubmit(submit)}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${isSettingOpen ? '' : 'hidden'}`}
     >
       {/* Overlay */}
-      {isOverlayBoolean && (
+      {isOverlayVisible && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
       )}
 
@@ -188,8 +188,8 @@ const Setting = () => {
         <div className="flex justify-end gap-3 border-t pt-4">
           <button
             onClick={() => {
-              setSettingPopUp(false)
-              setisOverlayBoolean(false)
+              setIsSettingOpen(false)
+              setIsOverlayVisible(false)
             }}
             type="button"
             className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"

@@ -1,38 +1,21 @@
-import React, { useRef, useState, useEffect } from 'react'
-import realTime from '../../appwrite/realTime.js'
-import { Spinner } from '../'
-import { Button } from '../ui/button.jsx'
-import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import { categoriesArr } from '../AskQue/Category'
-import { useAskContext } from '../../context/AskContext'
-import parse from "html-react-parser";
 import './Opinions.css'
+import { Spinner } from '../'
+import parse from "html-react-parser";
+import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { Button } from '../ui/button.jsx'
+import { useSelector } from 'react-redux'
+import realTime from '../../appwrite/realTime.js'
+import { categoriesArr } from '../AskQue/Category'
+import React, { useRef, useState, useEffect } from 'react'
 
 const Opinions = ({ visitedProfileUserID }) => {
 
   const spinnerRef = useRef()
-  const [isLoading, setIsLoading] = useState(false)
   const [comments, setcomments] = useState([]);
-  const [isSearching, setisSearching] = useState(false)
-  const [lastPostID, setLastPostID] = useState(null)
-  const [isPostAvailable, setisPostAvailable] = useState(true)
-  const [totalFilteredcomments, settotalFilteredcomments] = useState(0)
-  const [isIntersecting, setIsIntersecting] = useState(false)
-  const {
-    hasMorePostsInProfileFilterOpinions,
-    sethasMorePostsInProfileFilterOpinions,
-    increaseViews,
-    isDarkModeOn,
-    savedMyProfileComments,
-    setsavedMyProfileComments,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature,
-  } = useAskContext();
 
   const userData = useSelector((state) => state.auth.userData);
-  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
+
   const { register, handleSubmit, reset, getValues } = useForm({})
 
   const opinionsLeft = useRef()
@@ -69,7 +52,7 @@ const Opinions = ({ visitedProfileUserID }) => {
 
     sethasMorePostsInProfileFilterOpinions(true)
     const filteredOpinions = await realTime.getCommentsWithQueries({ ...data })
-    
+
     const isArray = Array.isArray(filteredOpinions)
     if (isArray) {
       sethasMorePostsInProfileFilterOpinions(false)
@@ -99,44 +82,13 @@ const Opinions = ({ visitedProfileUserID }) => {
     }
   }
 
-  useEffect(() => {
-    if (comments.length >= totalFilteredcomments) {
-      setIsLoading(false)
-      sethasMorePostsInProfileFilterOpinions(false)
-      setLastPostID((prev) => null)
-    } else {
-      setLastPostID((prev) => comments[comments.length - 1]?.$id)
-      setIsLoading(true)
-      sethasMorePostsInProfileFilterOpinions(true)
-    }
 
-    if (comments?.length) setsavedMyProfileComments((prev) => comments)
-  }, [comments, isIntersecting, isLoading])
 
-  useEffect(() => {
-    
-    const getMorecomments = async () => {
-      const data = getValues()
-      const filteredOpinions = await realTime.getCommentsWithQueries({ ...data, lastPostID })
-     
-      if (filteredOpinions.length !== 0) {
-        setcomments((prev) => [...prev, ...filteredOpinions.documents])
-      }
-
-    }
-
-    if (isIntersecting) {
-      if (lastPostID !== null) {
-        getMorecomments()
-      }
-    }
-  }, [isIntersecting])
   useEffect(() => {
     const ref = spinnerRef.current;
     if (ref) {
       const observer = new IntersectionObserver(([entry]) => {
 
-        setIsIntersecting((prev) => entry.isIntersecting)
       }, {
         root: null,
         rootMargin: '0px',
@@ -147,15 +99,11 @@ const Opinions = ({ visitedProfileUserID }) => {
       return () => ref && observer.unobserve(ref)
     }
 
-  }, [spinnerRef.current, comments, lastPostID, totalFilteredcomments])
-  useEffect(() => {
-    if (savedMyProfileComments && savedMyProfileComments?.length > 0) {
-      setcomments((prev) => savedMyProfileComments);
-    }
-  }, [])
+  }, [spinnerRef.current, comments])
+
 
   return (
-    <div id='Profile_Opinions_Filter' className={`flex ${isDarkModeOn ? 'darkMode' : ''}`}>
+    <div id='Profile_Opinions_Filter'>
       <div
         onClick={() => {
           if (opinionsLeft.current && opinionsRight.current) {
@@ -220,20 +168,20 @@ const Opinions = ({ visitedProfileUserID }) => {
           </div>
         </div>
 
-        <Button type='Submit' className={`Profile_Opinions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{`${isSearching ? 'Searching' : 'Apply Filter'}`}</Button>
+        <Button type='Submit' className={`Profile_Opinions_ApplyFilter`}>{`${true ? 'Searching' : 'Apply Filter'}`}</Button>
         <input type='reset'
           onClick={() => {
             reset()
           }}
           value={'Reset Filter'}
-          className={`Profile_Opinions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
+          className={`Profile_Opinions_ResentFilter`} />
       </form>
 
 
       <div
         ref={opinionsRight}
-        id='Profile_Opinions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : 'placeholder:'}`}>
-        {!isPostAvailable && <p className={`text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>No Posts Available</p>}
+        id='Profile_Opinions_Filtered_Questions'>
+        {true && <p className={`text-center`}>No Posts Available</p>}
         {comments?.map((comment, index) => {
           if (isPostAvailable !== true) {
             return
@@ -257,7 +205,7 @@ const Opinions = ({ visitedProfileUserID }) => {
           </div>
         })}
 
-        {(isLoading && hasMorePostsInProfileFilterOpinions) && <section ref={spinnerRef} className='flex justify-center'>
+        {true && <section ref={spinnerRef} className='flex justify-center'>
           <Spinner />
         </section>}
       </div>

@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import './ChatInProfile.css'
-import { useAskContext } from '../../context/AskContext'
 import profile from '../../appwrite/profile'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 
-const ChatInProfile = ({ profileData, setProfileData }) => {
-    console.log(profileData)
+const ChatInProfile = ({ profileData}) => {
+  
     const userData = useSelector((state) => state?.auth.userData)
     const navigate = useNavigate();
 
     const [canYouSeeFollowers_Following, setcanYouSeeFollowers_Following] = useState(true);
     const [activeNav, setactiveNav] = useState('Following')
-    const { myUserProfile, setMyUserProfile, isDarkModeOn } = useAskContext();
     const { handleSubmit, register, watch } = useForm();
     const [searchValue, setSearchValue] = useState('')
     const unfollow = async (index) => {
@@ -67,7 +65,7 @@ const ChatInProfile = ({ profileData, setProfileData }) => {
     return (
         <div id='ChatInProfile'>
 
-            <nav className={`ChatInProfileNav ${isDarkModeOn ? 'darkMode' : ''}`}>
+            <nav className={`ChatInProfileNav`}>
                 <ul className='flex'>
                     <li onClick={() => setactiveNav('Following')} className={`${activeNav === 'Following' ? 'active' : ''} cursor-pointer`}>Following</li>
                     <li onClick={() => setactiveNav('Followers')} className={`${activeNav === 'Followers' ? 'active' : ''} cursor-pointer`}>Followers</li>
@@ -112,7 +110,7 @@ const ChatInProfile = ({ profileData, setProfileData }) => {
                                     {myUserProfile?.userIdAuth !== profileData?.userIdAuth && <button onClick={() => navigation(JSON.parse(profile).profileID)}>visit</button>}
                                 </li>
                             })}
-                            {profileData?.following?.length === 0 && <div className={`${isDarkModeOn ? 'text-white' : 'text-black'} text-center`}>No Followers</div>}
+                            {profileData?.following?.length === 0 && <div className={`text-center`}>No Followers</div>}
                         </ul>
                     </section>}
 
@@ -133,7 +131,7 @@ const ChatInProfile = ({ profileData, setProfileData }) => {
                                     <button onClick={() => navigation(JSON.parse(profile).profileID)}>Visit</button>
                                 </li>
                             })}
-                            {profileData?.followers?.length === 0 && <div className={`${isDarkModeOn ? 'text-white' : 'text-black'} text-center`}>No Followers</div>}
+                            {profileData?.followers?.length === 0 && <div className={`text-center`}>No Followers</div>}
                         </ul>
                     </section>}
 

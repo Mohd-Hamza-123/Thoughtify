@@ -1,6 +1,4 @@
 import React from "react";
-import "./ProfileSummary.css";
-import { useAskContext } from "../../context/AskContext";
 import { useSelector } from "react-redux";
 
 const ProfileSummary = ({ profileData = {} }) => {
@@ -10,59 +8,128 @@ const ProfileSummary = ({ profileData = {} }) => {
     interestedIn,
     occupation,
     educationLvl,
-    userIdAuth
+    userIdAuth,
   } = profileData;
 
-  const userAuthStatus = useSelector((state) => state?.auth?.status);
-  const userData = useSelector((state) => state?.auth?.userData)
-  const { isDarkModeOn } = useAskContext()
+  const userData = useSelector((state) => state?.auth?.userData);
+
   return (
-    <div className={`ProfileSummary w-full flex relative gap-3`}>
-      <div id="ProfileSummary" className={`w-2/3 ${isDarkModeOn ? 'darkMode' : ''}`}>
-        <div id="ProfileSummary_Bio_Div">
-          <span className=""> Bio </span>
-          <pre id="ProfileSummayPre" className="whitespace-pre-wrap">{bio}</pre>
-          <div className="ProfileSummary_Links mt-3">
-            <span>Links </span>
-            {links?.map((link, index) => (
-              <div key={JSON.parse(link).URL + index} className="flex gap-2 items-center">
-                <i className="fa-solid fa-link"></i>
-                <a href={JSON.parse(link).URL} target="_blank" className={`${isDarkModeOn ? 'text-red-600' : 'text-blue-600'}`}>
-                  {JSON.parse(link).Title}
-                </a>
-              </div>
-            ))}
+    <div className="ProfileSummary w-full flex flex-col lg:flex-row gap-6 p-4 sm:p-6 lg:p-8 bg-gray-50 rounded-2xl shadow-md">
+      {/* Left Section */}
+      <div
+        id="ProfileSummary"
+        className={`w-full ${userIdAuth === userData?.$id ? "lg:w-2/3" : "w-full"} bg-white rounded-xl shadow-md p-4 sm:p-6 lg:p-8 border border-gray-100`}
+      >
+        {/* Bio */}
+        <div id="ProfileSummary_Bio_Div" className="mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
+            <i className="fa-solid fa-user text-blue-600"></i> Bio
+          </h2>
+          <p
+            id="ProfileSummayPre"
+            className="mt-2 text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm sm:text-base"
+          >
+            {bio && bio.trim() !== ""
+              ? bio
+              : "No bio added yet. Share something about yourself!"}
+          </p>
+        </div>
+
+        {/* Links */}
+        <div className="ProfileSummary_Links mb-6">
+          <h3 className="text-md sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <i className="fa-solid fa-link text-green-600"></i> Links
+          </h3>
+          <div className="flex flex-col gap-2 mt-2">
+            {links && links.length > 0 ? (
+              links.map((link, index) => (
+                <div
+                  key={JSON.parse(link).URL + index}
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm sm:text-base"
+                >
+                  <i className="fa-solid fa-arrow-up-right-from-square text-gray-500"></i>
+                  <a
+                    href={JSON.parse(link).URL}
+                    target="_blank"
+                    className="hover:underline truncate max-w-[90%]"
+                  >
+                    {JSON.parse(link).Title}
+                  </a>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 italic text-sm sm:text-base">
+                No links added.
+              </p>
+            )}
           </div>
         </div>
 
-        <div id="ProfileSummary_HighlvlEduDiv" className="mt-3">
-          <span>Highest Level of Education : </span>
-          <span>{educationLvl}</span>
+        {/* Education */}
+        <div
+          id="ProfileSummary_HighlvlEduDiv"
+          className="mb-4 flex flex-wrap items-center gap-2 text-gray-700 text-sm sm:text-base"
+        >
+          <i className="fa-solid fa-graduation-cap text-indigo-600"></i>
+          <span className="font-semibold">Highest Level of Education:</span>
+          <span>{educationLvl || "Not specified"}</span>
         </div>
 
-        <div id="ProfileSummary_OccupationDiv" className="mt-3">
-          <span>Occupation : </span>
-          <span>{occupation}</span>
+        {/* Occupation */}
+        <div
+          id="ProfileSummary_OccupationDiv"
+          className="mb-4 flex flex-wrap items-center gap-2 text-gray-700 text-sm sm:text-base"
+        >
+          <i className="fa-solid fa-briefcase text-purple-600"></i>
+          <span className="font-semibold">Occupation:</span>
+          <span>{occupation || "Not specified"}</span>
         </div>
 
-        <div id="ProfileSummary_InterestedDiv" className="mt-3">
-          <span>Interested In  </span>
-          <div className="flex gap-0 flex-col mt-2">
-            {interestedIn?.map((interest, index) => (
-              <span key={interest + index + Date.now()}>
-                {`${index + 1}) ${interest} `}
-              </span>
-            ))}
+        {/* Interested In */}
+        <div id="ProfileSummary_InterestedDiv">
+          <h3 className="text-md sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <i className="fa-solid fa-star text-yellow-500"></i> Interested In
+          </h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {interestedIn && interestedIn.length > 0 ? (
+              interestedIn.map((interest, index) => (
+                <span
+                  key={interest + index + Date.now()}
+                  className="text-gray-600 bg-gray-100 px-3 py-1 rounded-md border border-gray-200 text-sm sm:text-base"
+                >
+                  {`${index + 1}) ${interest}`}
+                </span>
+              ))
+            ) : (
+              <p className="text-gray-500 italic text-sm sm:text-base">
+                No interests added yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
-      {(userAuthStatus && userIdAuth === userData?.$id) && <div id="ProfileSummarySecondDiv" className={`w-1/3 h-full ${isDarkModeOn ? 'darkMode' : ''}`}>
-  
-        <ul className="flex flex-col gap-2">
-          <li>Welcome, {profileData?.name}</li>
-          <li>This is your one-stop shop for getting answers and connecting with others.</li>
-          <li>Connect with friends!   Chat with your friends, discuss topics that interest you, and build a supportive network.</li>
-          <li>Get involved!   The more active you are, the more you'll get out of this platform. Share your knowledge, answer questions, and make a difference.</li>
+
+      {/* Right Section */}
+      {userIdAuth === userData?.$id && <div
+        id="ProfileSummarySecondDiv"
+        className="w-full lg:w-1/3 bg-white rounded-xl shadow-md p-4 sm:p-6 lg:p-8 border border-gray-100">
+        <ul className="flex flex-col gap-4 text-gray-700 leading-relaxed text-sm sm:text-base">
+          <li className="font-bold text-gray-900 text-base sm:text-lg">
+            Welcome, {profileData?.name}
+          </li>
+          <li>
+            This is your one-stop shop for getting answers and connecting with
+            others.
+          </li>
+          <li>
+            Connect with friends! Chat with your friends, discuss topics that
+            interest you, and build a supportive network.
+          </li>
+          <li>
+            Get involved! The more active you are, the more you'll get out of
+            this platform. Share your knowledge, answer questions, and make a
+            difference.
+          </li>
         </ul>
       </div>}
     </div>

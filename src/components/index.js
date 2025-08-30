@@ -14,7 +14,7 @@ import LowerNavigationBar from "./NavBar/LowerNavigationBar";
 import Comments from "./Chat/Comments";
 import ChatRTE from "./Chat/ChatRTE";
 import ProfileSummary from "./Profile/ProfileSummary";
-import Favourite from "./Profile/Favourite";
+import Favourite from "./Profile/Bookmark";
 import Questions from './Profile/Questions'
 import Opinions from './Profile/Opinions'
 import EditProfile from "./Profile/EditProfile";

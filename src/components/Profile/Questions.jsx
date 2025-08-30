@@ -1,270 +1,175 @@
-import React, { useRef, useState, useEffect } from 'react'
-import './Questions.css'
-import appwriteService from '../../appwrite/config'
-import { Spinner } from '../'
-import { useForm } from 'react-hook-form'
-import { Button } from '../ui/button'
+import { Icons, Spinner } from '../'
 import { Input } from '../ui/input'
-import { Link} from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { Button } from '../ui/button'
+import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
 import { categoriesArr } from '../AskQue/Category'
-import { useAskContext } from '../../context/AskContext'
-import { getTotalPostByMe } from '../../store/profileSlice'
-const Questions = ({ visitedProfileUserID }) => {
-  const TotalPostByMe = useSelector((state) => state.profileSlice?.totalPostsbyMe)
+import appwriteService from '../../appwrite/config'
+import { useDispatch, useSelector } from 'react-redux'
+import React, { useRef, useState, useEffect } from 'react'
+import { useNotificationContext } from '@/context/NotificationContext'
+import { useInfiniteQuery } from '@tanstack/react-query'
+
+const Questions = ({ visitedUserProfile }) => {
+  console.log(visitedUserProfile)
   const dispatch = useDispatch()
+  const spinnerRef = useRef(null)
 
 
-  const spinnerRef = useRef()
-  const [isLoading, setIsLoading] = useState(false)
-  const [queries, setQueries] = useState([]);
+  const [toggle, setToggle] = useState(false)
 
-  const [lastPostID, setLastPostID] = useState(null)
-  const [isPostAvailable, setisPostAvailable] = useState(true)
-  const [totalFilteredQueries, settotalFilteredQueries] = useState(0);
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [isSearching, setIsSearching] = useState(false)
-  const {
-    hasMorePostsInProfileFilterQuestions,
-    sethasMorePostsInProfileFilterQuestions,
-    isDarkModeOn,
-    savedMyProfilePosts,
-    setSavedMyProfilePosts,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature,
-  } = useAskContext()
-
-  const QuestionsLeft = useRef()
-  const QuestionRight = useRef()
-
+  const { setNotification } = useNotificationContext()
   const userData = useSelector((state) => state.auth.userData);
-  const othersUserProfile = useSelector((state) => state?.usersProfileSlice?.userProfileArr);
-  const { register, handleSubmit, reset, getValues } = useForm({})
-  const [totalNumberofPosts, settotalNumberofPosts] = useState(0);
+  const [filters, setFilters] = useState({})
+  const { register, handleSubmit, reset } = useForm({})
 
+  const { data: queries, isPending, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
+    queryKey: ['questions', visitedUserProfile?.userIdAuth, filters],
+    queryFn: async ({ queryKey, pageParam }) => {
+      const { filters } = queryKey
+      await appwriteService.getPostsWithQueries({ ...filters })
+    },
+    enabled: false,
+  })
   const submit = async (data) => {
-
-    if (visitedProfileUserID !== userData?.$id) {
-      const visitedProfileUserData = othersUserProfile?.find((profile) => profile?.userIdAuth === visitedProfileUserID);
-
-
-      if (!visitedProfileUserData) return
-
-      if (visitedProfileUserData?.othersCanFilterYourPosts === "My Following") {
-        const parsingFollowingArr = visitedProfileUserData?.following.map((obj) => JSON.parse(obj));
-        console.log(parsingFollowingArr);
-        const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-        console.log(isHeFollowsYou);
-        if (!isHeFollowsYou) {
-          setNotificationPopMsgNature((prev) => false);
-          setnotificationPopMsg((prev) => "You can't filter");
-          return
-        }
-      } else if (visitedProfileUserData?.othersCanFilterYourPosts === "None") {
-        setNotificationPopMsgNature((prev) => false);
-        setnotificationPopMsg((prev) => 'No one can filter');
-        return
-      }
-    }
-
-    setIsSearching((prev) => true)
-
-    data.UserID = visitedProfileUserID
-
-    sethasMorePostsInProfileFilterQuestions(true)
-    const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data })
-
-    const isArray = Array.isArray(filteredQuestions)
-    if (isArray) {
-      sethasMorePostsInProfileFilterQuestions(false)
-      setIsLoading(false)
-      settotalFilteredQueries(0)
-      setLastPostID(null)
-      setisPostAvailable(false)
-    } else {
-      setIsLoading(true)
-      setisPostAvailable(true)
-      if (filteredQuestions.documents.length > 0) {
-        settotalFilteredQueries(filteredQuestions.total)
-        setQueries((prev) => filteredQuestions.documents)
-      } else {
-        settotalFilteredQueries(0)
-        setQueries((prev) => [])
-        setisPostAvailable(false)
-      }
-    }
-
-    setIsSearching((prev) => false)
-    if (QuestionsLeft.current && QuestionRight.current && window.innerWidth < 500) {
-      QuestionsLeft.current.classList.toggle("none");
-    }
+    setFilters(data)
+    refetch()
   }
 
   useEffect(() => {
-    if (queries?.length >= totalFilteredQueries) {
-      setIsLoading(false)
-      sethasMorePostsInProfileFilterQuestions(false)
-      setLastPostID((prev) => null)
-    } else {
-      setLastPostID((prev) => queries[queries?.length - 1]?.$id)
-      setIsLoading(true)
-      sethasMorePostsInProfileFilterQuestions(true)
-    }
-
-    if (queries?.length > 0) setSavedMyProfilePosts((prev) => queries)
-  }, [queries, isIntersecting, isLoading])
-  useEffect(() => {
-
-    const getMoreQueries = async () => {
-      const data = getValues()
-      const filteredQuestions = await appwriteService.getPostsWithQueries({ ...data, lastPostID })
-      console.log(filteredQuestions)
-      if (filteredQuestions.length !== 0) {
-        setQueries((prev) => [...prev, ...filteredQuestions.documents])
-      }
-
-    }
-
-    if (isIntersecting) {
-      if (lastPostID !== null) {
-        getMoreQueries()
-      }
-    }
-  }, [isIntersecting])
-  useEffect(() => {
     const ref = spinnerRef.current;
     if (ref) {
-      const observer = new IntersectionObserver(([entry]) => {
-
-        setIsIntersecting((prev) => entry.isIntersecting)
-      }, {
+      const observer = new IntersectionObserver(([entry]) => { }, {
         root: null,
         rootMargin: '0px',
         threshold: 1
       })
-
       observer.observe(ref)
       return () => ref && observer.unobserve(ref)
     }
-
-  }, [spinnerRef.current, queries, lastPostID, totalFilteredQueries])
-
-  useEffect(() => {
-    if (TotalPostByMe == 0) {
-      appwriteService
-        .getPosts({ lastPostID: null, TrustedResponders: null })
-        .then((res) => {
-          if (!res) return
-          settotalNumberofPosts((prev) => res?.total)
-          dispatch(getTotalPostByMe({ totalPostsbyMe: res?.total }))
-        })
-    } else {
-      settotalNumberofPosts((prev) => TotalPostByMe)
-    }
-  }, []);
-  useEffect(() => {
-    if (savedMyProfilePosts?.length > 0) {
-      setQueries((prev) => savedMyProfilePosts)
-    }
-  }, []);
-
+  }, [queries])
 
   return (
+    <div
+      className="flex flex-col lg:flex-row gap-3 w-full p-2 sm:p-6 lg:p-5 bg-gray-50 rounded-2xl shadow-md"
+    >
+      {/* Toggle Button */}
+      <Button
+        onClick={() => setToggle((prev) => !prev)}
+        variant="outline"
+        className="lg:hidden justify-center items-center w-fit self-end lg:self-start mb-4 lg:mb-0 hover:bg-gray-100 transition flex"
+      >
+        <Icons.switch />
+      </Button>
 
-    <div id='Profile_Questions_Filter' className='flex'>
-      <div
-        onClick={() => {
-          if (QuestionsLeft.current && QuestionRight.current) {
-            QuestionsLeft.current.classList.toggle("none");
-          }
-        }}
-        className="Home_RIGHT_LEFT_Grid_div">
-        <button
-          className="flex justify-center items-center">
-          <i className='bx bxs-grid-alt'></i>
-        </button>
-      </div>
+      {/* Filter Form */}
       <form
-        ref={QuestionsLeft}
-        id='Profile_Filter_Questions_Form' className={`w-full flex flex-col gap-5 p-3 relative ${isDarkModeOn ? 'darkMode' : ''}`} onSubmit={handleSubmit(submit)}>
+        id="Profile_Filter_Questions_Form"
+        className={`w-full lg:w-1/3 xl:w-1/4 flex flex-col gap-6 p-3 rounded-xl bg-white shadow border border-gray-200 transition-all duration-300 ${toggle ? 'hidden' : 'block'
+          }`}
+        onSubmit={handleSubmit(submit)}
+      >
 
-        <div id='Profile_Questions_Title'>
-          <p className={`${isDarkModeOn ? 'text-white' : 'text-black'}`}>Filter by Post Title :</p>
-          <div className='flex gap-2'>
-            <label htmlFor='Profile_Questions_Title_Filter'>Title : </label>
-            <Input {...register("Title", {
-              required: false
-            })} id='Profile_Questions_Title_Filter' placeholder="Title" />
+        <div className="flex flex-col gap-3 mt-4">
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+            {true ? 'Searching...' : 'Apply Filter'}
+          </Button>
+          <Input
+            type="reset"
+            onClick={() => {
+              reset()
+              setNotification({ message: 'Filter Cleared', type: 'success' })
+            }}
+            value={'Reset Filter'}
+            className="w-full border border-gray-300 rounded-md py-2 text-sm hover:bg-gray-100 cursor-pointer"
+          />
+        </div>
+        {/* Title */}
+        <div id="Profile_Questions_Title" className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter by Post Title :</p>
+          <div className="flex gap-2 items-center">
+            <label htmlFor="Profile_Questions_Title_Filter" className="text-sm text-gray-600">
+              Title:
+            </label>
+            <Input
+              {...register('Title', { required: false })}
+              id="Profile_Questions_Title_Filter"
+              placeholder="Enter title..."
+              className="flex-1 border-gray-300 rounded-md"
+            />
           </div>
         </div>
 
-        <div>
-          <p>Filter By Views :</p>
-          <div className='flex flex-col gap-1'>
-            <div className='flex gap-2'>
-              <input {...register("Viewed")} type="radio" name="Viewed" id="Profile_Questions_Most_Viewed" value={'MostViewed'} />
-              <label htmlFor='Profile_Questions_Most_Viewed'>Most Viewed</label>
-            </div>
-            <div className='flex gap-2'>
-              <input {...register("Viewed")} type="radio" name="Viewed" id="Profile_Questions_Less_Viewed" value={'lessViewed'} />
-              <label htmlFor='Profile_Questions_Less_Viewed'>Less Viewed</label>
-            </div>
+        {/* Views */}
+        <div className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter By Views :</p>
+          <div className="flex flex-col gap-1 text-sm">
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('Viewed')} type="radio" value={'MostViewed'} />
+              Most Viewed
+            </label>
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('Viewed')} type="radio" value={'lessViewed'} />
+              Less Viewed
+            </label>
           </div>
         </div>
 
-        <div>
-          <p>Filter By Post Age :</p>
-          <div className='flex flex-col gap-1'>
-            <div className='flex gap-2'>
-              <input  {...register("PostAge")} id="Profile_Questions_PostAge_Recent" type="radio" name="PostAge" value={'Recent'} />
-              <label className="cursor-pointer" htmlFor='Profile_Questions_PostAge_Recent'>Recent</label>
-            </div>
-            <div className='flex gap-2'>
-              <input {...register("PostAge")} id="Profile_Questions_PostAge_Oldest" type="radio" name="PostAge" value={'Oldest'} />
-              <label className="cursor-pointer" htmlFor='Profile_Questions_PostAge_Oldest'>Oldest</label>
-            </div>
+        {/* Post Age */}
+        <div className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter By Post Age :</p>
+          <div className="flex flex-col gap-1 text-sm">
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('PostAge')} type="radio" value={'Recent'} />
+              Recent
+            </label>
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('PostAge')} type="radio" value={'Oldest'} />
+              Oldest
+            </label>
           </div>
         </div>
 
-
-        <div>
-          <p>Filter By Comment :</p>
-          <div className='flex flex-col gap-1'>
-            <div className='flex gap-2'>
-              <input  {...register("Commented")} id="Profile_Questions_Most_Commented" type="radio" name="Commented" value={'Most Commented'} />
-              <label className="cursor-pointer" htmlFor='Profile_Questions_Most_Commented'>Most Commented</label>
-            </div>
-            <div className='flex gap-2'>
-              <input {...register("Commented")} id="Profile_Questions_Least_Commented" type="radio" name="Commented" value={'Least Commented'} />
-              <label className="cursor-pointer" htmlFor='Profile_Questions_Least_Commented'>Least Commented</label>
-            </div>
+        {/* Comments */}
+        <div className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter By Comment :</p>
+          <div className="flex flex-col gap-1 text-sm">
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('Commented')} type="radio" value={'Most Commented'} />
+              Most Commented
+            </label>
+            <label className="flex gap-2 cursor-pointer">
+              <input {...register('Commented')} type="radio" value={'Least Commented'} />
+              Least Commented
+            </label>
           </div>
         </div>
 
-
-
-
-
-        <div>
-          <div>
-            <p>Favourite : </p>
-          </div>
-          <div className='flex gap-2'>
-            <input type="radio" {...register("Like_Dislike")} name="Like_Dislike" id="Profile_Questions_Liked" value={'Most Liked'} />
-            <label htmlFor="Profile_Questions_Liked">Most liked</label>
-          </div>
-          <div className='flex gap-2'>
-            <input type="radio"  {...register("Like_Dislike")} name="Like_Dislike" id="Profile_Questions_Disliked" value={'Most Disliked'} />
-            <label htmlFor="Profile_Questions_Disliked">Most disliked</label>
+        {/* Favourite */}
+        <div className="space-y-2">
+          <p className="font-semibold text-gray-800">Favourite :</p>
+          <div className="flex flex-col gap-1 text-sm">
+            <label className="flex gap-2 cursor-pointer">
+              <input type="radio" {...register('Like_Dislike')} value={'Most Liked'} />
+              Most liked
+            </label>
+            <label className="flex gap-2 cursor-pointer">
+              <input type="radio" {...register('Like_Dislike')} value={'Most Disliked'} />
+              Most disliked
+            </label>
           </div>
         </div>
 
-        <div>
-          <p>Filter By Category : </p>
-          <div id='Profile_Questions_Category' className='flex gap-2'>
-            <label htmlFor="">Category : </label>
-            <select name="category" {...register("category")} id="" className='outline-none'>
-              <option defaultChecked value={'All Category'}>All Category</option>
+        {/* Category */}
+        <div className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter By Category :</p>
+          <div className="flex gap-2 items-center">
+            <label className="text-sm text-gray-600">Category:</label>
+            <select
+              {...register('category')}
+              className="flex-1 border border-gray-300 rounded-md px-2 py-1 outline-none text-sm"
+            >
+              <option value={'All Category'}>All Category</option>
               {categoriesArr?.map((category, index) => (
                 <option key={category.category + index}>{category.category}</option>
               ))}
@@ -272,76 +177,83 @@ const Questions = ({ visitedProfileUserID }) => {
           </div>
         </div>
 
-        <div id='Profile_Questions_FilterByDate'>
-          <p>Filter By Date : </p>
-          <div className='flex flex-col gap-3'>
-
-
-            <div className='flex gap-1'>
-              <label className='' htmlFor="AfterDate">After Date :</label>
-              <input {...register("AfterDate", {
-                required: false
-              })} type="date" name="AfterDate" id="AfterDate" />
-            </div>
-
-            <div className='flex gap-1'>
-              <label className='' htmlFor="BeforeDate">Before Date :</label>
-              <input type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")} />
-            </div>
+        {/* Date */}
+        <div id="Profile_Questions_FilterByDate" className="space-y-2">
+          <p className="font-semibold text-gray-800">Filter By Date :</p>
+          <div className="flex flex-col gap-3 text-sm">
+            <label className="flex gap-2 items-center">
+              After:
+              <input type="date" {...register('AfterDate')} className="border rounded-md px-2 py-1" />
+            </label>
+            <label className="flex gap-2 items-center">
+              Before:
+              <input type="date" {...register('BeforeDate')} className="border rounded-md px-2 py-1" />
+            </label>
           </div>
         </div>
 
-        <Button type='Submit' className={`Profile_Questions_ApplyFilter ${isDarkModeOn ? 'darkMode' : ''}`}>{isSearching ? 'Searching' : 'Apply Filter'}</Button>
-        <input type='reset' onClick={() => {
-          reset()
-          setNotificationPopMsgNature((prev) => true)
-          setnotificationPopMsg((prev) => "Filter Cleared")
-        }} value={'Reset Filter'} className={`Profile_Questions_ResentFilter ${isDarkModeOn ? 'darkMode' : ''}`} />
       </form>
+
+      {/* Filtered Results */}
       <div
-        ref={QuestionRight}
-        id='Profile_Questions_Filtered_Questions' className={`${isDarkModeOn ? 'darkMode' : ''}`}>
+        id="Profile_Questions_Filtered_Questions"
+        className={`w-full flex-1 rounded-xl bg-white shadow p-5 border border-gray-200 ${toggle ? 'block' : 'hidden lg:block'
+          }`}
+      >
+        {true && <p className="text-center text-gray-500 italic">No Posts Available</p>}
 
-        {!isPostAvailable && <p className='text-center'>No Posts Available</p>}
-        {queries?.map((querie, index) => {
-          if (isPostAvailable !== true) {
-            return
-          }
-          return <div key={querie?.$id}>
-            <span>{querie?.name}</span>
-
-            <Link to={`/post/${querie?.$id}/${null}`}>
-              <p>{querie?.title}</p>
-              <div id='BrowseQuestions_created_category_views' className='flex gap-3 flex-wrap'>
-                <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{new Date(querie?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                <span className={`${isDarkModeOn ? 'text-black' : 'text-black'}`}>{querie?.category}</span>
-                <div className='flex justify-center items-center'>
-                  <span>{querie?.views}</span>
-                  <i className=" fa-solid fa-eye" aria-hidden="true"></i>
-                </div>
-                <div>
-                  <span>{querie.commentCount}</span>
-                  <i className="fa-solid fa-comment"></i>
-                </div>
-                <div>
-                  <span>{querie?.like}</span>
-                  <i className="fa-solid fa-thumbs-up"></i>
-                </div>
-
-                <div>
-                  <span>{querie?.dislike}</span>
-                  <i className="fa-solid fa-thumbs-down"></i>
-                </div>
+        <div className="space-y-4 mt-4">
+          {queries?.map((querie, index) => {
+            if (isPostAvailable !== true) return null
+            return (
+              <div
+                key={querie?.$id}
+                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition"
+              >
+                <span className="font-semibold text-gray-800">{querie?.name}</span>
+                <Link to={`/post/${querie?.$id}/${null}`} className="block mt-2">
+                  <p className="text-lg font-medium text-blue-600 hover:underline">{querie?.title}</p>
+                  <div
+                    id="BrowseQuestions_created_category_views"
+                    className="flex gap-3 flex-wrap text-sm text-gray-600 mt-2"
+                  >
+                    <span>
+                      {new Date(querie?.$createdAt).toLocaleDateString('en-US', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
+                    </span>
+                    <span className="bg-gray-100 px-2 py-0.5 rounded-md border">{querie?.category}</span>
+                    <div className="flex items-center gap-1">
+                      <span>{querie?.views}</span>
+                      <i className="fa-solid fa-eye" aria-hidden="true"></i>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>{querie.commentCount}</span>
+                      <i className="fa-solid fa-comment"></i>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>{querie?.like}</span>
+                      <i className="fa-solid fa-thumbs-up"></i>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span>{querie?.dislike}</span>
+                      <i className="fa-solid fa-thumbs-down"></i>
+                    </div>
+                  </div>
+                </Link>
               </div>
-            </Link>
-          </div>
-        })}
+            )
+          })}
+        </div>
 
-        {(isLoading && hasMorePostsInProfileFilterQuestions) && <section ref={spinnerRef} className='flex justify-center'>
-          <Spinner />
-        </section>}
+        {true && (
+          <section ref={spinnerRef} className="flex justify-center mt-6">
+            <Spinner />
+          </section>
+        )}
       </div>
-
     </div>
   )
 }

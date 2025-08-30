@@ -1,34 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
 import "./Favourite.css";
 import appwriteService from "../../appwrite/config";
-import { Spinner } from "../";
+import { Spinner } from "..";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useAskContext } from "../../context/AskContext";
-import { getFilteredBookmarkPosts } from "../../store/profileSlice";
 import profile from "../../appwrite/profile";
 
-const Favourite = ({ visitedProfileUserID }) => {
-  const bookMarkPostInRedux = useSelector(
-    (state) => state.profileSlice?.filteredBookmarkPosts
-  );
+const Bookmark = ({ visitedProfileUserID }) => {
+  const bookMarkPostInRedux = useSelector((state) => state.profileSlice?.filteredBookmarkPosts)
   const dispatch = useDispatch();
 
   const spinnerRef = useRef();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [isPostAvailable, setisPostAvailable] = useState(true);
-  const [totalFilteredbookmarks, settotalFilteredbookmarks] = useState(0);
-
-  const [isIntersecting, setIsIntersecting] = useState(false);
-
-  const {
-    hasMorePostsInProfileFilterBookmark,
-    sethasMorePostsInProfileFilterBookmark,
-    myUserProfile,
-    setMyUserProfile
-  } = useAskContext();
-
+ 
   const userData = useSelector((state) => state.auth.userData);
 
   const bookMarkCounter = useRef(0);
@@ -82,51 +65,8 @@ const Favourite = ({ visitedProfileUserID }) => {
           }
         }
       }
-      setIsLoading(true);
-      sethasMorePostsInProfileFilterBookmark(true);
     }
   };
-
-  useEffect(() => {
-    if (bookMarkPostInRedux.length >= totalFilteredbookmarks) {
-      setIsLoading(false);
-      sethasMorePostsInProfileFilterBookmark(false);
-    } else {
-      setIsLoading(true);
-      sethasMorePostsInProfileFilterBookmark(true);
-    }
-  }, [bookMarkPostInRedux]);
-
-  useEffect(() => {
-    const getFilteredBookmark = async () => {
-      for (
-        let i = bookMarkPostInRedux.length - 1;
-        i < totalFilteredbookmarks && i < bookMarkPostInRedux.length - 1 + 5;
-        i++
-      ) {
-        console.log("lkjfaslkjdf");
-        const filteredBookmark = await appwriteService.getPostWithBookmark(
-          myUserProfile.bookmarks[i]
-        );
-
-        dispatch(
-          getFilteredBookmarkPosts({
-            filteredBookmarkPosts: [filteredBookmark],
-          })
-        );
-        if (i == totalFilteredbookmarks - 1) {
-          setIsLoading(false);
-          sethasMorePostsInProfileFilterBookmark(false);
-        }
-      }
-      bookMarkCounter.current = bookMarkCounter.current + 5;
-    };
-
-    if (isIntersecting && bookMarkPostInRedux.length >= 5) {
-      getFilteredBookmark();
-    }
-  }, [isIntersecting]);
-
 
 
   useEffect(() => {
@@ -134,7 +74,7 @@ const Favourite = ({ visitedProfileUserID }) => {
     if (ref) {
       const observer = new IntersectionObserver(
         ([entry]) => {
-          setIsIntersecting((prev) => entry.isIntersecting);
+         
         },
         {
           root: null,
@@ -146,36 +86,9 @@ const Favourite = ({ visitedProfileUserID }) => {
       observer.observe(ref);
       return () => ref && observer.unobserve(ref);
     }
-  }, [spinnerRef.current, isLoading, bookMarkPostInRedux]);
-
-
-  useEffect(() => {
-    if (myUserProfile) {
-      if (myUserProfile?.userIdAuth !== visitedProfileUserID) {
-        setIsLoading((prev) => false)
-      }
-      settotalFilteredbookmarks(myUserProfile?.bookmarks?.length);
-    }
-
-    if (myUserProfile?.bookmarks?.length >= totalFilteredbookmarks) {
-      setIsLoading((prev) => false)
-    }
-
-  }, [myUserProfile]);
-
-  const indicator = useRef(true);
-
-  useEffect(() => {
-    if (indicator.current && bookMarkPostInRedux.length < 4) {
-      submit();
-      indicator.current = false;
-    }
-
-    if (bookMarkPostInRedux.length < myUserProfile.bookmarks.length) {
-      setIsLoading(true);
-      sethasMorePostsInProfileFilterBookmark(true)
-    }
   }, []);
+
+
 
 
   return (
@@ -232,7 +145,7 @@ const Favourite = ({ visitedProfileUserID }) => {
       </div>
 
       {
-        (isLoading && hasMorePostsInProfileFilterBookmark && myUserProfile?.userIdAuth === visitedProfileUserID && userData) && (
+        (true) && (
           <section ref={spinnerRef} className="flex justify-center">
             <Spinner />
           </section>
@@ -242,4 +155,4 @@ const Favourite = ({ visitedProfileUserID }) => {
   );
 };
 
-export default Favourite;
+export default Bookmark;

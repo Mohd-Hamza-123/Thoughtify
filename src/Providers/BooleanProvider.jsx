@@ -4,6 +4,7 @@ import { BooleanProvider as BP } from "@/context/BooleanContext";
 const BooleanProvider = ({ children }) => {
   const [isOverlayVisible, setIsOverlayVisible] = useState(false)
   const [isSidebarVisible, setIsSidebarVisible] = useState(false)
+  const [isSettingOpen, setIsSettingOpen] = useState(false)
   
   return (
     <BP
@@ -12,6 +13,8 @@ const BooleanProvider = ({ children }) => {
         setIsOverlayVisible,
         isSidebarVisible,
         setIsSidebarVisible,
+        isSettingOpen,
+        setIsSettingOpen
       }}
     >
       {children}

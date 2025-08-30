@@ -4,7 +4,6 @@ import authService from '../../appwrite/auth'
 import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { categoriesArr } from '../AskQue/Category'
-import { useAskContext } from '../../context/AskContext'
 import { useBooleanContext } from '@/context/BooleanContext'
 import { useNotificationContext } from '@/context/NotificationContext'
 
@@ -16,9 +15,8 @@ const HomeRight = ({ switchTrigger }) => {
     const userData = useSelector((state) => state.auth.userData)
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false);
 
-    const { setfeedbackPopUp, SetSettingPopUp } = useAskContext()
     const { setNotification } = useNotificationContext()
-    const { setIsOverlayVisible } = useBooleanContext()
+    const { setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
         if (userData) setisEmailVerified(userData?.emailVerification || false)
@@ -50,7 +48,7 @@ const HomeRight = ({ switchTrigger }) => {
             setNotification({ message: "You are not Login", type: "error" })
             return
         }
-        SetSettingPopUp((prev) => !prev)
+        setIsSettingOpen((prev) => !prev)
         setIsOverlayVisible((prev) => !prev)
     }
     const trustedRespondersPopUp = () => {
@@ -79,7 +77,7 @@ const HomeRight = ({ switchTrigger }) => {
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
                 {userAuthStatus && <span className={`cursor-pointer`} onClick={feedbackPopUp}>Feedback</span>}
-                <span onClick={settingPopUp}>Setting</span>
+                <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
                 <span className={`cursor-pointer`} onClick={trustedRespondersPopUp}>Trusted Responders</span>
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointe">Verify Your Email</span>}
             </div>

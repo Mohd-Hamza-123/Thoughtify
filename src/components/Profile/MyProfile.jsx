@@ -15,6 +15,7 @@ import {
   ChatInProfile,
   ProfileSummary,
 } from "../index";
+import { useQuery } from "@tanstack/react-query";
 
 const MyProfile = () => {
 
@@ -24,20 +25,21 @@ const MyProfile = () => {
 
   const authStatus = useSelector((state) => state?.auth?.status)
   const userData = useSelector((state) => state?.auth?.userData);
-  const profileData = useSelector((state) => state?.profileSlice?.userProfile)
-  
-  const { profileImage } = profileData
-  const { profileImageURL } = JSON.parse(profileImage)
-  console.log(profileImageURL)
+  const myProfile = useSelector((state) => state?.profileSlice?.userProfile)
+
   const { setNotification } = useNotificationContext()
   const realUser = userData ? slug === userData.$id : false;
 
-
   const [isBlocked, setisBlocked] = useState(false);
-  const [isFollowing, setisFollowing] = useState(false)
-  const [activeNav, setactiveNav] = useState('Profile Summary')
-  const [activeNavRender, setactiveNavRender] = useState(<ProfileSummary profileData={profileData || {}} />)
 
+  const [activeNav, setActiveNav] = useState('Profile Summary')
+  const [activeNavRender, setActiveNavRender] = useState(null)
+
+  const { data: profileData, isPending } = useQuery({
+    queryKey: ['profiles', slug],
+    queryFn: async () => profile.listSingleProfile(slug),
+    staleTime: Infinity,
+  })
 
   const follow_Unfollow = async () => {
 
@@ -45,16 +47,11 @@ const MyProfile = () => {
       setNotification({ message: "You are not Login", type: "error" })
       return
     }
-    if (!myUserProfile) return;
-    setisFollowing((prev) => !prev);
-    let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-
 
     const isFollowing = updateFollowArr?.filter((profileObj) => profileObj.profileID === slug);
 
 
     if (isFollowing.length > 0) {
-
 
       // updating sender profile
       const findDeleteIndex = updateFollowArr.findIndex((profileObj) => profileObj.profileID === slug);
@@ -172,27 +169,27 @@ const MyProfile = () => {
   }
 
   useEffect(() => {
-    setactiveNav('Profile Summary')
-  }, [slug]);
+    setActiveNav('Profile Summary')
+    setActiveNavRender(<ProfileSummary profileData={profileData} />)
+  }, [slug, profileData]);
 
   useEffect(() => {
 
     switch (activeNav) {
-      case 'Opinions': setactiveNavRender(<Opinions visitedProfileUserID={slug} />)
+      case 'Opinions': setActiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
-      case 'Favourites': setactiveNavRender(<Favourite visitedProfileUserID={slug} />)
+      case 'Favourites': setActiveNavRender(<Favourite visitedProfileUserID={slug} />)
         break;
-      case 'Questions': setactiveNavRender(<Questions visitedProfileUserID={slug} />)
+      case 'Questions': setActiveNavRender(<Questions visitedUserProfile={profileData} />)
         break;
-      case 'ProfileChats': setactiveNavRender(<ChatInProfile profileData={profileData || {}} setProfileData={setProfileData} />)
+      case 'ProfileChats': setActiveNavRender(<ChatInProfile profileData={profileData || {}} />)
         break;
-      default: setactiveNavRender(<ProfileSummary profileData={profileData || {}} />)
+      default: setActiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
-  }, [activeNav, profileData])
+  }, [activeNav])
 
-
-
-  if (profileData) {
+  if (!isPending) {
+    const { profileImageURL } = JSON.parse(profileData?.profileImage)
     return (<div id="MyProfile_Parent">
       <div className="MyProfile_HorizontalLine"></div>
       <div id="MyProfile" className="">
@@ -243,7 +240,7 @@ const MyProfile = () => {
                   <Button
                     className="p-2 rounded-sm"
                     onClick={follow_Unfollow}
-                  >{`${isFollowing ? 'Unfollow' : 'Follow'}`}</Button>
+                  >{`${true ? 'Unfollow' : 'Follow'}`}</Button>
                 )}
                 {!realUser && <Button
                   className="p-2 rounded-sm"
@@ -306,36 +303,28 @@ const MyProfile = () => {
           <section id="MyProfile_Data_section">
             <ul className="flex justify-between">
               <li
-                onClick={() => {
-                  setactiveNav('Profile Summary')
-                }}
+                onClick={() => setActiveNav('Profile Summary')}
                 className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
                 Profile Summary
               </li>
 
               <li
-                onClick={() => {
-                  setactiveNav('Questions')
-                }}
+                onClick={() => setActiveNav('Questions')}
                 className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
                 Questions
               </li>
 
               <li
-                onClick={() => { setactiveNav('Opinions') }} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
+                onClick={() => setActiveNav('Opinions')} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
                 Opinions
               </li>
               <li
-                onClick={() => {
-                  setactiveNav('Favourites')
-                }}
+                onClick={() => setActiveNav('Favourites')}
                 className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null} ${profileData?.userIdAuth !== userData?.$id ? 'none' : 'last-of-type:'}`}>
                 Bookmarks
               </li>
 
-              <li onClick={() => {
-                setactiveNav('ProfileChats')
-              }} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
+              <li onClick={() => setActiveNav('ProfileChats')} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
                 Chats
               </li>
             </ul>

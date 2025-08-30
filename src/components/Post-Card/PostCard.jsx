@@ -21,7 +21,7 @@ const PostCard = ({
   trustedResponderPost,
   profileImage = "",
 }) => {
-
+  
   profileImage = profileImage ? profileImage.replace("/preview", "/view") : null 
   const { imageURL, imageID } = JSON.parse(queImage)
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL
