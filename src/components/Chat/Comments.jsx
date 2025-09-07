@@ -21,7 +21,7 @@ const Comments = () => {
     const { pageParam: lastCommentId } = object
 
     const data = await realTime.listComment(slug, lastCommentId);
-  
+
     const commentsLength = data?.documents?.length
     return {
       comments: data?.documents,
@@ -108,7 +108,7 @@ const Comments = () => {
       });
     } catch (err) {
       console.log(err.message);
-       setNotification({ message: "Comment not Deleted", type: "error" });
+      setNotification({ message: "Comment not Deleted", type: "error" });
     }
   };
 
@@ -161,91 +161,113 @@ const Comments = () => {
           // console.log(comment)
           const profilePicURL = 'https://images.pexels.com/photos/33029806/pexels-photo-33029806.jpeg'
 
-          return <div key={comment?.$id} className="Chat_Comment_Div">
+          {/* Comment card */ }
+         return <div
+            key={comment?.$id}
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 mb-5 shadow-md hover:shadow-xl transition-all duration-200"
+          >
             <section>
-              <div className="flex justify-between">
-
-                <Link
-                  to={`/profile/${comment?.authId}`}
-                  id={`Comment${comment?.$id}`}>
-                  <div className="flex gap-2 cursor-pointer">
+              {/* Header */}
+              <div className="flex justify-between items-start">
+                <Link to={`/profile/${comment?.authId}`} id={`Comment${comment?.$id}`}>
+                  <div className="flex gap-3 items-center cursor-pointer">
                     <img
-                      className="Chat_Comment_Div_img"
+                      className="w-11 h-11 rounded-full object-cover border-2 border-white dark:border-slate-800 shadow-sm hover:scale-105 transition-transform"
                       src={profilePicURL}
                       alt="profilePic"
                     />
-                    <span className="font-bold Chat_Comment_Name">{comment?.name}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
+                      {comment?.name}
+                    </span>
                   </div>
                 </Link>
-                <div>
-                  {(userData?.$id === comment?.authId || userData?.$id === conf.myPrivateUserID) && (
-                    <span
-                      onClick={() => deleteComments(comment?.$id)}
-                      className="cursor-pointer">
-                      <Icons.trashcan />
-                    </span>
-                  )}
-                </div>
 
+                <div>
+                  {(userData?.$id === comment?.authId ||
+                    userData?.$id === conf.myPrivateUserID) && (
+                      <span
+                        onClick={() => deleteComments(comment?.$id)}
+                        className="cursor-pointer text-slate-500 hover:text-red-500 transition-colors"
+                      >
+                        <Icons.trashcan />
+                      </span>
+                    )}
+                </div>
               </div>
 
-
-              <div className="Chat_Comment">
-                {comment?.commentContent ? parse(comment?.commentContent) : ''}</div>
-
+              {/* Comment body */}
+              <div className="mt-3 text-[15px] leading-relaxed text-slate-700 dark:text-slate-300 px-3 py-2 bg-slate-50 dark:bg-slate-800 rounded-lg border-l-4 border-indigo-300 dark:border-indigo-500">
+                {comment?.commentContent ? parse(comment?.commentContent) : ""}
+              </div>
             </section>
 
+            {/* Reply button */}
             <div id="ReplyDiv" className="flex justify-end mt-3">
               <span
-                className="cursor-pointer"
-                onClick={() => setactiveTextArea(comment?.$id)}>
+                className="cursor-pointer bg-slate-900 dark:bg-slate-700 text-white text-xs font-medium px-3 py-1.5 rounded-full shadow hover:shadow-md hover:scale-105 transition"
+                onClick={() => setactiveTextArea(comment?.$id)}
+              >
                 Reply
               </span>
             </div>
 
-            <div className={`${activeTextArea === comment?.$id ? '' : 'hidden'}`}>
+            {/* Reply textarea */}
+            <div className={`${activeTextArea === comment?.$id ? "" : "hidden"} mt-3`}>
               <textarea
-                name=""
                 id={`id_${comment?.$id}`}
                 rows="4"
                 value={replyComment}
-                className="Chat_textArea"
+                className="w-full resize-y min-h-[72px] max-h-[260px] p-3 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-sm shadow-inner focus:ring-2 focus:ring-indigo-400 focus:outline-none transition"
                 onChange={(e) => setReplyComment(e.target.value)}
               ></textarea>
 
               <Button
-                onClick={() => subComment({
-                  commentId: comment?.$id,
-                  subComment: comment?.subComment,
-                  userId: userData?.$id,
-                  username: name,
-                })}
-                className="Chat-Comment-Reply"
-                value="Submit"
-                type="submit">
+                onClick={() =>
+                  subComment({
+                    commentId: comment?.$id,
+                    subComment: comment?.subComment,
+                    userId: userData?.$id,
+                    username: name,
+                  })
+                }
+                className="mt-2 px-5 py-2 text-sm rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium shadow transition"
+                type="submit"
+              >
                 Submit
               </Button>
             </div>
 
-
+            {/* Sub comments */}
             <SubComment subComment={comment?.subComment} />
 
-            <button className="Chat_See_Replies"
-              onClick={() => { loadMoreSubComments(comment) }}>
-              {`${(loadSubComments_Five_Mul >= comment?.subComment?.length && comment?.$id === id_For_Five_Mul) || comment?.subComment?.length <= fixedReplies ? 'No Replies' : 'See Replies'}`}</button>
-            <div>
+            {/* See replies */}
+            <button
+              className="mt-3 text-xs px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+              onClick={() => loadMoreSubComments(comment)}
+            >
+              {(loadSubComments_Five_Mul >= comment?.subComment?.length &&
+                comment?.$id === id_For_Five_Mul) ||
+                comment?.subComment?.length <= fixedReplies
+                ? "No Replies"
+                : "See Replies"}
+            </button>
+
+            {/* Date */}
+            <div className="mt-2 text-xs text-slate-500">
               {new Date(comment?.$createdAt).toLocaleString()}
             </div>
           </div>
+
         })}
       </div>
 
-      {hasNextPage && < div className="flex justify-center" ref={spinnerRef}>
-        <Spinner />
-      </div>}
 
     </div >
   );
 };
 
 export default Comments;
+
+// {hasNextPage && < div className="flex justify-center" ref={spinnerRef}>
+//   <Spinner />
+// </div>}

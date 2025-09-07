@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import appwriteService from "../../appwrite/config";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
+import profile from "@/appwrite/profile";
 
 const ViewPost = () => {
 
@@ -24,11 +25,16 @@ const ViewPost = () => {
     queryKey: ['post', slug],
     queryFn: async () => {
       const data = await appwriteService.getPost(slug)
-      return data
+      const userId = data?.userId
+      const profileInfo = await profile.listSingleProfile(userId)
+      const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
+      const imageURL = profileImage ? profileImage?.profileImageURL : null
+      return {
+        ...data, profileImage: imageURL
+      }
     }
   })
 
-  // console.log(post)
 
 
   useEffect(() => {

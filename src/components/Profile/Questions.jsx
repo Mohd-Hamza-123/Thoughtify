@@ -11,7 +11,9 @@ import { useNotificationContext } from '@/context/NotificationContext'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
 const Questions = ({ visitedUserProfile }) => {
+
   console.log(visitedUserProfile)
+  
   const dispatch = useDispatch()
   const spinnerRef = useRef(null)
 

@@ -27,6 +27,7 @@ const ViewPostHeader = ({ post }) => {
     const navigate = useNavigate();
 
 
+
     const removePost = async () => {
         const flag = await deleteQuestion(post);
         if (flag) {

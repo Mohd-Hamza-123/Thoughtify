@@ -23,14 +23,13 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     let x = documents.map(async (post) => {
       const userId = post?.userId
       const profileInfo = await profile.listSingleProfile(userId)
-  
       const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
- 
       const imageURL = profileImage ? profileImage?.profileImageURL : null
       return {
         ...post, profileImage: imageURL
       }
     })
+
     documents = await Promise.all(x)
 
     const documentsLength = posts?.documents.length
@@ -41,7 +40,8 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     }
   }, []);
 
-  const { data,
+  const {
+    data,
     isPending,
     isError,
     error,

@@ -114,21 +114,22 @@ export class Service {
             return null
         }
     }
-    
+
     async getPosts({ lastPostID = null, TrustedResponders = false }) {
-       
+
         let QueryArr = [
             Query.limit(4),
-            // Query.orderDesc(`$createdAt`),
+            Query.orderDesc(`$createdAt`),
             Query.equal("status", ['public'])
         ]
 
         if (TrustedResponders) {
             if (lastPostID) {
                 QueryArr = [
-                    Query.limit(4),
+                    ...QueryArr,
+
                     Query.cursorAfter(lastPostID),
-                    Query.equal("status", ['public'])]
+                ]
             }
             QueryArr.push(Query.equal("trustedResponderPost", [true]))
             QueryArr.push(Query.isNotNull("trustedResponderPost"))
@@ -137,8 +138,7 @@ export class Service {
             if (lastPostID) {
                 // console.log(lastPostID)
                 QueryArr = [
-                    Query.limit(4),
-                    // Query.orderDesc(`$createdAt`), 
+                    ...QueryArr,
                     Query.cursorAfter(lastPostID),
                     Query.equal("status", ['public']),
                     // Query.isNotNull("trustedResponderPost"),
@@ -146,6 +146,7 @@ export class Service {
                 ]
             }
         }
+        
         try {
             return await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
