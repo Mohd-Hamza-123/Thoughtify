@@ -116,12 +116,13 @@ export const uploadQuestionWithImage = async (
 
 export const deleteQuestion = async (post) => {
     const post_id = post?.$id
-    const { imageID } = JSON.parse(JSON.parse(post?.queImage))
     try {
+        const { imageID } = JSON.parse(post?.queImage)
         if (imageID) await appwriteService.deleteThumbnail(imageID)
         await appwriteService.deletePost(post_id)
         return true
     } catch (error) {
+        console.log(error?.message)
         return false
     }
 }

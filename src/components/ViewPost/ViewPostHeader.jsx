@@ -18,6 +18,7 @@ import { IoEyeSharp } from "react-icons/io5";
 import { deleteQuestion } from "@/lib/posts";
 import { dateFormatFunc } from "@/helpers/format-dates";
 import { useNotificationContext } from "@/context/NotificationContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ViewPostHeader = ({ post }) => {
 
@@ -25,11 +26,20 @@ const ViewPostHeader = ({ post }) => {
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     const { setNotification } = useNotificationContext();
     const navigate = useNavigate();
-
-
+    const queryClient = useQueryClient()
 
     const removePost = async () => {
         const flag = await deleteQuestion(post);
+        queryClient.setQueryData(['posts'], (oldData) => {
+            return {
+                ...oldData,
+                pages: oldData.pages.map((page) => ({
+                    ...page,
+                    documents: page.documents.filter((previous) => previous?.$id !== post?.$id),
+                })),
+            }
+        })
+        // let flag = false
         if (flag) {
             setNotification({ message: "Post deleted", type: "success" });
             navigate("/");
