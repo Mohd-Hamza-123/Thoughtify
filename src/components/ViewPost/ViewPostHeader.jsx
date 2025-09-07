@@ -39,26 +39,34 @@ const ViewPostHeader = ({ post }) => {
     };
 
     return (
-        <div className="flex justify-between mx-3 mt-1 relative items-center">
-            {/* Below div contains category, date, views, comment count */}
-            <div className="flex gap-3 items-center">
-                <span className="tag-style">{post?.category}</span>
-                <span className="tag-style">{dateFormatFunc(post?.$createdAt) || ""}</span>
-                <span className="flex gap-1 items-center tag-style">
-                    <span>{post?.views}</span>
-                    <IoEyeSharp />
+        <div className="flex justify-between items-center mx-3 mt-2 relative">
+            {/* Left: category, date, views, comment count */}
+            <div className="flex gap-3 items-center flex-wrap">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100">
+                    {post?.category}
                 </span>
-                <span className="flex gap-2 items-center tag-style">
-                    <span>{post?.commentCount}</span>
-                    <FaComment />
+
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-sm border border-slate-100">
+                    {dateFormatFunc(post?.$createdAt) || ""}
+                </span>
+
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-sm border border-slate-100">
+                    <span className="text-sm font-semibold">{post?.views}</span>
+                    <IoEyeSharp className="text-base" />
+                </span>
+
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 text-slate-600 text-sm border border-slate-100">
+                    <span className="text-sm font-semibold">{post?.commentCount}</span>
+                    <FaComment className="text-sm" />
                 </span>
             </div>
 
+            {/* Right: actions for author */}
             {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
-                <ul className="flex gap-4 items-center">
+                <ul className="flex gap-3 items-center">
                     <AlertDialog>
                         <AlertDialogTrigger>
-                            <li className="cursor-pointer text-xl">
+                            <li className="cursor-pointer rounded-full p-2 hover:bg-red-50 text-red-600 transition-colors">
                                 <Icons.trashcan />
                             </li>
                         </AlertDialogTrigger>
@@ -78,10 +86,11 @@ const ViewPostHeader = ({ post }) => {
                     </AlertDialog>
 
                     <li
-                        className="cursor-pointer"
+                        className="cursor-pointer rounded-full p-2 hover:bg-slate-100 transition"
                         onClick={() => navigate(`/EditQuestion/${post?.$id}`)}
+                        title="Edit post"
                     >
-                        <Icons.edit className="text-xl" />
+                        <Icons.edit className="text-base" />
                     </li>
                 </ul>
             )}
