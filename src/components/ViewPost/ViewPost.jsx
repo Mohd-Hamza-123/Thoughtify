@@ -2,6 +2,7 @@ import "../../index.css";
 import { SecondLoader } from "..";
 import { Client } from "appwrite";
 import conf from "../../conf/conf";
+import profile from "@/appwrite/profile";
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import realTime from "../../appwrite/realTime";
@@ -9,19 +10,13 @@ import { useQuery } from "@tanstack/react-query";
 import appwriteService from "../../appwrite/config";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
-import profile from "@/appwrite/profile";
 
 const ViewPost = () => {
 
   const viewPostLeft = useRef();
-
-  let client = new Client()
-    .setEndpoint(conf.appwriteURL)
-    .setProject(conf.appwriteProjectId);
-
+  const ViewPostRef = useRef();
   const { slug, filterCommentID } = useParams();
-
-  const { data: post } = useQuery({
+  const { data: post, isPending } = useQuery({
     queryKey: ['post', slug],
     queryFn: async () => {
       const data = await appwriteService.getPost(slug)
@@ -35,19 +30,11 @@ const ViewPost = () => {
     }
   })
 
+  console.log(post)
 
-
-  useEffect(() => {
-    if (filterCommentID !== "null") {
-      realTime
-        .getSingleComment(filterCommentID)
-        .then((res) => {
-          setfilteredComment(res);
-        })
-        .catch((res) => null);
-    }
-  }, [filterCommentID]);
-
+  let client = new Client()
+    .setEndpoint(conf.appwriteURL)
+    .setProject(conf.appwriteProjectId);
 
   // Update Post in RealTime
   // useEffect(() => {
@@ -68,15 +55,14 @@ const ViewPost = () => {
   // }, []);
 
 
-  const ViewPostRef = useRef();
 
 
 
   useEffect(() => {
     makeCodeBlock()
-  }, [post?.content])
+  }, [post])
 
-  return post ? (
+  return !isPending ? (
     <div
       ref={ViewPostRef}
       className="w-full relative flex">

@@ -7,6 +7,16 @@ import React, { useEffect, useState } from "react";
 
 const ViewPostMain = ({ post }) => {
 
+  const { profileImage } = post
+  // console.log("profileImage", profileImage)
+
+  // let image = profileImage ? JSON.parse(profileImage) : null
+  // if (image) {
+  //   image = image?.profileImageURL ? image?.profileImageURL : image
+  //   image = image.replace("/preview", "/view")
+  // }
+
+
   const isPollOpinionVisible = true;
   const [selectedChoice, setSelectedChoice] = useState(null);
   const userData = useSelector((state) => state?.auth?.userData);
@@ -28,7 +38,7 @@ const ViewPostMain = ({ post }) => {
           <Link to={`/profile/${post?.userId}`}>
             <div className="flex gap-3 items-center cursor-pointer">
               <img
-                src={post?.profileImage.replace("/preview", "/view")}
+                src={profileImage || '/NoProfile.png'}
                 className="rounded-full h-10 w-10 object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
                 alt="avatar"
               />
@@ -83,11 +93,10 @@ const ViewPostMain = ({ post }) => {
                       onClick={() => update(choice)}
                     >
                       <div
-                        className={`relative w-full border rounded-lg overflow-hidden transition-shadow duration-150 ${
-                          choice === selectedChoice
-                            ? "ring-2 ring-blue-400 shadow-md"
-                            : "border-slate-200 dark:border-slate-700 hover:shadow-sm"
-                        }`}
+                        className={`relative w-full border rounded-lg overflow-hidden transition-shadow duration-150 ${choice === selectedChoice
+                          ? "ring-2 ring-blue-400 shadow-md"
+                          : "border-slate-200 dark:border-slate-700 hover:shadow-sm"
+                          }`}
                       >
                         <div className="relative z-10 flex justify-between items-center p-3 md:p-4 gap-4">
                           <span className="text-base md:text-lg font-medium text-slate-900 dark:text-slate-100">
@@ -108,11 +117,10 @@ const ViewPostMain = ({ post }) => {
                           }}
                         >
                           <div
-                            className={`h-full ${
-                              choice === selectedChoice
-                                ? "bg-gradient-to-r from-blue-400 to-blue-500"
-                                : "bg-slate-200/70 dark:bg-slate-700/60"
-                            }`}
+                            className={`h-full ${choice === selectedChoice
+                              ? "bg-gradient-to-r from-blue-400 to-blue-500"
+                              : "bg-slate-200/70 dark:bg-slate-700/60"
+                              }`}
                           />
                         </div>
                       </div>

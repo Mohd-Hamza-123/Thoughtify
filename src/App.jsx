@@ -149,7 +149,7 @@ function App() {
       onInstallApp,
     }}>
 
-    <Initialization/>
+    <Initialization />
     <NavBar />
     <SideBar />
     <Overlay />
