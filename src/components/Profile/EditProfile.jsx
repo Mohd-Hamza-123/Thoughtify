@@ -20,7 +20,7 @@ const EditProfile = () => {
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
   const profileData = useSelector((state) => state.profileSlice.userProfile);
-  console.log(profileData)
+  // console.log(profileData)
   const {
     $id: profileId,
     bio,
@@ -64,7 +64,7 @@ const EditProfile = () => {
     } = profileObject
 
 
-    console.log(profileObject)
+    // console.log(profileObject)
 
     setIsUpdating(true)
 
@@ -85,7 +85,7 @@ const EditProfile = () => {
       let profileImageObject = null;
       if (profileImage) {
         let uploadedPic = await profile.createBucket({ file: profileImage });
-        console.log(uploadedPic)
+        // console.log(uploadedPic)
         const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id);
         profileImageObject = JSON.stringify({
           profileImageID: uploadedPic?.$id,
@@ -93,7 +93,7 @@ const EditProfile = () => {
         })
       }
 
-      console.log(profileImageObject)
+      // console.log(profileImageObject)
 
       let profileData = await profile.updateProfile(
         profileId,

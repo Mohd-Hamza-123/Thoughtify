@@ -32,14 +32,14 @@ const ViewPostMain = ({ post }) => {
   }, [post]);
 
   return (
-    <div className="mt-6">
+    <div className="md:mt-4">
       <div className="mx-auto bg-white/80 dark:bg-slate-900/70 overflow-hidden">
-        <div className="p-5 md:p-6">
+        <div className="py-2 px-1 md:p-6">
           <Link to={`/profile/${post?.userId}`}>
             <div className="flex gap-3 items-center cursor-pointer">
               <img
                 src={profileImage || '/NoProfile.png'}
-                className="rounded-full h-10 w-10 object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
+                className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
                 alt="avatar"
               />
               <div className="flex flex-col">
@@ -64,7 +64,7 @@ const ViewPostMain = ({ post }) => {
             {post?.title}
           </h2>
 
-          <div className="prose prose-sm dark:prose-invert max-w-none mt-4 px-1 py-2 text-slate-700 dark:text-slate-300">
+          <div className="prose prose-sm dark:prose-invert max-w-none mt-1 md:mt-3 px-1 py-2 text-slate-700 dark:text-slate-300">
             {parse(post?.content)}
           </div>
 

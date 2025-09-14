@@ -49,7 +49,7 @@ const ViewPostHeader = ({ post }) => {
     };
 
     return (
-        <div className="flex justify-between items-center mx-3 mt-2 relative">
+        <div className="flex justify-between items-center mx-1 md:mx-3 mt-2 relative">
             {/* Left: category, date, views, comment count */}
             <div className="flex gap-3 items-center flex-wrap">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100">

@@ -30,7 +30,7 @@ const ViewPost = () => {
     }
   })
 
-  console.log(post)
+  // console.log(post)
 
   let client = new Client()
     .setEndpoint(conf.appwriteURL)

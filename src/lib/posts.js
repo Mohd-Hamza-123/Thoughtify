@@ -4,60 +4,78 @@ import convertToWebPFile from "@/helpers/convert-image-into-webp";
 import conf from "@/conf/conf";
 
 export const updateLikeCount = async (post, myUserProfile) => {
-    console.log(post)
-    console.log(myUserProfile)
+
     try {
 
         if (!post || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
+        const isPostLiked = myUserProfile?.likedQuestions?.includes(post?.$id)
 
-        if (myUserProfile?.likedQuestions?.includes(post?.$id)) {
+        if (isPostLiked) {
 
+            const currentPost = await appwriteService.getPost(post?.$id)
             const updatePost = await appwriteService.updatePost_Like_DisLike({
-                postId: post?.$id,
-                like: post?.like - 1,
-                dislike: post?.dislike,
-            })
+                postId: currentPost?.$id,
+                like: currentPost?.like - 1,
+            });
 
-            const like_post_array = myUserProfile?.likedQuestions?.filter((postId) => postId !== post?.$id)
+            const like_post_array = myUserProfile?.likedQuestions?.filter((postId) => postId !== currentPost?.$id);
 
-            const dislike_post_array = myUserProfile?.dislikedQuestions?.filter((postId) => postId !== post?.$id)
+            const updateProfile = await profile.updateProfileWithQueries({
+                profileID: myUserProfile?.$id,
+                likedQuestions: like_post_array,
+            });
 
-
-            const updateProfile =
-                await profile.updateProfileWithQueries({
-                    profileID: myUserProfile?.$id,
-                    likedQuestions: like_post_array,
-                    dislikedQuestions: dislike_post_array,
-                });
             return {
                 post: updatePost,
                 profile: updateProfile
             }
         } else {
+            const isPostDisliked = myUserProfile?.dislikedQuestions?.includes(post?.$id)
 
-            const dislike_post_array = myUserProfile?.dislikedQuestions?.filter((postId) => postId !== post?.$id)
+            if (isPostDisliked) {
 
-            const like_post_array = [...myUserProfile?.likedQuestions, post?.$id]
+                const currentPost = await appwriteService.getPost(post?.$id)
+                const updatePost = await appwriteService.updatePost_Like_DisLike({
+                    postId: post?.$id,
+                    like: currentPost?.like + 1,
+                    dislike: currentPost?.dislike - 1,
+                })
+                const like_post_array = [...myUserProfile?.likedQuestions, post?.$id]
+                const dislike_post_array = myUserProfile?.dislikedQuestions?.filter((postId) => postId !== post?.$id)
+                
+                const updateProfile =
+                    await profile.updateProfileWithQueries({
+                        profileID: myUserProfile?.$id,
+                        likedQuestions: like_post_array,
+                        dislikedQuestions: dislike_post_array,
+                    });
+                return {
+                    post: updatePost,
+                    profile: updateProfile
+                }
 
-            const updatePost = await appwriteService.updatePost_Like_DisLike({
-                postId: post?.$id,
-                like: post?.like + 1,
-                dislike: post?.dislike,
-            });
+            } else {
 
-            console.log(updatePost)
+                const currentPost = await appwriteService.getPost(post?.$id)
+                const updatePost = await appwriteService.updatePost_Like_DisLike({
+                    postId: post?.$id,
+                    like: currentPost?.like + 1,
+                })
 
-            const updateProfile =
-                await profile.updateProfileWithQueries({
-                    profileID: myUserProfile?.$id,
-                    likedQuestions: like_post_array,
-                    dislikedQuestions: dislike_post_array,
-                });
+                const like_post_array = [...myUserProfile?.likedQuestions, post?.$id]
+                const updateProfile =
+                    await profile.updateProfileWithQueries({
+                        profileID: myUserProfile?.$id,
+                        likedQuestions: like_post_array,
+                    });
 
-            return {
-                post: updatePost,
-                profile: updateProfile
+                return {
+                    post: updatePost,
+                    profile: updateProfile,
+                }
             }
+
+
         }
 
     } catch (error) {
@@ -66,6 +84,83 @@ export const updateLikeCount = async (post, myUserProfile) => {
     }
 }
 
+export const updateDislikeCount = async (post, myUserProfile) => {
+    try {
+
+        if (!post || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
+
+        const isPostDisliked = myUserProfile?.dislikedQuestions?.includes(post?.$id)
+
+        if (isPostDisliked) {
+
+            const currentPost = await appwriteService.getPost(post?.$id)
+            const updatePost = await appwriteService.updatePost_Like_DisLike({
+                postId: currentPost?.$id,
+                dislike: currentPost?.dislike - 1,
+            })
+
+            const dislike_post_array = myUserProfile?.dislikedQuestions?.filter((postId) => postId !== post?.$id)
+
+            const updateProfile =
+                await profile.updateProfileWithQueries({
+                    profileID: myUserProfile?.$id,
+                    dislikedQuestions: dislike_post_array,
+                });
+
+            return {
+                post: updatePost,
+                profile: updateProfile
+            }
+
+        } else {
+            const isPostLiked = myUserProfile?.likedQuestions?.includes(post?.$id)
+            if (isPostLiked) {
+                const currentPost = await appwriteService.getPost(post?.$id)
+                const updatePost = await appwriteService.updatePost_Like_DisLike({
+                    postId: post?.$id,
+                    like: currentPost?.like - 1,
+                    dislike: currentPost?.dislike + 1,
+                })
+                const like_post_array = myUserProfile?.likedQuestions?.filter((postId) => postId !== post?.$id)
+                const dislike_post_array = [...myUserProfile?.dislikedQuestions, post?.$id]
+                const updateProfile =
+                    await profile.updateProfileWithQueries({
+                        profileID: myUserProfile?.$id,
+                        likedQuestions: like_post_array,
+                        dislikedQuestions: dislike_post_array,
+                    });
+
+                return {
+                    post: updatePost,
+                    profile: updateProfile
+                }
+
+            } else {
+
+                const currentPost = await appwriteService.getPost(post?.$id)
+                const updatePost = await appwriteService.updatePost_Like_DisLike({
+                    postId: post?.$id,
+                    dislike: currentPost?.dislike + 1,
+                })
+                const dislike_post_array = [...myUserProfile?.dislikedQuestions, post?.$id]
+                const updateProfile =
+                    await profile.updateProfileWithQueries({
+                        profileID: myUserProfile?.$id,
+                        dislikedQuestions: dislike_post_array,
+                    });
+
+                return {
+                    post: updatePost,
+                    profile: updateProfile
+                }
+            }
+        }
+
+
+    } catch (error) {
+
+    }
+}
 export const uploadQuestionWithImage = async (
     data,
     userData,
@@ -232,10 +327,10 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
         if (response.ok) {
             const UnsplashRes = await response.json();
             const ImgArrUnsplash = UnsplashRes.results
-        
+
             const randomIndex = Math.floor(Math.random() * 10);
             console.log(ImgArrUnsplash[randomIndex]?.urls?.regular)
-            const ImgURL =  ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
+            const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
             const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null })
 
             const dbPost = await appwriteService.createPost({
@@ -245,7 +340,7 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
                 pollQuestion,
                 pollOptions: pollOptions.map((obj) => JSON.stringify(obj)),
                 name: userData?.name,
-                trustedResponderPost : isAdmin,
+                trustedResponderPost: isAdmin,
             }, categoryValue);
             return dbPost
         }
