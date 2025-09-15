@@ -1,5 +1,5 @@
-import "./BrowseQuestions.css";
-import { Spinner } from "../index";
+
+import { Icons, Spinner } from "../index";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,9 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
   const { category, searchInput } = useParams();
   const { register, handleSubmit, setValue, reset, getValues } = useForm({});
 
-  const filters = useRef({})
+  const filters = useRef({
+    Like_Dislike: 'Most Liked'
+  })
   const spinnerRef = useRef();
   const BrowseQuestionLeft = useRef();
   const BrowseQuestionRight = useRef();
@@ -40,14 +42,14 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: false
+    enabled: true
   })
 
   const posts = useMemo(() => {
     return data?.pages?.flatMap((page) => page.documents)
   }, [data])
 
-  console.log(posts)
+
 
   const submit = async (data) => {
 
@@ -103,331 +105,250 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
 
   return (
-    <div className="flex md:flex-row flex-col gap-2">
+    <div className="flex md:flex-row flex-col gap-2 w-screen">
       {switchTrigger && <form
         ref={BrowseQuestionLeft}
-        id="BrowseQuestions_Filters"
-        className="w-full flex flex-col gap-5 p-3 relative h-full"
-        onSubmit={handleSubmit(submit)}>
-
-        <div className="flex justify-between">
-          <Button variant='outline' type="Submit">
+        className="w-[27%] flex flex-col gap-6 p-5 bg-white border border-gray-200 rounded-xl shadow-sm h-full"
+        onSubmit={handleSubmit(submit)}
+      >
+        {/* Buttons */}
+        <div className="flex justify-between items-center gap-3">
+          <Button
+            variant="outline"
+            type="Submit"
+            className="px-4 py-2 rounded-lg border-gray-300 hover:bg-blue-50"
+          >
             {isFetching ? "Searching..." : "Apply Filter"}
           </Button>
-          <Button variant="destructive" onClick={resetFilter} type="reset">Reset Filter</Button>
+          <Button
+            variant="destructive"
+            onClick={resetFilter}
+            type="reset"
+            className="px-4 py-2 rounded-lg"
+          >
+            Reset Filter
+          </Button>
         </div>
-        <div id="BrowseQuestions_PostTitle">
-          <p>Filter by Post Title : </p>
-          <div className="flex gap-2 items-center">
-            <label
-              htmlFor="BrowseQuestions_PostTitle_Filter">
+
+        {/* Title */}
+        <div id="BrowseQuestions_PostTitle" className="space-y-2">
+          <p className="font-medium text-gray-700">Filter by Post Title :</p>
+          <div className="flex gap-3 items-center">
+            <label htmlFor="BrowseQuestions_PostTitle_Filter" className="text-sm text-gray-600">
               Title:
             </label>
             <input
-              {...register("Title", {
-                required: false,
-              })}
+              {...register("Title", { required: false })}
               id="BrowseQuestions_PostTitle_Filter"
               placeholder="Title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
+        {/* Views */}
         <div>
-          <p>Filter By Views :</p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("Viewed")}
-                type="radio"
-                name="Viewed"
-                id="BrowseQuestions_Most_Viewed"
-                value={"MostViewed"}
-              />
-              <label htmlFor="BrowseQuestions_Most_Viewed"
-              >
-                Most Viewed
-              </label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("Viewed")}
-                type="radio"
-                name="Viewed"
-                id="BrowseQuestions_Less_Viewed"
-                value={"lessViewed"}
-              />
-              <label htmlFor="BrowseQuestions_Less_Viewed">Less Viewed</label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p>Filter By Post Age :</p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("PostAge")}
-                id="BrowseQuestion_PostAge_Recent"
-                type="radio"
-                name="PostAge"
-                value={"Recent"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="BrowseQuestion_PostAge_Recent">
-                Recent
-              </label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("PostAge")}
-                id="BrowseQuestion_PostAge_Oldest"
-                type="radio"
-                name="PostAge"
-                value="Oldest"
-              />
-              <label
-                className={`cursor-pointer`}
-                htmlFor="BrowseQuestion_PostAge_Oldest">
-                Oldest
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <p>
-            Filter By Comment :
-          </p>
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <input
-                {...register("Commented")}
-                id="BrowseQuestion_Most_Commented"
-                type="radio"
-                name="Commented"
-                value={"Most Commented"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="BrowseQuestion_Most_Commented"
-              >
-                Most Commented
-              </label>
-            </div>
-            <div className="flex gap-2">
-              <input
-                {...register("Commented")}
-                id="BrowseQuestion_Least_Commented"
-                type="radio"
-                name="Commented"
-                value={"Least Commented"}
-              />
-              <label
-                className="cursor-pointer"
-                htmlFor="BrowseQuestion_Least_Commented"
-              >
-                Least Commented
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <div>
-
-          <p> Favourite :</p>
-
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("Like_Dislike")}
-              name="Like_Dislike"
-              id="BrowseQuestion_Liked"
-              value="Most Liked"
-            />
-            <label htmlFor="BrowseQuestion_Liked"> Most liked </label>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("Like_Dislike")}
-              name="Like_Dislike"
-              id="BrowseQuestion_Disliked"
-              value={"Most Disliked"}
-            />
-            <label htmlFor="BrowseQuestion_Disliked" > Most disliked </label>
-          </div>
-        </div>
-
-        <div>
-          <span>Post By :</span>
-          <div className="flex gap-2">
-            <input
-              defaultChecked={true}
-              type="radio"
-              {...register("PostFrom")}
-              name="PostFrom"
-              id="BrowseQuestion_From_All"
-              value={"All"}
-            />
-            <label htmlFor="BrowseQuestion_From_All">All</label>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("PostFrom")}
-              name="PostFrom"
-              id="BrowseQuestion_From_Responders"
-              value={"Responders"}
-            />
-            <label htmlFor="BrowseQuestion_From_Responders">
-              Responders
+          <p className="font-medium text-gray-700">Filter By Views :</p>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Viewed")} type="radio" value="MostViewed" className="accent-blue-500" />
+              <span>Most Viewed</span>
             </label>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="radio"
-              {...register("PostFrom")}
-              name="PostFrom"
-              id="BrowseQuestion_Non-Responders"
-              value={"Non Responders"}
-            />
-            <label
-
-              htmlFor="BrowseQuestion_Non-Responders">
-              Non-Responders
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Viewed")} type="radio" value="lessViewed" className="accent-blue-500" />
+              <span>Less Viewed</span>
             </label>
           </div>
         </div>
 
+        {/* Post Age */}
         <div>
-          <p>
-            Filter By Category :
-          </p>
-          <div id="BrowseQuestions_Category" className="flex gap-2">
-            <label>
-              Category :
+          <p className="font-medium text-gray-700">Filter By Post Age :</p>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("PostAge")} type="radio" value="Recent" className="accent-blue-500" />
+              <span>Recent</span>
             </label>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("PostAge")} type="radio" value="Oldest" className="accent-blue-500" />
+              <span>Oldest</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Comments */}
+        <div>
+          <p className="font-medium text-gray-700">Filter By Comment :</p>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Commented")} type="radio" value="Most Commented" className="accent-blue-500" />
+              <span>Most Commented</span>
+            </label>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Commented")} type="radio" value="Least Commented" className="accent-blue-500" />
+              <span>Least Commented</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Likes/Dislikes */}
+        <div>
+          <p className="font-medium text-gray-700">Favourite :</p>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Like_Dislike")} type="radio" value="Most Liked" className="accent-green-500" />
+              <span>Most Liked</span>
+            </label>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("Like_Dislike")} type="radio" value="Most Disliked" className="accent-red-500" />
+              <span>Most Disliked</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Post By */}
+        <div>
+          <p className="font-medium text-gray-700">Post By :</p>
+          <div className="flex flex-col gap-2 mt-1">
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("PostFrom")} type="radio" value="All" defaultChecked className="accent-blue-500" />
+              <span>All</span>
+            </label>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("PostFrom")} type="radio" value="Responders" className="accent-blue-500" />
+              <span>Responders</span>
+            </label>
+            <label className="flex gap-2 items-center cursor-pointer">
+              <input {...register("PostFrom")} type="radio" value="Non Responders" className="accent-blue-500" />
+              <span>Non-Responders</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Category */}
+        <div>
+          <p className="font-medium text-gray-700">Filter By Category :</p>
+          <div className="flex items-center gap-2 mt-1">
+            <label className="text-sm text-gray-600">Category :</label>
             <select
-              name="category"
               {...register("category")}
-              className="outline-none">
-              <option
-                defaultChecked
-                value="All Category">
+              className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="All Category" defaultChecked>
                 All Category
               </option>
               {categoriesArr?.map((category, index) => (
-                <option key={category.category + index}>
-                  {category.category}
-                </option>
+                <option key={category.category + index}>{category.category}</option>
               ))}
             </select>
           </div>
         </div>
 
+        {/* Date */}
         <div id="BrowseQuestions_FilterByDate">
-          <p>Filter By Date :</p>
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-1">
-              <label
-                htmlFor="AfterDate">
-                After Date :
-              </label>
+          <p className="font-medium text-gray-700">Filter By Date :</p>
+          <div className="flex flex-col gap-3 mt-1">
+            <div className="flex items-center gap-2">
+              <label htmlFor="AfterDate" className="text-sm text-gray-600">After Date :</label>
               <input
-                {...register("AfterDate", {
-                  required: false,
-                })}
+                {...register("AfterDate")}
                 type="date"
-                name="AfterDate"
                 id="AfterDate"
+                className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-
-            <div className="flex gap-1">
-              <label
-                htmlFor="BeforeDate">
-                Before Date :
-              </label>
+            <div className="flex items-center gap-2">
+              <label htmlFor="BeforeDate" className="text-sm text-gray-600">Before Date :</label>
               <input
-                type="date"
-                name="BeforeDate"
-                id="BeforeDate"
                 {...register("BeforeDate")}
+                type="date"
+                id="BeforeDate"
+                className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         </div>
-      </form>}
+      </form>
+      }
+
       <div
         ref={BrowseQuestionRight}
-        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll`}
-        id="BrowseQuestions_Filtered_Questions">
-        {posts?.length === 0 && <p className="text-center"> No Posts Available</p>}
-        {posts?.map((post, index) => {
+        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll px-4 w-[73%]`}>
+        {posts?.length === 0 && <p className="text-center text-gray-500 mt-8"> No Posts Available</p>}
 
-          return (
-            <div key={post?.$id}>
-              <span>{post.name}</span>
+        <div className="space-y-4">
+          {posts?.map((post) => {
+            return (
+              <div
+                key={post?.$id}
+                className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition rounded-xl p-5"
+              >
+                {/* Author */}
+                <span className="text-sm font-medium text-blue-600">{post.name}</span>
 
-              <Link to={`/post/${post.$id}/${null}`}>
-                <p >
-                  {post.title}
-                </p>
-                <div
-                  id="BrowseQuestions_created_category_views"
-                  className="flex gap-3 flex-wrap">
-                  <span>
-                    {new Date(post.$createdAt).toLocaleDateString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span>{post.category}</span>
-                  <div className="flex justify-center items-center">
-                    <span>
-                      {post.views}
+                {/* Post Title */}
+                <Link to={`/post/${post.$id}/${null}`}>
+                  <h4 className="text-lg font-semibold mt-1 mb-2 text-gray-800 hover:text-blue-700 transition">
+                    {post.title}
+                  </h4>
+
+                  {/* Meta info */}
+                  <div
+                    id="BrowseQuestions_created_category_views"
+                    className="flex flex-wrap gap-4 text-sm text-gray-600"
+                  >
+                    {/* Date */}
+                    <span className="flex items-center gap-1">
+                      📅{" "}
+                      {new Date(post.$createdAt).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </span>
-                    <i
-                      className="fa-solid fa-eye"
-                      aria-hidden="true"
-                    ></i>
-                  </div>
-                  <div>
-                    <span>{post.commentCount}</span>
-                    <i className="fa-solid fa-comment"
-                    ></i>
-                  </div>
-                  <div>
-                    <span>
-                      {post?.like}
+
+                    {/* Category */}
+                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">
+                      {post.category}
                     </span>
-                    <i
-                      className={`fa-solid fa-thumbs-up"
-                        }`}
-                    ></i>
-                  </div>
 
-                  <div>
-                    <span> {post?.dislike} </span>
-                    <i
-                      className="fa-solid fa-thumbs-down"
-                    ></i>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          );
-        })}
+                    {/* Views */}
+                    <div className="flex gap-1 items-center">
+                      <span>{post.views}</span>
+                      <Icons.views className="w-4 h-4 text-gray-500" />
+                    </div>
 
-        {hasNextPage &&
-          <section ref={spinnerRef} className="flex justify-center">
+                    {/* Comments */}
+                    <div className="flex gap-1 items-center">
+                      <span>{post.commentCount}</span>
+                      <Icons.comment className="w-4 h-4 text-gray-500" />
+                    </div>
+
+                    {/* Likes */}
+                    <div className="flex gap-1 items-center">
+                      <span>{post?.like}</span>
+                      <Icons.like className="w-4 h-4 text-green-500" />
+                    </div>
+
+                    {/* Dislikes */}
+                    <div className="flex gap-1 items-center">
+                      <span>{post?.dislike}</span>
+                      <Icons.dislike className="w-4 h-4 text-red-500" />
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {hasNextPage && (
+          <section ref={spinnerRef} className="flex justify-center py-4">
             <Spinner />
           </section>
-        }
+        )}
       </div>
+
     </div>
   );
 };
