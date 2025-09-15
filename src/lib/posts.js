@@ -42,7 +42,7 @@ export const updateLikeCount = async (post, myUserProfile) => {
                 })
                 const like_post_array = [...myUserProfile?.likedQuestions, post?.$id]
                 const dislike_post_array = myUserProfile?.dislikedQuestions?.filter((postId) => postId !== post?.$id)
-                
+
                 const updateProfile =
                     await profile.updateProfileWithQueries({
                         profileID: myUserProfile?.$id,
@@ -83,7 +83,6 @@ export const updateLikeCount = async (post, myUserProfile) => {
         return null
     }
 }
-
 export const updateDislikeCount = async (post, myUserProfile) => {
     try {
 
@@ -208,7 +207,6 @@ export const uploadQuestionWithImage = async (
         throw new Error(error)
     }
 }
-
 export const deleteQuestion = async (post) => {
     const post_id = post?.$id
     try {
@@ -221,7 +219,6 @@ export const deleteQuestion = async (post) => {
         return false
     }
 }
-
 export const updatePoll = async ({ post, userData, choice }) => {
 
     try {
@@ -310,7 +307,6 @@ export const updatePoll = async ({ post, userData, choice }) => {
     }
 
 }
-
 export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData, uploaderProfile) => {
 
     try {
@@ -351,4 +347,8 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
         return null
     }
 
+}
+export const bookMarkPost = async (postId, myUserProfile) => {
+    if(!postId || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
+    console.log(myUserProfile)
 }

@@ -16,7 +16,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   const { setNotification } = useNotificationContext()
   const authStatus = useSelector((state) => state.auth.status)
   const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
-  
+
   const [likeState, setLikeState] = useState({
     like: post?.like,
     isLiked: myUserProfile?.likedQuestions?.includes(post?.$id)
@@ -26,8 +26,11 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     isDisliked: myUserProfile?.dislikedQuestions?.includes(post?.$id)
   })
 
+  const [isBookmarked, setIsBookmarked] = useState(myUserProfile?.bookmarks?.includes(post?.$id))
+  console.log(isBookmarked)
 
-  const { mutate } = useMutation({
+
+  const { mutate, isPending: isLikePending } = useMutation({
     mutationFn: async (data) => {
       const { post, myUserProfile } = data
       return await updateLikeCount(post, myUserProfile)
@@ -36,6 +39,9 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       if (likeState.isLiked) {
         setLikeState((prev) => ({ ...prev, like: prev.like - 1, isLiked: false }))
       } else {
+        if (disLikeState.dislike) {
+          setDisLikeState((prev) => ({ ...prev, dislike: prev.dislike - 1, isDisliked: false }))
+        }
         setLikeState((prev) => ({ ...prev, like: prev.like + 1, isLiked: true }))
       }
     },
@@ -57,7 +63,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     },
   })
 
-  const { mutate: dislikeMutate } = useMutation({
+  const { mutate: dislikeMutate, isPending: isDislikePending } = useMutation({
     mutationFn: async (data) => {
       const { post, myUserProfile } = data
       return await updateDislikeCount(post, myUserProfile)
@@ -66,6 +72,9 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       if (disLikeState.isDisliked) {
         setDisLikeState((prev) => ({ ...prev, dislike: prev.dislike - 1, isDisliked: false }))
       } else {
+        if (likeState.isLiked) {
+          setLikeState((prev) => ({ ...prev, like: prev.like - 1, isLiked: false }))
+        }
         setDisLikeState((prev) => ({ ...prev, dislike: prev.dislike + 1, isDisliked: true }))
       }
     },
@@ -87,16 +96,41 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     },
   })
 
+  const { mutate: bookMarkMutate } = useMutation({
+    mutationFn: async (data) => {
+      const { postId, myUserProfile } = data
+      return await bookMarkPost(postId, myUserProfile)
+    },
+    onMutate: (variables) => {
+      if (isBookmarked) {
+        setIsBookmarked(false)
+      } else {
+        setIsBookmarked(true)
+      }
+    },
+    onError: (error, variables, context) => {
+      console.log(error)
+    },
+    onSuccess: (data, variables, context) => {
+      console.log(data)
+    },
+    onSettled: (data, error, variables, context) => {
+      updatePost(data?.post)
+      const newProfile = data?.profile
+      const isBookmarked = newProfile?.bookmarks?.includes(data?.post?.$id)
+      setIsBookmarked(isBookmarked)
+      dispatch(userProfile({ userProfile: data?.profile }))
+    },
+  })
 
 
   const like_func = async () => {
     if (!authStatus) {
       setNotification({ message: "Please Login", type: "error" });
-      return 
+      return
     }
     mutate({ post, myUserProfile })
   }
-
   const dislike_func = () => {
     if (!authStatus) {
       setNotification({ message: "Please Login", type: "error" });
@@ -110,11 +144,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       setNotification({ message: "Please Login", type: "error" });
       return;
     }
-  }
-
-  const isPostDisliked = () => {
-    if (myUserProfile?.dislikedQuestions?.includes(post?.$id))
-      return true
+    bookMarkMutate({ postId: post?.$id, myUserProfile })
   }
 
   function updatePost(newPost) {
@@ -126,6 +156,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   return (
     <div className="flex justify-between gap-10 my-3">
       <Button
+        disabled={isLikePending || isDislikePending}
         variant='outline'
         className="flex-1"
         onClick={like_func}>
@@ -136,18 +167,19 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       </Button>
 
       <Button
+        disabled={isDislikePending || isLikePending}
         variant='outline'
         className="flex-1"
         onClick={dislike_func}>
-        <span className={`${isPostDisliked() ? "text-blue-500" : "text-black"}`}>{post?.dislike}</span>
-        <FaThumbsDown className={`${isPostDisliked() ? "fill-blue-500" : "fill-black"}`} />
+        <span className={`${disLikeState.isDisliked ? "text-blue-500" : "text-black"}`}>{disLikeState.dislike}</span>
+        <FaThumbsDown className={`${disLikeState.isDisliked ? "fill-blue-500" : "fill-black"}`} />
       </Button>
 
       <Button
         className="flex-1"
         variant='outline'
         onClick={bookMark_func}>
-        <FaRegBookmark className={`${true ? "font-bold fill-black" : "font-normal"}`} />
+        <FaRegBookmark className={`${isBookmarked ? "font-bold fill-blue-500" : "font-normal"}`} />
       </Button>
     </div>
   )
