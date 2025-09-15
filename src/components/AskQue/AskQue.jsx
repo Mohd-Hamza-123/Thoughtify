@@ -19,11 +19,10 @@ import { uploadQuestionWithImage, uploadPostWithUnsplashAPI } from "@/lib/posts"
 const AskQue = ({ post }) => {
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
-
-  const isAdmin = userData.labels.includes("admin") ? true : false
-  const UserAuthStatus = useSelector((state) => state.auth.status)
+  const UserAuthStatus = useSelector((state) => state.auth.status);
+  const isAdmin = userData.labels.includes("admin") ? true : false;
 
   const { handleSubmit, register, control, getValues } =
     useForm({
@@ -47,18 +46,17 @@ const AskQue = ({ post }) => {
     categoryFlag: false,
   })
 
-  // console.log(initialPostData)
 
   const {
-    thumbnailFile,
-    thumbnailURL,
-    categoryFlag,
-    categoryValue,
-    pollQuestion,
-    pollOptions,
-    pollTextAreaEmpty,
     options,
     isUploading,
+    pollOptions,
+    thumbnailURL,
+    pollQuestion,
+    categoryFlag,
+    thumbnailFile,
+    categoryValue,
+    pollTextAreaEmpty
   } = initialPostData
 
   const { setNotification } = useNotificationContext()
@@ -107,7 +105,7 @@ const AskQue = ({ post }) => {
   const deleteThumbnail = async () => {
     setInitialPostData((prev) => ({ ...prev, thumbnailURL: '', thumbnailFile: null }))
     try {
-      const deleteprevThumbnail = await appwriteService.deleteThumbnail(post?.queImageID)
+      await appwriteService.deleteThumbnail(post?.queImageID)
     } catch (error) {
       console.log("AskQue delete Img error.")
     }
@@ -121,7 +119,6 @@ const AskQue = ({ post }) => {
   }
 
   const poolQuestionChange = (e) => {
-
     if (e.target?.value !== '') {
       setInitialPostData((prev) => ({
         ...prev,
@@ -219,6 +216,9 @@ const AskQue = ({ post }) => {
 
       } else if (thumbnailURL && !imageID) {
         try {
+
+          console.log(thumbnailURL)
+          console.log(imageID)
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
             queImage: JSON.stringify({ imageURL: thumbnailURL, imageID: null }),
@@ -227,12 +227,14 @@ const AskQue = ({ post }) => {
             trustedResponderPost: isAdmin
           }, categoryValue);
 
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+          
           setNotification({ message: "Post Updated", type: "success" })
         } catch (error) {
           setNotification({ message: "Post is Not Updated", type: "error" })
         }
       } else if (thumbnailURL && imageID) {
+        console.log(thumbnailURL)
+        console.log(imageID)
         try {
           const dbPost = await appwriteService.updatePost(post?.$id, {
             ...data,
@@ -247,6 +249,9 @@ const AskQue = ({ post }) => {
 
       } else {
 
+        console.log(thumbnailURL)
+        console.log(imageID)
+
         try {
           if (imageID) await appwriteService.deleteThumbnail(imageID)
           const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
@@ -254,8 +259,8 @@ const AskQue = ({ post }) => {
           const ImgArrUnsplash = UnsplashRes.results
           const randomIndex = Math.floor(Math.random() * 10);
 
-       
-          const ImgURL =  ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
+
+          const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
 
           const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null });
 
@@ -267,8 +272,9 @@ const AskQue = ({ post }) => {
             trustedResponderPost: isAdmin
           }, categoryValue);
 
-          dispatch(getInitialPost({ initialPosts: [dbPost], initialPostsFlag: true }))
+         
           setNotification({ message: "Post Updated", type: "success" })
+
         } catch (error) {
           setNotification({ message: "Post is Not Updated", type: "error" })
           return

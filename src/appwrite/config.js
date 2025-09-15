@@ -46,7 +46,7 @@ export class Service {
     }
 
     async updatePost(slug, postObject) {
-        console.log(postObject)
+       
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
         } catch (error) {
