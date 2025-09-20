@@ -2,6 +2,7 @@ import "./MyProfile.css";
 import conf from "../../conf/conf";
 import { Button } from "../ui/button";
 import profile from "../../appwrite/profile";
+import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import notification from "../../appwrite/notification";
@@ -15,24 +16,26 @@ import {
   ChatInProfile,
   ProfileSummary,
 } from "../index";
-import { useQuery } from "@tanstack/react-query";
+import { followUnfollow, blockUnblock } from "@/lib/profile";
+import { userProfile } from "@/store/profileSlice";
+
 
 const MyProfile = () => {
 
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { setNotification } = useNotificationContext();
 
-  const authStatus = useSelector((state) => state?.auth?.status)
   const userData = useSelector((state) => state?.auth?.userData);
+  const authStatus = useSelector((state) => state?.auth?.status);
   const myProfile = useSelector((state) => state?.profileSlice?.userProfile)
-
-  const { setNotification } = useNotificationContext()
+  const isFollow = myProfile?.following?.find((follow) => JSON.parse(follow)?.profileID === slug)
+  const isBlocked = myProfile?.blockedUsers?.includes(slug)
   const realUser = userData ? slug === userData.$id : false;
 
-  const [isBlocked, setisBlocked] = useState(false);
-
-  const [activeNav, setActiveNav] = useState('Profile Summary')
+  const [isDisable, setIsDisable] = useState(false)
+  const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null)
 
   const { data: profileData, isPending } = useQuery({
@@ -42,124 +45,30 @@ const MyProfile = () => {
   })
 
   const follow_Unfollow = async () => {
-
+    setIsDisable(true)
     if (!authStatus) {
       setNotification({ message: "You are not Login", type: "error" })
       return
     }
-
-    const isFollowing = updateFollowArr?.filter((profileObj) => profileObj.profileID === slug);
-
-
-    if (isFollowing.length > 0) {
-
-      // updating sender profile
-      const findDeleteIndex = updateFollowArr.findIndex((profileObj) => profileObj.profileID === slug);
-      console.log(updateFollowArr[findDeleteIndex])
-
-      updateFollowArr.splice(findDeleteIndex, 1);
-
-      const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
-
-      const follow = await profile.updateEveryProfileAttribute({
-        profileID: myUserProfile.$id,
-        following: stringifyUpdateFollowArr,
-      });
-      setMyUserProfile(follow);
-
-      // updating receiver profile
-      let receiver = await profile.listProfile({ slug });
-      let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj));
-
-      if (receiverDetails.length === 0) return
-      receiverDetails = receiverDetails.filter((profile) => profile.profileID !== userData?.$id);
-
-      receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
-
-      const updateReceiver = await profile.updateEveryProfileAttribute({
-        profileID: receiver.documents[0].$id,
-        followers: receiverDetails,
-      })
-
-
-
-    } else if (myUserProfile.blockedUsers.some((profileID) => profileID === slug)) {
-
-      setNotification({ message: "You have to Unblock to follow", type: "error" })
-      return;
-    } else {
-
-      let receiver = await profile.listProfile({ slug })
-
-      updateFollowArr.push({ profileID: slug, name: receiver.documents[0].name });
-      const stringifyUpdateFollowArr = updateFollowArr.map((obj) => JSON.stringify(obj));
-
-      const follow = await profile.updateEveryProfileAttribute({
-        profileID: myUserProfile.$id,
-        following: stringifyUpdateFollowArr,
-      });
-      setMyUserProfile(follow);
-
-      try {
-        const createNotification = await notification.createNotification({ content: `${userData.name} has started following you`, isRead: false, slug: `profile/${userData.$id}`, name: userData?.name, userID: userData.$id, userIDofReceiver: slug, userProfilePic: myUserProfile?.profileImgURL });
-        console.log(createNotification)
-      } catch (error) {
-
-      }
-
-
-      // updating receiver profile
-
-      let receiverDetails = receiver.documents[0].followers.map((obj) => JSON.parse(obj))
-      console.log(receiverDetails);
-      receiverDetails.push({ profileID: userData.$id, name: userData.name })
-      receiverDetails = receiverDetails.map((obj) => JSON.stringify(obj));
-
-      const updateReceiver = await profile.updateEveryProfileAttribute({
-        profileID: receiver.documents[0].$id,
-        followers: receiverDetails,
-      })
-
-    }
-
-
-
+    const newProfile = await followUnfollow({ isFollow, slug, myProfile })
+    if (newProfile?.success) dispatch(userProfile({ userProfile: newProfile?.payload }))
+    else setNotification({ message: newProfile?.error, type: "error" })
+    setIsDisable(false)
   }
+
   const block_Unblock = async () => {
+    setIsDisable(true)
     if (!authStatus) {
       setNotification({ message: "You are not Login", type: "error" })
       return
     }
-    if (!myUserProfile) return;
+    const newProfile = await blockUnblock({ isBlocked, slug, myProfile })
+    if (newProfile?.success) dispatch(userProfile({ userProfile: newProfile?.payload }))
+    else setNotification({ message: newProfile?.error, type: "error" })
+    setIsDisable(false)
 
-
-
-    const isBlocked = myUserProfile?.blockedUsers?.includes(slug);
-    let updateBlockedArr = [...myUserProfile.blockedUsers];
-    let updateFollowArr = [...myUserProfile.following].map((obj) => JSON.parse(obj));
-
-    let isFollowing = false;
-    isFollowing = updateFollowArr.some((profile) => profile.profileID === slug)
-
-    if (isBlocked) {
-      updateBlockedArr.splice(updateBlockedArr.indexOf(slug), 1);
-      console.log("unBlock");
-      setisBlocked((prev) => !prev)
-    } else if (isFollowing) {
-      setNotification({ message: "You have to unfollow to Block", type: "error" })
-      return;
-    } else {
-      setisBlocked((prev) => !prev)
-      updateBlockedArr.push(slug);
-    }
-
-    const follow = await profile.updateEveryProfileAttribute({
-      profileID: myUserProfile.$id,
-      blockedUsers: updateBlockedArr
-    });
-
-    setMyUserProfile(follow);
   }
+
   const promote_Demote = async () => {
     console.log(profileData);
     profile.updateEveryProfileAttribute({ trustedResponder: !profileData?.trustedResponder, profileID: profileData?.$id })
@@ -236,13 +145,17 @@ const MyProfile = () => {
                     navigate(`/ChatRoom/${userData?.$id}/${slug}`)
                   }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
                 )}
+
                 {!realUser && (
                   <Button
+                    disabled={isDisable}
                     className="p-2 rounded-sm"
                     onClick={follow_Unfollow}
-                  >{`${true ? 'Unfollow' : 'Follow'}`}</Button>
+                  >{`${isFollow ? 'Unfollow' : 'Follow'}`}</Button>
                 )}
+
                 {!realUser && <Button
+                  disabled={isDisable}
                   className="p-2 rounded-sm"
                   onClick={block_Unblock}
                 >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
@@ -275,7 +188,6 @@ const MyProfile = () => {
             id="MyProfile_Header_Right"
             className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
           >
-
 
             <div className="flex w-full">
               <p className="w-1/2">Followers :</p>

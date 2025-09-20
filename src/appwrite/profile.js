@@ -76,7 +76,7 @@ export class Profile {
         interestedIn,
         profileImage,
     }) {
-        
+
         let payload = {}
         if (bio) payload.bio = bio
         if (links) payload.links = links
@@ -97,7 +97,11 @@ export class Profile {
         }
     }
 
-    async updateProfileWithQueries({ profileID, likedQuestions, dislikedQuestions, bookmarks }) {
+    async updateProfileWithQueries({
+        profileID,
+        likedQuestions,
+        dislikedQuestions,
+        bookmarks }) {
         let obj = {}
         if (likedQuestions) obj.likedQuestions = likedQuestions
         if (dislikedQuestions) obj.dislikedQuestions = dislikedQuestions
@@ -122,7 +126,9 @@ export class Profile {
         }
 
         try {
-            const res = await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+            const res = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
                 QueryArr
             )
             return res
@@ -140,12 +146,15 @@ export class Profile {
             return null
         }
     }
+
     async listProfilesWithQueries({ listResponders }) {
         let QueryArr = []
         if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
 
         try {
-            return await this.databases.listDocuments(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId,
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
                 QueryArr
             )
         } catch (error) {
@@ -158,7 +167,8 @@ export class Profile {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                slug)
+                slug
+            )
         } catch (error) {
             console.log(error?.message)
             return null

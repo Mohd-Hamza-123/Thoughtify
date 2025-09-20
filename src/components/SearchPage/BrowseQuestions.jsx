@@ -1,4 +1,3 @@
-
 import { Icons, Spinner } from "../index";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
@@ -105,10 +104,10 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
 
   return (
-    <div className="flex md:flex-row flex-col gap-2 w-screen">
+    <div className="flex md:flex-row flex-col gap-2 w-screen px-2 mt-2">
       {switchTrigger && <form
         ref={BrowseQuestionLeft}
-        className="w-[27%] flex flex-col gap-6 p-5 bg-white border border-gray-200 rounded-xl shadow-sm h-full"
+        className="w-full md:w-[27%] flex flex-col gap-6 p-5 bg-white border border-gray-200 rounded-xl shadow-sm h-full"
         onSubmit={handleSubmit(submit)}
       >
         {/* Buttons */}
@@ -273,7 +272,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
       <div
         ref={BrowseQuestionRight}
-        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll px-4 w-[73%]`}>
+        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll px-4 w-full md:w-[73%]`}>
         {posts?.length === 0 && <p className="text-center text-gray-500 mt-8"> No Posts Available</p>}
 
         <div className="space-y-4">
