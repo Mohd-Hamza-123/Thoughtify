@@ -44,7 +44,8 @@ export class Profile {
         othersCanFilterYourPosts = null,
         othersSeeYourFollowers_Following = null,
         whoCanMsgYou = null,
-        trustedResponder = null
+        trustedResponder = null,
+        bookmarks = null
     }) {
         let updateObj = {}
         if (following) updateObj.following = following
@@ -58,12 +59,17 @@ export class Profile {
         if (trustedResponder || trustedResponder === false) {
             updateObj.trustedResponder = trustedResponder
         }
-
+        if (bookmarks) updateObj.bookmarks = bookmarks
+        console.log(bookmarks)
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId, 
+                conf.appwriteProfileCollectionId, 
+                profileID,
                 updateObj
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

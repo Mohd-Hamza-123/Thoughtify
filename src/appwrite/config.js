@@ -164,7 +164,7 @@ export class Service {
         From,
         Title,
         Viewed,
-        UserID,
+        userID,
         PostAge,
         PostFrom,
         category,
@@ -207,8 +207,8 @@ export class Service {
         } else if (Commented === 'Least Commented') {
             QueryArr.push(Query.orderAsc('commentCount'))
         }
-        if (UserID) {
-            QueryArr.push(Query.equal("userId", [UserID]))
+        if (userID) {
+            QueryArr.push(Query.equal("userId", [userID]))
         }
         if (PostFrom === 'Responders') {
             QueryArr.push(Query.equal("trustedResponderPost", true))

@@ -348,7 +348,34 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
     }
 
 }
-export const bookMarkPost = async (postId, myUserProfile) => {
-    if(!postId || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
-    console.log(myUserProfile)
+export const bookMarkPost = async (postId, myUserProfile, isBookmarked) => {
+    try {
+        if (!postId || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
+        if (isBookmarked) {
+            let bookmarks = myUserProfile?.bookmarks
+
+            bookmarks = bookmarks?.filter((bookmark) => bookmark !== postId)
+            const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
+            if (updateProfile) return {
+                success: true,
+                payload: updateProfile
+            }
+        } else {
+            let bookmarks = myUserProfile?.bookmarks
+
+            bookmarks = [...bookmarks,postId]
+            const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
+            if (updateProfile) return {
+                success: true,
+                payload: updateProfile
+            }
+        }
+    } catch (error) {
+        console.log(error?.message)
+        return {
+            success: false,
+            error: process.env.NODE_ENV === "development" ? error?.message : "Something went wrong"
+        }
+    }
+
 }

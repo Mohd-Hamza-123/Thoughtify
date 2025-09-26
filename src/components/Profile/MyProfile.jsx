@@ -36,7 +36,7 @@ const MyProfile = () => {
 
   const [isDisable, setIsDisable] = useState(false)
   const [activeNav, setActiveNav] = useState('Profile Summary');
-  const [activeNavRender, setActiveNavRender] = useState(null)
+  const [activeNavRender, setActiveNavRender] = useState(null);
 
   const { data: profileData, isPending } = useQuery({
     queryKey: ['profiles', slug],
@@ -223,7 +223,7 @@ const MyProfile = () => {
               <li
                 onClick={() => setActiveNav('Questions')}
                 className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
-                Questions
+                My Posts
               </li>
 
               <li

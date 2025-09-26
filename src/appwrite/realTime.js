@@ -118,7 +118,7 @@ export class RealTime {
     }
 
     async getCommentsWithQueries({ Title, category,
-        BeforeDate, AfterDate, PostAge, UserID, lastPostID
+        BeforeDate, AfterDate, PostAge, userID, lastPostID
     }) {
 
         let QueryArr = [Query.limit(5)];
@@ -136,8 +136,8 @@ export class RealTime {
         }
 
 
-        if (UserID) {
-            QueryArr.push(Query.equal("authid", [UserID]))
+        if (userID) {
+            QueryArr.push(Query.equal("authId", [userID]))
         }
 
         try {
@@ -149,6 +149,7 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
+            console.log(error?.message)
             return null
         }
     }

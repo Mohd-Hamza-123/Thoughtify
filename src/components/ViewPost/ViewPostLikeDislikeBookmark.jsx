@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react';
 import { Button } from '../ui/button';
 import { FaThumbsUp } from "react-icons/fa6";
 import { FaThumbsDown } from "react-icons/fa";
-import { updateDislikeCount, updateLikeCount } from '@/lib/posts';
+import { bookMarkPost, updateDislikeCount, updateLikeCount } from '@/lib/posts';
 import { FaRegBookmark } from "react-icons/fa6";
 import { userProfile } from '@/store/profileSlice';
 import { useSelector, useDispatch } from 'react-redux';
@@ -25,10 +25,8 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     dislike: post?.dislike,
     isDisliked: myUserProfile?.dislikedQuestions?.includes(post?.$id)
   })
-
-  const [isBookmarked, setIsBookmarked] = useState(myUserProfile?.bookmarks?.includes(post?.$id))
-  console.log(isBookmarked)
-
+  
+  const isBookmarked = myUserProfile?.bookmarks?.includes(post?.$id)
 
   const { mutate, isPending: isLikePending } = useMutation({
     mutationFn: async (data) => {
@@ -96,30 +94,20 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     },
   })
 
-  const { mutate: bookMarkMutate } = useMutation({
+  const { mutate: bookMarkMutate , isPending : isBookMarkPending} = useMutation({
     mutationFn: async (data) => {
       const { postId, myUserProfile } = data
-      return await bookMarkPost(postId, myUserProfile)
+      return await bookMarkPost(postId, myUserProfile,isBookmarked)
     },
     onMutate: (variables) => {
-      if (isBookmarked) {
-        setIsBookmarked(false)
-      } else {
-        setIsBookmarked(true)
-      }
+      
     },
     onError: (error, variables, context) => {
-      console.log(error)
-    },
-    onSuccess: (data, variables, context) => {
-      console.log(data)
+      console.log(error?.message)
     },
     onSettled: (data, error, variables, context) => {
-      updatePost(data?.post)
-      const newProfile = data?.profile
-      const isBookmarked = newProfile?.bookmarks?.includes(data?.post?.$id)
-      setIsBookmarked(isBookmarked)
-      dispatch(userProfile({ userProfile: data?.profile }))
+      // updatePost(data?.post)
+      if(data.success) dispatch(userProfile({ userProfile: data?.payload }))
     },
   })
 
@@ -140,6 +128,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   }
 
   const bookMark_func = () => {
+    if(isBookMarkPending) return 
     if (!authStatus) {
       setNotification({ message: "Please Login", type: "error" });
       return;
@@ -179,7 +168,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
         className="flex-1"
         variant='outline'
         onClick={bookMark_func}>
-        <FaRegBookmark className={`${isBookmarked ? "font-bold fill-blue-500" : "font-normal"}`} />
+        <FaRegBookmark className={`${isBookmarked ? "text-blue-500" : "font-normal"}`} />
       </Button>
     </div>
   )

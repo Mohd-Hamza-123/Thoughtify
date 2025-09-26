@@ -6,34 +6,45 @@ import { useForm } from 'react-hook-form'
 import { categoriesArr } from '../AskQue/Category'
 import appwriteService from '../../appwrite/config'
 import { useDispatch, useSelector } from 'react-redux'
-import React, { useRef, useState, useEffect } from 'react'
-import { useNotificationContext } from '@/context/NotificationContext'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
+import { useNotificationContext } from '@/context/NotificationContext'
 
 const Questions = ({ visitedUserProfile }) => {
 
-  console.log(visitedUserProfile)
-  
+  const userID = visitedUserProfile?.$id
   const dispatch = useDispatch()
   const spinnerRef = useRef(null)
-
 
   const [toggle, setToggle] = useState(false)
 
   const { setNotification } = useNotificationContext()
   const userData = useSelector((state) => state.auth.userData);
-  const [filters, setFilters] = useState({})
-  const { register, handleSubmit, reset } = useForm({})
+  const [filters, setFilters] = useState({userID})
+  const { register, handleSubmit, reset } = useForm()
 
-  const { data: queries, isPending, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
+  const { data: queries = [], isLoading, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
     queryKey: ['questions', visitedUserProfile?.userIdAuth, filters],
     queryFn: async ({ queryKey, pageParam }) => {
-      const { filters } = queryKey
-      await appwriteService.getPostsWithQueries({ ...filters })
+      const filteredQuestions = await appwriteService.getPostsWithQueries({ ...filters }, pageParam)
+      const documents = filteredQuestions.documents
+      const documentsLength = documents.length;
+      return {
+        documents,
+        nextCursor: documentsLength ? documents[documentsLength - 1].$id : undefined
+      }
     },
-    enabled: false,
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    enabled: true,
   })
+
+  
+  let queriesArr = useMemo(() => queries.pages?.flatMap((page) => page.documents), [queries])
+
+ 
   const submit = async (data) => {
+    data.userID = userID
     setFilters(data)
     refetch()
   }
@@ -41,10 +52,12 @@ const Questions = ({ visitedUserProfile }) => {
   useEffect(() => {
     const ref = spinnerRef.current;
     if (ref) {
-      const observer = new IntersectionObserver(([entry]) => { }, {
+      const observer = new IntersectionObserver(([entry]) => { 
+        if (entry.isIntersecting) fetchNextPage()
+      }, {
         root: null,
         rootMargin: '0px',
-        threshold: 1
+        threshold: 0
       })
       observer.observe(ref)
       return () => ref && observer.unobserve(ref)
@@ -74,7 +87,7 @@ const Questions = ({ visitedUserProfile }) => {
 
         <div className="flex flex-col gap-3 mt-4">
           <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-            {true ? 'Searching...' : 'Apply Filter'}
+            {isLoading ? 'Searching...' : 'Apply Filter'}
           </Button>
           <Input
             type="reset"
@@ -205,13 +218,11 @@ const Questions = ({ visitedUserProfile }) => {
         {true && <p className="text-center text-gray-500 italic">No Posts Available</p>}
 
         <div className="space-y-4 mt-4">
-          {queries?.map((querie, index) => {
-            if (isPostAvailable !== true) return null
+          {queriesArr?.map((querie, index) => {
             return (
               <div
                 key={querie?.$id}
-                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition"
-              >
+                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition">
                 <span className="font-semibold text-gray-800">{querie?.name}</span>
                 <Link to={`/post/${querie?.$id}/${null}`} className="block mt-2">
                   <p className="text-lg font-medium text-blue-600 hover:underline">{querie?.title}</p>
@@ -229,19 +240,19 @@ const Questions = ({ visitedUserProfile }) => {
                     <span className="bg-gray-100 px-2 py-0.5 rounded-md border">{querie?.category}</span>
                     <div className="flex items-center gap-1">
                       <span>{querie?.views}</span>
-                      <i className="fa-solid fa-eye" aria-hidden="true"></i>
+                      <Icons.views/>
                     </div>
                     <div className="flex items-center gap-1">
                       <span>{querie.commentCount}</span>
-                      <i className="fa-solid fa-comment"></i>
+                      <Icons.comment/>
                     </div>
                     <div className="flex items-center gap-1">
                       <span>{querie?.like}</span>
-                      <i className="fa-solid fa-thumbs-up"></i>
+                      <Icons.like/>
                     </div>
                     <div className="flex items-center gap-1">
                       <span>{querie?.dislike}</span>
-                      <i className="fa-solid fa-thumbs-down"></i>
+                      <Icons.dislike/>
                     </div>
                   </div>
                 </Link>
@@ -250,7 +261,7 @@ const Questions = ({ visitedUserProfile }) => {
           })}
         </div>
 
-        {true && (
+        {hasNextPage && (
           <section ref={spinnerRef} className="flex justify-center mt-6">
             <Spinner />
           </section>
