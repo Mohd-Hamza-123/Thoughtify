@@ -1,157 +1,180 @@
-import React, { useRef, useState, useEffect } from "react";
-import "./Favourite.css";
+import React, { useEffect, useMemo, useRef } from "react";
 import appwriteService from "../../appwrite/config";
-import { Spinner } from "..";
+import { Icons, Spinner } from "..";
 import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import profile from "../../appwrite/profile";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
-const Bookmark = ({ visitedProfileUserID }) => {
-  const bookMarkPostInRedux = useSelector((state) => state.profileSlice?.filteredBookmarkPosts)
-  const dispatch = useDispatch();
+const PAGE_SIZE = 5;
 
-  const spinnerRef = useRef();
- 
-  const userData = useSelector((state) => state.auth.userData);
+const Bookmark = ({ visitedUserProfile }) => {
+  const userID = visitedUserProfile?.$id;
+  const bookmarksIDs = visitedUserProfile?.bookmarks ?? []; // array of post ids
+  const spinnerRef = useRef(null);
+  const stableIds = useMemo(() => bookmarksIDs.slice(), [bookmarksIDs]);
 
-  const bookMarkCounter = useRef(0);
+  const {
+    data,
+    status,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+  } = useInfiniteQuery({
+    queryKey: ["bookmarkPosts", userID],
+    enabled: Boolean(userID && stableIds.length),
+    initialPageParam: 0,
+    queryFn: async ({ pageParam = 0 }) => {
+      
+      const start = pageParam;
+      const end = Math.min(start + PAGE_SIZE, stableIds.length);
+      const slice = stableIds.slice(start, end);
 
-  const submit = async () => {
-    if (visitedProfileUserID === userData?.$id) {
-      const totalLength = myUserProfile?.bookmarks?.length;
-      let bookMarkArray = myUserProfile?.bookmarks;
+      
+      const posts = await Promise.all(
+        slice.map((id) =>
+          appwriteService
+            .getPost(id)
+            .catch(() => null) 
+        )
+      );
 
-      if (totalLength === 0) {
-        setisPostAvailable(false);
-        return;
-      } else {
-        setisPostAvailable(true);
-      }
+      const items = posts.filter(Boolean);
+      const nextCursor = end < stableIds.length ? end : undefined;
 
-      if (totalLength > 5) {
-        for (let i = 0; i < 5; i++) {
-          const filteredBookmark = await appwriteService.getPostWithBookmark(
-            bookMarkArray[i]
-          );
-          console.log(filteredBookmark);
-          if (filteredBookmark) {
-            dispatch(
-              getFilteredBookmarkPosts({
-                filteredBookmarkPosts: [filteredBookmark],
-              })
-            );
-          }
-        }
-        bookMarkCounter.current = bookMarkCounter.current + 5;
-      } else {
-        for (let i = 0; i < totalLength; i++) {
-          const filteredBookmark = await appwriteService.getPostWithBookmark(
-            bookMarkArray[i]
-          );
+      return { items, nextCursor };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
 
-          if (filteredBookmark) {
-            dispatch(
-              getFilteredBookmarkPosts({
-                filteredBookmarkPosts: [filteredBookmark],
-              })
-            );
-          } else {
-            // console.log(myUserProfile?.bookmarks);
-            let newArr = myUserProfile?.bookmarks
-            newArr.splice(i, 1);
-            const updateBookMarkInProfile = await profile.updateProfileWithQueries({ profileID: myUserProfile?.$id, bookmarks: newArr })
-            console.log(updateBookMarkInProfile)
-            setMyUserProfile((prev) => updateBookMarkInProfile)
-          }
-        }
-      }
-    }
-  };
+  
+  const bookMarkPosts = useMemo(
+    () => (data?.pages ?? []).flatMap((p) => p.items),
+    [data]
+  );
 
 
   useEffect(() => {
-    const ref = spinnerRef.current;
-    if (ref) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-         
-        },
-        {
-          root: null,
-          rootMargin: "0px",
-          threshold: 1,
+    const node = spinnerRef.current;
+    if (!node) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
-      );
+      },
+      { root: null, rootMargin: "200px 0px", threshold: 0 }
+    );
 
-      observer.observe(ref);
-      return () => ref && observer.unobserve(ref);
-    }
-  }, []);
+    io.observe(node);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  if (!stableIds.length) {
+    return (
+      <div className="p-8 text-sm text-gray-600 dark:text-gray-300">
+        No bookmarks yet.
+      </div>
+    );
+  }
 
-
+  if (status === "error") {
+    return (
+      <div className="p-8 text-sm text-red-600">
+        Failed to load bookmarks{error?.message ? `: ${error.message}` : ""}.
+      </div>
+    );
+  }
 
   return (
     <div
       id="Profile_Bookmark_Filter"
-      className={`flex`}
+      className="flex w-full justify-center"
     >
-      <div id="Profile_Bookmark_Filtered_Bookmark">
+      <div
+        id="Profile_Bookmark_Filtered_Bookmark"
+        className="w-full max-w-3xl px-3 sm:px-4 md:px-0"
+      >
+       
+        {status === "pending" && (
+          <div className="flex justify-center my-8">
+            <Spinner />
+          </div>
+        )}
 
-        {bookMarkPostInRedux?.map((bookmark, index) => {
+        {bookMarkPosts.map((bookmark) => (
+          <div
+            className="BookMark_Posts group mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
+            key={bookmark?.$id}
+          >
+            <Link
+              to={`/post/${bookmark?.$id}/${null}`}
+              className="block p-4 sm:p-5"
+            >
+              <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 leading-snug group-hover:underline truncate">
+                {bookmark?.title}
+              </p>
 
-          if (isPostAvailable !== true || (visitedProfileUserID !== userData?.$id) || !bookmark) {
-            return;
-          }
+              <div className="BrowseBookmark_created_category_views mt-3 flex flex-wrap gap-2 sm:gap-3">
+                <span className="Favourite_CreatedAt inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2.5 py-1 text-xs">
+                  {bookmark?.$createdAt
+                    ? new Date(bookmark.$createdAt).toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : ""}
+                </span>
 
-          return (
-            < div className={`BookMark_Posts`
-            } key={bookmark?.$id}>
-              <Link to={`/post/${bookmark?.$id}/${null}`}>
-                <p>{bookmark?.title}</p>
-                <div
-                  className="BrowseBookmark_created_category_views flex gap-3 flex-wrap"
-                >
-                  <span className="Favourite_CreatedAt">
-                    {new Date(bookmark?.$createdAt).toLocaleDateString(
-                      "en-US",
-                      { day: "numeric", month: "long", year: "numeric" }
-                    )}
-                  </span>
-                  <span className="Favourite_Category">{bookmark?.category}</span>
-                  <div className="flex justify-center items-center">
-                    <span>{bookmark?.views}</span>
-                    <i className=" fa-solid fa-eye" aria-hidden="true"></i>
-                  </div>
-                  <div>
-                    <span>{bookmark.commentCount}</span>
-                    <i className="fa-solid fa-comment"></i>
-                  </div>
-                  <div>
-                    <span>{bookmark?.like}</span>
-                    <i className="fa-solid fa-thumbs-up"></i>
-                  </div>
+                <span className="Favourite_Category inline-flex items-center gap-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 text-xs">
+                  {bookmark?.category}
+                </span>
 
-                  <div>
-                    <span>{bookmark?.dislike}</span>
-                    <i className="fa-solid fa-thumbs-down"></i>
-                  </div>
+                <div className="flex items-center gap-1 rounded-full bg-gray-50 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300">
+                  <span>{bookmark?.views ?? 0}</span>
+                  <Icons.views />
                 </div>
-              </Link>
-            </div>
-          );
-        })}
 
+                <div className="flex items-center gap-1 rounded-full bg-gray-50 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-700 dark:text-gray-300">
+                  <span>{bookmark?.commentCount ?? 0}</span>
+                  <Icons.comment />
+                </div>
+
+                <div className="flex items-center gap-1 rounded-full bg-green-50 dark:bg-green-900/30 px-2.5 py-1 text-xs text-green-700 dark:text-green-300">
+                  <span>{bookmark?.like ?? 0}</span>
+                  <Icons.like />
+                </div>
+
+                <div className="flex items-center gap-1 rounded-full bg-red-50 dark:bg-red-900/30 px-2.5 py-1 text-xs text-red-700 dark:text-red-300">
+                  <span>{bookmark?.dislike ?? 0}</span>
+                  <Icons.dislike />
+                </div>
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
 
-      {
-        (true) && (
-          <section ref={spinnerRef} className="flex justify-center">
+
+      {hasNextPage && (
+        <section
+          ref={spinnerRef}
+          className="flex w-full justify-center my-8"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 px-4 py-2 shadow-sm">
             <Spinner />
-          </section>
-        )
-      }
-    </div >
+            <span className="text-xs text-gray-600 dark:text-gray-300">
+              Loading more…
+            </span>
+          </div>
+        </section>
+      )}
+
+      {isFetching && !isFetchingNextPage && (
+        <div className="sr-only">Updating…</div>
+      )}
+    </div>
   );
 };
 

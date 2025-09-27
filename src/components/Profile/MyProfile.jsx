@@ -87,7 +87,7 @@ const MyProfile = () => {
     switch (activeNav) {
       case 'Opinions': setActiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
-      case 'Favourites': setActiveNavRender(<Favourite visitedProfileUserID={slug} />)
+      case 'Favourites': setActiveNavRender(<Favourite visitedUserProfile={profileData}  />)
         break;
       case 'Questions': setActiveNavRender(<Questions visitedUserProfile={profileData} />)
         break;

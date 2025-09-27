@@ -12,18 +12,18 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 const Opinions = ({ visitedProfileUserID }) => {
 
   const spinnerRef = useRef()
+  const opinionsLeft = useRef()
+  const opinionsRight = useRef()
   const { register, handleSubmit, reset } = useForm()
   const userData = useSelector((state) => state.auth.userData);
   const [filters, setFilters] = useState({ userID: visitedProfileUserID })
-  const opinionsLeft = useRef()
-  const opinionsRight = useRef()
 
-  const { data = [], hasNextPage, fetchNextPage } = useInfiniteQuery({
-    queryKey: ['opinions', visitedProfileUserID],
+  const { data = [], hasNextPage, fetchNextPage, isLoading, refetch } = useInfiniteQuery({
+    queryKey: ['opinions', visitedProfileUserID, filters],
     queryFn: async ({ queryKey, pageParam }) => {
-      console.log(pageParam)
+    
       const filteredOpinions = await realTime.getCommentsWithQueries({ ...filters, lastPostID: pageParam })
-      console.log(filteredOpinions)
+      
       const documents = filteredOpinions.documents
       const documentsLength = documents.length;
       return {
@@ -34,7 +34,6 @@ const Opinions = ({ visitedProfileUserID }) => {
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
-
 
   const comments = useMemo(() => data.pages?.flatMap((page) => page.documents), [data])
 
@@ -52,14 +51,14 @@ const Opinions = ({ visitedProfileUserID }) => {
       }, {
         root: null,
         rootMargin: '0px',
-        threshold: 1
+        threshold: 0.5
       })
 
       observer.observe(ref)
       return () => ref && observer.unobserve(ref)
     }
 
-  }, [spinnerRef.current, comments])
+  }, [hasNextPage, fetchNextPage, data])
 
   return (
     <div className="max-w-7xl mx-auto w-full">
@@ -87,6 +86,20 @@ const Opinions = ({ visitedProfileUserID }) => {
           className="w-full lg:w-[30%] flex flex-col gap-6 rounded-md border border-gray-200 bg-white p-4 sm:p-3 shadow-sm dark:bg-gray-900 dark:border-gray-800"
           onSubmit={handleSubmit(submit)}
         >
+          <div className="mt-2 flex items-center gap-3">
+            <Button
+              type='Submit'
+              className={`Profile_Opinions_ApplyFilter inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98]`}>
+              {`${isLoading ? 'Searching' : 'Apply Filter'}`}
+            </Button>
+
+            <input
+              type='reset'
+              onClick={() => { reset() }}
+              value={'Reset Filter'}
+              className="Profile_Opinions_ResentFilter cursor-pointer rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
+            />
+          </div>
           <div className="border-b border-gray-200 pb-2 dark:border-gray-800">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Filter By Post Age :</p>
           </div>
@@ -108,7 +121,7 @@ const Opinions = ({ visitedProfileUserID }) => {
           <div className="border-t border-gray-200 pt-4 dark:border-gray-800">
             <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">Filter By Category :</p>
             <div id='Profile_Opinions_Category' className='flex items-center gap-3'>
-              <label className="text-sm text-gray-600 dark:text-gray-300">Category :</label>
+              <label className="text-sm text-gray-600 dark:text-gray-300">Category</label>
               <select
                 name="category" {...register("category")}
                 className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200'
@@ -126,7 +139,7 @@ const Opinions = ({ visitedProfileUserID }) => {
 
             <div className='flex flex-col gap-3'>
               <div className='flex items-center gap-3'>
-                <label htmlFor="AfterDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>After Date :</label>
+                <label htmlFor="AfterDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>After Date</label>
                 <input
                   {...register("AfterDate", { required: false })}
                   type="date" name="AfterDate" id="AfterDate"
@@ -135,7 +148,7 @@ const Opinions = ({ visitedProfileUserID }) => {
               </div>
 
               <div className='flex items-center gap-3'>
-                <label htmlFor="BeforeDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>Before Date :</label>
+                <label htmlFor="BeforeDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>Before Date</label>
                 <input
                   type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")}
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
@@ -144,21 +157,7 @@ const Opinions = ({ visitedProfileUserID }) => {
             </div>
           </div>
 
-          <div className="mt-2 flex items-center gap-3">
-            <Button
-              type='Submit'
-              className={`Profile_Opinions_ApplyFilter inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98]`}
-            >
-              {`${true ? 'Searching' : 'Apply Filter'}`}
-            </Button>
 
-            <input
-              type='reset'
-              onClick={() => { reset() }}
-              value={'Reset Filter'}
-              className="Profile_Opinions_ResentFilter cursor-pointer rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
-            />
-          </div>
         </form>
 
         {/* Right: Results */}
@@ -166,7 +165,7 @@ const Opinions = ({ visitedProfileUserID }) => {
           ref={opinionsRight}
           className="flex-1 rounded-2xl border border-dashed border-gray-200 p-4 sm:p-6 min-h-[320px] bg-gray-50 dark:bg-gray-950 dark:border-gray-800"
         >
-          {true && (
+          {comments?.length === 0 && (
             <p className="text-center text-sm font-semibold text-gray-600 dark:text-gray-300">
               No Posts Available
             </p>
