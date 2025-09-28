@@ -1,143 +1,134 @@
 import React, { useState, useEffect } from 'react'
-import './ChatInProfile.css'
 import profile from '../../appwrite/profile'
-import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { Icons } from '..'
 
+const ChatInProfile = ({ profileData }) => {
 
-const ChatInProfile = ({ profileData}) => {
-  
     const userData = useSelector((state) => state?.auth.userData)
     const navigate = useNavigate();
+    const followers = Array.isArray(profileData?.followers) ? profileData.followers.map((follower) => JSON.parse(follower)) : []
+    const following = Array.isArray(profileData?.following) ? profileData.following.map((following) => JSON.parse(following)) : []
+    console.log(followers)
+    console.log(following)
+    const [activeNav, setActiveNav] = useState('Following')
 
-    const [canYouSeeFollowers_Following, setcanYouSeeFollowers_Following] = useState(true);
-    const [activeNav, setactiveNav] = useState('Following')
-    const { handleSubmit, register, watch } = useForm();
-    const [searchValue, setSearchValue] = useState('')
-    const unfollow = async (index) => {
-        let followingArr = myUserProfile?.following;
-        followingArr.splice(index, 1);
-        const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile?.$id, following: followingArr });
-        setMyUserProfile((prev) => updateProfile)
-        setProfileData((prev) => updateProfile)
+    const submit = async (form) => {
+        const formData = new FormData(form)
+        const searchValue = formData.searchValue
     }
 
-    const watchedValue = watch('searchValue');
-
-    useEffect(() => {
-        setSearchValue((prev) => watchedValue)
-    }, [watchedValue])
-
-    useEffect(() => {
-        setSearchValue(prev => '')
-    }, [activeNav])
-
-    useEffect(() => {
-        if (profileData?.userIdAuth === userData?.$id) {
-            setcanYouSeeFollowers_Following((prev) => true);
-        } else {
-            console.log(profileData);
-            if (profileData?.othersSeeYourFollowers_Following === 'None') {
-                setcanYouSeeFollowers_Following((prev) => false)
-            } else if (profileData?.othersSeeYourFollowers_Following === 'My Following') {
-                const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-
-                const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-
-                if (!isHeFollowsYou) {
-                    setcanYouSeeFollowers_Following((prev) => false);
-                    return
-                } else {
-                    setcanYouSeeFollowers_Following((prev) => true);
-                }
-            }
-        }
-    }, [profileData])
-
-    const submit = async (data) => {
-
-        setSearchValue((prev) => data.searchValue)
-    }
     const navigation = (profileID) => {
         navigate(`/profile/${profileID}`);
     }
-    return (
-        <div id='ChatInProfile'>
 
-            <nav className={`ChatInProfileNav`}>
-                <ul className='flex'>
-                    <li onClick={() => setactiveNav('Following')} className={`${activeNav === 'Following' ? 'active' : ''} cursor-pointer`}>Following</li>
-                    <li onClick={() => setactiveNav('Followers')} className={`${activeNav === 'Followers' ? 'active' : ''} cursor-pointer`}>Followers</li>
+    return (
+        <div
+            id='ChatInProfile'
+            className="w-full max-w-3xl mx-auto p-4 sm:p-6 lg:p-8"
+        >
+
+            <nav className="mb-4">
+                <ul className="flex items-center gap-3 border-b border-gray-200 pb-2">
+                    <li
+                        onClick={() => setActiveNav('Following')}
+                        className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200
+        ${activeNav === 'Following'
+                                ? 'bg-black text-white shadow-sm scale-105'
+                                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                            }`}
+                    >
+                        Following
+                    </li>
+
+                    <li
+                        onClick={() => setActiveNav('Followers')}
+                        className={`px-5 py-2 rounded-full text-sm font-medium cursor-pointer transition-all duration-200
+        ${activeNav === 'Followers'
+                                ? 'bg-black text-white shadow-sm scale-105'
+                                : 'text-gray-600 hover:text-black hover:bg-gray-100'
+                            }`}
+                    >
+                        Followers
+                    </li>
                 </ul>
             </nav>
 
-            <div className="MyProfile_HorizontalLine"></div>
 
-            {canYouSeeFollowers_Following && <section>
-                <div className="ChatInProfile_wrapper">
-                    <form className="searchBar" onSubmit={handleSubmit(submit)}>
+            {true && (
+                <section className="mt-4 space-y-4">
+
+                    <form
+                        className="searchBar group relative"
+                        onSubmit={(e) => submit(e.target)}
+                    >
                         <input
-                            {...register("searchValue", {
-                                required: true,
-                            })}
-                            id="searchQueryInput" type="text" placeholder="Search" value={searchValue} />
-                        <button id="searchQuerySubmit" type="submit" >
-                            <svg viewBox="0 0 24 24"><path fill="#666666" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-                            </svg>
+                            id="searchQueryInput"
+                            type="text"
+                            placeholder="Search"
+                            name='searchValue'
+                            className="w-full rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-12 py-3 text-sm outline-none ring-0 focus:border-neutral-300 dark:focus:border-neutral-700 focus:ring-4 focus:ring-neutral-100 dark:focus:ring-neutral-800/50 shadow-sm transition placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                        />
+                        <button
+                            id="searchQuerySubmit"
+                            type="submit"
+                            className="absolute inset-y-0 right-1 my-1 mr-1 inline-flex items-center justify-center rounded-full px-4 text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-white transition"
+                        >
+                            <Icons.search />
                         </button>
                     </form>
-                </div>
 
-                <div className='ChatInProfile_Two_Sections'>
+                    <div className='ChatInProfile_Two_Sections grid grid-cols-1 gap-3'>
 
-                    {activeNav === 'Following' && <section>
-                        <ul>
-                            {profileData?.following?.map((profile, index) => {
-                                if (searchValue !== '') {
-                                    let boolean = JSON.parse(profile)?.name.includes(searchValue);
-                                    if (boolean && searchValue !== '') {
-                                    } else {
-                                        return
-                                    }
-                                }
-                                return <li key={JSON.parse(profile).profileID}>
-                                    <span
-                                        onClick={() => navigation(JSON.parse(profile).profileID)}>
-                                        {JSON.parse(profile).name}
-                                    </span>
-                                    {myUserProfile?.userIdAuth === profileData?.userIdAuth && <button onClick={() => unfollow(index)}>Unfollow</button>}
-                                    {myUserProfile?.userIdAuth !== profileData?.userIdAuth && <button onClick={() => navigation(JSON.parse(profile).profileID)}>visit</button>}
-                                </li>
-                            })}
-                            {profileData?.following?.length === 0 && <div className={`text-center`}>No Followers</div>}
-                        </ul>
-                    </section>}
+                        {activeNav === 'Following' && (
+                            <section className="space-y-2">
+                                <ul className="space-y-2">
+                                    {following.map((followingProfile) => (
+                                        <li
+                                            key={followingProfile?.profileID}
+                                            className="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-4 shadow-sm hover:shadow-md transition"
+                                        >
+                                            <span className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+                                                {followingProfile?.name}
+                                            </span>
+                                            <button
+                                                className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 active:scale-[0.98] transition"
+                                            >
+                                                unfollow
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
 
-                    {activeNav === 'Followers' && <section>
-                        <ul>
-                            {profileData?.followers?.map((profile, index) => {
-                                if (searchValue !== '') {
-                                    let boolean = JSON.parse(profile)?.name.includes(searchValue);
+                        {activeNav === 'Followers' && (
+                            <section className="space-y-2">
+                                <ul className="space-y-2">
+                                    {followers.map((followerProfile) => (
+                                        <li
+                                            key={followerProfile?.profileID}
+                                            className="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 sm:p-4 shadow-sm hover:shadow-md transition"
+                                        >
+                                            <span className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+                                                {followerProfile?.name}
+                                            </span>
+                                            <button
+                                                className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 active:scale-[0.98] transition"
+                                            >
+                                                Message
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        )}
 
-                                    if (boolean && searchValue !== '') {
-                                    } else {
-                                        return
-                                    }
-                                }
-
-                                return <li key={JSON.parse(profile).profileID}>
-                                    <span className='cursor-auto'>{JSON.parse(profile).name}</span>
-                                    <button onClick={() => navigation(JSON.parse(profile).profileID)}>Visit</button>
-                                </li>
-                            })}
-                            {profileData?.followers?.length === 0 && <div className={`text-center`}>No Followers</div>}
-                        </ul>
-                    </section>}
-
-                </div>
-            </section>}
-        </div >
+                    </div>
+                </section>
+            )}
+        </div>
     )
 }
 
