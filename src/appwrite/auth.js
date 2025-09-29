@@ -76,8 +76,10 @@ export class AuthService {
 
     async forgetPassword(email) {
         try {
-            const promise = this.account.createRecovery(email, 'https://thoughtify.vercel.app/reset-password');
-
+            const environment = process.env.NODE_ENV;
+            const path = environment === "production" ? 'https://thoughtify.vercel.app/reset-password' : "http://localhost:5173/reset-password"
+            
+            const promise = this.account.createRecovery(email, path);
             return promise
         } catch (error) {
             return null
