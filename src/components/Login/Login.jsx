@@ -88,8 +88,8 @@ const Login = () => {
 
         <form
           className="max-w-full flex flex-col justify-center items-center gap-6"
-          onSubmit={handleSubmit(login)}
-        >
+          onSubmit={handleSubmit(login)}>
+            
           <div className="relative flex flex-col">
             <Input
               required

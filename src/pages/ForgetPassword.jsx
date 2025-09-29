@@ -1,76 +1,110 @@
-import React from 'react'
-import './ForgetPassword.css'
-import { Button } from '@/components/ui/button';
-import { useForm } from "react-hook-form";
+import React, { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Link, useNavigate } from 'react-router-dom'
 import authService from '../appwrite/auth'
-import { useAskContext } from '../context/AskContext'
+import { Input } from '@/components/ui/input'
 const ForgetPassword = () => {
-  const {
-    isDarkModeOn,
-    setnotificationPopMsg,
-    setNotificationPopMsgNature,
-  } = useAskContext()
-  const { register, handleSubmit } = useForm();
-  const submit = async (data) => {
+
+  const [email, setEmail] = useState('')
+  const navigate = useNavigate()
+
+  const submit = async (e) => {
+    e.preventDefault()
     try {
-      const recovery = await authService.forgetPassword(data.email);
-
-      setNotificationPopMsgNature((prev) => true);
-      setnotificationPopMsg((prev) => "Link is sent to your Gmail")
-    } catch (error) {
-      setNotificationPopMsgNature((prev) => false);
-      setnotificationPopMsg((prev) => "Please Try Again Later")
+      await authService.forgetPassword(email)
+      // toast success if you have one
+    } catch (err) {
+      // toast error if needed
     }
-
-
   }
+
   return (
-    <div id="forget_Password" className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-      <div
-        className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-8 border border-black/10`}
+    <div
+      id='Login_Container'
+      className="relative min-h-screen w-full
+        grid place-items-center
+        overflow-hidden
+        bg-gradient-to-b from-gray-50 via-gray-50 to-gray-100
+        dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900">
+
+      <Button
+        onClick={() => navigate('/')}
+        className="absolute left-6 top-6
+          rounded-full px-4 py-2 text-sm
+          bg-white dark:bg-neutral-900
+          border border-gray-200 dark:border-neutral-800
+          shadow hover:bg-gray-50 dark:hover:bg-neutral-800
+          text-gray-700 dark:text-gray-200"
+        variant="ghost"
       >
-        <div className="flex justify-center items-center">
-          <img className="Login_signup_Logo" src='Thoughtify.webp' alt="Logo" />
-        </div>
-        <div className="forgetPassword_Recovery_Heading flex flex-col w-full">
+        ← Back to Home
+      </Button>
+
+  
+      <div
+        className="w-[92%] max-w-xl
+          rounded-2xl
+          bg-white dark:bg-neutral-900
+          border border-gray-200 dark:border-neutral-800
+          shadow-xl shadow-gray-200/50 dark:shadow-black/20"
+      >
+        <div className="p-6 sm:p-10">
+     
+          <div className="flex justify-center">
+            <img
+              src="Thoughtify.webp"
+              alt="Logo"
+              className="h-14 rounded-full"
+            />
+          </div>
+
           
-          <h1 className={`font-bold text-2xl mt-3 mb-1 text-center ${isDarkModeOn ? 'text-white' : 'text-black'}`}>
-            Password Recovery
-          </h1>
+          <div className="mt-5 mb-5 text-center">
+            <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+              Password Recovery
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              Enter your email to reset your password
+            </p>
+          </div>
 
+          {/* Form */}
           <form
-            className="max-w-full flex flex-col justify-center items-center"
-            onSubmit={handleSubmit(submit)}
-          >
-            <div id='Login' className="w-full flex flex-col justify-center items-center mb-3 gap-8">
-              <div className="relative flex flex-col">
-                <input
-                  required
-                  type="email"
-                  placeholder=""
-                  className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
-                  {...register("email", {
-                    required: true,
-                  })}
-                />
-                <span>Enter your Email</span>
-                <i className="w-full"></i>
-              </div>
+            className="max-w-full flex flex-col justify-center items-center gap-6"
+            onSubmit={submit}>
 
+            <div className="relative flex flex-col">
+              <Input
+                required
+                type="email"
+                placeholder=""
+                className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
+              />
+              <span>Email</span>
+              <i className="w-full"></i>
             </div>
 
-            <div>
-              <Button type="submit" className="mt-3 rounded-sm block px-2 py-1 login_signIn_Btn">
-                Reset Password
-              </Button>
-            </div>
+            <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+              {`${true ? 'wait...' : 'Login'}`}
+            </Button>
+
           </form>
 
+          {/* Helper + bottom link */}
+          <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
+            We’ll send you a reset link if your email exists in our system.
+          </p>
 
+          <div className="mt-3 text-center">
+            <Link
+              to="/login"
+              className="text-sm font-medium text-blue-600 hover:text-blue-700">
+              Return to Login
+            </Link>
+          </div>
         </div>
       </div>
     </div>
-
   )
 }
 

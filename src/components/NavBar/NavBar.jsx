@@ -4,7 +4,8 @@ import { UpperNavigationBar, LowerNavigationBar } from "../";
 const NavBar = () => {
   
   const location = useLocation();
-  const hide = location.pathname === "/login" || location.pathname === "/signup";
+  const hide = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === '/forgotPassword';
+  
   if (hide) return null
 
   return (

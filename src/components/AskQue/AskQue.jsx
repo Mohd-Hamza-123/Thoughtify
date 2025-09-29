@@ -22,7 +22,7 @@ const AskQue = ({ post }) => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const UserAuthStatus = useSelector((state) => state.auth.status);
-  const isAdmin = userData.labels.includes("admin") ? true : false;
+  const isAdmin = userData?.labels?.includes("admin") ? true : false;
 
   const { handleSubmit, register, control, getValues } =
     useForm({
