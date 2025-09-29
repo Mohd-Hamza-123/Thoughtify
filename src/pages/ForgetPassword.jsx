@@ -1,20 +1,44 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Link, useNavigate } from 'react-router-dom'
 import authService from '../appwrite/auth'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Link, useNavigate } from 'react-router-dom'
+import { useNotificationContext } from '@/context/NotificationContext'
+
 const ForgetPassword = () => {
 
-  const [email, setEmail] = useState('')
   const navigate = useNavigate()
+  const [waiting, setWaiting] = useState(false)
+  const { setNotification } = useNotificationContext()
 
   const submit = async (e) => {
     e.preventDefault()
+    setWaiting(true)
+    const formData = new FormData(e.target)
+    const email = formData.get('email')
     try {
-      await authService.forgetPassword(email)
-      // toast success if you have one
+      const res = await authService.forgetPassword(email)
+      console.log(res)
+      if (res) {
+        setNotification({
+          message: 'Check your email for reset link',
+          type: 'success'
+        })
+        navigate('/')
+      } else {
+        setNotification({
+          message: 'Something went wrong',
+          type: 'error'
+        })
+      }
+      setWaiting(false)
     } catch (err) {
-      // toast error if needed
+      console.log(err?.message)
+      setWaiting(false)
+      setNotification({
+        message: process.env.NODE_ENV === "development" ? err?.message : "Something went wrong.",
+        type: 'error'
+      })
     }
   }
 
@@ -40,16 +64,11 @@ const ForgetPassword = () => {
         ← Back to Home
       </Button>
 
-  
+
       <div
-        className="w-[92%] max-w-xl
-          rounded-2xl
-          bg-white dark:bg-neutral-900
-          border border-gray-200 dark:border-neutral-800
-          shadow-xl shadow-gray-200/50 dark:shadow-black/20"
-      >
+        className="w-[92%] max-w-xl">
         <div className="p-6 sm:p-10">
-     
+
           <div className="flex justify-center">
             <img
               src="Thoughtify.webp"
@@ -58,7 +77,7 @@ const ForgetPassword = () => {
             />
           </div>
 
-          
+
           <div className="mt-5 mb-5 text-center">
             <h1 className="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
               Password Recovery
@@ -76,6 +95,7 @@ const ForgetPassword = () => {
             <div className="relative flex flex-col">
               <Input
                 required
+                name="email"
                 type="email"
                 placeholder=""
                 className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
@@ -84,8 +104,8 @@ const ForgetPassword = () => {
               <i className="w-full"></i>
             </div>
 
-            <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
-              {`${true ? 'wait...' : 'Login'}`}
+            <Button type="submit" className="mt-2 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+              {`${waiting ? 'wait...' : 'Reset'}`}
             </Button>
 
           </form>
