@@ -1,9 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { getAvatar } from "@/lib/avatar";
 import { useSelector } from "react-redux";
-import profile from "@/appwrite/profile";
-import { getAvatar } from "@/services/getAvatar";
-import authService from "@/appwrite/auth";
 
 const Logo = () => {
   return (

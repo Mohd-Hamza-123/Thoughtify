@@ -1,18 +1,13 @@
 import React from "react";
-import { useAskContext } from "@/context/AskContext";
 import { Icons } from ".";
+
+
 const DarkModeToggle = () => {
-  const {
-    setIsOpen,
-    isDarkModeOn,
-    setisDarkModeOn,
-    setisOverlayBoolean,
-  } = useAskContext();
 
   const closeSideBarAndOverlay = () => {
-    setIsOpen(false);
-    setisOverlayBoolean(false);
-  };
+    
+  }
+
 
   return (
 

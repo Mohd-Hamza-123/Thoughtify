@@ -1,13 +1,13 @@
 import { Loader } from '@/components';
-import React, { useEffect } from 'react';
 import profile from '@/appwrite/profile';
-import { login, logout } from '@/store/authSlice';
+import React, { useEffect } from 'react';
 import authService from '@/appwrite/auth';
+import useProfile from '@/hooks/useProfile';
 import { useNavigate } from 'react-router-dom';
+import { login, logout } from '@/store/authSlice';
 import { userProfile } from '@/store/profileSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { homePageLoading } from '@/store/loadingSlice';
-import useProfile from '@/hooks/useProfile';
 
 
 const Initialization = ({ children }) => {

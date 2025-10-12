@@ -5,6 +5,7 @@ import profile from '../../appwrite/profile'
 import { userProfile } from '@/store/profileSlice'
 import { useNotificationContext } from '@/context/NotificationContext'
 import { useBooleanContext } from '@/context/BooleanContext'
+
 const Setting = () => {
 
   const { setNotification } = useNotificationContext()
@@ -25,8 +26,7 @@ const Setting = () => {
   return (
     <form
       onSubmit={handleSubmit(submit)}
-      className={`fixed inset-0 z-50 flex items-center justify-center ${isSettingOpen ? '' : 'hidden'}`}
-    >
+      className={`fixed inset-0 z-50 flex items-center justify-center ${isSettingOpen ? '' : 'hidden'}`}>
       {/* Overlay */}
       {isOverlayVisible && (
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>

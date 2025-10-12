@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./PersonalChat.css";
-import { TextArea, UpperNavigationBar } from "../../components/index";
+import { UpperNavigationBar } from "../../components/index";
+import { Textarea as TextArea } from "../ui/textarea";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
