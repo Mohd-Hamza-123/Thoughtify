@@ -3,7 +3,7 @@ import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
-import increaseViews from "@/services/increasePostView";
+import { increaseViews } from "@/lib/posts";
 
 const PostCard = ({
   $id,

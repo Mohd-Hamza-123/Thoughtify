@@ -1,5 +1,5 @@
 import conf from '../conf/conf'
-import { Client, Account, ID } from 'appwrite'
+import { Client, Account, ID, Functions } from 'appwrite'
 
 export class AuthService {
     client = new Client();
@@ -10,6 +10,7 @@ export class AuthService {
             .setEndpoint(conf.appwriteURL)
             .setProject(conf.appwriteProjectId)
         this.account = new Account(this.client);
+        this.functions = new Functions(this.client)
     }
 
     async createAccount({ email, password, name }) {
@@ -78,7 +79,7 @@ export class AuthService {
         try {
             const environment = process.env.NODE_ENV;
             const path = environment === "production" ? 'https://thoughtify.vercel.app/reset-password' : "http://localhost:5173/reset-password"
-            
+
             const promise = this.account.createRecovery(email, path);
             return promise
         } catch (error) {
@@ -123,6 +124,29 @@ export class AuthService {
         }
     }
 
+    async deleteAccount(userId) {
+        try {
+            // console.log(userId)
+            const { jwt } = await this.account.createJWT()
+            // console.log(jwt)
+            this.client.setJWT(jwt)
+            const payload = { jwt, userId }
+            const exec = await this.functions.createExecution(
+                "68de0d1a00016e46e7f1",
+                JSON.stringify(payload),
+                false,
+                '/ping'
+            )
+            // console.log(exec)
+            return exec
+        } catch (error) {
+            console.log(error?.message)
+            return {
+                success: false,
+                error: process.env.NODE_ENV === "development" ? error?.message : "Something went wrong"
+            }
+        }
+    }
 }
 
 const authService = new AuthService();

@@ -9,7 +9,7 @@ import {
   UpperNavigationBarSearch,
   UpperNavigationBarNotification,
 } from "..";
-import { getAvatar } from "@/services/getAvatar";
+import { getAvatar } from "@/lib/avatar";
 
 const NavigationBar = () => {
 

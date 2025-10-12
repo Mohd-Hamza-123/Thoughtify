@@ -1,5 +1,5 @@
 import React, { useState, memo } from 'react'
-import { TextArea } from '..'
+import { Textarea as TextArea } from "../ui/textarea";
 
 const EditProfileBio = ({ bio, setProfileObject }) => {
   

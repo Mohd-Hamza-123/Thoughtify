@@ -1,6 +1,5 @@
 import RTE from "./RTE";
 import Login from "./Login/Login";
-import TextArea from "./TextArea";
 import NavBar from "./NavBar/NavBar";
 import AskQue from "./AskQue/AskQue";
 import Signup from "./Signup/Signup";
@@ -41,5 +40,5 @@ import GoBackHome from "./GoBackHome";
 import Trigger from "./Home/Trigger/Trigger";
 
 
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, TextArea, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
 

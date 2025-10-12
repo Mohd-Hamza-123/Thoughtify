@@ -18,6 +18,17 @@ import {
 } from "../index";
 import { followUnfollow, blockUnblock } from "@/lib/profile";
 import { userProfile } from "@/store/profileSlice";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import authService from "@/appwrite/auth";
 
 
 const MyProfile = () => {
@@ -70,11 +81,30 @@ const MyProfile = () => {
   }
 
   const promote_Demote = async () => {
-    console.log(profileData);
     profile.updateEveryProfileAttribute({ trustedResponder: !profileData?.trustedResponder, profileID: profileData?.$id })
       .then((res) => {
-        setProfileData((prev) => res)
+        // setProfileData((prev) => res)
       })
+  }
+
+  const deleteUserAccount = async () => {
+
+    if (slug === userData.$id) {
+      authService.deleteAccount(userData.$id)
+        .then((res) => {
+          console.log(res)
+          if (res) {
+            setNotification({ message: "Account Deleted", type: "success" })
+            navigate(`/`)
+          } else {
+            setNotification({ message: res.error, type: "error" })
+          }
+        })
+        .catch((err) => {
+          setNotification({ message: err.message, type: "error" })
+        })
+    }
+
   }
 
   useEffect(() => {
@@ -87,7 +117,7 @@ const MyProfile = () => {
     switch (activeNav) {
       case 'Opinions': setActiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
-      case 'Favourites': setActiveNavRender(<Favourite visitedUserProfile={profileData}  />)
+      case 'Favourites': setActiveNavRender(<Favourite visitedUserProfile={profileData} />)
         break;
       case 'Questions': setActiveNavRender(<Questions visitedUserProfile={profileData} />)
         break;
@@ -176,7 +206,27 @@ const MyProfile = () => {
                     {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
                   </Button>
                 )}
+
+                {slug === userData?.$id && <AlertDialog>
+                  <AlertDialogTrigger className="px-2 py-1 rounded-sm">
+                    Account Delete
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure , you want to delete your account ? All your data will be deleted.
+                      </AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={deleteUserAccount}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>}
               </div>
+
             </div>
           </div>
 
