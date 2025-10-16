@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import authService from "@/appwrite/auth";
 import { logout } from "@/store/authSlice";
+import { NotFound } from "@/pages/pages";
 
 
 const MyProfile = () => {
@@ -50,9 +51,9 @@ const MyProfile = () => {
   const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null);
 
-  const { data: profileData, isPending , isError} = useQuery({
+  const { data: profileData, isPending, isError, isSuccess } = useQuery({
     queryKey: ['profiles', slug],
-    queryFn: async () => profile.listSingleProfile(slug),
+    queryFn: () => profile.listSingleProfile(slug),
     staleTime: Infinity,
   })
 
@@ -153,21 +154,21 @@ const MyProfile = () => {
   }, [activeNav])
 
   const navLinks = [
-    { name: 'Profile Summary', visible: true },
     { name: 'Opinions', visible: true },
-    { name: 'bookmark', visible: userData?.$id === slug },
     { name: 'Questions', visible: true },
     { name: 'ProfileChats', visible: true },
+    { name: 'Profile Summary', visible: true },
+    { name: 'bookmark', visible: userData?.$id === slug },
   ]
 
   const userInfo = [
-    { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
     { label: "Followers", value: profileData?.followers?.length },
     { label: "Following", value: profileData?.following?.length },
     { label: "Verified", value: userData?.emailVerification ? "Yes" : "No" },
+    { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
   ]
 
-  if (!isPending) {
+  if (!isPending && isSuccess && profileData) {
     const { profileImageURL } = JSON.parse(profileData?.profileImage)
     return (
       <div className="bg-gray-100 dark:bg-black py-4 w-full">
@@ -270,14 +271,18 @@ const MyProfile = () => {
           <section className="w-full">{activeNavRender}</section>
         </div>
       </div>)
-  } else {
+  }
+
+  if (isPending)
     return <div className="w-screen h-screen flex justify-center items-center">
       <div className="MyProfile_Loader_Div">
         <SecondLoader />
       </div>
     </div>
-  }
 
-};
+  if (isError) return <NotFound />
+}
+
+
 
 export default MyProfile;

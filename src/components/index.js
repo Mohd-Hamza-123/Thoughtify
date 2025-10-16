@@ -39,6 +39,8 @@ import HomeLeft from "./Home/HomeLeft";
 import GoBackHome from "./GoBackHome";
 import Trigger from "./Home/Trigger/Trigger";
 import Setting from "./Setting/Setting";
+import UnderlineAnimate from "./UnderlineAnimate";
 
-export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
+
+export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger , UnderlineAnimate }
 

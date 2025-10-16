@@ -22,7 +22,6 @@ const HomeRight = ({ switchTrigger }) => {
         if (userData) setisEmailVerified(userData?.emailVerification || false)
     }, [userData])
 
-
     const verifyEmail = async () => {
         try {
             const getVerificationDetails = await authService.emailVerification();
@@ -60,7 +59,7 @@ const HomeRight = ({ switchTrigger }) => {
     }
 
     return (
-        <section className={`w-full md:w-[35%] sticky top-0 ${switchTrigger === false ? "block" : "hidden"} md:block`}>
+        <section className={`h-fit w-full md:w-[35%] sticky top-0 ${switchTrigger === false ? "block" : "hidden"} md:block`}>
             <div className={`HomeRight_Category my-4`}>
                 <p>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>

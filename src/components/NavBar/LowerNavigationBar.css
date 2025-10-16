@@ -23,7 +23,7 @@
         left: 0vw;
     }
 
- 
+
 }
 
 #LowerNavigationBar.darkMode {
@@ -61,7 +61,21 @@ body.darkMode #LowerNavigationBar li {
     color: black;
 }
 
+#LowerNavigationBar a div {
+    width: 0px;
+    transition-property: width;
+    transition-duration: 500ms;
+    transition-timing-function: ease;
+}
+
+#LowerNavigationBar a.active div {
+    width: 0px;
+}
+
+#LowerNavigationBar a:hover div {
+    width: 80%;
+}
+
 body.darkMode #LowerNavigationBar a.active li {
     border-color: #FF3500;
 }
-

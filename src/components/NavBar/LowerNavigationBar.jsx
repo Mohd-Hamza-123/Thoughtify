@@ -37,15 +37,16 @@ const LowerNavigationBar = () => {
       ref={lowerNavBarRef}
       id="LowerNavigationBar"
       className={`${isOpen ? "lightdark" : ""}`}>
-      {arr?.map((nav) => (
+      {arr.map((nav) => (
         <NavLink
           onClick={() => {
             if (lowerNavBarRef.current) lowerNavBarRef.current.classList.remove("active");
           }}
-          key={nav.NavName}
           to={nav.slug}
-          className={({ isActive }) => `${isActive ? "active" : ""}`}>
+          key={nav.NavName}
+          className={({ isActive }) => `${isActive ? "active" : ""} relative`}>
           <li>{nav.NavName}</li>
+          <div className="bg-white rounded-lg h-[2px] mx-auto absolute bottom-[2px] left-0 right-0"></div>
         </NavLink>
       ))}
     </nav>

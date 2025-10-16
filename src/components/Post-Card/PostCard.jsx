@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { increaseViews } from "@/lib/posts";
+import UnderlineAnimate from "../UnderlineAnimate";
 
 const PostCard = ({
   $id,
@@ -77,10 +78,14 @@ const PostCard = ({
             </Link>
           </div>
 
-          <Link to={`/post/${$id}/${null}`} className="group-hover:underline">
-            <h3 className="poppins text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight">
-              {title ? title : pollQuestion}
+          <Link to={`/post/${$id}/${null}`}>
+
+            <h3 className="poppins text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight inline-block">
+              <UnderlineAnimate className="bg-gray-700">
+                {title ? title : pollQuestion}
+              </UnderlineAnimate>
             </h3>
+
           </Link>
 
           <div className="flex flex-wrap gap-2 sm:gap-3 items-center mt-2">

@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { AskProvider } from "./context/AskContext";
-import { Routes, Route } from "react-router-dom";
-import { useSelector } from "react-redux";
-import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { NavBar, NotificationPop } from "./components";
 import authService from "./appwrite/auth";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import { AskProvider } from "./context/AskContext";
+import Overlay from "./components/Overlay/Overlay";
 import notification from "./appwrite/notification";
+import { NavBar, NotificationPop } from "./components";
 import Initialization from "./components/Initialization";
 
 import {
