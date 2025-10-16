@@ -4,31 +4,31 @@ import { Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Overlay from "./components/Overlay/Overlay";
 import "./App.css";
-import { NavBar, NotificationPop, SideBar } from "./components";
-import { Feedback } from "./components";
+import { NavBar, NotificationPop } from "./components";
 import authService from "./appwrite/auth";
-import Setting from "./components/Setting/Setting";
 import notification from "./appwrite/notification";
-import Home from "./pages/Home";
-import LoginPage from "./pages/LoginPage";
-import ForgetPassword from "./pages/ForgetPassword";
-import SignupPage from "./pages/SignupPage";
-import ViewPostPage from "./pages/ViewPostPage";
-import AskQuestion from "./pages/AskQuestion";
-import EditAskQuestion from "./pages/EditAskQuestion";
-import Profile from "./pages/Profile";
-import EditProfilePage from "./pages/EditProfilePage";
-import SearchPage from "./pages/SearchPage";
-import PersonalChatPage from "./pages/PersonalChatPage";
-import ResetPassword from "./pages/ResetPassword";
-import FindFriends from "./pages/FindFriends";
-import RespondersSectionPage from "./pages/RespondersSectionPage";
-import TrustedRespondersPage from "./pages/TrustedRespondersPage";
 import Initialization from "./components/Initialization";
 
+import {
+  Home,
+  Profile,
+  NotFound,
+  LoginPage,
+  SignupPage,
+  SearchPage,
+  FindFriends,
+  AskQuestion,
+  ViewPostPage,
+  ResetPassword,
+  ForgetPassword,
+  EditAskQuestion,
+  EditProfilePage,
+  PersonalChatPage,
+  RespondersSectionPage,
+  TrustedRespondersPage,
+} from "./pages/pages";
 
 function App() {
-
 
   const userData = useSelector((state) => state.auth?.userData);
   const authStatus = useSelector((state) => state.auth.status);
@@ -36,9 +36,6 @@ function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
-
-  // getting notifications
-  const [notifications, setnotifications] = useState(null);
 
   const deleteNotication = async () => {
     const listdocumentstoDelete = await notification.getNotification({
@@ -67,8 +64,6 @@ function App() {
       const userData = await authService.getCurrentUser();
       const res = await notification.getNotification({ userID: userData?.$id });
 
-      setnotifications(res?.documents);
-
       if (res?.total > 25) {
         const totalItemsToDelete = res?.total - 25;
 
@@ -85,7 +80,7 @@ function App() {
         }
       }
     } catch (error) {
-      setnotifications([]);
+    
     }
   }
 
@@ -150,37 +145,30 @@ function App() {
     }}>
 
     <Initialization />
-    <NavBar />
-    <SideBar />
     <Overlay />
-    <Setting />
-    <Feedback />
     <NotificationPop />
+
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="login" element={<LoginPage />} />
-      <Route path="signup" element={<SignupPage />} />
-      <Route path="profile/:slug" element={<Profile />} />
-      <Route path="Find-People" element={<FindFriends />} />
-      <Route path="AskQuestion" element={<AskQuestion />} />
-      <Route path="forgotPassword" element={<ForgetPassword />} />
-      <Route path="reset-password" element={<ResetPassword />} />
-      <Route path="EditQuestion/:slug" element={<EditAskQuestion />} />
-      <Route path="/trustedResponders" element={<TrustedRespondersPage />} />
-      <Route
-        path="EditProfile/:slug"
-        element={<EditProfilePage />}
-      />
-      <Route
-        path="ChatRoom/:senderSlug/:receiverSlug"
-        element={<PersonalChatPage />}
-      />
-      <Route
-        path="BrowseQuestion/:category/:searchInput"
-        element={<SearchPage />}
-      />
-      <Route path="post/:slug/:filterCommentID" element={<ViewPostPage />} />
-      <Route path="Responders-Section" element={<RespondersSectionPage />} />
+
+      <Route path="/" Component={NavBar}>
+        <Route index Component={Home} />
+        <Route path="profile/:slug" Component={Profile} />
+        <Route path="Find-People" Component={FindFriends} />
+        <Route path="AskQuestion" Component={AskQuestion} />
+        <Route path="EditQuestion/:slug" Component={EditAskQuestion} />
+        <Route path="trustedResponders" Component={TrustedRespondersPage} />
+        <Route path="EditProfile/:slug" Component={EditProfilePage} />
+        <Route path="BrowseQuestion/:category/:searchInput" Component={SearchPage} />
+        <Route path="ChatRoom/:senderSlug/:receiverSlug" Component={PersonalChatPage} />
+        <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
+        <Route path="Responders-Section" Component={RespondersSectionPage} />
+      </Route>
+
+      <Route path="login" Component={LoginPage} />
+      <Route path="signup" Component={SignupPage} />
+      <Route path="forgotPassword" Component={ForgetPassword} />
+      <Route path="reset-password" Component={ResetPassword} />
+      <Route path="*" Component={NotFound} />
     </Routes>
 
   </AskProvider>

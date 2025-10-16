@@ -1,6 +1,6 @@
 import "./Home.css";
 import { useState } from "react";
-import { HomeLeft, HomeRight, Trigger } from "../components/index";
+import { HomeLeft, HomeRight, Trigger, Setting, Feedback } from "../components/index";
 import InitializationWrapper from "@/components/Initialization";
 
 const Home = () => {
@@ -15,6 +15,8 @@ const Home = () => {
           isTrustedResponder={false} />
         <HomeRight switchTrigger={switchTrigger} />
       </div>
+      <Setting />
+      <Feedback/>
     </div>
   );
 };

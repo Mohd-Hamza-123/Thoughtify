@@ -1,13 +1,3 @@
-#MyProfile_Parent {
-    background-color: rgb(242, 242, 242);
-    font-family: 'Gabarito', sans-serif;
-    padding-bottom: 30px;
-    width: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-
-
 
 @media only screen and (max-width: 500px) {
 
@@ -95,12 +85,6 @@
     background-color: transparent;
 }
 
-#MyProfile {
-    width: 85%;
-    height: 100%;
-    margin: 0 auto;
-    position: relative;
-}
 
 #MyProfile_Header {
     height: 32vh;
@@ -114,11 +98,6 @@
     color: white !important;
 }
 
-#MyProfile_Img_Div img {
-    width: 75%;
-    background-color: white;
-    border-radius: 50%;
-}
 
 #MyProfile_Img_Div span {
     position: absolute;
