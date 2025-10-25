@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 import { useNotificationContext } from "@/context/NotificationContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import avatarService from "@/appwrite/avatar";
 
 const FindFriends = () => {
 
@@ -20,9 +21,12 @@ const FindFriends = () => {
     onSuccess: (data, variables) => {
       queryClient.setQueryData(['users'], (old = []) => {
         console.log(data)
-        const users = data?.map((user)=> {
-          if(user.profileImage) user.profileImage = JSON.parse(user.profileImage)
-            return user
+        const users = data?.map((user) => {
+          if (user.profileImage) { user.profileImage = JSON.parse(user.profileImage) }
+          else {
+            user.profileImage = { profileImageURL: avatarService.createAvatar({ name: user.name }) }
+          }
+          return user
         })
         const merged = [...old, ...users];
 
@@ -61,7 +65,9 @@ const FindFriends = () => {
           <p>Searched</p>
           <div>
             {allUsers?.map((profile) => {
+
               const profileImageURL = profile?.profileImage?.profileImageURL;
+
               return <div
                 key={profile?.$id}
                 onClick={() => navigate(`/profile/${profile?.userIdAuth}`)}
@@ -111,7 +117,7 @@ const FindFriends = () => {
                 <div className="FindFriendsPage_ListFriends_Searched_Person">
 
                   <div className="flex gap-3 items-center">
-                    <img src={persons?.profileImage.profileImageURL || "NoProfile.png"}
+                    <img src={persons?.profileImage?.profileImageURL || "NoProfile.png"}
                       alt={persons?.name} />
                     <p>{persons?.name}</p>
                   </div>
