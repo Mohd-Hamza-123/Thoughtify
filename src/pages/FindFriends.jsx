@@ -19,9 +19,12 @@ const FindFriends = () => {
     mutationFn: (username) => getUserByName(username),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(['users'], (old = []) => {
-     
-        const newUsers = Array.isArray(data) ? data : [data];
-        const merged = [...old, ...newUsers];
+        console.log(data)
+        const users = data?.map((user)=> {
+          if(user.profileImage) user.profileImage = JSON.parse(user.profileImage)
+            return user
+        })
+        const merged = [...old, ...users];
 
         // remove duplicates by $id
         const unique = merged.filter(
@@ -41,7 +44,7 @@ const FindFriends = () => {
   const searchedUser = mutation.data
 
   const allUsers = queryClient.getQueryData(['users']);
-  
+
   const submit = async (data) => {
     mutation.mutate(data.searchValue)
     reset();
@@ -57,20 +60,16 @@ const FindFriends = () => {
         <section className="px-3">
           <p>Searched</p>
           <div>
-            {allUsers?.map((profile) => (
-              <div
+            {allUsers?.map((profile) => {
+              const profileImageURL = profile?.profileImage?.profileImageURL;
+              return <div
                 key={profile?.$id}
                 onClick={() => navigate(`/profile/${profile?.userIdAuth}`)}
-                className="FindFriendsPage_ListFriends cursor-pointer"
-              >
-                <div>
-                  <img src={profile?.profileImgURL} />
-                </div>
-                <p>
-                  {profile?.name}
-                </p>
+                className="FindFriendsPage_ListFriends cursor-pointer">
+                <img src={profileImageURL} alt={profile?.name} />
+                <h6>{profile?.name}</h6>
               </div>
-            ))}
+            })}
             {allUsers?.length === 0 && (
               <div className="FindFriendsPage_ListFriends">
                 <p >
@@ -112,20 +111,12 @@ const FindFriends = () => {
                 <div className="FindFriendsPage_ListFriends_Searched_Person">
 
                   <div className="flex gap-3 items-center">
-                    <img src={persons?.profileImgURL || "NoProfile.png"}
-                      alt="NoProfile" />
+                    <img src={persons?.profileImage.profileImageURL || "NoProfile.png"}
+                      alt={persons?.name} />
                     <p>{persons?.name}</p>
                   </div>
 
-                  <div>{persons?.bio}</div>
-
-                  <div>
-                    <b>Occupation :</b> {persons?.occupation}
-                  </div>
-
-                  <div className="my-1 flex">
-                    <b>EducationLvl : </b> {persons?.educationLvl}
-                  </div>
+                  <p>{persons?.bio || "No bio added yet"}</p>
 
                   {persons?.interestedIn > 0 && <div className="flex gap-1 flex-wrap">
                     <b>Interested In : </b>

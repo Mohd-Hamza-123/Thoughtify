@@ -1,14 +1,15 @@
 import "./App.css";
 import authService from "./appwrite/auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { AskProvider } from "./context/AskContext";
+import profile from "./appwrite/profile";
 import Overlay from "./components/Overlay/Overlay";
 import notification from "./appwrite/notification";
 import { NavBar, NotificationPop } from "./components";
 import Initialization from "./components/Initialization";
-
+import { useNotificationContext } from "./context/NotificationContext";
 import {
   Home,
   Profile,
@@ -27,35 +28,37 @@ import {
   RespondersSectionPage,
   TrustedRespondersPage,
 } from "./pages/pages";
+import { login } from "./store/authSlice";
+import { userProfile } from "./store/profileSlice";
 
 function App() {
-
-  const userData = useSelector((state) => state.auth?.userData);
+  const dispatch = useDispatch()
   const authStatus = useSelector((state) => state.auth.status);
-
+  const { setNotification } = useNotificationContext();
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
 
-  const deleteNotication = async () => {
-    const listdocumentstoDelete = await notification.getNotification({
-      userID: userData?.$id,
-    });
-
-    for (let i = 0; i < listdocumentstoDelete.documents.length; i++) {
-      let notificationID = listdocumentstoDelete?.documents[i]?.$id;
-      if (!notificationID) return;
-      notification.deleteNotication({ notificationID });
-    }
-  };
-
-  const verifyEmail = () => {
-    if (userId && secret) {
-      authService.verifyWithUserId_secret(userId, secret).then((res) => {
+  const verifyEmail = async () => {
+    try {
+      if (userId && secret) {
+        const res = authService.verifyWithUserId_secret(userId, secret);
         if (res) {
-
+          setNotification({ message: "Email Verified", type: "success" })
+          const user = await authService.getCurrentUser();
+          dispatch(login({ userData: user }));
+          let profileData = await profile.updateProfile(
+            user.$id,
+            {
+             verified : user.emailVerification
+            }
+          );
+          dispatch(userProfile({ userProfile: profileData }))
         }
-      });
+      }
+    } catch (error) {
+      console.log(error)
+      setNotification({ message: error?.message, type: "error" })
     }
   };
 
@@ -64,23 +67,8 @@ function App() {
       const userData = await authService.getCurrentUser();
       const res = await notification.getNotification({ userID: userData?.$id });
 
-      if (res?.total > 25) {
-        const totalItemsToDelete = res?.total - 25;
-
-        const limitToDelete = Math.min(totalItemsToDelete, 50);
-        const listdocumentstoDelete = await notification.getNotification({
-          userID: userData?.$id,
-          limit: limitToDelete,
-        });
-
-        for (let i = 0; i < limitToDelete; i++) {
-          let notificationID = listdocumentstoDelete?.documents[i]?.$id;
-          if (!notificationID) return;
-          notification.deleteNotication({ notificationID });
-        }
-      }
     } catch (error) {
-    
+
     }
   }
 
@@ -119,21 +107,12 @@ function App() {
 
 
   useEffect(() => {
-    window.addEventListener("beforeinstallprompt", installApp);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", installApp);
-    };
-  }, []);
 
-  useEffect(() => {
-    // if (indicator.current) {
-    //   fetchData();
-    //   indicator.current = false;
-    // }
-    if (authStatus) {
-      verifyEmail();
-      getNotification();
-    }
+    if (userId && secret) verifyEmail();
+    if (authStatus) getNotification();
+
+    window.addEventListener("beforeinstallprompt", installApp);
+    return () => window.removeEventListener("beforeinstallprompt", installApp);
 
   }, []);
 

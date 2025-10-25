@@ -5,7 +5,7 @@ import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { increaseViews } from "@/lib/posts";
 import UnderlineAnimate from "../UnderlineAnimate";
-
+import { Icons } from "..";
 const PostCard = ({
   $id,
   queImage,
@@ -21,6 +21,7 @@ const PostCard = ({
   isTrustedResponder,
   trustedResponderPost,
   profileImage = "",
+  verified,
 }) => {
   profileImage = profileImage ? profileImage.replace("/preview", "/view") : null;
   const { imageURL, imageID } = JSON.parse(queImage || "{}");
@@ -29,8 +30,7 @@ const PostCard = ({
   return (
     <section
       onClick={() => increaseViews($id)}
-      className="group relative w-full mt-4 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-    >
+      className="group relative w-full mt-4 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer">
       {/* layout: column on small, row on lg */}
       <div className="flex flex-col lg:flex-row">
         {/* Image (top on mobile, right on lg) */}
@@ -57,8 +57,9 @@ const PostCard = ({
                 alt={name}
               />
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  {name}
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1">
+                  <span>{name}</span>
+                  {verified && <Icons.verified />}
                 </span>
                 <div className="flex items-center gap-2 mt-1">
                   {trustedResponderPost && (
@@ -66,13 +67,7 @@ const PostCard = ({
                       Responder
                     </span>
                   )}
-                  <span className="text-xs text-slate-400 hidden sm:inline">
-                    {new Date($createdAt).toLocaleDateString("en-US", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
+             
                 </div>
               </div>
             </Link>

@@ -7,13 +7,14 @@ import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useRef, useEffect, useMemo, useCallback } from "react";
+import { useSelector } from "react-redux";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   const navigate = useNavigate()
-
   const homeLeft = useRef(null);
   const spinnerRef = useRef(null);
+
 
   const getPosts = useCallback(async (object) => {
     const { pageParam: lastPostID } = object
@@ -23,10 +24,13 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     let x = documents.map(async (post) => {
       const userId = post?.userId
       const profileInfo = await profile.listSingleProfile(userId)
+
+      const verified = profileInfo?.verified
+     
       const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
       const imageURL = profileImage ? profileImage?.profileImageURL : null
       return {
-        ...post, profileImage: imageURL
+        ...post, profileImage: imageURL,verified
       }
     })
 
@@ -57,13 +61,12 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     },
   })
 
-  // Memoize posts to prevent unnecessary re-renders
+
   const posts = useMemo(() => {
     return data?.pages?.flatMap(page => page.documents) ?? [];
 
   }, [data?.pages]);
 
-  // Memoize filtered posts
   const filteredPosts = useMemo(() => {
     if (isTrustedResponder === false) {
       return posts;
@@ -113,6 +116,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     )
   else if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
+     <img className="w-[20%]" src="./Thoughtify.webp" alt="Sorry Image Failed" />
       <span>{checkAppWriteError(error?.message)}</span>
       {!error?.message && <p className="select-none dark:text-white">Something went wrong !</p>}
       <Button

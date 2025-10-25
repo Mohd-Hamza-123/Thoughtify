@@ -1,9 +1,10 @@
-import { Client, Users, Account, Databases } from "node-appwrite";
+import { Client, Users, Account, Databases, Query } from "node-appwrite";
 
 const ALLOWED_ORIGINS = ["http://localhost:5173", process.env.VITE_THOUGHTIFY_DOMAIN];
 
 const databaseId = process.env.VITE_APPWRITE_DATABASE_ID
 const profileCollectionId = process.env.VITE_APPWRITE_PROFILECOLLECTION_ID
+const postCollectionId = process.env.VITE_APPWRITE_COLLECTION_ID
 
 export default async ({ req, res, log }) => {
 
@@ -46,17 +47,32 @@ export default async ({ req, res, log }) => {
   const users = new Users(adminClient);
   const databases = new Databases(adminClient);
 
-  try {
-    const response = await users.list(); // requires 'users.read' on the key
-    log(`Total users: ${response.total}`);
-  } catch (err) {
-    return res.json({ error: "Could not list users: " + err.message }, 500, CORS);
-  }
+  // try {
+  //   const response = await users.list(); // requires 'users.read' on the key
+  //   log(`Total users: ${response.total}`);
+  // } catch (err) {
+  //   return res.json({ error: "Could not list users: " + err.message }, 500, CORS);
+  // }
 
   if (req.path === "/ping") {
     try {
       await users.delete(userId)
       await databases.deleteDocument(databaseId, profileCollectionId, userId)
+      const posts = await databases.listDocuments(
+        databaseId,
+        postCollectionId,
+        [Query.equal('userId', userId)]
+      )
+
+      const postsData = posts.documents.map((post) => ({ postId: post?.$id, queImage: JSON.parse(post?.queImage || "") }));
+      console.log(postsData);
+
+      const deletePosts = postsData.map((p) => {
+        return databases.deleteDocument(databaseId, postCollectionId, p.postId)
+      })
+
+      await Promise.all(deletePosts)
+      
       return res.json({
         success: true,
         message: `account is deleted`

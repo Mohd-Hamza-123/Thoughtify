@@ -14,6 +14,7 @@ import { useNotificationContext } from "@/context/NotificationContext";
 import profile from '@/appwrite/profile';
 import { userProfile } from '@/store/profileSlice';
 import { homePageLoading } from '@/store/loadingSlice';
+import appwriteService from '@/appwrite/config';
 
 const Login = () => {
 
@@ -28,6 +29,7 @@ const Login = () => {
     try {
       setIsWaiting(true)
       const session = await authService.login({ ...data });
+  
       if (session?.success) {
         const userData = await authService.getCurrentUser();
         if (userData) {
@@ -42,6 +44,7 @@ const Login = () => {
           })
         }
       } else {
+        await authService.logout()
         setNotification({
           message: checkAppWriteError(session?.error),
           type: 'error'
@@ -49,6 +52,7 @@ const Login = () => {
       }
       setIsWaiting(false)
     } catch (error) {
+      console.log(error)
       setNotification({
         message: error?.message || "something went wrong.",
         type: 'error'

@@ -107,9 +107,8 @@ const EditProfile = () => {
         }
       );
       dispatch(userProfile({ userProfile: profileData }))
-      console.log(profileData)
-      navigate(`/profile/${userData?.$id}`);
       setNotification({ message: "Profile Updated", type: "success" })
+      navigate(`/profile/${userData?.$id}`);
       setIsUpdating(false)
     } catch (error) {
       setNotification({ message: "Profile not updated", type: "error" })

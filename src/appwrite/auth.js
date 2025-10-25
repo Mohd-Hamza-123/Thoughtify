@@ -1,5 +1,5 @@
 import conf from '../conf/conf'
-import { Client, Account, ID, Functions } from 'appwrite'
+import { Client, Account, ID, Functions} from 'appwrite'
 
 export class AuthService {
     client = new Client();
@@ -13,6 +13,7 @@ export class AuthService {
         this.functions = new Functions(this.client)
     }
 
+  
     async createAccount({ email, password, name }) {
 
         try {
@@ -59,9 +60,13 @@ export class AuthService {
 
     async emailVerification() {
         try {
-            return await this.account.createVerification(`https://thoughtify.vercel.app/`);
+            const env = process.env.NODE_ENV
+            const path = env === "production" ? conf.viteThoughtifyDomain : 'http://localhost:5173/'
+            console.log(path)
+            return await this.account.createVerification(path);
 
         } catch (error) {
+            console.log(error)
             return null
         }
     }

@@ -16,6 +16,7 @@ import {
   SecondLoader,
   ChatInProfile,
   ProfileSummary,
+  Icons,
 } from "../index";
 import { followUnfollow, blockUnblock } from "@/lib/profile";
 import {
@@ -42,7 +43,7 @@ const MyProfile = () => {
 
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
-  const myProfile = useSelector((state) => state?.profileSlice?.userProfile)
+  const myProfile = useSelector((state) => state?.profileSlice?.userProfile);
   const isFollow = myProfile?.following?.find((follow) => JSON.parse(follow)?.profileID === slug)
   const isBlocked = myProfile?.blockedUsers?.includes(slug)
   const realUser = userData ? slug === userData.$id : false;
@@ -90,16 +91,17 @@ const MyProfile = () => {
     if (slug === userData.$id) {
       authService.deleteAccount(userData.$id)
         .then((res) => {
-          console.log(res)
+          console.log(JSON.parse(res.responseBody))
           if (res) {
             setNotification({ message: "Account Deleted", type: "success" })
             dispatch(logout())
             navigate(`/`)
           } else {
-            setNotification({ message: res.error, type: "error" })
+            setNotification({ message: res?.error, type: "error" })
           }
         })
         .catch((err) => {
+          console.log(err)
           setNotification({ message: err.message, type: "error" })
         })
     }
@@ -134,6 +136,7 @@ const MyProfile = () => {
   }
 
   useEffect(() => {
+
     setActiveNav('Profile Summary')
     setActiveNavRender(<ProfileSummary profileData={profileData} />)
   }, [slug, profileData]);
@@ -154,11 +157,11 @@ const MyProfile = () => {
   }, [activeNav])
 
   const navLinks = [
-    { name: 'Opinions', visible: true },
-    { name: 'Questions', visible: true },
-    { name: 'ProfileChats', visible: true },
     { name: 'Profile Summary', visible: true },
+    { name: 'Questions', visible: true },
+    { name: 'Opinions', visible: true },
     { name: 'bookmark', visible: userData?.$id === slug },
+    { name: 'ProfileChats', visible: true },
   ]
 
   const userInfo = [
@@ -166,12 +169,13 @@ const MyProfile = () => {
     { label: "Following", value: profileData?.following?.length },
     { label: "Verified", value: userData?.emailVerification ? "Yes" : "No" },
     { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
+    { label: "Posts", value: 0 }
   ]
 
   if (!isPending && isSuccess && profileData) {
     const { profileImageURL } = JSON.parse(profileData?.profileImage)
     return (
-      <div className="bg-gray-100 dark:bg-black py-4 w-full">
+      <div className="bg-gray-100 dark:bg-black py-4 w-full min-h-screen">
         <div className="w-[95%] md:w-[85%] mx-auto">
 
           <section id="MyProfile_Header" className="w-full flex">
@@ -184,9 +188,42 @@ const MyProfile = () => {
 
               <div
                 id="MyProfile_Name_Div"
-                className="w-3/4 h-full flex flex-col justify-center gap-3">
+                className="w-3/4 h-full flex flex-col gap-1 justify-center items-start">
 
-                <h6>{profileData?.name}</h6>
+                <h6 className="text-lg font-bold text-gray-800 dark:text-white flex gap-1 items-center">
+                  <span>{profileData?.name}</span>
+                  {profileData?.verified && <Icons.verified />}
+                </h6>
+                <p className="text-gray-500 text-sm">{profileData?.bio || "No bio added yet. Share something about yourself!"}</p>
+                {realUser && (
+                  <div className="flex gap-1 items-center">
+                    <Button
+                      className="p-2 rounded-sm"
+                      variant="outline"
+                      onClick={() => navigate(`/EditProfile/${slug}`)}>
+                      Edit Profile
+                    </Button>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger>
+                        <Button variant="destructive">Account Delete</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure , you want to delete your account ? All your data will be deleted.
+                          </AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={deleteUserAccount}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
 
                 <div id="MyProfile_3Buttons" className="flex gap-3">
                   {!realUser && <>
@@ -202,16 +239,6 @@ const MyProfile = () => {
                       onClick={block_Unblock}
                     >{isBlocked ? 'UnBlock' : 'Block'}</Button>
                   </>}
-
-                  {realUser && (
-                    <Button
-                      className="p-2 rounded-sm"
-                      onClick={() => {
-                        navigate(`/EditProfile/${slug}`)
-                      }}>
-                      Edit Profile
-                    </Button>
-                  )}
                   {(userData?.$id === conf.myPrivateUserID) && (
                     <Button
                       className="p-2 rounded-sm"
@@ -219,25 +246,6 @@ const MyProfile = () => {
                       {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
                     </Button>
                   )}
-
-                  {slug === userData?.$id && <AlertDialog>
-                    <AlertDialogTrigger className="px-2 py-1 rounded-sm">
-                      Account Delete
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you sure , you want to delete your account ? All your data will be deleted.
-                        </AlertDialogTitle>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={deleteUserAccount}>
-                          Continue
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>}
                 </div>
 
               </div>

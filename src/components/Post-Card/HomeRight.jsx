@@ -78,7 +78,7 @@ const HomeRight = ({ switchTrigger }) => {
                 {userAuthStatus && <span className={`cursor-pointer`} onClick={feedbackPopUp}>Feedback</span>}
                 <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
                 <span className={`cursor-pointer`} onClick={trustedRespondersPopUp}>Trusted Responders</span>
-                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointe">Verify Your Email</span>}
+                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}
             </div>
         </section>
     )

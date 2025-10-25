@@ -18,8 +18,10 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaThumbsUp } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
+import { MdVerifiedUser } from "react-icons/md";
 import { FaComment } from "react-icons/fa";
 const Icons = {
+  verified : (props) => (<MdVerifiedUser {...props} />),
   dislike : (props) => (<FaThumbsDown {...props} />),
   like : (props) => (<FaThumbsUp {...props} />),
   views : (props) => (<IoEyeSharp {...props} />),
