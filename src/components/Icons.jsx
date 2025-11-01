@@ -20,7 +20,11 @@ import { FaThumbsUp } from "react-icons/fa";
 import { FaThumbsDown } from "react-icons/fa";
 import { MdVerifiedUser } from "react-icons/md";
 import { FaComment } from "react-icons/fa";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { FaLock } from "react-icons/fa";
 const Icons = {
+  private : (props) => (<FaLock {...props} />),
+  public : (props) => (<FaPeopleGroup {...props} />),
   verified : (props) => (<MdVerifiedUser {...props} />),
   dislike : (props) => (<FaThumbsDown {...props} />),
   like : (props) => (<FaThumbsUp {...props} />),

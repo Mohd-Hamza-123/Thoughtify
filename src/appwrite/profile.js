@@ -164,6 +164,7 @@ export class Profile {
                 QueryArr
             )
         } catch (error) {
+            console.log(error)
             return null
         }
     }

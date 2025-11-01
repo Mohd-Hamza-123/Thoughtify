@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Icons } from "@/components";
 import { Link } from "react-router-dom";
 import avatarService from "@/appwrite/avatar";
@@ -6,6 +6,8 @@ import { getUserByName } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 import { useNotificationContext } from "@/context/NotificationContext";
+import profile from "@/appwrite/profile";
+import { getAvatar } from "@/lib/avatar";
 
 const FindFriends = () => {
 
@@ -41,17 +43,24 @@ const FindFriends = () => {
       setNotification({ message: "Something went wrong", type: "error" });
     },
   });
-
   const searchedUser = mutation.data
-
   const allUsers = queryClient.getQueryData(['users']);
-
+  console.log(allUsers)
   const submit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target)
     mutation.mutate(formData.get("searchValue"))
+    e.target.reset()
   };
 
+  useEffect(() => {
+    if (allUsers) return
+    profile.listProfilesWithQueries({ listResponders: true })
+      .then((res) => {
+        const users = res?.documents || []
+        queryClient.setQueryData(['users'], users)
+      })
+  }, [])
 
   return (
     <main className="relative min-h-[83dvh] bg-slate-50 dark:bg-slate-900/60 p-4">
@@ -81,7 +90,7 @@ const FindFriends = () => {
                 >
                   <div className="flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-slate-800/60 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition">
                     <img
-                      src={profileImageURL}
+                      src={profileImageURL ? profileImageURL : getAvatar(profile?.name)}
                       alt={profile?.name}
                       className="w-12 h-12 rounded-full object-cover ring-2 ring-white dark:ring-slate-900 shadow-sm"
                     />
@@ -99,7 +108,7 @@ const FindFriends = () => {
               )
             }) : (
               <div className="flex items-center justify-center p-6 rounded-xl bg-white/60 dark:bg-slate-800/50 border border-dashed border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-300">
-                <p>No users are here</p>
+                No users are here
               </div>
             )}
           </div>
@@ -121,8 +130,7 @@ const FindFriends = () => {
                 />
                 <button
                   className="inline-flex items-center justify-center p-2 rounded-lg  text-white hover:bg-gray-200 active:scale-95 transition"
-                  type="submit"
-                >
+                  type="submit">
                   <Icons.search />
                 </button>
               </form>
@@ -158,7 +166,7 @@ const FindFriends = () => {
 
                         {persons?.interestedIn?.length > 0 && (
                           <div className="mt-3 flex flex-wrap items-center gap-2">
-                            <b className="text-sm text-slate-700 dark:text-slate-200">Interested In:</b>
+                            <b className="text-sm text-slate-700 dark:text-slate-200">Interested In :</b>
                             <div className="flex gap-2 flex-wrap">
                               {persons?.interestedIn?.map((interest) => (
                                 <span

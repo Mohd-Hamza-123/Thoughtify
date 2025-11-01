@@ -116,9 +116,8 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     )
   else if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
-     <img className="w-[20%]" src="./Thoughtify.webp" alt="Sorry Image Failed" />
       <span>{checkAppWriteError(error?.message)}</span>
-      {!error?.message && <p className="select-none dark:text-white">Something went wrong !</p>}
+      {!error?.message && <p className="select-none dark:text-white font-bold">Something went wrong !</p>}
       <Button
         variant="destructive"
         onClick={() => location.reload()}>
