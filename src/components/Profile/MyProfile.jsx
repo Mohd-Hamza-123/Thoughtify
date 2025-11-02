@@ -58,6 +58,7 @@ const MyProfile = () => {
     staleTime: Infinity,
   })
 
+  console.log(profileData)
   const follow_Unfollow = async () => {
     setIsDisable(true)
     if (!authStatus) {
@@ -136,13 +137,11 @@ const MyProfile = () => {
   }
 
   useEffect(() => {
-
     setActiveNav('Profile Summary')
     setActiveNavRender(<ProfileSummary profileData={profileData} />)
   }, [slug, profileData]);
 
   useEffect(() => {
-
     switch (activeNav) {
       case 'Opinions': setActiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
@@ -155,6 +154,13 @@ const MyProfile = () => {
       default: setActiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
   }, [activeNav])
+
+  useEffect(()=>{
+    if(isSuccess && !isPending && profileData === null){
+      navigate('/')
+      setNotification({ message: "Profile Not Found", type: "error" })
+    }
+  },[profileData])
 
   const navLinks = [
     { name: 'Profile Summary', visible: true },

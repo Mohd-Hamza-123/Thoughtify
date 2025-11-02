@@ -30,7 +30,7 @@ const PostCard = ({
   const { imageURL, imageID } = JSON.parse(queImage || "{}");
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL;
   const date = new Date($createdAt).toDateString();
-  console.log(opinionsFrom)
+ 
   return (
     <section
       onClick={() => increaseViews($id)}
@@ -78,7 +78,7 @@ const PostCard = ({
           </Link>
 
           <div className="flex flex-wrap gap-2 sm:gap-3 items-center mt-2">
-            <span className="px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-100 dark:border-slate-700">
+            <span className="tag-style text-sm">
               {date}
             </span>
 
@@ -87,22 +87,22 @@ const PostCard = ({
             </span>
 
             {opinionsFrom && (
-              <span className="px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-100 dark:border-slate-700">
+              <span className="tag-style text-sm">
                 {opinionsFrom}
               </span>
             )}
 
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-100 dark:border-slate-700">
+            <span className="tag-style text-sm flex items-center gap-1">
               <span className="text-sm font-semibold">{views}</span>
               <IoEyeSharp className="text-sm" />
             </span>
 
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs border border-slate-100 dark:border-slate-700">
+            <span className="tag-style text-sm flex items-center gap-1">
               <span className="text-sm font-semibold">{commentCount}</span>
               <FaComment className="text-sm" />
             </span>
 
-            <span className="px-3 py-1 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 text-md">
+            <span className="tag-style text-md flex items-center gap-1">
               {opinionsFrom === 'Everyone' ? <Icons.public /> : <Icons.private />}
             </span>
           </div>

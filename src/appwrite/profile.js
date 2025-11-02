@@ -174,8 +174,7 @@ export class Profile {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                slug
-            )
+                slug)
         } catch (error) {
             console.log(error?.message)
             return null

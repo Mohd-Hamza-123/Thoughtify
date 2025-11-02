@@ -1,13 +1,13 @@
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
-import { PostCard, Spinner } from "..";
+import { Spinner } from "..";
 import profile from "@/appwrite/profile";
 import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useRef, useEffect, useMemo, useCallback } from "react";
-import { useSelector } from "react-redux";
+import React, { useRef, useEffect, useMemo, useCallback, Suspense } from "react";
+const PostCard = React.lazy(() => import("../Post-Card/PostCard"));
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
@@ -26,11 +26,11 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       const profileInfo = await profile.listSingleProfile(userId)
 
       const verified = profileInfo?.verified
-     
+
       const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
       const imageURL = profileImage ? profileImage?.profileImageURL : null
       return {
-        ...post, profileImage: imageURL,verified
+        ...post, profileImage: imageURL, verified
       }
     })
 
@@ -108,13 +108,13 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     );
   }, []);
 
-  if (isPending)
-    return (
-      <div className={`h-[400px] w-full md:w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
-        <SecondLoader />
-      </div>
-    )
-  else if (isError) {
+  // if (isPending)
+  //   return (
+  //     <div className={`h-[400px] w-full md:w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
+  //       <SecondLoader />
+  //     </div>
+  //   )
+  if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
       <span>{checkAppWriteError(error?.message)}</span>
       {!error?.message && <p className="select-none dark:text-white font-bold">Something went wrong !</p>}
@@ -124,7 +124,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
         Reload
       </Button>
     </div>
-  } else if (filteredPosts.length === 0) {
+  } else if (!isPending && filteredPosts.length === 0) {
     return <div className="w-[65%] flex flex-col items-center justify-center gap-2 ">
       <p>No Posts Found</p>
       <Button
@@ -139,12 +139,14 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       <div
         ref={homeLeft}
         className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
-        {filteredPosts?.map(renderPostCard)}
-        {hasNextPage && (
-          <div ref={spinnerRef} className="flex justify-center py-4">
-            <Spinner />
-          </div>
-        )}
+        <Suspense fallback={<div className="w-full h-full flex justify-center items-center"><SecondLoader/></div>}>
+          {filteredPosts?.map(renderPostCard)}
+          {hasNextPage && (
+            <div ref={spinnerRef} className="flex justify-center py-4">
+              <Spinner />
+            </div>
+          )}
+        </Suspense>
       </div>
     );
 };

@@ -16,9 +16,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
   const { category, searchInput } = useParams();
   const { register, handleSubmit, setValue, reset, getValues } = useForm({});
 
-  const filters = useRef({
-    Like_Dislike: 'Most Liked'
-  })
+  const filters = useRef({Like_Dislike: 'Most Liked'})
   const spinnerRef = useRef();
   const BrowseQuestionLeft = useRef();
   const BrowseQuestionRight = useRef();
@@ -104,12 +102,11 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
 
   return (
-    <div className="flex md:flex-row flex-col gap-2 w-screen px-2 mt-2">
+    <div className="flex md:flex-row flex-col gap-2 w-screen px-2 mt-2 h-[80dvh]">
       {switchTrigger && <form
         ref={BrowseQuestionLeft}
-        className="w-full md:w-[27%] flex flex-col gap-6 p-5 bg-white border border-gray-200 rounded-xl shadow-sm h-full"
-        onSubmit={handleSubmit(submit)}
-      >
+        className="w-full md:w-[27%] flex flex-col gap-6 p-5 bg-white rounded-xl shadow-sm h-full overflow-y-auto"
+        onSubmit={handleSubmit(submit)}>
         {/* Buttons */}
         <div className="flex justify-between items-center gap-3">
           <Button
@@ -140,7 +137,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               {...register("Title", { required: false })}
               id="BrowseQuestions_PostTitle_Filter"
               placeholder="Title"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-2 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2"
             />
           </div>
         </div>
@@ -231,7 +228,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
             <label className="text-sm text-gray-600">Category :</label>
             <select
               {...register("category")}
-              className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-1 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="All Category" defaultChecked>
                 All Category
@@ -253,7 +250,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 {...register("AfterDate")}
                 type="date"
                 id="AfterDate"
-                className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="flex items-center gap-2">
@@ -262,7 +259,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                 {...register("BeforeDate")}
                 type="date"
                 id="BeforeDate"
-                className="px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -280,59 +277,52 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
             return (
               <div
                 key={post?.$id}
-                className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition rounded-xl p-5"
-              >
+                className="hover:shadow-md transition rounded-xl p-3 border border-slate-200">
                 {/* Author */}
-                <span className="text-sm font-medium text-blue-600">{post.name}</span>
+                <span className="text-md font-md">{post.name}</span>
 
                 {/* Post Title */}
                 <Link to={`/post/${post.$id}/${null}`}>
-                  <h4 className="text-lg font-semibold mt-1 mb-2 text-gray-800 hover:text-blue-700 transition">
+                  <h4 className="text-lg font-semibold mt-1 mb-2 text-gray-800 transition">
                     {post.title}
                   </h4>
 
                   {/* Meta info */}
                   <div
                     id="BrowseQuestions_created_category_views"
-                    className="flex flex-wrap gap-4 text-sm text-gray-600"
-                  >
+                    className="flex flex-wrap gap-4 text-sm text-gray-600">
                     {/* Date */}
-                    <span className="flex items-center gap-1">
-                      📅{" "}
-                      {new Date(post.$createdAt).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                    <span className="tag-style">
+                      {new Date(post.$createdAt).toDateString()}
                     </span>
 
                     {/* Category */}
-                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-md text-xs font-medium">
+                    <span className="tag-style">
                       {post.category}
                     </span>
 
                     {/* Views */}
-                    <div className="flex gap-1 items-center">
+                    <div className="tag-style flex items-center gap-1">
                       <span>{post.views}</span>
-                      <Icons.views className="w-4 h-4 text-gray-500" />
+                      <Icons.views className="" />
                     </div>
 
                     {/* Comments */}
-                    <div className="flex gap-1 items-center">
+                    <div className="tag-style flex items-center gap-1">
                       <span>{post.commentCount}</span>
-                      <Icons.comment className="w-4 h-4 text-gray-500" />
+                      <Icons.comment className="" />
                     </div>
 
                     {/* Likes */}
-                    <div className="flex gap-1 items-center">
+                    <div className="tag-style flex items-center gap-1">
                       <span>{post?.like}</span>
-                      <Icons.like className="w-4 h-4 text-green-500" />
+                      <Icons.like className="" />
                     </div>
 
                     {/* Dislikes */}
-                    <div className="flex gap-1 items-center">
+                    <div className="tag-style flex items-center gap-1">
                       <span>{post?.dislike}</span>
-                      <Icons.dislike className="w-4 h-4 text-red-500" />
+                      <Icons.dislike className="" />
                     </div>
                   </div>
                 </Link>
