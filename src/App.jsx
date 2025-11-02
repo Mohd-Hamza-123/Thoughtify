@@ -1,35 +1,31 @@
 import "./App.css";
-import authService from "./appwrite/auth";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState, Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
-import { AskProvider } from "./context/AskContext";
 import profile from "./appwrite/profile";
-import Overlay from "./components/Overlay/Overlay";
-import notification from "./appwrite/notification";
+import authService from "./appwrite/auth";
 import { NotificationPop } from "./components";
+import { Routes, Route } from "react-router-dom";
+import Overlay from "./components/Overlay/Overlay";
+import { AskProvider } from "./context/AskContext";
+import notification from "./appwrite/notification";
+import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
+import { useEffect, useState, Suspense, lazy } from "react";
+import { Home, SearchPage, ViewPostPage, } from "./pages/pages";
 import { useNotificationContext } from "./context/NotificationContext";
-import {
-  Home,
-  SearchPage,
-  FindFriends,
-  ViewPostPage,
-  EditAskQuestion,
-  PersonalChatPage,
-  RespondersSectionPage,
-  TrustedRespondersPage,
-} from "./pages/pages";
 
-const NavBar = lazy(() => import("./components/NavBar/NavBar"));
 const Profile = lazy(() => import("./pages/Profile"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const LoginPage = lazy(() => import("./pages/LoginPage"))
 const SignupPage = lazy(() => import("./pages/SignupPage"))
-const AskQuestion = lazy(()=> import("./pages/AskQuestion"))
+const AskQuestion = lazy(() => import("./pages/AskQuestion"))
+const FindFriends = lazy(() => import("./pages/FindFriends"));
+const NavBar = lazy(() => import("./components/NavBar/NavBar"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
-const NotFound = lazy(() => import("./pages/NotFound"));
 const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
+const EditAskQuestion = lazy(() => import("./pages/EditAskQuestion"));
+const PersonalChatPage = lazy(() => import("./pages/PersonalChatPage"));
+const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
+const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
 
 import { login } from "./store/authSlice";
 import { userProfile } from "./store/profileSlice";
