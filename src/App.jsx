@@ -125,7 +125,7 @@ function App() {
     <Initialization />
     <Overlay />
     <NotificationPop />
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route path="/" element={<NavBar />}>
           <Route index Component={Home} />

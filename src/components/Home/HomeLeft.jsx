@@ -11,8 +11,8 @@ const PostCard = React.lazy(() => import("../Post-Card/PostCard"));
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
-  const navigate = useNavigate()
   const homeLeft = useRef(null);
+  const navigate = useNavigate();
   const spinnerRef = useRef(null);
 
 
@@ -108,12 +108,12 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     );
   }, []);
 
-  // if (isPending)
-  //   return (
-  //     <div className={`h-[400px] w-full md:w-[65%] relative Home_Left flex justify-center items-center ${switchTrigger === true ? "block" : "hidden"}`}>
-  //       <SecondLoader />
-  //     </div>
-  //   )
+  if (isPending)
+    return (
+      <div className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+        <div className="w-full h-full flex justify-center items-center mt-10"><SecondLoader /></div>
+      </div>
+    )
   if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
       <span>{checkAppWriteError(error?.message)}</span>
@@ -135,20 +135,21 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     </div>
   }
   else
-    return (
-      <div
-        ref={homeLeft}
-        className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
-        <Suspense fallback={<div className="w-full h-full flex justify-center items-center"><SecondLoader/></div>}>
-          {filteredPosts?.map(renderPostCard)}
-          {hasNextPage && (
-            <div ref={spinnerRef} className="flex justify-center py-4">
-              <Spinner />
-            </div>
-          )}
-        </Suspense>
-      </div>
-    );
+  return (
+    <div
+      ref={homeLeft}
+      className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+
+      <Suspense fallback={<div className="w-full h-full flex justify-center items-center mt-10"><SecondLoader /></div>}>
+        {filteredPosts?.map(renderPostCard)}
+        {hasNextPage && (
+          <div ref={spinnerRef} className="flex justify-center py-4">
+            <Spinner />
+          </div>
+        )}
+      </Suspense>
+    </div>
+  );
 };
 
 export default HomeLeft;
