@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { categoriesArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
-import React, { useEffect, useRef, useMemo } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useEffect, useRef, useMemo } from "react";
 import { useNotificationContext } from "@/context/NotificationContext";
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {

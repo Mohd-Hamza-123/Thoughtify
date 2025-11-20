@@ -62,6 +62,9 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
   })
 
 
+  console.log(hasNextPage)
+
+
   const posts = useMemo(() => {
     return data?.pages?.flatMap(page => page.documents) ?? [];
 
@@ -75,28 +78,32 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     }
   }, [posts, isTrustedResponder]);
 
+
   useEffect(() => {
-    const ref = spinnerRef.current;
 
-    if (ref) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
+    const ref = spinnerRef.current
+    if (!ref) return
 
-          if (entry.isIntersecting && hasNextPage) {
-            fetchNextPage();
-          }
-        },
-        {
-          root: null,
-          rootMargin: "100px", // Increased margin for better UX
-          threshold: 0.1,
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage) {
+          console.log("intersect");
+          fetchNextPage();
         }
-      );
+      },
+      {
+        root: null,        // 👈 use the scrolling container
+        rootMargin: "0px",
+        threshold: 0.1,
+      }
+    );
 
-      observer.observe(ref);
-      return () => ref && observer.unobserve(ref);
-    }
+    observer.observe(ref);
+
+    return () => observer.unobserve(ref);
+
   }, [fetchNextPage, hasNextPage]);
+
 
   // Memoize the PostCard render function
   const renderPostCard = useCallback((post) => {
@@ -135,21 +142,21 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     </div>
   }
   else
-  return (
-    <div
-      ref={homeLeft}
-      className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+    return (
+      <div
+        ref={homeLeft}
+        className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
 
-      <Suspense fallback={<div className="w-full h-full flex justify-center items-center mt-10"><SecondLoader /></div>}>
-        {filteredPosts?.map(renderPostCard)}
-        {hasNextPage && (
-          <div ref={spinnerRef} className="flex justify-center py-4">
-            <Spinner />
-          </div>
-        )}
-      </Suspense>
-    </div>
-  );
+    
+          {filteredPosts?.map(renderPostCard)}
+          {hasNextPage && (
+            <div ref={spinnerRef} className="flex justify-center py-4">
+              <Spinner />
+            </div>
+          )}
+        
+      </div>
+    );
 };
 
 export default HomeLeft;
