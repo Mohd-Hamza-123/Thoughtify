@@ -74,12 +74,11 @@ const SideBar = () => {
       slug: `/EditProfile/${userData?.$id}`,
       icon: <Icons.edit />,
     },
-    {
-      name: "Chat",
-      slug: `/chat/${userData?.$id}`,
-      icon: <Icons.chats />
-
-    },
+    // {
+    //   name: "Chat",
+    //   slug: `/chat/${userData?.$id}`,
+    //   icon: <Icons.chats />
+    // },
     {
       name: "About Creater",
       slug: `/profile/${conf.myPrivateUserID}`,
@@ -152,7 +151,7 @@ const SideBar = () => {
           </div>
         )}
         <hr />
-        <DarkModeToggle />
+        {/* <DarkModeToggle /> */}
 
       </div>
     </div>
