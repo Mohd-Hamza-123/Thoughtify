@@ -62,13 +62,10 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
   })
 
 
-  console.log(hasNextPage)
-
-
   const posts = useMemo(() => {
     return data?.pages?.flatMap(page => page.documents) ?? [];
-
   }, [data?.pages]);
+
 
   const filteredPosts = useMemo(() => {
     if (isTrustedResponder === false) {
@@ -87,7 +84,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && hasNextPage) {
-          console.log("intersect");
+          // console.log("intersect");
           fetchNextPage();
         }
       },
@@ -117,8 +114,8 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
   if (isPending)
     return (
-      <div className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
-        <div className="w-full h-full flex justify-center items-center mt-10"><SecondLoader /></div>
+      <div className={`w-full h-[75dvh] md:w-[65%] flex justify-center items-center ${switchTrigger === true ? "flex" : "hidden"}`}>
+        <SecondLoader />
       </div>
     )
   if (isError) {

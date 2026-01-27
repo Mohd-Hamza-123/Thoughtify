@@ -13,9 +13,7 @@ const Logo = () => {
           alt="Logo"
           loading="lazy"
         />
-        <h1 className="md:text-2xl text-md font-semibold dark:text-white">
-          Thoughtify
-        </h1>
+        <h1 className="md:text-2xl text-lg font-semibold dark:text-white"> Thoughtify</h1>
       </figure>
     </Link>
   );

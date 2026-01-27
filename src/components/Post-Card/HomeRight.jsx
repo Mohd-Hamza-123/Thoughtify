@@ -1,22 +1,24 @@
 import './HomeRight.css'
-import { useSelector } from 'react-redux'
+import { useSelector , useDispatch } from 'react-redux'
 import authService from '../../appwrite/auth'
 import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { categoriesArr } from '../AskQue/Category'
 import { useBooleanContext } from '@/context/BooleanContext'
 import { useNotificationContext } from '@/context/NotificationContext'
+import { feedbackToggle } from '@/store/booleanSlice'
 
 const HomeRight = ({ switchTrigger }) => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const userAuthStatus = useSelector((state) => state.auth.status)
 
     const userData = useSelector((state) => state.auth.userData)
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false);
 
     const { setNotification } = useNotificationContext()
-    const { setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
+    const { setIsSettingOpen, setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
         if (userData) setisEmailVerified(userData?.emailVerification || false)
@@ -39,9 +41,9 @@ const HomeRight = ({ switchTrigger }) => {
 
     }
     const feedbackPopUp = () => {
-        setNotification({ message: "Feedback", type: "success" })
-        setfeedbackPopUp((prev) => !prev)
+        dispatch(feedbackToggle())
     }
+
     const settingPopUp = () => {
         if (!userAuthStatus) {
             setNotification({ message: "You are not Login", type: "error" })
@@ -75,7 +77,7 @@ const HomeRight = ({ switchTrigger }) => {
             </div>
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
-                {userAuthStatus && <span className={`cursor-pointer`} onClick={feedbackPopUp}>Feedback</span>}
+                {userAuthStatus && <span className="cursor-pointer" onClick={feedbackPopUp}>Feedback</span>}
                 <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
                 <span className={`cursor-pointer`} onClick={trustedRespondersPopUp}>Trusted Responders</span>
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}

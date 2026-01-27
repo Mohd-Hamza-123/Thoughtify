@@ -13,7 +13,7 @@ const UpperNavigationBarSearch = () => {
   };
   
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex bg-white-secondary border p-1 md:p-2 rounded-xl overflow-hidden w-1/2">
+    <form onSubmit={handleSubmit(submit)} className="flex bg-white-secondary border px-3 py-2 md:p-2 rounded-xl overflow-hidden w-2/3">
 
       <input
         {...register("searchQuestion", {
