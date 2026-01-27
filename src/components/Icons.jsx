@@ -22,7 +22,15 @@ import { MdVerifiedUser } from "react-icons/md";
 import { FaComment } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
+import { FaInstagramSquare } from "react-icons/fa";
+import { BsTwitterX } from "react-icons/bs";
+import { FaLinkedin } from "react-icons/fa";
 const Icons = {
+  linkedin : (props) => (<FaLinkedin {...props} />),
+  twitter : (props) => (<BsTwitterX {...props} />),
+  instagram : (props) => (<FaInstagramSquare {...props} />),
+  github : (props) => (<FaGithub {...props} />),
   private : (props) => (<FaLock {...props} />),
   public : (props) => (<FaPeopleGroup {...props} />),
   verified : (props) => (<MdVerifiedUser {...props} />),
