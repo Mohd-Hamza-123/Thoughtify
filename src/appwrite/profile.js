@@ -63,8 +63,8 @@ export class Profile {
         console.log(bookmarks)
         try {
             return await this.databases.updateDocument(
-                conf.appwriteDatabaseId, 
-                conf.appwriteProfileCollectionId, 
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
                 profileID,
                 updateObj
             )
@@ -121,15 +121,13 @@ export class Profile {
             return null
         }
     }
+
     async listProfile({ slug, name }) {
-        // console.log(name)
-        let QueryArr = []
-        if (slug) {
-            QueryArr.push(Query.equal("userIdAuth", [`${slug}`]))
-        }
-        if (name) {
-            QueryArr.push(Query.equal("name", [`${name}`]))
-        }
+        
+        let QueryArr = [];
+
+        if (slug) QueryArr.push(Query.equal("$id", [slug]))
+        if (name) QueryArr.push(Query.equal("name", [name]))
 
         try {
             const res = await this.databases.listDocuments(
@@ -139,6 +137,7 @@ export class Profile {
             )
             return res
         } catch (error) {
+            console.error("profile.js : Error in listProfile : ", error)
             return null
         }
     }
@@ -176,7 +175,8 @@ export class Profile {
                 conf.appwriteProfileCollectionId,
                 slug)
         } catch (error) {
-            console.log(error?.message)
+            const errMessage = error instanceof Error ? error.message : error
+            console.error("profile.js : Error in listSingleProfile : ", errMessage)
             return null
         }
     }

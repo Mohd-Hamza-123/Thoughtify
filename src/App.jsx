@@ -1,8 +1,10 @@
 import "./App.css";
 import profile from "./appwrite/profile";
 import authService from "./appwrite/auth";
+import { login } from "./store/authSlice";
 import { NotificationPop } from "./components";
 import { Routes, Route } from "react-router-dom";
+import { userProfile } from "./store/profileSlice";
 import Overlay from "./components/Overlay/Overlay";
 import { AskProvider } from "./context/AskContext";
 import notification from "./appwrite/notification";
@@ -27,13 +29,15 @@ const PersonalChatPage = lazy(() => import("./pages/PersonalChatPage"));
 const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
 const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
 
-import { login } from "./store/authSlice";
-import { userProfile } from "./store/profileSlice";
+
 
 function App() {
+
   const dispatch = useDispatch()
-  const authStatus = useSelector((state) => state.auth.status);
   const { setNotification } = useNotificationContext();
+  const authStatus = useSelector((state) => state.auth.status);
+
+  
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");

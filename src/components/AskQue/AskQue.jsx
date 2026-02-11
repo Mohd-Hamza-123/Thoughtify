@@ -1,37 +1,28 @@
 import "./AskQue.css";
-import conf from "../../conf/conf";
+import { Icons, RTE } from "../";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Textarea as TextArea } from "../ui/textarea";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { categoriesArr } from "./Category";
-import { Icons, RTE } from "../";
 import { MAX_IMAGE_SIZE } from "@/constant";
-import profile from "../../appwrite/profile";
-import { useNavigate } from "react-router-dom";
+import useSubmitPost from "@/hooks/useSubmitPost";
 import appwriteService from "../../appwrite/config";
-import { useSelector, useDispatch } from "react-redux";
+import { Textarea as TextArea } from "../ui/textarea";
 import React, { useEffect, useState, memo } from "react";
-import convertToWebPFile from "@/helpers/convert-image-into-webp";
 import { useNotificationContext } from "@/context/NotificationContext";
-import { uploadQuestionWithImage, uploadPostWithUnsplashAPI } from "@/lib/posts";
-
 
 const AskQue = ({ post }) => {
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const userData = useSelector((state) => state.auth.userData);
-  const UserAuthStatus = useSelector((state) => state.auth.status);
-  const isAdmin = userData?.labels?.includes("admin") ? true : false;
+  const userStatus = useSelector((state) => state.auth.status);
 
   const { handleSubmit, register, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
         content: post?.content || "",
-        pollAnswer: post?.pollAnswer || '',
-        opinionsFrom: post?.opinionsFrom || '',
+        pollAnswer: post?.pollAnswer || "",
+        opinionsFrom: post?.opinionsFrom || "",
       },
     });
 
@@ -60,6 +51,7 @@ const AskQue = ({ post }) => {
     pollTextAreaEmpty
   } = initialPostData
 
+  const { createPost, updatePost } = useSubmitPost()
   const { setNotification } = useNotificationContext()
 
   const selectThumbnail = async (e) => {
@@ -165,19 +157,22 @@ const AskQue = ({ post }) => {
     }
     setInitialPostData((prev) => ({ ...prev, options: "" }))
   }
+
   const submit = async (data) => {
 
-    if (!UserAuthStatus) {
+    console.log(initialPostData)
+
+    if (!userStatus) {
       setNotification({ message: "You are not logged In", type: "error" })
       return
     }
 
-    if (pollQuestion && pollOptions.length <= 1) {
+    if (Array.isArray(pollQuestion) && pollOptions.length <= 1) {
       setNotification({ message: "There must be 2 Poll options", type: "error" })
       return
     }
 
-    if (!initialPostData?.categoryValue) {
+    if (!categoryValue) {
       setNotification({ message: "Select a Category. Choose General If not Specific", type: "error" })
       return
     }
@@ -187,138 +182,20 @@ const AskQue = ({ post }) => {
       return
     }
 
+
     setInitialPostData((prev) => ({ ...prev, isUploading: true }))
 
     if (post) {
-
-      const { imageURL, imageID } = JSON.parse(post?.queImage)
-
-      if (thumbnailFile) {
-
-        try {
-          if (imageID) await appwriteService.deleteThumbnail(imageID)
-          const webpFile = await convertToWebPFile(thumbnailFile);
-          const dbThumbnail = await appwriteService.createThumbnail({ file: webpFile });
-          const imageURL = await appwriteService.getThumbnailPreview(dbThumbnail?.$id)
-
-          const dbPost = await appwriteService.updatePost(post.$id, {
-            ...data,
-            queImage: JSON.stringify({ imageURL, imageID: dbThumbnail.$id }),
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          console.log(error)
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-
-      } else if (thumbnailURL && !imageID) {
-        try {
-
-          console.log(thumbnailURL)
-          console.log(imageID)
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            queImage: JSON.stringify({ imageURL: thumbnailURL, imageID: null }),
-            pollQuestion: pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-          
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-      } else if (thumbnailURL && imageID) {
-        console.log(thumbnailURL)
-        console.log(imageID)
-        try {
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-
-      } else {
-
-        console.log(thumbnailURL)
-        console.log(imageID)
-
-        try {
-          if (imageID) await appwriteService.deleteThumbnail(imageID)
-          const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-          const UnsplashRes = await unsplashImg.json();
-          const ImgArrUnsplash = UnsplashRes.results
-          const randomIndex = Math.floor(Math.random() * 10);
-
-
-          const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
-
-          const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null });
-
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            queImage,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-         
-          setNotification({ message: "Post Updated", type: "success" })
-
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-          return
-        }
-      }
-      navigate("/");
+      updatePost({ post, initialPostData })
     } else {
-
-      const uploaderProfile = await profile.listProfile({ slug: userData?.$id });
-
-      if (uploaderProfile?.total === 0) {
-        setNotification({ message: "Your Profile is not Verified", type: "error" })
-        return
-      }
-
-      if (initialPostData?.thumbnailFile) {
-        try {
-          const dbPost = await uploadQuestionWithImage(
-            data,
-            userData,
-            initialPostData,
-            uploaderProfile,
-          )
-          setNotification({ message: "Post Created", type: "success" })
-          navigate(`/post/${dbPost?.$id}/null`)
-        } catch (error) {
-          console.log(error)
-          setNotification({ message: "Post is not Created", type: "error" })
-        }
-
-      } else {
-        const dbPost = await uploadPostWithUnsplashAPI(initialPostData, data, userData, uploaderProfile)
-        if (dbPost) {
-          setNotification({ message: "Post Created", type: "success" })
-          navigate(`/post/${dbPost?.$id}/null`)
-          return
-        } else {
-          setNotification({ message: "Post is not Created", type: "error" })
-        }
-      }
+      createPost({ initialPostData, data })
     }
+
     setInitialPostData((prev) => ({ ...prev, isUploading: false }))
+
   }
+
+
 
 
   return (
@@ -453,9 +330,14 @@ const AskQue = ({ post }) => {
                 <Icons.dropdown />
               </div>
 
-              {categoryFlag && <ul className={`AskQue-dropdown-list flex flex-col`}>
-                {categoriesArr?.map((object, index) => (
-                  <li key={object.category + index} className="dropdown-item" onClick={() => selectPostCategory(object.category)}>{object.category}</li>
+              {categoryFlag && <ul className="AskQue-dropdown-list flex flex-col">
+                {categoriesArr.map((object) => (
+                  <li
+                    key={object.category}
+                    className="dropdown-item"
+                    onClick={() => selectPostCategory(object.category)}>
+                    {object.category}
+                  </li>
                 ))}
               </ul>}
             </div>
