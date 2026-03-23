@@ -37,7 +37,7 @@ function App() {
   const { setNotification } = useNotificationContext();
   const authStatus = useSelector((state) => state.auth.status);
 
-  
+
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
@@ -120,12 +120,7 @@ function App() {
   }, []);
 
 
-  return <AskProvider
-    value={{
-      isAppInstalled,
-      onInstallApp,
-    }}>
-
+  return <AskProvider value={{ isAppInstalled, onInstallApp }}>
     <Initialization />
     <Overlay />
     <NotificationPop />

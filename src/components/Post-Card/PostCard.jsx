@@ -1,12 +1,12 @@
 import "./PostCard.css";
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
-import { FaComment } from "react-icons/fa";
-import { IoEyeSharp } from "react-icons/io5";
-import { increaseViews } from "@/lib/posts";
-import UnderlineAnimate from "../UnderlineAnimate";
-import { Icons, SkeletonImage } from "..";
 import { getAvatar } from "@/lib/avatar";
+import { Icons, SkeletonImage } from "..";
+import { FaComment } from "react-icons/fa";
+import { increaseViews } from "@/lib/posts";
+import { IoEyeSharp } from "react-icons/io5";
+import UnderlineAnimate from "../UnderlineAnimate";
 
 const PostCard = ({
   $id,
@@ -70,7 +70,7 @@ const PostCard = ({
           </div>
 
           <Link to={`/post/${$id}/${null}`}>
-            <h2 className="poppins text-lg sm:text-xl md:text-2xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight inline-block">
+            <h2 className="poppins text-md sm:text-xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight inline-block">
               <UnderlineAnimate className="bg-gray-700">
                 {title ? title : pollQuestion}
               </UnderlineAnimate>
@@ -78,27 +78,27 @@ const PostCard = ({
           </Link>
 
           <div className="flex flex-wrap gap-2 sm:gap-3 items-center mt-2">
-            <span className="tag-style text-sm">
+            <span className="tag-style text-[12px]">
               {date}
             </span>
 
-            <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-xs border border-indigo-100 dark:border-indigo-800">
+            <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-[12px] border border-indigo-100 dark:border-indigo-800">
               {category}
             </span>
 
             {opinionsFrom && (
-              <span className="tag-style text-sm">
+              <span className="tag-style text-[12px]">
                 {opinionsFrom}
               </span>
             )}
 
             <span className="tag-style text-sm flex items-center gap-1">
-              <span className="text-sm font-semibold">{views}</span>
+              <span className="text-[12px]">{views}</span>
               <IoEyeSharp className="text-sm" />
             </span>
 
             <span className="tag-style text-sm flex items-center gap-1">
-              <span className="text-sm font-semibold">{commentCount}</span>
+              <span className="text-[12px]">{commentCount}</span>
               <FaComment className="text-sm" />
             </span>
 

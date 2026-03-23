@@ -1,6 +1,6 @@
+import { Spinner } from "..";
 import { SecondLoader } from "..";
 import { Button } from "../ui/button";
-import { Spinner } from "..";
 import profile from "@/appwrite/profile";
 import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
