@@ -1,6 +1,7 @@
 import "./Home.css";
 import { useState } from "react";
-import { HomeLeft, HomeRight, Trigger, Setting, Feedback } from "../components/index";
+import { usePost } from "@/hooks/usePost";
+import { HomeLeft, HomeRight, Trigger, Setting, Feedback , Spinner } from "../components/index";
 
 const Home = () => {
 

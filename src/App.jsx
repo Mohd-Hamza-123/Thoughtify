@@ -10,26 +10,24 @@ import { AskProvider } from "./context/AskContext";
 import notification from "./appwrite/notification";
 import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
-import { useEffect, useState, Suspense, lazy } from "react";
-import { Home, SearchPage, ViewPostPage, } from "./pages/pages";
+import { useEffect, useState } from "react";
+import { Home, ViewPostPage, } from "./pages/pages";
 import { useNotificationContext } from "./context/NotificationContext";
+import NavBar from "./components/NavBar/NavBar";
 
-const Profile = lazy(() => import("./pages/Profile"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const LoginPage = lazy(() => import("./pages/LoginPage"))
-const SignupPage = lazy(() => import("./pages/SignupPage"))
-const AskQuestion = lazy(() => import("./pages/AskQuestion"))
-const FindFriends = lazy(() => import("./pages/FindFriends"));
-const NavBar = lazy(() => import("./components/NavBar/NavBar"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
-const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
-const EditAskQuestion = lazy(() => import("./pages/EditAskQuestion"));
-const PersonalChatPage = lazy(() => import("./pages/PersonalChatPage"));
-const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
-const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
-
-
+// const Profile = lazy(() => import("./pages/Profile"));
+// const NotFound = lazy(() => import("./pages/NotFound"));
+// const LoginPage = lazy(() => import("./pages/LoginPage"))
+// const SignupPage = lazy(() => import("./pages/SignupPage"))
+// const AskQuestion = lazy(() => import("./pages/AskQuestion"))
+// const FindFriends = lazy(() => import("./pages/FindFriends"));
+// const NavBar = lazy(() => import("./components/NavBar/NavBar"));
+// const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+// const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
+// const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
+// const EditAskQuestion = lazy(() => import("./pages/EditAskQuestion"));
+// const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
+// const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
 
 function App() {
 
@@ -124,29 +122,26 @@ function App() {
     <Initialization />
     <Overlay />
     <NotificationPop />
-    <Suspense fallback={<div>Loading...</div>}>
-      <Routes>
-        <Route path="/" element={<NavBar />}>
-          <Route index Component={Home} />
-          <Route path="profile/:slug" Component={Profile} />
+    <Routes>
+      <Route path="/" element={<NavBar />}>
+        <Route index Component={Home} />
+        <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
+        {/* <Route path="profile/:slug" Component={Profile} />
           <Route path="Find-People" Component={FindFriends} />
           <Route path="AskQuestion" Component={AskQuestion} />
           <Route path="EditQuestion/:slug" Component={EditAskQuestion} />
-          <Route path="trustedResponders" Component={TrustedRespondersPage} />
           <Route path="EditProfile/:slug" Component={EditProfilePage} />
           <Route path="BrowseQuestion/:category/:searchInput" Component={SearchPage} />
-          <Route path="ChatRoom/:senderSlug/:receiverSlug" Component={PersonalChatPage} />
-          <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
-          <Route path="Responders-Section" Component={RespondersSectionPage} />
-        </Route>
+          
+          <Route path="Responders-Section" Component={RespondersSectionPage} /> */}
+      </Route>
 
-        <Route path="login" Component={LoginPage} />
+      {/* <Route path="login" Component={LoginPage} />
         <Route path="signup" Component={SignupPage} />
         <Route path="forgotPassword" Component={ForgetPassword} />
         <Route path="reset-password" Component={ResetPassword} />
-        <Route path="*" Component={NotFound} />
-      </Routes>
-    </Suspense>
+        <Route path="*" Component={NotFound} /> */}
+    </Routes>
   </AskProvider>
 }
 

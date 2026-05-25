@@ -1,49 +1,56 @@
 import "../../index.css";
-import { SecondLoader } from "..";
-import profile from "@/appwrite/profile";
-import { useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import appwriteService from "../../appwrite/config";
+import { Spinner } from "..";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate, useParams } from "react-router-dom";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
 
 const ViewPost = () => {
 
-  const viewPostLeft = useRef();
   const ViewPostRef = useRef();
+  const viewPostLeft = useRef();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate()
   const { slug, filterCommentID } = useParams();
-  const { data: post, isPending } = useQuery({
-    queryKey: ['post', slug],
-    queryFn: async () => {
-      const data = await appwriteService.getPost(slug)
-      const userId = data?.userId
-      const profileInfo = await profile.listSingleProfile(userId)
-      const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
-      const imageURL = profileImage ? profileImage?.profileImageURL : null
-      return {
-        ...data, profileImage: imageURL
-      }
-    }
-  })
+  const [post, setPost] = useState(null);
 
+  const getPost = async () => {
+    let data = null
+    const posts = queryClient.getQueryData(["posts"]);
+    const pages = posts?.pages
+
+    if (!Array.isArray(pages) || !pages.length) {
+      navigate("/")
+      return
+    }
+
+    pages?.flatMap((page) => {
+      data = page.documents.find((p) => p.$id === slug)
+    });
+
+    if (!data) {
+      navigate("/")
+      return
+    }
+    setPost(data)
+  }
 
   useEffect(() => {
     makeCodeBlock()
-  }, [post])
+    getPost()
+  }, [])
 
+  return post ? <div
+    ref={ViewPostRef}
+    className="w-full relative flex">
 
-  return !isPending ? (
-    <div
-      ref={ViewPostRef}
-      className="w-full relative flex">
+    <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-hidden">
+      <ViewPostMainContent post={post} />
+      <ViewPostLikeDislikeBookmark post={post} />
+    </section>
 
-      <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-hidden">
-        <ViewPostMainContent post={post} />
-        <ViewPostLikeDislikeBookmark post={post} />
-      </section>
-
-      {/* <section
+    {/* <section
         ref={viewPostRight}
         className={`ViewPost_Related_Filter_Comment_Questions w-[30%] ${isNavbarHidden ? "" : "active"
           }`}>
@@ -100,12 +107,9 @@ const ViewPost = () => {
           </div>
         )}
       </section> */}
-    </div>
-  ) : (
-    <div className="w-full flex justify-center items-center h-[80dvh]">
-      <SecondLoader />
-    </div>
-  );
+  </div> : <div className="w-full flex justify-center items-center h-[80dvh]">
+    <Spinner />
+  </div>
 };
 
 export default ViewPost;

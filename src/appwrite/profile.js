@@ -176,8 +176,7 @@ export class Profile {
                 slug)
         } catch (error) {
             const errMessage = error instanceof Error ? error.message : error
-            console.error("profile.js : Error in listSingleProfile : ", errMessage)
-            return null
+            console.error("profile.js : ", errMessage)
         }
     }
 

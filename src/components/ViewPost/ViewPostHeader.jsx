@@ -24,7 +24,7 @@ const ViewPostHeader = ({ post }) => {
 
     const userData = useSelector((state) => state?.auth?.userData);
     const isAuthor = post && userData ? post.userId === userData.$id : false;
-    console.log(isAuthor)
+    // console.log(isAuthor)
 
     const { setNotification } = useNotificationContext();
     const navigate = useNavigate();

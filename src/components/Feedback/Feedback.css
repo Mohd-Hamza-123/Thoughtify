@@ -96,22 +96,7 @@ body.darkMode #Feedback textarea {
 }
 
 /* Submit Button */
-#Feedback section button[type="submit"] {
-  padding: 10px 22px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #5adaff, #5468ff);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
 
-#Feedback section button[type="submit"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(84, 104, 255, 0.4);
-}
 
 /* Cancel Button */
 #Feedback section button[type="reset"] {

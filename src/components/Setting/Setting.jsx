@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import profile from '../../appwrite/profile'
@@ -8,10 +8,10 @@ import { useBooleanContext } from '@/context/BooleanContext'
 
 const Setting = () => {
 
-  const { setNotification } = useNotificationContext()
-  const { isSettingOpen, setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
   const { register, handleSubmit } = useForm();
+  const { setNotification } = useNotificationContext()
   const myUserProfile = useSelector((state) => state.profileSlice.userProfile)
+  const { isSettingOpen, setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
 
   const submit = async (data) => {
     try {
@@ -147,42 +147,7 @@ const Setting = () => {
           </div>
         </div>
 
-        {/* Who Can Message You */}
-        <div className="space-y-3">
-          <p className="text-sm font-medium text-gray-700">Who Can Message You :</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
-              <input
-                defaultChecked={myUserProfile?.whoCanMsgYou === 'My Following'}
-                {...register("whoCanMsgYou")}
-                type="radio"
-                name="whoCanMsgYou"
-                value="My Following"
-              />
-              My Following
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
-              <input
-                defaultChecked={myUserProfile?.whoCanMsgYou === 'Everyone'}
-                {...register("whoCanMsgYou")}
-                type="radio"
-                name="whoCanMsgYou"
-                value="Everyone"
-              />
-              Everyone
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 flex-1">
-              <input
-                defaultChecked={myUserProfile?.whoCanMsgYou === 'None'}
-                {...register("whoCanMsgYou")}
-                type="radio"
-                name="whoCanMsgYou"
-                value="None"
-              />
-              None
-            </label>
-          </div>
-        </div>
+      
 
         {/* Buttons */}
         <div className="flex justify-end gap-3 border-t pt-4">

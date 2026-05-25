@@ -6,19 +6,15 @@ import FindFriends from './FindFriends'
 import AskQuestion from './AskQuestion'
 import SignupPage from './SignupPage'
 import LoginPage from './LoginPage'
-import PersonalChatPage from './PersonalChatPage'
 import ViewPostPage from './ViewPostPage'
 import ForgetPassword from './ForgetPassword'
 import EditAskQuestion from './EditAskQuestion'
 import ResetPassword from './ResetPassword'
 import NotFound from './NotFound'
-import TrustedRespondersPage from './TrustedRespondersPage'
 import RespondersSectionPage from './RespondersSectionPage'
 
 export {
-    PersonalChatPage,
     RespondersSectionPage,
-    TrustedRespondersPage,
     FindFriends,
     EditProfilePage,
     EditAskQuestion,

@@ -290,7 +290,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                   {/* Meta info */}
                   <div
                     id="BrowseQuestions_created_category_views"
-                    className="flex flex-wrap gap-4 text-sm text-gray-600">
+                    className="flex flex-wrap gap-4 text-[12px] text-gray-600">
                     {/* Date */}
                     <span className="tag-style">
                       {new Date(post.$createdAt).toDateString()}

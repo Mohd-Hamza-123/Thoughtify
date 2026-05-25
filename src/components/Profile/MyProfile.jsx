@@ -6,14 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { userProfile } from "@/store/profileSlice";
 import { useSelector, useDispatch } from "react-redux";
-import notification from "../../appwrite/notification";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNotificationContext } from "@/context/NotificationContext";
 import {
   Opinions,
   Favourite,
   Questions,
-  SecondLoader,
+  Spinner,
   ChatInProfile,
   ProfileSummary,
   Icons,
@@ -290,7 +289,7 @@ const MyProfile = () => {
   if (isPending)
     return <div className="w-screen h-screen flex justify-center items-center">
       <div className="MyProfile_Loader_Div">
-        <SecondLoader />
+        <Spinner />
       </div>
     </div>
 

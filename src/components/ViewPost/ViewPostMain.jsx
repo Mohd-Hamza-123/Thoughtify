@@ -8,14 +8,7 @@ import React, { useEffect, useState } from "react";
 const ViewPostMain = ({ post }) => {
 
   const { profileImage } = post
-  // console.log("profileImage", profileImage)
-
-  // let image = profileImage ? JSON.parse(profileImage) : null
-  // if (image) {
-  //   image = image?.profileImageURL ? image?.profileImageURL : image
-  //   image = image.replace("/preview", "/view")
-  // }
-
+  console.log("profileImage", profileImage , typeof profileImage)
 
   const isPollOpinionVisible = true;
   const [selectedChoice, setSelectedChoice] = useState(null);
@@ -38,7 +31,7 @@ const ViewPostMain = ({ post }) => {
           <Link to={`/profile/${post?.userId}`}>
             <div className="flex gap-3 items-center cursor-pointer">
               <img
-                src={profileImage || '/NoProfile.png'}
+                src={profileImage || '/NoProfile.jpg'}
                 className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
                 alt="avatar"
               />

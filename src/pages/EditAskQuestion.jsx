@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import appwriteService from "../appwrite/config";
-import {
-  AskQue,
-  LowerNavigationBar,
-  NavBar,
-  SecondLoader,
-  UpperNavigationBar,
-} from "../components/index";
+import React, { useEffect, useState } from "react";
+import { AskQue, Spinner, } from "../components/index";
 
 const EditAskQuestion = () => {
   const [post, setPost] = useState(null);
@@ -28,7 +22,7 @@ const EditAskQuestion = () => {
     </>
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">
-      <SecondLoader />
+      <Spinner />
     </div>
   );
 };

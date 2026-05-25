@@ -1,13 +1,10 @@
 import { Spinner } from "..";
-import { SecondLoader } from "..";
 import { Button } from "../ui/button";
-import profile from "@/appwrite/profile";
+import { usePost } from "@/hooks/usePost";
+import { PostCard } from "@/components/index";
 import { useNavigate } from "react-router-dom";
-import appwriteService from "@/appwrite/config";
 import { checkAppWriteError } from "@/messages";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useRef, useEffect, useMemo, useCallback, Suspense } from "react";
-const PostCard = React.lazy(() => import("../Post-Card/PostCard"));
+import React, { useRef, useEffect, useMemo, useCallback } from "react";
 
 const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
 
@@ -15,57 +12,18 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
   const navigate = useNavigate();
   const spinnerRef = useRef(null);
 
-
-  const getPosts = useCallback(async (object) => {
-    const { pageParam: lastPostID } = object
-    const posts = await appwriteService.getPosts({ lastPostID });
-    let documents = posts?.documents
-
-    let x = documents.map(async (post) => {
-      const userId = post?.userId
-      const profileInfo = await profile.listSingleProfile(userId)
-
-      const verified = profileInfo?.verified
-
-      const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
-      const imageURL = profileImage ? profileImage?.profileImageURL : null
-      return {
-        ...post, profileImage: imageURL, verified
-      }
-    })
-
-    documents = await Promise.all(x)
-
-    const documentsLength = posts?.documents.length
-
-    return {
-      documents: documents,
-      nextCursor: documentsLength ? documents[documentsLength - 1]?.$id : undefined
-    }
-  }, []);
-
   const {
     data,
-    isPending,
-    isError,
     error,
-    fetchNextPage,
+    isError,
+    isPending,
     hasNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['posts'],
-    queryFn: getPosts,
-    staleTime: Infinity,
-    initialPageParam: null,
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.nextCursor
-    },
-  })
-
+    fetchNextPage,
+  } = usePost()
 
   const posts = useMemo(() => {
     return data?.pages?.flatMap(page => page.documents) ?? [];
   }, [data?.pages]);
-
 
   const filteredPosts = useMemo(() => {
     if (isTrustedResponder === false) {
@@ -84,7 +42,6 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && hasNextPage) {
-          // console.log("intersect");
           fetchNextPage();
         }
       },
@@ -112,12 +69,10 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     );
   }, []);
 
-  if (isPending)
-    return (
-      <div className={`w-full h-[75dvh] md:w-[65%] flex justify-center items-center ${switchTrigger === true ? "flex" : "hidden"}`}>
-        <SecondLoader />
-      </div>
-    )
+  if (isPending) return <div className={`w-full h-[75dvh] md:w-[65%] flex justify-center items-center ${switchTrigger === true ? "flex" : "hidden"}`}>
+    <Spinner />
+  </div>
+
   if (isError) {
     return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
       <span>{checkAppWriteError(error?.message)}</span>
@@ -143,15 +98,13 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       <div
         ref={homeLeft}
         className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+        {filteredPosts?.map(renderPostCard)}
+        {hasNextPage && (
+          <div ref={spinnerRef} className="flex justify-center py-4">
+            <Spinner />
+          </div>
+        )}
 
-    
-          {filteredPosts?.map(renderPostCard)}
-          {hasNextPage && (
-            <div ref={spinnerRef} className="flex justify-center py-4">
-              <Spinner />
-            </div>
-          )}
-        
       </div>
     );
 };

@@ -52,13 +52,6 @@ const HomeRight = ({ switchTrigger }) => {
         setIsSettingOpen((prev) => !prev)
         setIsOverlayVisible((prev) => !prev)
     }
-    const trustedRespondersPopUp = () => {
-        if (!userAuthStatus) {
-            setNotification({ message: "You are not Login", type: "error" })
-            return
-        }
-        navigate(`/trustedResponders`);
-    }
 
     return (
         <section className={`h-fit w-full md:w-[35%] sticky top-0 ${switchTrigger === false ? "block" : "hidden"} md:block`}>
@@ -79,7 +72,6 @@ const HomeRight = ({ switchTrigger }) => {
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
                 {userAuthStatus && <span className="cursor-pointer" onClick={feedbackPopUp}>Feedback</span>}
                 <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
-                <span className={`cursor-pointer`} onClick={trustedRespondersPopUp}>Trusted Responders</span>
                 {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}
             </div>
         </section>
