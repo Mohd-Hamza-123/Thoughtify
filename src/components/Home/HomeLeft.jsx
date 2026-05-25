@@ -21,18 +21,17 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     fetchNextPage,
   } = usePost()
 
-  const posts = useMemo(() => {
-    return data?.pages?.flatMap(page => page.documents) ?? [];
-  }, [data?.pages]);
+  const posts = useMemo(() => data?.pages?.flatMap(page => page?.documents) ?? [], [data?.pages]);
 
   const filteredPosts = useMemo(() => {
-    if (isTrustedResponder === false) {
-      return posts;
-    } else {
-      return posts.filter(post => post?.trustedResponderPost);
-    }
-  }, [posts, isTrustedResponder]);
 
+    if (!isTrustedResponder) {
+      return posts;
+    }
+
+    return posts.filter(post => post?.trustedResponderPost);
+
+  }, [posts, isTrustedResponder]);
 
   useEffect(() => {
 
@@ -57,7 +56,6 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     return () => observer.unobserve(ref);
 
   }, [fetchNextPage, hasNextPage]);
-
 
   // Memoize the PostCard render function
   const renderPostCard = useCallback((post) => {

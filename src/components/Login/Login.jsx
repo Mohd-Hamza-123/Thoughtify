@@ -10,11 +10,10 @@ import { checkAppWriteError } from '@/messages';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../../store/authSlice";
-import { useNotificationContext } from "@/context/NotificationContext";
 import profile from '@/appwrite/profile';
+import { toast } from "sonner"
 import { userProfile } from '@/store/profileSlice';
 import { homePageLoading } from '@/store/loadingSlice';
-import appwriteService from '@/appwrite/config';
 
 const Login = () => {
 
@@ -23,13 +22,13 @@ const Login = () => {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [isWaiting, setIsWaiting] = useState(false);
-  const { setNotification } = useNotificationContext()
+
 
   const login = async (data) => {
     try {
       setIsWaiting(true)
       const session = await authService.login({ ...data });
-  
+
       if (session?.success) {
         const userData = await authService.getCurrentUser();
         if (userData) {
@@ -38,35 +37,23 @@ const Login = () => {
           dispatch(userProfile({ userProfile: profileData }))
           dispatch(homePageLoading({ homePageLoading: false }))
           navigate("/");
-          setNotification({
-            message: 'You are Logged In',
-            type: 'success'
-          })
+          toast.success('You are Logged In')
         }
       } else {
         await authService.logout()
-        setNotification({
-          message: checkAppWriteError(session?.error),
-          type: 'error'
-        })
+        toast.error(checkAppWriteError(session?.error))
       }
       setIsWaiting(false)
     } catch (error) {
-      console.log(error)
-      setNotification({
-        message: error?.message || "something went wrong.",
-        type: 'error'
-      })
+      console.log(error instanceof Error ? error.message : error)
+      toast.error(error?.message || "something went wrong.")
       setIsWaiting(false)
     }
   };
 
   useEffect(() => {
-    if (errors?.password) {
-      setNotification({
-        message: errors.password?.message,
-        type: 'error'
-      })
+    if (errors?.email) {
+      toast.error(errors.email?.message)
     }
   }, [errors])
 
@@ -93,7 +80,7 @@ const Login = () => {
         <form
           className="max-w-full flex flex-col justify-center items-center gap-6"
           onSubmit={handleSubmit(login)}>
-            
+
           <div className="relative flex flex-col">
             <Input
               required

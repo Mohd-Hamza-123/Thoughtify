@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useNotificationContext } from '@/context/NotificationContext';
+import {toast} from "sonner"
 import { Icons } from '..';
 
 
@@ -13,10 +13,6 @@ const EditProfileLinks = ({ links, setProfileObject }) => {
   // console.log(linksArr)
   const url = useRef();
   const title = useRef();
-
-  const { setNotification } = useNotificationContext()
-
-
 
   function isValidURL(URL) {
     // Regular expression for a valid URL

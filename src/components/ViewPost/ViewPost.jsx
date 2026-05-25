@@ -1,5 +1,6 @@
 import "../../index.css";
 import { Spinner } from "..";
+import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,27 +11,29 @@ const ViewPost = () => {
 
   const ViewPostRef = useRef();
   const viewPostLeft = useRef();
-  const queryClient = useQueryClient();
   const navigate = useNavigate()
-  const { slug, filterCommentID } = useParams();
+  const queryClient = useQueryClient();
   const [post, setPost] = useState(null);
+  const { slug , filterCommentID } = useParams();
 
   const getPost = async () => {
-    let data = null
-    const posts = queryClient.getQueryData(["posts"]);
-    const pages = posts?.pages
 
-    if (!Array.isArray(pages) || !pages.length) {
+    let data = null
+    const query = queryClient.getQueryData(["posts"]);
+    const pages = query?.pages
+
+    if (!Array.isArray(pages) || pages.length === 0) {
       navigate("/")
+      toast.error("No Posts Found")
       return
     }
 
-    pages?.flatMap((page) => {
-      data = page.documents.find((p) => p.$id === slug)
-    });
+    const posts = pages.flatMap(page => page?.documents || [])
+    data = posts.find(post => post?.$id === slug)
 
     if (!data) {
       navigate("/")
+      toast.error("No Posts Found")
       return
     }
     setPost(data)

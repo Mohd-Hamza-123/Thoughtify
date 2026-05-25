@@ -168,7 +168,7 @@ export const uploadQuestionWithImage = async (
 ) => {
     let imageId = null
     const isAdmin = userData?.labels?.includes("admin") ? true : false
-    console.log(isAdmin)
+    // console.log(isAdmin)
     try {
 
         const {
@@ -318,14 +318,15 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
             pollQuestion,
         } = initialPostData
 
-
         const response = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
+
         if (response.ok) {
+
             const UnsplashRes = await response.json();
             const ImgArrUnsplash = UnsplashRes.results
 
             const randomIndex = Math.floor(Math.random() * 10);
-            console.log(ImgArrUnsplash[randomIndex]?.urls?.regular)
+         
             const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
             const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null })
 
@@ -341,10 +342,15 @@ export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData,
             return dbPost
         }
 
-        return null
+        throw new Error("Something went wrong.Please upload question with Image.")
+
     } catch (error) {
-        console.log(error)
-        return null
+        const message = error instanceof Error ? error.message : error
+        console.error(message)
+        throw new Error(message, {
+            cause: error
+        })
+
     }
 
 }
@@ -363,7 +369,7 @@ export const bookMarkPost = async (postId, myUserProfile, isBookmarked) => {
         } else {
             let bookmarks = myUserProfile?.bookmarks
 
-            bookmarks = [...bookmarks,postId]
+            bookmarks = [...bookmarks, postId]
             const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
             if (updateProfile) return {
                 success: true,

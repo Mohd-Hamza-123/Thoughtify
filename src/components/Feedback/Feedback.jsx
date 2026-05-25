@@ -4,12 +4,11 @@ import { Button } from '../ui/button'
 import { useForm } from 'react-hook-form'
 import feedbackService from '../../appwrite/feedback'
 import { useSelector, useDispatch } from 'react-redux'
-import { useNotificationContext } from '@/context/NotificationContext'
+import {toast} from "sonner"
 import { feedbackToggle as feedbackToggleFunc } from '@/store/booleanSlice'
 
 const Feedback = () => {
   const dispatch = useDispatch()
-  const { setNotification } = useNotificationContext()
   const { register, handleSubmit, setValue } = useForm()
   const userData = useSelector((state) => state.auth.userData);
   const userAuthStatus = useSelector((state) => state.auth.status)
@@ -20,9 +19,9 @@ const Feedback = () => {
     if (!userAuthStatus) return
     try {
       const feedBack = await feedbackService.createFeedBack({ feedback: data.Feedback, userID: userData?.$id, username: userData?.name, email: userData?.email });
-      setNotification({ message: "Feedback", type: "success" })
+      toast.success("feedback sent")
     } catch (error) {
-      setNotification({ message: "Feedback Failed. Try again later", type: "error" })
+      toast.error("Feedback not sent.")
     }
     setValue("Feedback", '')
     dispatch(feedbackToggleFunc())

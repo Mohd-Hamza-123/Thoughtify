@@ -25,7 +25,6 @@ import Feedback from "./Feedback/Feedback";
 import Spinner from "./Spinner/Spinner";
 import ChatInProfile from "./Profile/ChatInProfile";
 import Loader from "./Loader/Loader";
-import NotificationPop from "./Notification/NotificationPop";
 import DarkModeToggle from "./DarkModeToggle";
 import Logo from "./Logo";
 import Icons from "./Icons";
@@ -41,5 +40,5 @@ import Setting from "./Setting/Setting";
 import UnderlineAnimate from "./UnderlineAnimate";
 import SkeletonImage from "./Loader/ImageSkeleton";
 
-export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger , UnderlineAnimate, SkeletonImage }
+export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
 

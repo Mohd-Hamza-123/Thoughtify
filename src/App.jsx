@@ -1,40 +1,39 @@
 import "./App.css";
+import { toast } from "sonner"
 import profile from "./appwrite/profile";
 import authService from "./appwrite/auth";
 import { login } from "./store/authSlice";
-import { NotificationPop } from "./components";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { userProfile } from "./store/profileSlice";
 import Overlay from "./components/Overlay/Overlay";
 import { AskProvider } from "./context/AskContext";
 import notification from "./appwrite/notification";
+import { Home, ViewPostPage, } from "./pages/pages";
+import { NavBar } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
-import { useEffect, useState } from "react";
-import { Home, ViewPostPage, } from "./pages/pages";
-import { useNotificationContext } from "./context/NotificationContext";
-import NavBar from "./components/NavBar/NavBar";
+import {
+  AskQuestion,
+  NotFound,
+  LoginPage,
+  SignupPage,
+  ResetPassword,
+  ForgotPassword,
+  EditAskQuestion
+} from "@/pages/pages"
 
 // const Profile = lazy(() => import("./pages/Profile"));
-// const NotFound = lazy(() => import("./pages/NotFound"));
-// const LoginPage = lazy(() => import("./pages/LoginPage"))
-// const SignupPage = lazy(() => import("./pages/SignupPage"))
-// const AskQuestion = lazy(() => import("./pages/AskQuestion"))
 // const FindFriends = lazy(() => import("./pages/FindFriends"));
 // const NavBar = lazy(() => import("./components/NavBar/NavBar"));
-// const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-// const ForgetPassword = lazy(() => import("./pages/ForgetPassword"));
 // const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
-// const EditAskQuestion = lazy(() => import("./pages/EditAskQuestion"));
 // const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
 // const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
 
 function App() {
 
   const dispatch = useDispatch()
-  const { setNotification } = useNotificationContext();
   const authStatus = useSelector((state) => state.auth.status);
-
 
   const urlParams = new URLSearchParams(window.location.search);
   const secret = urlParams.get("secret");
@@ -45,7 +44,7 @@ function App() {
       if (userId && secret) {
         const res = authService.verifyWithUserId_secret(userId, secret);
         if (res) {
-          setNotification({ message: "Email Verified", type: "success" })
+          toast.success("Email Verified")
           const user = await authService.getCurrentUser();
           dispatch(login({ userData: user }));
           let profileData = await profile.updateProfile(
@@ -58,8 +57,8 @@ function App() {
         }
       }
     } catch (error) {
-      console.log(error)
-      setNotification({ message: error?.message, type: "error" })
+      console.error(error instanceof Error ? error.message : error)
+      toast.error(error?.message)
     }
   };
 
@@ -121,26 +120,25 @@ function App() {
   return <AskProvider value={{ isAppInstalled, onInstallApp }}>
     <Initialization />
     <Overlay />
-    <NotificationPop />
     <Routes>
       <Route path="/" element={<NavBar />}>
         <Route index Component={Home} />
         <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
+        <Route path="ask-question" Component={AskQuestion} />
+        <Route path="edit-question/:slug" Component={EditAskQuestion} />
         {/* <Route path="profile/:slug" Component={Profile} />
           <Route path="Find-People" Component={FindFriends} />
-          <Route path="AskQuestion" Component={AskQuestion} />
-          <Route path="EditQuestion/:slug" Component={EditAskQuestion} />
+          
           <Route path="EditProfile/:slug" Component={EditProfilePage} />
           <Route path="BrowseQuestion/:category/:searchInput" Component={SearchPage} />
-          
           <Route path="Responders-Section" Component={RespondersSectionPage} /> */}
       </Route>
 
-      {/* <Route path="login" Component={LoginPage} />
-        <Route path="signup" Component={SignupPage} />
-        <Route path="forgotPassword" Component={ForgetPassword} />
-        <Route path="reset-password" Component={ResetPassword} />
-        <Route path="*" Component={NotFound} /> */}
+      <Route path="login" Component={LoginPage} />
+      <Route path="signup" Component={SignupPage} />
+      <Route path="forgotPassword" Component={ForgotPassword} />
+      <Route path="reset-password" Component={ResetPassword} />
+      <Route path="*" Component={NotFound} />
     </Routes>
   </AskProvider>
 }

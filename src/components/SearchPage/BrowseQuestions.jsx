@@ -7,11 +7,10 @@ import { categoriesArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useMemo } from "react";
-import { useNotificationContext } from "@/context/NotificationContext";
+import {toast} from "sonner"
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
-  const { setNotification } = useNotificationContext()
 
   const { category, searchInput } = useParams();
   const { register, handleSubmit, setValue, reset, getValues } = useForm({});

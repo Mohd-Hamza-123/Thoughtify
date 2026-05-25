@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { categoriesArr } from '../AskQue/Category'
 import { useBooleanContext } from '@/context/BooleanContext'
-import { useNotificationContext } from '@/context/NotificationContext'
 import { feedbackToggle } from '@/store/booleanSlice'
+import {toast} from "sonner"
 
 const HomeRight = ({ switchTrigger }) => {
 
@@ -17,7 +17,6 @@ const HomeRight = ({ switchTrigger }) => {
     const userData = useSelector((state) => state.auth.userData)
     const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false);
 
-    const { setNotification } = useNotificationContext()
     const { setIsSettingOpen, setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
@@ -29,14 +28,18 @@ const HomeRight = ({ switchTrigger }) => {
             const getVerificationDetails = await authService.emailVerification();
 
             if (getVerificationDetails) {
-                setNotification({ message: "Message sent! Check your G-mail inbox to verify", type: "success" })
+              
+                toast.success("Message sent! Check your G-mail inbox to verify")
 
             } else {
-                setNotification({ message: "Verification Failed. Try again later", type: "error" })
+             
+                toast.error("Verification Failed. Try again later")
             }
 
         } catch (error) {
-            setNotification({ message: "Verification Failed. Try again later", type: "error" })
+          
+            toast.error("Verification Failed. Try again later")
+            console.log(error instanceof Error ? error.message : error)
         }
 
     }
@@ -46,7 +49,7 @@ const HomeRight = ({ switchTrigger }) => {
 
     const settingPopUp = () => {
         if (!userAuthStatus) {
-            setNotification({ message: "You are not Login", type: "error" })
+            toast.error("You are not login")
             return
         }
         setIsSettingOpen((prev) => !prev)

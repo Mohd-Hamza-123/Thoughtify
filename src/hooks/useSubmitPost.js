@@ -1,15 +1,14 @@
-
+import { toast } from "sonner"
 import profile from "@/appwrite/profile";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
-import { useNotificationContext } from "@/context/NotificationContext";
 import { uploadQuestionWithImage, uploadPostWithUnsplashAPI } from "@/lib/posts";
+
 
 const useSubmitPost = () => {
 
     const navigate = useNavigate();
-    const { setNotification } = useNotificationContext()
     const userData = useSelector((state) => state.auth.userData);
     const isAdmin = userData?.labels?.includes("admin") ? true : false;
 
@@ -17,39 +16,36 @@ const useSubmitPost = () => {
 
         try {
 
-            const uploaderProfile = await profile.listProfile({ slug: userData?.$id });
+            const uploaderProfile = await profile.getProfileById({ $id: userData?.$id, query: ["name"] });
 
-            if (uploaderProfile?.total === 0) {
-                setNotification({ message: "Your Profile is not Verified", type: "error" })
-                return
-            }
+            let dbPost = null
 
-            if (initialPostData?.thumbnailFile) {
-
-                const dbPost = await uploadQuestionWithImage(
+            if (initialPostData.thumbnailFile) {
+                dbPost = await uploadQuestionWithImage(
                     data,
                     userData,
                     initialPostData,
                     uploaderProfile,
                 )
-                setNotification({ message: "Post Created", type: "success" })
+                toast.success("post created")
                 navigate(`/post/${dbPost?.$id}/null`)
 
             } else {
 
-                const dbPost = await uploadPostWithUnsplashAPI(initialPostData, data, userData, uploaderProfile)
+                dbPost = await uploadPostWithUnsplashAPI(initialPostData, data, userData, uploaderProfile)
 
                 if (dbPost) {
-                    setNotification({ message: "Post Created", type: "success" })
+                    toast.success("post created")
                     navigate(`/post/${dbPost?.$id}/null`)
                     return
-                } else {
-                    setNotification({ message: "Post is not Created", type: "error" })
                 }
+
             }
+
         } catch (error) {
-            console.log("Error creating post : ", error)
-            setNotification({ message: "Post is not Created", type: "error" })
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            toast.error(message || "something went wrong")
         }
 
     }
@@ -75,7 +71,8 @@ const useSubmitPost = () => {
                     trustedResponderPost: isAdmin
                 }, categoryValue);
 
-                setNotification({ message: "Post Updated", type: "success" })
+
+                toast.success("post updated")
             } else if (thumbnailURL && !imageID) {
 
                 const dbPost = await appwriteService.updatePost(post?.$id, {
@@ -125,7 +122,7 @@ const useSubmitPost = () => {
 
         } catch (error) {
             console.log(error)
-            setNotification({ message: "Post is Not Updated", type: "error" })
+            toast.error("Post is not updated")
         }
 
     }

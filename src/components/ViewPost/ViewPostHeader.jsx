@@ -17,7 +17,7 @@ import { FaComment } from "react-icons/fa";
 import { IoEyeSharp } from "react-icons/io5";
 import { deleteQuestion } from "@/lib/posts";
 import { dateFormatFunc } from "@/helpers/format-dates";
-import { useNotificationContext } from "@/context/NotificationContext";
+import {toast} from "sonner"
 import { useQueryClient } from "@tanstack/react-query";
 
 const ViewPostHeader = ({ post }) => {
@@ -26,7 +26,7 @@ const ViewPostHeader = ({ post }) => {
     const isAuthor = post && userData ? post.userId === userData.$id : false;
     // console.log(isAuthor)
 
-    const { setNotification } = useNotificationContext();
+
     const navigate = useNavigate();
     const queryClient = useQueryClient()
 
@@ -99,7 +99,7 @@ const ViewPostHeader = ({ post }) => {
 
                     <li
                         className="cursor-pointer rounded-full p-2 hover:bg-slate-100 transition"
-                        onClick={() => navigate(`/EditQuestion/${post?.$id}`)}
+                        onClick={() => navigate(`/edit-question/${post?.$id}`)}
                         title="Edit post"
                     >
                         <Icons.edit className="text-base" />

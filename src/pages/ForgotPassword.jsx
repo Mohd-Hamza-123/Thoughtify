@@ -1,15 +1,14 @@
+import { toast } from "sonner"
 import React, { useState } from 'react'
 import authService from '../appwrite/auth'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Link, useNavigate } from 'react-router-dom'
-import { useNotificationContext } from '@/context/NotificationContext'
 
 const ForgetPassword = () => {
 
   const navigate = useNavigate()
   const [waiting, setWaiting] = useState(false)
-  const { setNotification } = useNotificationContext()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -20,25 +19,16 @@ const ForgetPassword = () => {
       const res = await authService.forgetPassword(email)
       console.log(res)
       if (res) {
-        setNotification({
-          message: 'Check your email for reset link',
-          type: 'success'
-        })
+        toast('Check your email for reset link')
         navigate('/')
       } else {
-        setNotification({
-          message: 'Something went wrong',
-          type: 'error'
-        })
+        toast.error('Something went wrong')
       }
       setWaiting(false)
     } catch (err) {
-      console.log(err?.message)
+      console.error(err instanceof Error ? err.message : err)
       setWaiting(false)
-      setNotification({
-        message: process.env.NODE_ENV === "development" ? err?.message : "Something went wrong.",
-        type: 'error'
-      })
+      toast.error("Something went wrong.")
     }
   }
 

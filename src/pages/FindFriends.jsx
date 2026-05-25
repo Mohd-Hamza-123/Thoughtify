@@ -1,19 +1,17 @@
-import React, { useEffect } from "react";
+import {toast} from "sonner"
 import { Icons } from "@/components";
 import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import profile from "@/appwrite/profile";
+import { getAvatar } from "@/lib/avatar";
 import avatarService from "@/appwrite/avatar";
 import { getUserByName } from "@/lib/profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
-import { useNotificationContext } from "@/context/NotificationContext";
-import profile from "@/appwrite/profile";
-import { getAvatar } from "@/lib/avatar";
 
 const FindFriends = () => {
 
   const queryClient = useQueryClient()
-
-  const { setNotification } = useNotificationContext();
 
   const mutation = useMutation({
     mutationFn: (username) => getUserByName(username),
@@ -39,8 +37,8 @@ const FindFriends = () => {
       });
     },
     onError: (err) => {
-      console.log(err);
-      setNotification({ message: "Something went wrong", type: "error" });
+      console.log(err instanceof Error ? err.message : err);
+      toast.error("Something went wrong")
     },
   });
   const searchedUser = mutation.data

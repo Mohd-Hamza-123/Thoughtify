@@ -3,14 +3,14 @@ import React, { useRef } from 'react'
 import { Button } from '../ui/button';
 import { useForm } from "react-hook-form";
 import { useSelector } from 'react-redux';
-import { useNotificationContext } from '@/context/NotificationContext';
+import {toast} from "sonner"
 import appwriteService from '@/appwrite/config';
 import realTime from '@/appwrite/realTime';
 
 const CommentRTE = ({slug}) => {
 
     const editorRef = useRef(null)
-    const { setNotification } = useNotificationContext()
+   
     const authStatus = useSelector((state) => state?.auth?.status)
     const userData = useSelector((state) => state?.auth?.userData)
     const { control, handleSubmit, getValues } =

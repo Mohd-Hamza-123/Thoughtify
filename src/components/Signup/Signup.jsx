@@ -13,7 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { login, logout } from "../../store/authSlice";
 import { homePageLoading } from "@/store/loadingSlice";
-import { useNotificationContext } from "@/context/NotificationContext";
+import {toast} from "sonner"
 
 const Signup = () => {
 
@@ -21,7 +21,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const { createProfile } = useProfile()
   const { register, handleSubmit } = useForm();
-  const { setNotification } = useNotificationContext()
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data) => await authService.createAccount({ ...data }),
@@ -32,7 +32,9 @@ const Signup = () => {
       dispatch(homePageLoading({ homePageLoading: false }))
       navigate('/')
     },
-    onError: (error, variables, context) => setNotification({ message: checkAppWriteError(error?.message), type: 'error' })
+    onError: (error, variables, context) => {
+      toast.error(checkAppWriteError(error?.message))
+    },
   })
 
   const create = (data) => mutate({ ...data })

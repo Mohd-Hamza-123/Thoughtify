@@ -7,7 +7,7 @@ import AskQuestion from './AskQuestion'
 import SignupPage from './SignupPage'
 import LoginPage from './LoginPage'
 import ViewPostPage from './ViewPostPage'
-import ForgetPassword from './ForgetPassword'
+import ForgotPassword from './ForgotPassword'
 import EditAskQuestion from './EditAskQuestion'
 import ResetPassword from './ResetPassword'
 import NotFound from './NotFound'
@@ -24,7 +24,7 @@ export {
     SignupPage,
     LoginPage,
     ViewPostPage,
-    ForgetPassword,
+    ForgotPassword,
     SearchPage,
     ResetPassword,
     NotFound

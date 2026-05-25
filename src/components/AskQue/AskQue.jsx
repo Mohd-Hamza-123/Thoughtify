@@ -1,4 +1,5 @@
 import "./AskQue.css";
+import { toast } from "sonner"
 import { Icons, RTE } from "../";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -10,7 +11,7 @@ import useSubmitPost from "@/hooks/useSubmitPost";
 import appwriteService from "../../appwrite/config";
 import { Textarea as TextArea } from "../ui/textarea";
 import React, { useEffect, useState, memo } from "react";
-import { useNotificationContext } from "@/context/NotificationContext";
+import { Spinner } from "../ui/spinner";
 
 const AskQue = ({ post }) => {
 
@@ -30,13 +31,14 @@ const AskQue = ({ post }) => {
     options: '',
     thumbnailURL: '',
     pollQuestion: '',
-    isUploading: false,
     categoryValue: '',
     thumbnailFile: null,
     pollOptions: [],
     pollTextAreaEmpty: true,
     categoryFlag: false,
   })
+
+  const [isLoading, setIsLoading] = useState(false)
 
 
   const {
@@ -52,14 +54,13 @@ const AskQue = ({ post }) => {
   } = initialPostData
 
   const { createPost, updatePost } = useSubmitPost()
-  const { setNotification } = useNotificationContext()
 
   const selectThumbnail = async (e) => {
 
     const file = e.currentTarget.files[0]
 
     if (file.size > MAX_IMAGE_SIZE) {
-      setNotification({ message: "Image Must be Less then and Equal to 512kb", type: "error" })
+      toast.error("Image Must be Less then and Equal to 512kb")
       e.currentTarget.value = ''
       return
     }
@@ -100,7 +101,7 @@ const AskQue = ({ post }) => {
     try {
       await appwriteService.deleteThumbnail(post?.queImageID)
     } catch (error) {
-      console.log("AskQue delete Img error.")
+      console.error("AskQue delete Img error.")
     }
   }
 
@@ -130,7 +131,7 @@ const AskQue = ({ post }) => {
   const addPollOptions = (e) => {
 
     if (post) {
-      setNotification({ message: "You cannot edit Poll", type: "error" })
+      toast.error("You cannot edit Poll")
       setInitialPostData((prev) => ({ ...prev, options: "" }))
       return
     }
@@ -149,53 +150,51 @@ const AskQue = ({ post }) => {
       })
     } else {
       if (!pollQuestion) {
-        setNotification({ message: "Write a Poll", type: "error" })
+        toast.error("Write a Poll")
         setInitialPostData((prev) => ({ ...prev, options: "" }))
         return
       }
-      setNotification({ message: "Maximum 4 Options Allowed", type: "error" })
+
+      toast("maximum 4 options allowed")
     }
     setInitialPostData((prev) => ({ ...prev, options: "" }))
   }
 
   const submit = async (data) => {
 
-    console.log(initialPostData)
-
     if (!userStatus) {
-      setNotification({ message: "You are not logged In", type: "error" })
-      return
-    }
-
-    if (Array.isArray(pollQuestion) && pollOptions.length <= 1) {
-      setNotification({ message: "There must be 2 Poll options", type: "error" })
+      toast.error("You are not logged In")
       return
     }
 
     if (!categoryValue) {
-      setNotification({ message: "Select a Category. Choose General If not Specific", type: "error" })
+      toast.error("Select a Category. Choose General If not Specific")
       return
     }
 
     if (!data.title && !pollQuestion) {
-      setNotification({ message: "Title is Empty", type: "error" })
+      toast.error("Title is Empty")
       return
     }
 
-
-    setInitialPostData((prev) => ({ ...prev, isUploading: true }))
-
-    if (post) {
-      updatePost({ post, initialPostData })
-    } else {
-      createPost({ initialPostData, data })
+    if (Array.isArray(pollQuestion) && pollOptions.length <= 1) {
+      toast.error("There must be 2 Poll options")
+      return
     }
 
-    setInitialPostData((prev) => ({ ...prev, isUploading: false }))
+    // setInitialPostData((prev) => ({ ...prev, isUploading: true }))
+    setIsLoading(true)
+
+    if (post) {
+      await updatePost({ post, initialPostData })
+    } else {
+      await createPost({ initialPostData, data })
+    }
+
+    // setInitialPostData((prev) => ({ ...prev, isUploading: false }))
+    setIsLoading(false)
 
   }
-
-
 
 
   return (
@@ -405,9 +404,9 @@ const AskQue = ({ post }) => {
           </div>}
           {/* buttons */}
           <div>
-            {isUploading ?
+            {isLoading ?
               <Button type="submit" className="askque_btn">
-                {post ? "Updating..." : "Uploading..."}
+                <Spinner />
               </Button>
               :
               <Button type="submit" className="askque_btn">

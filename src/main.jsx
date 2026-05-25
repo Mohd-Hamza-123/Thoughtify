@@ -4,10 +4,10 @@ import App from "./App.jsx";
 import store from "./store/store.js";
 import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
+import { Toaster } from "@/components/ui/sonner"
 import { BrowserRouter } from "react-router-dom";
 import QueryProvider from "./Providers/QueryProvider.jsx";
 import BooleanProvider from "./Providers/BooleanProvider.jsx";
-import NotificationProviders from "./Providers/NotificationProvider";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -15,9 +15,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <Provider store={store}>
           <BooleanProvider>
-            <NotificationProviders>
-              <App />
-            </NotificationProviders>
+            <Toaster />
+            <App />
           </BooleanProvider>
         </Provider>
       </BrowserRouter>

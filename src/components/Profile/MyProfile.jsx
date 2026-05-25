@@ -7,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { userProfile } from "@/store/profileSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useNotificationContext } from "@/context/NotificationContext";
 import {
   Opinions,
   Favourite,
@@ -31,14 +30,14 @@ import {
 import authService from "@/appwrite/auth";
 import { logout } from "@/store/authSlice";
 import { NotFound } from "@/pages/pages";
-
+import { toast } from "sonner"
 
 const MyProfile = () => {
 
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { setNotification } = useNotificationContext();
+
 
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
@@ -57,11 +56,11 @@ const MyProfile = () => {
     staleTime: Infinity,
   })
 
-  console.log(profileData)
+
   const follow_Unfollow = async () => {
     setIsDisable(true)
     if (!authStatus) {
-      setNotification({ message: "You are not Login", type: "error" })
+      toast.error("You are not Login")
       return
     }
     const newProfile = await followUnfollow({ isFollow, slug, myProfile })
@@ -72,7 +71,7 @@ const MyProfile = () => {
   const block_Unblock = async () => {
     setIsDisable(true)
     if (!authStatus) {
-      setNotification({ message: "You are not Login", type: "error" })
+      toast.error("You are not Login")
       return
     }
     const newProfile = await blockUnblock({ isBlocked, slug, myProfile })
@@ -93,28 +92,29 @@ const MyProfile = () => {
         .then((res) => {
           console.log(JSON.parse(res.responseBody))
           if (res) {
-            setNotification({ message: "Account Deleted", type: "success" })
+            toast.success("Account Deleted")
             dispatch(logout())
             navigate(`/`)
           } else {
-            setNotification({ message: res?.error, type: "error" })
+            toast.error(res?.error)
           }
         })
         .catch((err) => {
-          console.log(err)
-          setNotification({ message: err.message, type: "error" })
+          console.log(err instanceof Error ? err.message : err)
+          toast.error(err.message)
         })
     }
 
   }
   const message = () => {
     if (!authStatus) {
-      setNotification({ message: "You are not Login", type: "error" })
+      toast.error("You are not Login")
+      navigate('/login')
       return
     }
 
     if (profileData.whoCanMsgYou === "None") {
-      setNotification({ message: "You can't Message", type: "error" })
+      toast.error("You can't Message")
       return
     } else if (profileData.whoCanMsgYou === "My Following") {
       const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
@@ -122,13 +122,13 @@ const MyProfile = () => {
       const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
 
       if (!isHeFollowsYou) {
-        setNotification({ message: "You can't Message", type: "error" })
+        toast.error("You can't Message")
         return
       }
     }
 
     if (profileData?.blockedUsers?.includes(userData?.$id)) {
-      setNotification({ message: "You are Blocked", type: "error" })
+      toast.error("You are blocked")
       return
     }
 
@@ -154,12 +154,12 @@ const MyProfile = () => {
     }
   }, [activeNav])
 
-  useEffect(()=>{
-    if(isSuccess && !isPending && profileData === null){
+  useEffect(() => {
+    if (isSuccess && !isPending && profileData === null) {
       navigate('/')
-      setNotification({ message: "Profile Not Found", type: "error" })
+      toast.error("Profile Not found")
     }
-  },[profileData])
+  }, [profileData])
 
   const navLinks = [
     { name: 'Profile Summary', visible: true },

@@ -2,9 +2,8 @@ import ReactCrop from "react-image-crop";
 import { useSelector } from "react-redux";
 import React, { useRef, useState, memo } from "react";
 import { getCanvasPreview } from "./getCanvasPreview";
-import { useNotificationContext } from "@/context/NotificationContext";
 import { centerCrop, convertToPixelCrop, makeAspectCrop } from "react-image-crop";
-import profile from "@/appwrite/profile";
+
 
 const MINIMUM_DIMENSION = 50;
 
@@ -19,7 +18,7 @@ const EditProfileImage = ({ profileImageURL, setProfileObject }) => {
     const [imageURL, setImageURL] = useState('');
     const [seePreviewBefore, setSeePreviewBefore] = useState('')
 
-    const { setNotification } = useNotificationContext();
+    
     const userData = useSelector((state) => state.auth.userData);
 
 

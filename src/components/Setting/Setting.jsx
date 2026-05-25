@@ -3,13 +3,12 @@ import { useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import profile from '../../appwrite/profile'
 import { userProfile } from '@/store/profileSlice'
-import { useNotificationContext } from '@/context/NotificationContext'
+import {toast} from "sonner"
 import { useBooleanContext } from '@/context/BooleanContext'
 
 const Setting = () => {
 
   const { register, handleSubmit } = useForm();
-  const { setNotification } = useNotificationContext()
   const myUserProfile = useSelector((state) => state.profileSlice.userProfile)
   const { isSettingOpen, setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
 
@@ -17,9 +16,9 @@ const Setting = () => {
     try {
       const updateProfile = await profile.updateEveryProfileAttribute({ ...data, profileID: myUserProfile?.$id })
       dispatch(userProfile({ userProfile: updateProfile }))
-      setNotification({ type: 'success', message: 'Setting Changed' })
+      toast.success("setting changed")
     } catch (error) {
-      setNotification({ type: 'error', message: error?.message })
+      toast.error("setting change failed")
     }
   }
 

@@ -11,7 +11,7 @@ import realTime from "../../appwrite/realTime";
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useNotificationContext } from "@/context/NotificationContext";
+import { toast } from "sonner"
 
 const Comments = () => {
 
@@ -60,8 +60,6 @@ const Comments = () => {
   const authStatus = useSelector((state) => state?.auth?.status)
   const userData = useSelector((state) => state?.auth?.userData)
 
-  const { setNotification } = useNotificationContext()
-
   const fixedReplies = 2;
   const [replyComment, setReplyComment] = useState("");
   const [activeTextArea, setactiveTextArea] = useState(null)
@@ -93,8 +91,7 @@ const Comments = () => {
   const deleteComments = async (documentid) => {
     try {
       await realTime.deleteComment(documentid);
-      setNotification({ message: "Comment Deleted", type: "success" });
-
+      toast.success("Comment Deleted")
       // remove from query cache
       queryClient.setQueryData(['comments', slug], (oldData) => {
         if (!oldData) return oldData;
@@ -108,20 +105,20 @@ const Comments = () => {
       });
     } catch (err) {
       console.log(err.message);
-      setNotification({ message: "Comment not Deleted", type: "error" });
+      toast.error("Comment not Deleted")
     }
   };
 
   const subComment = async (data) => {
 
     if (!authStatus) {
-      setNotification({ message: "Please Login", type: 'error' })
+      toast.error("Please Login")
       return
     }
     const { subComment, userId, username, commentId } = data
 
     if (subComment?.length > 100) {
-      setNotification({ message: "You can't add more than 100 replies.", type: 'error' })
+      toast.error("You can't add more than 100 replies.")
       return
     }
 
@@ -162,7 +159,7 @@ const Comments = () => {
           const profilePicURL = 'https://images.pexels.com/photos/33029806/pexels-photo-33029806.jpeg'
 
           {/* Comment card */ }
-         return <div
+          return <div
             key={comment?.$id}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-5 mb-5 shadow-md hover:shadow-xl transition-all duration-200"
           >

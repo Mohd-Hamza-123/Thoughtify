@@ -1,9 +1,9 @@
 import React from "react";
 import './ResetPassword.css'
-import { Button } from "@/components/ui/button";
+import {toast} from "sonner"
 import authService from "../appwrite/auth";
 import { useNavigate } from 'react-router-dom'
-import { useNotificationContext } from "@/context/NotificationContext";
+import { Button } from "@/components/ui/button";
 
 const ResetPassword = () => {
 
@@ -11,7 +11,7 @@ const ResetPassword = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const secret = urlParams.get('secret');
     const userId = urlParams.get('userId');
-    const { setNotification } = useNotificationContext()
+   
 
     const submit = async (e) => {
         e.preventDefault();
@@ -19,27 +19,17 @@ const ResetPassword = () => {
         const password = data.get('password');
         const confirmPassword = data.get('confirmPassword');
         if (password !== confirmPassword) {
-            setNotification({
-                message: 'Passwords do not match',
-                type: 'error'
-            })
+            toast("passwords do not match")
             return
         }
         try {
             const reset = await authService.resetPassword(userId, secret, password, confirmPassword);
-            console.log(reset)
+            // console.log(reset)
             navigate('/login');
-            setNotification({
-                message: 'Password Changed',
-                type: 'success'
-            })
-
+            toast.success('Password Changed')
         } catch (error) {
             navigate('/login');
-            setNotification({
-                message: error?.message || "something went wrong.",
-                type: 'error'
-            })
+            toast.error(error?.message)
         }
 
     }
@@ -47,8 +37,7 @@ const ResetPassword = () => {
     return (
         <div
             id="reset_Password"
-            className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        >
+            className="flex items-center justify-center w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div
                 className={`flex items-center justify-center flex-col mx-auto w-full max-w-lg p-8`}
             >

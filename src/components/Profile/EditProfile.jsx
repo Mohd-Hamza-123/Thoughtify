@@ -11,7 +11,7 @@ import EditProfileImage from "./EditProfileImage";
 import EditProfileLinks from "./EditProfileLinks";
 import EditProfileOccupation from "./EditProfileOccupation";
 import EditProfileEducationLvl from "./EditProfileEducationLvl";
-import { useNotificationContext } from "@/context/NotificationContext";
+import {toast} from "sonner"
 import { userProfile } from "@/store/profileSlice";
 
 const EditProfile = () => {
@@ -32,9 +32,6 @@ const EditProfile = () => {
   } = profileData
 
   const { profileImageURL, profileImageID } = JSON.parse(profileImage)
-
-  const { setNotification } = useNotificationContext();
-
 
   const [isUpdating, setIsUpdating] = useState(false)
   const [profileObject, setProfileObject] = useState({
@@ -107,11 +104,11 @@ const EditProfile = () => {
         }
       );
       dispatch(userProfile({ userProfile: profileData }))
-      setNotification({ message: "Profile Updated", type: "success" })
+      toast.success("Profile Updated")
       navigate(`/profile/${userData?.$id}`);
       setIsUpdating(false)
     } catch (error) {
-      setNotification({ message: "Profile not updated", type: "error" })
+      toast.error("Profile not updated")
       console.log(error)
       setIsUpdating(false)
     }

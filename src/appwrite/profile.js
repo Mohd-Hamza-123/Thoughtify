@@ -123,7 +123,7 @@ export class Profile {
     }
 
     async listProfile({ slug, name }) {
-        
+
         let QueryArr = [];
 
         if (slug) QueryArr.push(Query.equal("$id", [slug]))
@@ -168,15 +168,41 @@ export class Profile {
         }
     }
 
+    async getProfileById({ $id, query = [] }) {
+        try {
+
+            return await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                $id,
+                [
+                    Query.select(query)
+                ]
+            )
+
+        } catch (error) {
+
+            const errMessage = error instanceof Error ? error.message : error
+            console.error("profile.js : ", errMessage)
+
+            throw new Error("Profile not found", {
+                cause: error
+            })
+        }
+    }
+
     async listSingleProfile(slug) {
         try {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
-                slug)
+                slug,
+
+            )
         } catch (error) {
             const errMessage = error instanceof Error ? error.message : error
             console.error("profile.js : ", errMessage)
+
         }
     }
 

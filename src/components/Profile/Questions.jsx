@@ -8,7 +8,7 @@ import appwriteService from '../../appwrite/config'
 import { useDispatch, useSelector } from 'react-redux'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import React, { useRef, useState, useEffect, useMemo } from 'react'
-import { useNotificationContext } from '@/context/NotificationContext'
+import {toast} from "sonner"
 
 const Questions = ({ visitedUserProfile }) => {
 
@@ -18,7 +18,6 @@ const Questions = ({ visitedUserProfile }) => {
 
   const [toggle, setToggle] = useState(false)
 
-  const { setNotification } = useNotificationContext()
   const userData = useSelector((state) => state.auth.userData);
   const [filters, setFilters] = useState({userID})
   const { register, handleSubmit, reset } = useForm()
