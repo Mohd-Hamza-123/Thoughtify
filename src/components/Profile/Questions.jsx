@@ -3,7 +3,7 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { categoriesArr } from '../AskQue/Category'
+import { categoryArr } from '../AskQue/Category'
 import appwriteService from '../../appwrite/config'
 import { useDispatch, useSelector } from 'react-redux'
 import { useInfiniteQuery } from '@tanstack/react-query'
@@ -184,7 +184,7 @@ const Questions = ({ visitedUserProfile }) => {
               className="flex-1 border border-gray-300 rounded-md px-2 py-1 outline-none text-sm"
             >
               <option value={'All Category'}>All Category</option>
-              {categoriesArr?.map((category, index) => (
+              {categoryArr?.map((category, index) => (
                 <option key={category.category + index}>{category.category}</option>
               ))}
             </select>

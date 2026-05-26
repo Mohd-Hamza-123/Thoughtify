@@ -1,6 +1,7 @@
+import { useSelector } from "react-redux";
 import profile from "@/appwrite/profile";
 import appwriteService from "@/appwrite/config";
-import convertToWebPFile from "@/helpers/convert-image-into-webp";
+
 import conf from "@/conf/conf";
 
 export const updateLikeCount = async (post, myUserProfile) => {
@@ -160,53 +161,7 @@ export const updateDislikeCount = async (post, myUserProfile) => {
 
     }
 }
-export const uploadQuestionWithImage = async (
-    data,
-    userData,
-    initialPostData,
-    uploaderProfile,
-) => {
-    let imageId = null
-    const isAdmin = userData?.labels?.includes("admin") ? true : false
-    // console.log(isAdmin)
-    try {
 
-        const {
-            categoryValue,
-            thumbnailFile,
-            pollQuestion,
-            pollOptions,
-        } = initialPostData
-
-        const webpFile = await convertToWebPFile(thumbnailFile);
-        const queCreatedImage = await appwriteService.createThumbnail({ file: webpFile })
-        imageId = queCreatedImage?.$id
-
-        const imageURL = await appwriteService.getThumbnailPreview(queCreatedImage?.$id)
-        const queImage = JSON.stringify({ imageURL: imageURL, imageID: queCreatedImage?.$id })
-
-
-        const dbPost = await appwriteService.createPost({
-            ...data,
-            queImage,
-            userId: userData?.$id,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)) || [],
-            name: userData?.name,
-            trustedResponderPost: isAdmin,
-        }, categoryValue);
-
-        if (dbPost) {
-            return dbPost
-        } else {
-            if (imageId) await appwriteService.deleteThumbnail(imageId)
-            return null
-        }
-
-    } catch (error) {
-        throw new Error(error)
-    }
-}
 export const deleteQuestion = async (post) => {
     const post_id = post?.$id
     try {
@@ -304,53 +259,6 @@ export const updatePoll = async ({ post, userData, choice }) => {
         return response
     } catch (error) {
         throw new Error(error)
-    }
-
-}
-export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData, uploaderProfile) => {
-
-    try {
-        const isAdmin = userData?.labels?.includes("admin") ? true : false
-
-        const {
-            categoryValue,
-            pollOptions,
-            pollQuestion,
-        } = initialPostData
-
-        const response = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-
-        if (response.ok) {
-
-            const UnsplashRes = await response.json();
-            const ImgArrUnsplash = UnsplashRes.results
-
-            const randomIndex = Math.floor(Math.random() * 10);
-         
-            const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
-            const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null })
-
-            const dbPost = await appwriteService.createPost({
-                ...data,
-                userId: userData.$id,
-                queImage,
-                pollQuestion,
-                pollOptions: pollOptions.map((obj) => JSON.stringify(obj)),
-                name: userData?.name,
-                trustedResponderPost: isAdmin,
-            }, categoryValue);
-            return dbPost
-        }
-
-        throw new Error("Something went wrong.Please upload question with Image.")
-
-    } catch (error) {
-        const message = error instanceof Error ? error.message : error
-        console.error(message)
-        throw new Error(message, {
-            cause: error
-        })
-
     }
 
 }

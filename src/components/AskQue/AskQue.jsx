@@ -3,18 +3,20 @@ import { toast } from "sonner"
 import { Icons, RTE } from "../";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { categoriesArr } from "./Category";
+import { categoryArr } from "./Category";
 import { MAX_IMAGE_SIZE } from "@/constant";
-import useSubmitPost from "@/hooks/useSubmitPost";
+import useCreatePost from "@/hooks/useCreatePost";
+import useUpdatePost from "@/hooks/useUpdatePost";
 import appwriteService from "../../appwrite/config";
 import { Textarea as TextArea } from "../ui/textarea";
-import React, { useEffect, useState, memo } from "react";
-import { Spinner } from "../ui/spinner";
+import React, { useEffect, useState, memo, useRef } from "react";
 
 const AskQue = ({ post }) => {
 
+  const optionsRef = useRef();
   const userStatus = useSelector((state) => state.auth.status);
 
   const { handleSubmit, register, control, getValues } =
@@ -24,36 +26,20 @@ const AskQue = ({ post }) => {
         content: post?.content || "",
         pollAnswer: post?.pollAnswer || "",
         opinionsFrom: post?.opinionsFrom || "",
+        category: post?.category || "General",
+        pollQuestion: post?.pollQuestion || "",
       },
     });
 
-  const [initialPostData, setInitialPostData] = useState({
-    options: '',
-    thumbnailURL: '',
-    pollQuestion: '',
-    categoryValue: '',
-    thumbnailFile: null,
-    pollOptions: [],
-    pollTextAreaEmpty: true,
-    categoryFlag: false,
-  })
+  const [queImage, setQueImage] = useState(post?.queImage || {})
+  const [pollOptions, setPollOptions] = useState(post?.pollOptions || [])
 
+  const [file, setFile] = useState(null)
+  const [fileView, setFileView] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-
-  const {
-    options,
-    isUploading,
-    pollOptions,
-    thumbnailURL,
-    pollQuestion,
-    categoryFlag,
-    thumbnailFile,
-    categoryValue,
-    pollTextAreaEmpty
-  } = initialPostData
-
-  const { createPost, updatePost } = useSubmitPost()
+  const { createPost } = useCreatePost()
+  const { updatePost } = useUpdatePost()
 
   const selectThumbnail = async (e) => {
 
@@ -65,100 +51,66 @@ const AskQue = ({ post }) => {
       return
     }
 
-    setInitialPostData((prev) => ({ ...prev, thumbnailFile: file }))
+    setFile(file)
+
     const reader = new FileReader()
     reader.onload = () => {
-      setInitialPostData((prev) => ({ ...prev, thumbnailURL: reader.result }))
+      setFileView(reader.result)
     }
+
     reader.readAsDataURL(file)
   }
 
   useEffect(() => {
-    if (post) {
-      const { imageURL } = JSON.parse(post?.queImage)
 
-      setInitialPostData((prev) => ({
-        ...prev,
-        categoryValue: post.category,
-        thumbnailURL: imageURL?.replace("preview", "view"),
-      }))
+    if (post && post?.queImage) {
 
-      if (post?.pollQuestion && post?.pollQuestion) {
-        const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
-        setInitialPostData((prev) => ({
-          ...prev,
-          pollQuestion: post.pollQuestion,
-          pollOptions: pollOptionsArray,
-          pollTextAreaEmpty: false
-        }))
-      }
+      // console.log(post.queImage)
+
+      const { imageURL } = JSON.parse(post?.queImage || {})
+
+      setFileView(imageURL?.replace("preview", "view"))
+
     }
 
   }, [])
 
   const deleteThumbnail = async () => {
-    setInitialPostData((prev) => ({ ...prev, thumbnailURL: '', thumbnailFile: null }))
     try {
-      await appwriteService.deleteThumbnail(post?.queImageID)
+      // console.log(post.queImage)
+      const { imageID } = JSON.parse(post?.queImage)
+      const response = await appwriteService.deleteThumbnail(imageID)
+      await appwriteService.updatePost({ slug: post?.$id, payload: { queImage: null } })
     } catch (error) {
-      console.error("AskQue delete Img error.")
+      const message = error instanceof Error ? error.message : error
+      console.error(message)
     }
+    setFile(null)
+    setFileView('')
   }
 
-  const categoryDropdownTrigger = () => setInitialPostData((prev) => ({ ...prev, categoryFlag: !prev.categoryFlag }))
-
-  const selectPostCategory = (category) => {
-    categoryDropdownTrigger()
-    setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
-  }
-
-  const poolQuestionChange = (e) => {
-    if (e.target?.value !== '') {
-      setInitialPostData((prev) => ({
-        ...prev,
-        pollQuestion: e.target?.value,
-        pollTextAreaEmpty: false
-      }))
-    } else {
-      setInitialPostData((prev) => ({
-        ...prev,
-        pollQuestion: "",
-        pollTextAreaEmpty: true,
-        pollOptions: []
-      }))
-    }
-  }
-  const addPollOptions = (e) => {
+  const addPollOptions = () => {
 
     if (post) {
-      toast.error("You cannot edit Poll")
-      setInitialPostData((prev) => ({ ...prev, options: "" }))
-      return
+      toast.error("You cannot edit Poll");
+      return;
     }
 
-    for (let i = 0; i < pollOptions.length; i++) {
-      if (pollOptions[i].option === options) {
-        setInitialPostData((prev) => ({ ...prev, options: "" }))
-        return
-      }
+    if (pollOptions.length >= 4) {
+      toast("Maximum 4 options allowed");
+      optionsRef.current.value = ""
+      return;
     }
 
-    if (pollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
-      setInitialPostData((prev) => {
-        let arr = [...prev.pollOptions, { option: options, vote: 0 }]
-        return { ...prev, pollOptions: arr }
-      })
-    } else {
-      if (!pollQuestion) {
-        toast.error("Write a Poll")
-        setInitialPostData((prev) => ({ ...prev, options: "" }))
-        return
-      }
+    const option = optionsRef.current.value.trim();
+    if (!option) return
 
-      toast("maximum 4 options allowed")
-    }
-    setInitialPostData((prev) => ({ ...prev, options: "" }))
-  }
+    setPollOptions([...pollOptions, { option, vote: 0 }]);
+    optionsRef.current.value = ""
+
+  };
+
+  const deletePollOptions = (index) => setPollOptions(pollOptions.filter((_, i) => i !== index));
 
   const submit = async (data) => {
 
@@ -167,31 +119,35 @@ const AskQue = ({ post }) => {
       return
     }
 
-    if (!categoryValue) {
-      toast.error("Select a Category. Choose General If not Specific")
+    if (!data.title && !data.pollQuestion) {
+      toast.error("Title or Poll Question is required")
       return
     }
 
-    if (!data.title && !pollQuestion) {
-      toast.error("Title is Empty")
+    if (pollOptions.length > 0 && !data.pollQuestion) {
+      toast.error("Poll Question is required")
       return
     }
 
-    if (Array.isArray(pollQuestion) && pollOptions.length <= 1) {
-      toast.error("There must be 2 Poll options")
-      return
+    if (data.pollQuestion && pollOptions.length < 2) {
+      toast.error("There must be 2 Poll options");
+      return;
     }
 
-    // setInitialPostData((prev) => ({ ...prev, isUploading: true }))
     setIsLoading(true)
 
+    data.queImage = queImage
+    data.pollOptions = pollOptions.map((obj) => JSON.stringify(obj)) || []
+
     if (post) {
-      await updatePost({ post, initialPostData })
+
+      const oldPost = await appwriteService.getPost(post?.$id)
+      await updatePost({ data, file, oldPost })
+
     } else {
-      await createPost({ initialPostData, data })
+      await createPost({ data, file })
     }
 
-    // setInitialPostData((prev) => ({ ...prev, isUploading: false }))
     setIsLoading(false)
 
   }
@@ -207,7 +163,7 @@ const AskQue = ({ post }) => {
         onSubmit={handleSubmit(submit)}
         className="flex flex-col lg:flex-row gap-3 mt-4">
 
-        <section className="flex flex-col gap-6 w-full md:w-[70%]">
+        <section className="flex flex-col gap-6 w-full">
           {/* title */}
           <div className="flex flex-col gap-3">
             <label htmlFor="Que_Title" className="font-bold">Title</label>
@@ -266,25 +222,30 @@ const AskQue = ({ post }) => {
 
         </section>
 
-        <section className="flex flex-col w-full md:w-[30%]">
+        <section className="flex flex-col w-full lg:w-[40%]">
           {/* thumbnail */}
           <div className="flex flex-col justify-center items-center">
             <div id="AskQue_Thumbnail">
-              {!thumbnailURL && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
+              {!fileView && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
               </p>}
-              {thumbnailURL && <img src={thumbnailURL} alt="thumbnail" />}
+              {fileView && <img src={fileView} alt="thumbnail" />}
             </div>
 
             <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
-              <label className={`AskQue_BrowseThumbnail`} htmlFor="BrowseThumbnail">{thumbnailURL ? `Change Image` : 'Browse Image'}</label>
 
-              <Input className="hidden" type="file"
+              <label className="AskQue_BrowseThumbnail" htmlFor="BrowseThumbnail">
+                {fileView ? `Change Image` : 'Browse Image'}
+              </label>
+
+              <input className="hidden"
+                type="file"
                 name="thumbnailImage"
                 accept="image/*"
                 id="BrowseThumbnail"
-                onChange={selectThumbnail} />
+                onChange={selectThumbnail}
+              />
 
-              {thumbnailURL && <span onClick={deleteThumbnail}>Remove Image</span>}
+              {fileView && <span onClick={deleteThumbnail}>Remove Image</span>}
             </div>
           </div>
           {/* post type */}
@@ -323,24 +284,19 @@ const AskQue = ({ post }) => {
           <div id="AskQue_SelectCategory">
             <p className={`mb-3`}>Select Category : </p>
             <div className="dropdown">
-              <div className="dropdown-header flex items-center justify-between"
-                onClick={categoryDropdownTrigger}>
-                <span>{initialPostData?.categoryValue ? initialPostData?.categoryValue : `Select Item`}</span>
-                <Icons.dropdown />
-              </div>
-
-              {categoryFlag && <ul className="AskQue-dropdown-list flex flex-col">
-                {categoriesArr.map((object) => (
-                  <li
+              <select {...register("category", {
+                required: true
+              })}>
+                {categoryArr.map((object) => (
+                  <option
                     key={object.category}
-                    className="dropdown-item"
-                    onClick={() => selectPostCategory(object.category)}>
+                    value={object.category}>
                     {object.category}
-                  </li>
+                  </option>
                 ))}
-              </ul>}
-            </div>
+              </select>
 
+            </div>
           </div>
           {/* pole */}
           {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : ""}`}>
@@ -350,19 +306,21 @@ const AskQue = ({ post }) => {
               maxLength={100}
               placeholder='Ask Pole'
               className={`AskQue_Pole_TextArea`}
-              value={`${post ? post?.pollQuestion : pollQuestion}`}
-              onChange={poolQuestionChange}>
+              {...register("pollQuestion", {
+                required: false
+              })}
+            >
             </TextArea>
 
             <div className="w-full flex flex-col gap-1 mt-1">
 
               <div className="flex gap-3 h-8">
                 <input
+                  ref={optionsRef}
                   type="text"
                   className="border outline-none px-2 text-sm w-3/5"
-                  value={options}
                   placeholder="options"
-                  onChange={(e) => setInitialPostData((prev) => ({ ...prev, options: e.target?.value }))} />
+                />
                 <Button
                   type="button"
                   variant="outline"
@@ -372,24 +330,15 @@ const AskQue = ({ post }) => {
                 </Button>
               </div>
 
-              {pollOptions?.map((options, index) => {
-
-                return <div className="w-full flex justify-start items-center" key={options.option}>
-
-                  <span className={`w-3/4`} >{`${index + 1} ) ${options.option}`}</span>
-
-                  <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
-                    () => {
-                      setpollOptions((prev) => {
-                        let arr = [...prev]
-                        arr.splice(index, 1)
-                        return [...arr]
-                      })
-                    }}></i></span>
+              {pollOptions.map((options, index) => {
+                return <div className="w-full flex justify-start items-center" key={options}>
+                  <span className={`w-3/4`} >{`${index + 1} ) ${options}`}</span>
+                  {!post && <span onClick={() => deletePollOptions(index)}><Icons.trashcan /></span>}
                 </div>
               })}
+
               <span className={`text-gray-500 ${pollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-              {!(pollOptions.length >= 2) && <span className={`text - gray - 500 ${pollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+              {!(pollOptions.length >= 2) && <span className={`text-gray-500`}>Add Minimum 2 Options</span>}
             </div>
 
             <div className="flex gap-3 h-8 mt-3 items-center">

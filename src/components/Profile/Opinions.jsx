@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '../ui/button.jsx'
 import { useSelector } from 'react-redux'
 import realTime from '../../appwrite/realTime.js'
-import { categoriesArr } from '../AskQue/Category'
+import { categoryArr } from '../AskQue/Category'
 import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -127,7 +127,7 @@ const Opinions = ({ visitedProfileUserID }) => {
                 className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200'
               >
                 <option defaultChecked value={'All Category'}>All Category</option>
-                {categoriesArr?.map((category, index) => (
+                {categoryArr?.map((category, index) => (
                   <option key={category.category + index}>{category.category}</option>
                 ))}
               </select>

@@ -1,4 +1,4 @@
-const categoriesArr = [
+export const categoryArr = [
     { category: 'General', slug: '/SearchQuestion/General' },
     { category: 'Programming', slug: '/SearchQuestion/Programming' },
     { category: 'Business', slug: '/SearchQuestion/Business' },
@@ -18,7 +18,6 @@ const categoriesArr = [
     { category: 'Home & Garden', slug: '/SearchQuestion/HomeGarden' },
     { category: 'Science & Technology', slug: '/SearchQuestion/ScienceTechnology' },
     { category: 'Social Issues', slug: '/SearchQuestion/SocialIssues' },
-    {category : 'Artificial Intelligence' , slug : '/SearchQuestion/ArtificialIntelligence'},
+    { category: 'Artificial Intelligence', slug: '/SearchQuestion/ArtificialIntelligence' },
 ]
 
-export { categoriesArr }

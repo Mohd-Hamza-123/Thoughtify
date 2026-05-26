@@ -3,7 +3,7 @@ import { useSelector , useDispatch } from 'react-redux'
 import authService from '../../appwrite/auth'
 import { useNavigate } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
-import { categoriesArr } from '../AskQue/Category'
+import { categoryArr } from '../AskQue/Category'
 import { useBooleanContext } from '@/context/BooleanContext'
 import { feedbackToggle } from '@/store/booleanSlice'
 import {toast} from "sonner"
@@ -61,7 +61,7 @@ const HomeRight = ({ switchTrigger }) => {
             <div className={`HomeRight_Category my-4`}>
                 <p>Search What Suits You</p>
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
-                    {categoriesArr?.map((category) => (
+                    {categoryArr?.map((category) => (
                         <span
                             onClick={() => navigate(`/BrowseQuestion/${category?.category}/${null}`)}
                             className='cursor-pointer'

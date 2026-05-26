@@ -14,25 +14,9 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, trustedResponderPost }, category) {
+    async createPost(payload) {
         try {
-            const payload = {
-                name,
-                title,
-                status,
-                userId,
-                content,
-                queImage,
-                category,
-                pollAnswer,
-                pollOptions,
-                opinionsFrom,
-                pollQuestion,
-                profileImgID,
-                trustedResponderPost,
-            }
             // console.log(payload)
-
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
@@ -40,18 +24,19 @@ export class Service {
                 payload
             )
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-            return null
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            throw error
         }
     }
 
-    async updatePost(slug, postObject) {
-
+    async updatePost({slug, payload}) {
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
+            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, payload)
         } catch (error) {
-            console.log(error)
-            return null
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            throw error
         }
     }
 
@@ -239,14 +224,17 @@ export class Service {
             return false
         }
     }
+
     async createThumbnail({ file }) {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
         } catch (error) {
-            console.log("Appwrite service :: createThumbnail :: error", error);
-            return false
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            throw error
         }
     }
+
     async updateThumbnail(fileID, file) {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
@@ -255,12 +243,14 @@ export class Service {
             return false
         }
     }
+
     async deleteThumbnail(fileid) {
 
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-            return false
+            console.log(error instanceof Error ? error.message : error)
+            return false 
         }
     }
 

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { AskQue, Spinner, } from "../components/index";
 
 const EditAskQuestion = () => {
+  
   const [post, setPost] = useState(null);
   const { slug } = useParams();
 
@@ -16,10 +17,8 @@ const EditAskQuestion = () => {
     getPost();
   }, []);
 
-  return post ? (
-    <>
-      <AskQue post={post} />
-    </>
+  return post ? (<AskQue post={post} />
+
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">
       <Spinner />

@@ -1,18 +1,17 @@
 import "./SideBar.css";
-import { useState } from "react";
 import Icons from "../Icons";
+import { useState } from "react";
 import conf from "../../conf/conf";
+import { ProfileImage } from "../Logo";
 import { Link } from "react-router-dom";
 import authService from "../../appwrite/auth";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/authSlice";
 import React, { useRef, useEffect } from "react";
-import { DarkModeToggle } from "../";
+import { userProfile } from "@/store/profileSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
-import { ProfileImage } from "../Logo";
 import { useBooleanContext } from "@/context/BooleanContext";
-import { userProfile } from "@/store/profileSlice";
 
 const SideBar = () => {
 
@@ -74,20 +73,10 @@ const SideBar = () => {
       slug: `/EditProfile/${userData?.$id}`,
       icon: <Icons.edit />,
     },
-    // {
-    //   name: "Chat",
-    //   slug: `/chat/${userData?.$id}`,
-    //   icon: <Icons.chats />
-    // },
     {
       name: "About Creater",
       slug: `/profile/${conf.myPrivateUserID}`,
       icon: <Icons.special />,
-    },
-    {
-      name: "Trusted Responders",
-      slug: `/trustedResponders`,
-      icon: <Icons.trusted />,
     },
   ];
 

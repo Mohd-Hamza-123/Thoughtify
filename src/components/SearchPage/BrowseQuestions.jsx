@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
-import { categoriesArr } from "../AskQue/Category";
+import { categoryArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useMemo } from "react";
@@ -232,7 +232,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               <option value="All Category" defaultChecked>
                 All Category
               </option>
-              {categoriesArr?.map((category, index) => (
+              {categoryArr?.map((category, index) => (
                 <option key={category.category + index}>{category.category}</option>
               ))}
             </select>
