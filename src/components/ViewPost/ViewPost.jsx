@@ -14,7 +14,7 @@ const ViewPost = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient();
   const [post, setPost] = useState(null);
-  const { slug , filterCommentID } = useParams();
+  const { slug, filterCommentID } = useParams();
 
   const getPost = async () => {
 
@@ -110,6 +110,7 @@ const ViewPost = () => {
           </div>
         )}
       </section> */}
+      
   </div> : <div className="w-full flex justify-center items-center h-[80dvh]">
     <Spinner />
   </div>

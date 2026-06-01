@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 const ViewPostMain = ({ post }) => {
 
   const { profileImage } = post
-  // console.log("profileImage", profileImage , typeof profileImage)
 
   const isPollOpinionVisible = true;
   const [selectedChoice, setSelectedChoice] = useState(null);

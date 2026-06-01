@@ -43,24 +43,18 @@ export class Profile {
         othersCanFilterYourOpinions = null,
         othersCanFilterYourPosts = null,
         othersSeeYourFollowers_Following = null,
-        whoCanMsgYou = null,
-        trustedResponder = null,
-        bookmarks = null
+        bookmarks = []
     }) {
+
         let updateObj = {}
         if (following) updateObj.following = following
         if (blockedUsers) updateObj.blockedUsers = blockedUsers
         if (followers) updateObj.followers = followers
-
         if (othersCanFilterYourOpinions || othersCanFilterYourOpinions === false) updateObj.othersCanFilterYourOpinions = othersCanFilterYourOpinions
         if (othersCanFilterYourPosts || othersCanFilterYourPosts === false) updateObj.othersCanFilterYourPosts = othersCanFilterYourPosts
         if (othersSeeYourFollowers_Following) updateObj.othersSeeYourFollowers_Following = othersSeeYourFollowers_Following
-        if (whoCanMsgYou) updateObj.whoCanMsgYou = whoCanMsgYou
-        if (trustedResponder || trustedResponder === false) {
-            updateObj.trustedResponder = trustedResponder
-        }
         if (bookmarks) updateObj.bookmarks = bookmarks
-        console.log(bookmarks)
+      
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -69,8 +63,9 @@ export class Profile {
                 updateObj
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            throw error
         }
     }
 
@@ -138,7 +133,7 @@ export class Profile {
             return res
         } catch (error) {
             console.error("profile.js : Error in listProfile : ", error)
-            return null
+            throw error
         }
     }
 

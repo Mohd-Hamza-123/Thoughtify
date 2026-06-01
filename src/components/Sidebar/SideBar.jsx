@@ -1,5 +1,6 @@
 import "./SideBar.css";
 import Icons from "../Icons";
+import { toast } from "sonner"
 import { useState } from "react";
 import conf from "../../conf/conf";
 import { ProfileImage } from "../Logo";
@@ -59,6 +60,7 @@ const SideBar = () => {
       }
     } catch (err) {
       // show message popup
+      toast.error("logout failed")
     }
   };
 
@@ -70,7 +72,7 @@ const SideBar = () => {
     },
     {
       name: "Edit Profile",
-      slug: `/EditProfile/${userData?.$id}`,
+      slug: `/edit-profile/${userData?.$id}`,
       icon: <Icons.edit />,
     },
     {
@@ -139,8 +141,7 @@ const SideBar = () => {
             <p>LogOut</p>
           </div>
         )}
-        <hr />
-        {/* <DarkModeToggle /> */}
+      
 
       </div>
     </div>

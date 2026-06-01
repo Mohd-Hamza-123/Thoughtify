@@ -1,13 +1,13 @@
-import React, { memo, useState } from 'react';
+import { toast } from "sonner"
 import { Button } from '../ui/button';
 import { FaThumbsUp } from "react-icons/fa6";
 import { FaThumbsDown } from "react-icons/fa";
-import { bookMarkPost, updateDislikeCount, updateLikeCount } from '@/lib/posts';
+import React, { memo, useState } from 'react';
 import { FaRegBookmark } from "react-icons/fa6";
 import { userProfile } from '@/store/profileSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from "sonner"
+import { bookMarkPost, updateDislikeCount, updateLikeCount } from '@/lib/posts';
 
 const ViewPostLikeDislikeBookmark = ({ post }) => {
 
@@ -15,11 +15,12 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   const queryClient = useQueryClient()
   const authStatus = useSelector((state) => state.auth.status)
   const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
-
+  console.log(myUserProfile)
   const [likeState, setLikeState] = useState({
     like: post?.like,
     isLiked: myUserProfile?.likedQuestions?.includes(post?.$id)
   })
+
   const [disLikeState, setDisLikeState] = useState({
     dislike: post?.dislike,
     isDisliked: myUserProfile?.dislikedQuestions?.includes(post?.$id)
@@ -93,21 +94,19 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     },
   })
 
-  const { mutate: bookMarkMutate, isPending: isBookMarkPending } = useMutation({
+  const { mutate: bookMarkMutate, isPending: isBookmarkPending } = useMutation({
     mutationFn: async (data) => {
       const { postId, myUserProfile } = data
       return await bookMarkPost(postId, myUserProfile, isBookmarked)
     },
-    onMutate: (variables) => {
-
-    },
     onError: (error, variables, context) => {
-      console.log(error?.message)
+      console.error(error?.message)
+      toast.error(error.message || "Something went wrong")
     },
-    onSettled: (data, error, variables, context) => {
-      // updatePost(data?.post)
-      if (data.success) dispatch(userProfile({ userProfile: data?.payload }))
-    },
+    onSuccess: (data, variables, context) => {
+      console.log(data)
+      dispatch(userProfile({ userProfile: data }))
+    }
   })
 
 
@@ -128,7 +127,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   }
 
   const bookMark_func = () => {
-    if (isBookMarkPending) return
+    if (isBookmarkPending) return
     if (!authStatus) {
       toast.error("Please login")
       return;
@@ -167,6 +166,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       <Button
         className="flex-1"
         variant='outline'
+        disabled={isBookmarkPending}
         onClick={bookMark_func}>
         <FaRegBookmark className={`${isBookmarked ? "text-blue-500" : "font-normal"}`} />
       </Button>

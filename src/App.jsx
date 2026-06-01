@@ -20,15 +20,13 @@ import {
   SignupPage,
   ResetPassword,
   ForgotPassword,
-  EditAskQuestion
+  EditAskQuestion,
+  FindFriends,
+  SearchPage,
+  RespondersSectionPage,
+  Profile,
+  EditProfilePage
 } from "@/pages/pages"
-
-// const Profile = lazy(() => import("./pages/Profile"));
-// const FindFriends = lazy(() => import("./pages/FindFriends"));
-// const NavBar = lazy(() => import("./components/NavBar/NavBar"));
-// const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
-// const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
-// const TrustedRespondersPage = lazy(() => import("./pages/TrustedRespondersPage"));
 
 function App() {
 
@@ -126,12 +124,12 @@ function App() {
         <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
         <Route path="ask-question" Component={AskQuestion} />
         <Route path="edit-question/:slug" Component={EditAskQuestion} />
-        {/* <Route path="profile/:slug" Component={Profile} />
-          <Route path="Find-People" Component={FindFriends} />
-          
-          <Route path="EditProfile/:slug" Component={EditProfilePage} />
-          <Route path="BrowseQuestion/:category/:searchInput" Component={SearchPage} />
-          <Route path="Responders-Section" Component={RespondersSectionPage} /> */}
+        <Route path="find-people" Component={FindFriends} />
+        <Route path="browse-question/:category/:searchInput" Component={SearchPage} />
+        <Route path="responders-post" Component={RespondersSectionPage} />
+        <Route path="profile/:slug" Component={Profile} />
+        <Route path="edit-profile/:slug" Component={EditProfilePage} />
+
       </Route>
 
       <Route path="login" Component={LoginPage} />

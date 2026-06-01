@@ -1,8 +1,5 @@
-import { useSelector } from "react-redux";
 import profile from "@/appwrite/profile";
 import appwriteService from "@/appwrite/config";
-
-import conf from "@/conf/conf";
 
 export const updateLikeCount = async (post, myUserProfile) => {
 
@@ -164,16 +161,11 @@ export const updateDislikeCount = async (post, myUserProfile) => {
 
 export const deleteQuestion = async (post) => {
     const post_id = post?.$id
-    try {
-        const { imageID } = JSON.parse(post?.queImage)
-        if (imageID) await appwriteService.deleteThumbnail(imageID)
-        await appwriteService.deletePost(post_id)
-        return true
-    } catch (error) {
-        console.log(error?.message)
-        return false
-    }
+    const { imageID } = JSON.parse(post?.queImage)
+    if (imageID) await appwriteService.deleteThumbnail(imageID)
+    await appwriteService.deletePost(post_id)
 }
+
 export const updatePoll = async ({ post, userData, choice }) => {
 
     try {
@@ -264,32 +256,26 @@ export const updatePoll = async ({ post, userData, choice }) => {
 }
 export const bookMarkPost = async (postId, myUserProfile, isBookmarked) => {
     try {
+
+        console.log(postId)
+        console.log(myUserProfile)
         if (!postId || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
         if (isBookmarked) {
             let bookmarks = myUserProfile?.bookmarks
-
             bookmarks = bookmarks?.filter((bookmark) => bookmark !== postId)
             const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
-            if (updateProfile) return {
-                success: true,
-                payload: updateProfile
-            }
+            return updateProfile
         } else {
             let bookmarks = myUserProfile?.bookmarks
 
             bookmarks = [...bookmarks, postId]
             const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
-            if (updateProfile) return {
-                success: true,
-                payload: updateProfile
-            }
+            return updateProfile
         }
     } catch (error) {
-        console.log(error?.message)
-        return {
-            success: false,
-            error: process.env.NODE_ENV === "development" ? error?.message : "Something went wrong"
-        }
+        let message = error instanceof Error ? error.message : error
+        console.log(message)
+
     }
 
 }

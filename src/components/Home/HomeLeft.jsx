@@ -82,11 +82,11 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
       </Button>
     </div>
   } else if (!isPending && filteredPosts.length === 0) {
-    return <div className="w-[65%] flex flex-col items-center justify-center gap-2 ">
+    return <div className="w-[65%] flex flex-col items-center justify-center gap-2">
       <p>No Posts Found</p>
       <Button
-        variant=""
-        onClick={() => navigate('/AskQuestion')}>
+        variant="outline"
+        onClick={() => navigate('/ask-question')}>
         Create a Post
       </Button>
     </div>

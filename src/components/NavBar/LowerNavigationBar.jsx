@@ -14,8 +14,12 @@ const LowerNavigationBar = () => {
       slug: "/",
     },
     {
+      NavName: "Responders",
+      slug: "/responders-post",
+    },
+    {
       NavName: "Find People",
-      slug: "/Find-People",
+      slug: "/find-people",
     },
     {
       NavName: "Have a Query ?",
@@ -23,7 +27,7 @@ const LowerNavigationBar = () => {
     },
     {
       NavName: "Browse Question",
-      slug: `/BrowseQuestion/${null}/${null}`,
+      slug: `/browse-question/${null}/${null}`,
     },
   ];
 
