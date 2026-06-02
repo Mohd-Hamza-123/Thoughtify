@@ -1,7 +1,6 @@
-import "./EditProfile.css";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import profile from "../../appwrite/profile";
 import "react-image-crop/dist/ReactCrop.css";
 import { useNavigate } from 'react-router-dom'
@@ -9,10 +8,10 @@ import EditProfileBio from "./EditProfileBio";
 import EditProfileTags from "./EditProfileTags";
 import EditProfileImage from "./EditProfileImage";
 import EditProfileLinks from "./EditProfileLinks";
+import { userProfile } from "@/store/profileSlice";
+import { useSelector, useDispatch } from "react-redux";
 import EditProfileOccupation from "./EditProfileOccupation";
 import EditProfileEducationLvl from "./EditProfileEducationLvl";
-import {toast} from "sonner"
-import { userProfile } from "@/store/profileSlice";
 
 const EditProfile = () => {
 
@@ -20,7 +19,7 @@ const EditProfile = () => {
   const dispatch = useDispatch()
   const userData = useSelector((state) => state.auth.userData);
   const profileData = useSelector((state) => state.profileSlice.userProfile);
-  // console.log(profileData)
+  
   const {
     $id: profileId,
     bio,
@@ -118,52 +117,52 @@ const EditProfile = () => {
 
   return (
     <form
-      className="h-full relative p-3 EditProfile_form"
-      onSubmit={submit}>
-
-      <EditProfileImage
-        profileImageURL={profileImageURL}
-        setProfileObject={setProfileObject} />
-
-      <div
-        className="w-full"
-        id="EditProfile_EditContent">
-
-        <EditProfileBio
-          setProfileObject={setProfileObject}
-          bio={bio}
-        />
-
-        <EditProfileLinks
-          setProfileObject={setProfileObject}
-          links={links}
-        />
-
-        <EditProfileEducationLvl
-          educationLevel={educationLvl}
+      onSubmit={submit}
+      className="relative w-full min-h-full px-4 py-6 sm:px-6 lg:px-10"
+    >
+      <div className="mx-auto flex w-full max-w-[900px] flex-col gap-8 pb-24">
+        <EditProfileImage
+          profileImageURL={profileImageURL}
           setProfileObject={setProfileObject}
         />
 
-        <EditProfileOccupation
-          occupation={occupation}
-          setProfileObject={setProfileObject}
-        />
+        <div className="flex w-full flex-col gap-6">
+          <EditProfileBio
+            setProfileObject={setProfileObject}
+            bio={bio}
+          />
 
-        <EditProfileTags
-          interestedIn={interestedIn}
-          setProfileObject={setProfileObject}
-        />
+          <EditProfileLinks
+            setProfileObject={setProfileObject}
+            links={links}
+          />
 
+          <EditProfileEducationLvl
+            educationLevel={educationLvl}
+            setProfileObject={setProfileObject}
+          />
+
+          <EditProfileOccupation
+            occupation={occupation}
+            setProfileObject={setProfileObject}
+          />
+
+          <EditProfileTags
+            interestedIn={interestedIn}
+            setProfileObject={setProfileObject}
+          />
+        </div>
       </div>
 
-      <Button
-        type="submit"
-        id="EditProfile_submit_btn"
-        className="flex justify-center items-center">
-        {`${isUpdating ? "Updating..." : 'Update Profile'}`}
-        <i className="fa-solid fa-file-arrow-up"></i>
-      </Button>
-
+      <div className="fixed bottom-4 left-0 z-20 flex w-full justify-center px-4">
+        <Button
+          type="submit"
+          className="flex items-center justify-center gap-2 rounded-md bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-sky-600 disabled:opacity-70"
+        >
+          {`${isUpdating ? "Updating..." : "Update Profile"}`}
+          <i className="fa-solid fa-file-arrow-up"></i>
+        </Button>
+      </div>
     </form>
   );
 };

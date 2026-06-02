@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import authService from "@/appwrite/auth";
 import { logout } from "@/store/authSlice";
-import { NotFound } from "@/pages/pages";
 import { toast } from "sonner"
 
 const MyProfile = () => {
@@ -50,7 +49,7 @@ const MyProfile = () => {
   const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null);
 
-  const { data: profileData, isPending, isError, isSuccess } = useQuery({
+  const { data: profileData, isPending, isError, isSuccess , error } = useQuery({
     queryKey: ['profiles', slug],
     queryFn: () => profile.listSingleProfile(slug),
     staleTime: Infinity,
@@ -106,34 +105,6 @@ const MyProfile = () => {
     }
 
   }
-  const message = () => {
-    if (!authStatus) {
-      toast.error("You are not Login")
-      navigate('/login')
-      return
-    }
-
-    if (profileData.whoCanMsgYou === "None") {
-      toast.error("You can't Message")
-      return
-    } else if (profileData.whoCanMsgYou === "My Following") {
-      const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
-
-      const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
-
-      if (!isHeFollowsYou) {
-        toast.error("You can't Message")
-        return
-      }
-    }
-
-    if (profileData?.blockedUsers?.includes(userData?.$id)) {
-      toast.error("You are blocked")
-      return
-    }
-
-    navigate(`/ChatRoom/${userData?.$id}/${slug}`)
-  }
 
   useEffect(() => {
     setActiveNav('Profile Summary')
@@ -155,11 +126,11 @@ const MyProfile = () => {
   }, [activeNav])
 
   useEffect(() => {
-    if (isSuccess && !isPending && profileData === null) {
+    if (isError) {
       navigate('/')
       toast.error("Profile Not found")
     }
-  }, [profileData])
+  }, [error, isError])
 
   const navLinks = [
     { name: 'Profile Summary', visible: true },
@@ -205,7 +176,7 @@ const MyProfile = () => {
                     <Button
                       className="p-2 rounded-sm"
                       variant="outline"
-                      onClick={() => navigate(`/EditProfile/${slug}`)}>
+                      onClick={() => navigate(`/edit-profile/${slug}`)}>
                       Edit Profile
                     </Button>
 
@@ -232,7 +203,7 @@ const MyProfile = () => {
 
                 <div id="MyProfile_3Buttons" className="flex gap-3">
                   {!realUser && <>
-                    <Button onClick={message} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
+                    
                     <Button
                       disabled={isDisable}
                       className="p-2 rounded-sm"
@@ -293,7 +264,6 @@ const MyProfile = () => {
       </div>
     </div>
 
-  if (isError) return <NotFound />
 }
 
 
