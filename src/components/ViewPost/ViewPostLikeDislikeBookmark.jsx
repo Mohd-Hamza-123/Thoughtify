@@ -15,7 +15,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   const queryClient = useQueryClient()
   const authStatus = useSelector((state) => state.auth.status)
   const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
-  console.log(myUserProfile)
+  
   const [likeState, setLikeState] = useState({
     like: post?.like,
     isLiked: myUserProfile?.likedQuestions?.includes(post?.$id)

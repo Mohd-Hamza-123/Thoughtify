@@ -1,32 +1,32 @@
+import { toast } from "sonner"
 import { ChatRTE } from '..';
 import React, { useRef } from 'react'
 import { Button } from '../ui/button';
-import { useForm } from "react-hook-form";
 import { useSelector } from 'react-redux';
-import {toast} from "sonner"
-import appwriteService from '@/appwrite/config';
+import { useForm } from "react-hook-form";
 import realTime from '@/appwrite/realTime';
+import appwriteService from '@/appwrite/config';
+import { useQueryClient } from "@tanstack/react-query";
 
-const CommentRTE = ({slug}) => {
-
+const CommentRTE = ({ slug }) => {
+    const queryClient = useQueryClient();
     const editorRef = useRef(null)
-   
     const authStatus = useSelector((state) => state?.auth?.status)
     const userData = useSelector((state) => state?.auth?.userData)
-    const { control, handleSubmit, getValues } =
-        useForm();
+
+    const { control, handleSubmit, getValues } = useForm();
 
     const Submit = async (data) => {
 
         clearEditorContent();
 
         if (!authStatus) {
-            setNotification({ message: "Please Login", type: 'error' })
+            toast.error("Please Login")
             return
         }
 
         if (!data.commentContent) {
-            setNotification({ message: "Comment not posted", type: 'error' })
+            toast.error("Comment not posted")
             return
         }
 
@@ -34,28 +34,38 @@ const CommentRTE = ({slug}) => {
             const post = await appwriteService.getPost(slug)
 
             if (post?.opinionsFrom === 'Responders' && profileData?.trustedResponder && post?.userId !== userData?.$id) {
-                setNotification({ message: "Only Responders can Comment on this post.", type: 'error' })
+                toast.error("Only Responders can Comment on this post.")
                 return
             }
 
             // console.log(post)
             // console.log(data)
 
-            const dbCommnet = await realTime.createComment({
+            const dbComment = await realTime.createComment({
                 ...data,
                 postId: post?.$id,
-                authId: userData?.$id,
-                name : userData?.name,
+                name: userData?.name,
                 category: post?.category,
+                profile : userData.$id
             });
-            console.log(dbCommnet)
 
-            setNotification({ message: "Comment Posted", type: 'success' })
+            queryClient.setQueryData(['comments', slug], (oldData) => {
+                if (!oldData) return oldData;
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page) => ({
+                        ...page,
+                        comments: [dbComment, ...page.comments],
+                    })),
+                };
+            });
 
-            return
+
+            toast.success("Comment Posted")
+
 
             setTimeout(() => {
-                let newComment = document.getElementById(`Comment${dbCommnet?.$id}`)
+                let newComment = document.getElementById(`Comment${dbComment?.$id}`)
                 console.log(newComment)
                 if (newComment) {
                     newComment.focus()
@@ -63,43 +73,44 @@ const CommentRTE = ({slug}) => {
             }, 1000);
 
 
-            if (authId !== post?.userId) {
-                // Getting Post Uploader profile to know whether he follows you or not.
-                const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
+            // if (authId !== post?.userId) {
+            //     // Getting Post Uploader profile to know whether he follows you or not.
+            //     const getPostUploaderProfile = await profile.listProfile({ slug: post?.userId });
 
 
-                let followersArr = getPostUploaderProfile?.documents[0]?.followers
-                followersArr = followersArr?.map((obj) => JSON.parse(obj))
+            //     let followersArr = getPostUploaderProfile?.documents[0]?.followers
+            //     followersArr = followersArr?.map((obj) => JSON.parse(obj))
 
-                const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authId);
+            //     const isNotificationSend = followersArr?.findIndex((profile) => profile.profileID === authId);
 
-                // If He follows you , notification will be sent
-                if (isNotificationSend !== -1) {
-                    const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `/post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authId, postId: post.$id, userIDofReceiver: post?.userId, userProfilePic: myUserProfile?.profileImgURL });
-                }
-            }
+            //     // If He follows you , notification will be sent
+            //     if (isNotificationSend !== -1) {
+            //         const createNotification = await notification.createNotification({ content: `${name} has commented on your post.`, isRead: false, slug: `/post/${post?.$id}/${dbCommnet?.$id}`, name, userID: authId, postId: post.$id, userIDofReceiver: post?.userId, userProfilePic: myUserProfile?.profileImgURL });
+            //     }
+            // }
 
-            if (postCommentCount || postCommentCount === 0) {
+            // if (postCommentCount || postCommentCount === 0) {
 
-                appwriteService.updatePostViews(postId, post.views, postCommentCount + 1)
-                    .then((res) => {
-                        setpostCommentCount((prev) => prev + 1)
-                        console.log(res)
-                        dispatch(getInitialPost({ initialPosts: [res] }))
-                    })
-                    .catch((error) => console.log(error))
-            } else {
+            //     appwriteService.updatePostViews(postId, post.views, postCommentCount + 1)
+            //         .then((res) => {
+            //             setpostCommentCount((prev) => prev + 1)
+            //             console.log(res)
+            //             dispatch(getInitialPost({ initialPosts: [res] }))
+            //         })
+            //         .catch((error) => console.log(error))
+            // } else {
 
-                appwriteService.updatePostViews(postId, post.views, post.commentCount + 1)
-                    .then((res) => {
-                        setpostCommentCount((prev) => post.commentCount + 1)
-                        dispatch(getInitialPost({ initialPosts: [res] }))
-                    })
-                    .catch((error) => console.log(error))
-            }
+            //     appwriteService.updatePostViews(postId, post.views, post.commentCount + 1)
+            //         .then((res) => {
+            //             setpostCommentCount((prev) => post.commentCount + 1)
+            //             dispatch(getInitialPost({ initialPosts: [res] }))
+            //         })
+            //         .catch((error) => console.log(error))
+            // }
         } catch (error) {
             console.log(error)
-            setNotification({ message: "Comment not Posted", type: 'error' })
+
+            toast.error("Comment not Posted")
         }
 
     };

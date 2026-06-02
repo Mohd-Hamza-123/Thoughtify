@@ -4,7 +4,7 @@ export const categoryArr = [
     { category: 'Business', slug: '/SearchQuestion/Business' },
     { category: 'Java', slug: '/SearchQuestion/Java' },
     { category: 'NoSQL', slug: '/SearchQuestion/NoSQL' },
-    { category: 'Education', slug: '/SearchQuestion/Education' },
+    { category: 'System Design', slug: '/SearchQuestion/system-design' },
     { category: 'Database', slug: '/SearchQuestion/database' },
     { category: 'frameworks', slug: '/SearchQuestion/frameworks' },
     { category: 'Gaming', slug: '/SearchQuestion/Gaming' },

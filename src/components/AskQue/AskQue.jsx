@@ -169,7 +169,7 @@ const AskQue = ({ post }) => {
             <label htmlFor="Que_Title" className="font-bold">Title</label>
             <TextArea
               maxLength="250"
-              id="Que_Title"
+              className="h-[100px]"
               placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
               {...register("title", {
                 required: false,

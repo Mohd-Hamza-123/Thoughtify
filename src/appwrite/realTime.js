@@ -12,30 +12,18 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({
-        postId,
-        commentContent,
-        authId,
-        name,
-        category
-    }) {
+    async createComment(payload) {
         try {
             return await this.database.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteNewCollectionId,
                 ID.unique(),
-                {
-                    name,
-                    postId,
-                    authId,
-                    category,
-                    commentContent,
-                    subComment: [],
-                }
+                payload
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            console.log(message)
+            throw error
         }
     }
 
@@ -76,12 +64,17 @@ export class RealTime {
 
     async listComment(postId, lastId) {
 
-        console.log(lastId)
-        
         let QueryArr = [
             Query.limit(4),
             Query.equal("postId", [`${postId}`]),
-            Query.orderDesc("$createdAt")
+            Query.orderDesc("$createdAt"),
+            Query.select([
+                "$id",
+                "name",
+                "commentContent",
+                "subComment",
+                "profile.profileImage"
+            ])
         ]
 
         if (lastId) {
@@ -100,8 +93,9 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            console.log(message)
+            throw error
         }
     }
 

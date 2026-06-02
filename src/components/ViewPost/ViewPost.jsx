@@ -53,63 +53,6 @@ const ViewPost = () => {
       <ViewPostLikeDislikeBookmark post={post} />
     </section>
 
-    {/* <section
-        ref={viewPostRight}
-        className={`ViewPost_Related_Filter_Comment_Questions w-[30%] ${isNavbarHidden ? "" : "active"
-          }`}>
-        <div id="ViewPost_RelatedQuestions">
-          <p>{post?.category} Related :</p>
-          {!isRelatedQueriesExist && (
-            <span className="">
-              No Related Post is Available of {post?.category}
-            </span>
-          )}
-
-          {isRelatedQueriesExist && (
-            <ul>
-              {relatedQueriesArr?.map((QuestionObj, index) => {
-                return (
-                  <li
-                    key={QuestionObj?.$id}
-                    onClick={() => {
-                      navigateToRelatedPost(QuestionObj?.$id);
-                      if (viewPostLeft.current && viewPostRight.current) {
-                        if (!window.screen.width <= 500) return;
-                        viewPostLeft.current.classList.toggle("none");
-                      }
-                    }}
-                    className="cursor-pointer"
-                  >
-                    {QuestionObj?.title
-                      ? QuestionObj?.title
-                      : QuestionObj?.pollQuestion}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-
-        {filterCommentID !== "null" && filteredComment && (
-          <div className={`ViewPost_Filtered_Comments`}>
-            <p>Comment :</p>
-            <div>
-              <div className="flex justify-between ViewPost_Filtered_Comments_Name_Delete">
-                <p>{filteredComment?.name}</p>
-                {filteredComment?.authid === userData?.$id && (
-                  <i
-                    onClick={() => {
-                      deleteComments(filterCommentID);
-                    }}
-                    className="fa-solid fa-trash cursor-pointer"
-                  ></i>
-                )}
-              </div>
-              <article>{parse(filteredComment?.commentContent)}</article>
-            </div>
-          </div>
-        )}
-      </section> */}
       
   </div> : <div className="w-full flex justify-center items-center h-[80dvh]">
     <Spinner />
