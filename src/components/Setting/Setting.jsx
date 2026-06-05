@@ -12,7 +12,7 @@ const Setting = () => {
   const myProfile = useSelector((state) => state.profileSlice.userProfile)
   const { isSettingOpen, setIsSettingOpen, isOverlayVisible, setIsOverlayVisible } = useBooleanContext()
 
-  console.log(myProfile)
+  // console.log(myProfile)
 
   const submit = async (data) => {
     try {

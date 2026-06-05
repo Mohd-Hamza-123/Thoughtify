@@ -32,7 +32,7 @@ const ViewPostHeader = ({ post }) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient()
 
-  
+
     const deleteMutation = useMutation({
         mutationFn: () => deleteQuestion(post),
 
@@ -87,7 +87,7 @@ const ViewPostHeader = ({ post }) => {
             </div>
 
             {/* Right: actions for author */}
-            {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
+            {(isAuthor || userData.email === conf.myPrivateUserID) && (
                 <ul className="flex gap-3 items-center">
                     <AlertDialog open={open} onOpenChange={setOpen}>
                         <AlertDialogTrigger>
@@ -107,7 +107,7 @@ const ViewPostHeader = ({ post }) => {
                                     disabled={deleteMutation.isPending}
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        if (isAuthor) deleteMutation.mutate();
+                                        if (isAuthor || userData.email === conf.myPrivateUserID) deleteMutation.mutate();
                                     }}
                                 >
                                     {deleteMutation.isPending ? (

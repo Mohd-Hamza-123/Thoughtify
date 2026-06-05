@@ -21,6 +21,7 @@ const Comments = () => {
   const authStatus = useSelector((state) => state?.auth?.status)
   const userData = useSelector((state) => state?.auth?.userData)
 
+  const textAreaRef = useRef(null)
 
   const getComments = useCallback(async (object) => {
 
@@ -43,6 +44,7 @@ const Comments = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useInfiniteQuery({
     queryKey: ['comments', slug],
     queryFn: getComments,
@@ -54,20 +56,15 @@ const Comments = () => {
 
   })
 
-  console.log(data)
+  // console.log(data)
 
   const filteredComments = useMemo(() => {
     const comment = data?.pages?.flatMap(page => page.comments) ?? []
     return Array.from(new Map(comment.map(c => [c.$id, c])).values())
   }, [data?.pages])
 
-  // console.log(comments)
 
-  const fixedReplies = 2;
-  const [replyComment, setReplyComment] = useState("");
   const [activeTextArea, setactiveTextArea] = useState(null)
-  const [id_For_Five_Mul, setid_For_Five_Mul] = useState(null)
-  const [loadSubComments_Five_Mul, setloadSubComments_Five_Mul] = useState(2)
 
   let spinnerRef = useRef();
 
@@ -113,47 +110,65 @@ const Comments = () => {
     }
   };
 
-  const subComment = async (data) => {
+  const subComment = async (e, commentId, commentArray) => {
+
+    e.preventDefault()
 
     if (!authStatus) {
       toast.error("Please Login")
       return
     }
-
-    const { subComment, userId, username, commentId } = data
-
-    if (subComment?.length > 100) {
-      toast.error("You can't add more than 100 replies.")
+    if (!textAreaRef.current) {
+      toast.error("Please enter comment")
       return
     }
 
+    const value = textAreaRef.current.value
+
+
+    // if (value.length > 100) {
+    //   toast.error("You can't add more than 100 replies.")
+    //   return
+    // }
+
     const newPayload = JSON.stringify({
-      comment: replyComment,
-      userId,
-      username,
+      comment: value,
+      userId: userData.$id,
+      username: userData.name,
     })
 
-    subComment.push(newPayload)
+    console.log(newPayload)
+
+    const newCommentArray = commentArray.concat(newPayload)
 
     const updatedComment = await realTime.updateComment({
       commentId,
-      subComment,
+      subComment: newCommentArray,
     })
-    // console.log(updatedComment)
 
-    setReplyComment((prev) => '')
+    console.log(updatedComment)
+
+    textAreaRef.current.value = ''
+
+    refetch()
   }
 
-  const loadMoreSubComments = (comment) => {
-    setid_For_Five_Mul((prev) => comment?.$id)
-    const currentCommentID = comment?.$id;
-    if (currentCommentID !== id_For_Five_Mul && id_For_Five_Mul !== null) {
-      setloadSubComments_Five_Mul((prev) => fixedReplies + 2)
-    }
-    if (loadSubComments_Five_Mul >= comment?.subComment?.length) return
+  const deleteSubComment = async (index, commentId, subComment) => {
 
-    setloadSubComments_Five_Mul((prev) => prev + 3)
+    const newCommentArray = subComment.filter((_, i) => i !== index);
+
+    const updatedComment = await realTime.updateComment({
+      commentId,
+      subComment: newCommentArray,
+    });
+
+    console.log(updatedComment);
+
+    refetch();
+
+    toast.success("Comment Deleted");
   }
+
 
   return (
     <div className="w-full md:w-[70%] px-3 py-3">
@@ -177,10 +192,10 @@ const Comments = () => {
 
 
           {/* Date */}
-          <div className="my-2 text-xs text-slate-500">
+          <span className="my-2 text-xs text-slate-500">
             {new Date(comment?.$createdAt).toLocaleString()}
-          </div>
-          
+          </span>
+
           <section>
             {/* Header */}
             <div className="flex justify-between items-start">
@@ -227,33 +242,33 @@ const Comments = () => {
           </div>
 
           {/* Reply textarea */}
-          <div className={`${activeTextArea === comment?.$id ? "" : "hidden"} mt-3`}>
+          <form
+            className={`${activeTextArea === comment?.$id ? "" : "hidden"} mt-3`}
+            onSubmit={(e) => subComment(e, comment?.$id, comment?.subComment)}
+          >
             <textarea
               id={`id_${comment?.$id}`}
               rows="4"
-              value={replyComment}
+              ref={textAreaRef}
               className="w-full resize-y min-h-[72px] max-h-[260px] p-3 border rounded-lg bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 text-sm shadow-inner focus:ring-2 focus:ring-indigo-400 focus:outline-none transition"
-              onChange={(e) => setReplyComment(e.target.value)}
+
             ></textarea>
 
             <Button
-              onClick={() =>
-                subComment({
-                  commentId: comment?.$id,
-                  subComment: comment?.subComment,
-                  userId: userData?.$id,
-                  username: name,
-                })
-              }
               className="mt-2 px-5 py-2 text-sm rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white font-medium shadow transition"
               type="submit"
+
             >
               Submit
             </Button>
-          </div>
+          </form>
 
           {/* Sub comments */}
-          <SubComment subComment={comment?.subComment} />
+          <SubComment
+            subComment={comment?.subComment}
+            deleteSubComment={deleteSubComment}
+            commentId={comment?.$id}
+          />
 
         </div>
 

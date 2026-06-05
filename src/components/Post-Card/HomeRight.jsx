@@ -14,7 +14,7 @@ const HomeRight = ({ switchTrigger }) => {
     const dispatch = useDispatch()
     const userStatus = useSelector((state) => state.auth.status)
     const userData = useSelector((state) => state.auth.userData)
-   
+
     const [isEmailVerified, setIsEmailVerified] = useState(userData?.emailVerification || false);
 
     const { setIsSettingOpen, setIsOverlayVisible } = useBooleanContext()
@@ -61,9 +61,10 @@ const HomeRight = ({ switchTrigger }) => {
                 <div className='flex flex-wrap gap-y-2 gap-x-3'>
                     {categoryArr?.map((category) => (
                         <span
-                            onClick={() => navigate(`/BrowseQuestion/${category?.category}/${null}`)}
+                            onClick={() => navigate(`/browse-question/${category?.category}/${null}`)}
+                            key={category.category}
                             className='cursor-pointer'
-                            key={category?.category}>
+                        >
                             {category.category}
                         </span>
                     ))}
