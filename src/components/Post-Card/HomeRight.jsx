@@ -1,26 +1,26 @@
 import './HomeRight.css'
-import { useSelector , useDispatch } from 'react-redux'
+import { toast } from "sonner"
 import authService from '../../appwrite/auth'
 import { useNavigate } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
 import { categoryArr } from '../AskQue/Category'
-import { useBooleanContext } from '@/context/BooleanContext'
+import React, { useState, useEffect } from 'react'
 import { feedbackToggle } from '@/store/booleanSlice'
-import {toast} from "sonner"
+import { useSelector, useDispatch } from 'react-redux'
+import { useBooleanContext } from '@/context/BooleanContext'
 
 const HomeRight = ({ switchTrigger }) => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch()
-    const userAuthStatus = useSelector((state) => state.auth.status)
-
+    const userStatus = useSelector((state) => state.auth.status)
     const userData = useSelector((state) => state.auth.userData)
-    const [isEmailVerified, setisEmailVerified] = useState(userData?.emailVerification || false);
+   
+    const [isEmailVerified, setIsEmailVerified] = useState(userData?.emailVerification || false);
 
     const { setIsSettingOpen, setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
-        if (userData) setisEmailVerified(userData?.emailVerification || false)
+        if (userData) setIsEmailVerified(userData?.emailVerification || false)
     }, [userData])
 
     const verifyEmail = async () => {
@@ -28,27 +28,25 @@ const HomeRight = ({ switchTrigger }) => {
             const getVerificationDetails = await authService.emailVerification();
 
             if (getVerificationDetails) {
-              
+
                 toast.success("Message sent! Check your G-mail inbox to verify")
 
             } else {
-             
+
                 toast.error("Verification Failed. Try again later")
             }
 
         } catch (error) {
-          
+
             toast.error("Verification Failed. Try again later")
             console.log(error instanceof Error ? error.message : error)
         }
 
     }
-    const feedbackPopUp = () => {
-        dispatch(feedbackToggle())
-    }
+    const feedbackPopUp = () => dispatch(feedbackToggle())
 
     const settingPopUp = () => {
-        if (!userAuthStatus) {
+        if (!userStatus) {
             toast.error("You are not login")
             return
         }
@@ -73,9 +71,9 @@ const HomeRight = ({ switchTrigger }) => {
             </div>
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
-                {userAuthStatus && <span className="cursor-pointer" onClick={feedbackPopUp}>Feedback</span>}
+                {userStatus && <span className="cursor-pointer" onClick={feedbackPopUp}>Feedback</span>}
                 <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
-                {(!isEmailVerified && userAuthStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}
+                {(!isEmailVerified && userStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}
             </div>
         </section>
     )

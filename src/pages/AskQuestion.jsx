@@ -1,5 +1,4 @@
 import React from "react";
-import "./AskQuestion.css";
 import { AskQue } from "../components/index";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 

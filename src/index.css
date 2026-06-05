@@ -8,16 +8,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    list-style: none;
 }
 
 html,
 body {
-    /* background-color: #FFFFFF; */
-    height: 100dvh;
+    min-height: 100dvh;
     width: 100dvw;
     overflow-x: hidden;
-    /* transition: background-color 1s ease !important; */
 }
 
 #root {
@@ -68,7 +65,7 @@ body::-webkit-scrollbar {
     border: 1px solid rgba(38, 37, 37, 0.171);
 }
 
-@media screen and(max-width: 480px) {
+@media screen and (max-width: 480px) {
     .tag-style {
         padding: 3px 4px !important;
     }

@@ -1,10 +1,12 @@
-import "./Home.css";
+
 import { useState } from "react";
-import { usePost } from "@/hooks/usePost";
-import { HomeLeft, HomeRight, Trigger, Setting, Feedback , Spinner } from "../components/index";
+import { HomeLeft, HomeRight, Trigger, Setting, Feedback } from "../components/index";
+import { useSelector } from 'react-redux'
+
 
 const Home = () => {
 
+   const myProfile = useSelector((state) => state.profileSlice.userProfile)
   const [switchTrigger, setSwitchTrigger] = useState(true);
 
   return (
@@ -14,7 +16,7 @@ const Home = () => {
         <HomeLeft switchTrigger={switchTrigger} isTrustedResponder={false} />
         <HomeRight switchTrigger={switchTrigger} />
       </div>
-      <Setting />
+      {myProfile && <Setting />}
       <Feedback />
     </div>
   );

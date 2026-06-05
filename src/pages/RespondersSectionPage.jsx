@@ -1,7 +1,7 @@
-import { HomeLeft } from "../components";
-import { HomeRight } from "../components";
 import React, { useState } from "react";
 import { Trigger } from "../components";
+import { HomeLeft } from "../components";
+import { HomeRight } from "../components";
 
 const RespondersSectionPage = () => {
 

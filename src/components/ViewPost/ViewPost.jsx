@@ -48,7 +48,7 @@ const ViewPost = () => {
     ref={ViewPostRef}
     className="w-full relative flex">
 
-    <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-hidden">
+    <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-x-hidden">
       <ViewPostMainContent post={post} />
       <ViewPostLikeDislikeBookmark post={post} />
     </section>

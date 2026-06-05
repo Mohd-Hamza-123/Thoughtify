@@ -67,42 +67,59 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     );
   }, []);
 
-  if (isPending) return <div className={`w-full h-[75dvh] md:w-[65%] flex justify-center items-center ${switchTrigger === true ? "flex" : "hidden"}`}>
-    <Spinner />
-  </div>
+  if (isPending)
+    return (
+      <div
+        className={`w-full min-h-[75dvh] md:w-[65%] flex justify-center items-center ${switchTrigger === true ? "flex" : "hidden"
+          }`}
+      >
+        <Spinner />
+      </div>
+    );
 
   if (isError) {
-    return <div className={`w-[65%] flex flex-col items-center justify-center gap-2 ${switchTrigger === true ? "block" : "hidden"}`}>
-      <span>{checkAppWriteError(error?.message)}</span>
-      {!error?.message && <p className="select-none dark:text-white font-bold">Something went wrong !</p>}
-      <Button
-        variant="destructive"
-        onClick={() => location.reload()}>
-        Reload
-      </Button>
-    </div>
+    return (
+      <div
+        className={`w-full min-h-[75dvh] px-3 md:px-0 md:w-[65%] flex flex-col items-center justify-center gap-2 text-center ${switchTrigger === true ? "flex" : "hidden"
+          }`}
+      >
+        <span>{checkAppWriteError(error?.message)}</span>
+
+        {!error?.message && (
+          <p className="select-none dark:text-white font-bold">
+            Something went wrong !
+          </p>
+        )}
+
+        <Button variant="destructive" onClick={() => location.reload()}>
+          Reload
+        </Button>
+      </div>
+    );
   } else if (!isPending && filteredPosts.length === 0) {
-    return <div className="w-[65%] flex flex-col items-center justify-center gap-2">
-      <p>No Posts Found</p>
-      <Button
-        variant="outline"
-        onClick={() => navigate('/ask-question')}>
-        Create a Post
-      </Button>
-    </div>
-  }
-  else
+    return (
+      <div className="w-full min-h-[75dvh] px-3 md:px-0 md:w-[65%] flex flex-col items-center justify-center gap-2 text-center">
+        <p>No Posts Found</p>
+
+        <Button variant="outline" onClick={() => navigate("/ask-question")}>
+          Create a Post
+        </Button>
+      </div>
+    );
+  } else
     return (
       <div
         ref={homeLeft}
-        className={`w-full flex-col md:w-[65%] flex md:flex-col gap-4 md:block ${switchTrigger === true ? "block" : "hidden"}`}>
+        className={`w-full md:w-[65%] flex flex-col gap-4 px-3 md:px-0 ${switchTrigger === true ? "flex" : "hidden"
+          }`}
+      >
         {filteredPosts?.map(renderPostCard)}
+
         {hasNextPage && (
           <div ref={spinnerRef} className="flex justify-center py-4">
             <Spinner />
           </div>
         )}
-
       </div>
     );
 };

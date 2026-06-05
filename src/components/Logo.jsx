@@ -24,7 +24,7 @@ export default Logo;
 export const ThoughtifyLogo = ({ className = '' }) => {
 
   return <img
-    className={`h-[50px] filter brightness-200 dark:invert ${className}`}
+    className={`h-[50px] filter brightness-200 ${className}`}
     src="/thoughtify.webp"
     alt="Logo"
   />

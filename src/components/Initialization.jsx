@@ -41,10 +41,8 @@ const Initialization = ({ children }) => {
                 dispatch(homePageLoading({ homePageLoading: false }))
                 return
             }
-
             dispatch(login({ userData }));
             await getMyProfile(userData)
-
         } catch (error) {
             console.error("Initialization.jsx : Error in loggedIn ", error)
             dispatch(logout())

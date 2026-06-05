@@ -36,7 +36,7 @@ const LowerNavigationBar = () => {
     <nav
       ref={lowerNavBarRef}
       id="LowerNavigationBar"
-      className={`${isOpen ? "lightdark" : ""}`}>
+      className={`hidden md:flex bg-bluePrimary ${isOpen ? "lightdark" : ""}`}>
       {arr.map((nav) => (
         <NavLink
           onClick={() => {
@@ -45,7 +45,7 @@ const LowerNavigationBar = () => {
           to={nav.slug}
           key={nav.NavName}
           className={({ isActive }) => `${isActive ? "active" : ""} relative`}>
-          <li>{nav.NavName}</li>
+          <li className="list-none">{nav.NavName}</li>
           <div className="bg-white rounded-lg h-[2px] mx-auto absolute bottom-[2px] left-0 right-0"></div>
         </NavLink>
       ))}

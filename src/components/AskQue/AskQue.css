@@ -76,10 +76,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#AskQue_PostType.darkMode {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
 
 #AskQue_PostType p {
     font-weight: bold;
@@ -102,11 +98,6 @@
     padding: 10px;
     max-width: 100%;
 
-}
-
-#AskQue_SelectCategory.darkMode {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 #AskQue_SelectCategory p {
@@ -138,12 +129,6 @@
     overflow-y: scroll;
 }
 
-.AskQue-dropdown-list.darkMode {
-    background: black;
-    color: white;
-    border: 1px dashed #ffffffa4;
-    border-top: none;
-}
 
 .dropdown-item {
     padding: 4px 4px 4px 11px;
@@ -153,9 +138,6 @@
     font-size: 15px;
     transition: background-color 0.3 ease;
 }
-
-
-
 
 #AskQue_Pole {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

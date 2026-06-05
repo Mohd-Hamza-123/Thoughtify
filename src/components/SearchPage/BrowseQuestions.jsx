@@ -7,7 +7,7 @@ import { categoryArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React, { useEffect, useRef, useMemo } from "react";
-import {toast} from "sonner"
+
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
@@ -101,10 +101,10 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
 
   return (
-    <div className="flex md:flex-row flex-col gap-2 w-screen px-2 mt-2 h-[80dvh]">
+    <div className="flex md:flex-row flex-col gap-2 px-2 mt-2 h-[79dvh]">
       {switchTrigger && <form
         ref={BrowseQuestionLeft}
-        className="w-full md:w-[27%] flex flex-col gap-6 p-5 bg-white rounded-xl shadow-sm h-full overflow-y-auto"
+        className="w-full md:w-[30%] flex flex-col gap-6 p-5 bg-white rounded-xl shadow-sm h-full overflow-y-auto"
         onSubmit={handleSubmit(submit)}>
         {/* Buttons */}
         <div className="flex justify-between items-center gap-3">

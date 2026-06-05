@@ -30,7 +30,6 @@
     .SideBar_Profile_Name p {
         font-size: 18px;
         cursor: pointer;
-        font-family: 'Gabarito', sans-serif;
     }
 
     .SideBarContent {
@@ -40,7 +39,6 @@
 
     .SideBarContent p {
         font-size: 16px !important;
-        font-family: 'Gabarito', sans-serif;
         font-weight: 500 !important;
     }
 }
@@ -54,10 +52,6 @@
     height: 1px;
     background-color: rgba(0, 0, 0, 0.268);
     border: none;
-}
-
-body.darkMode .SideBar hr {
-    background-color: rgba(255, 255, 255, 0.488);
 }
 
 .SideBarContent {
@@ -106,10 +100,6 @@ body.darkMode .SideBarContent svg {
 
 .SideBar_NightDayIcon_Div>div:nth-child(1) {
     color: rgb(0, 0, 0);
-}
-
-body.darkMode .SideBar_NightDayIcon_Div>div:nth-child(1) {
-    color: rgb(255, 255, 255);
 }
 
 .SideBar_NightDayIcon_Div i {

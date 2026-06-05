@@ -1,5 +1,4 @@
 import "./MyProfile.css";
-import conf from "../../conf/conf";
 import { Button } from "../ui/button";
 import profile from "../../appwrite/profile";
 import { useQuery } from "@tanstack/react-query";
@@ -77,12 +76,6 @@ const MyProfile = () => {
     if (newProfile?.success) dispatch(userProfile({ userProfile: newProfile?.payload }))
     else setNotification({ message: newProfile?.error, type: "error" })
     setIsDisable(false)
-  }
-  const promote_Demote = async () => {
-    profile.updateEveryProfileAttribute({ trustedResponder: !profileData?.trustedResponder, profileID: profileData?.$id })
-      .then((res) => {
-        // setProfileData((prev) => res)
-      })
   }
   const deleteUserAccount = async () => {
 
@@ -215,13 +208,7 @@ const MyProfile = () => {
                       onClick={block_Unblock}
                     >{isBlocked ? 'UnBlock' : 'Block'}</Button>
                   </>}
-                  {(userData?.$id === conf.myPrivateUserID) && (
-                    <Button
-                      className="p-2 rounded-sm"
-                      onClick={() => promote_Demote()}>
-                      {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
-                    </Button>
-                  )}
+               
                 </div>
 
               </div>

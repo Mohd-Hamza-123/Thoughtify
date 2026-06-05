@@ -18,7 +18,6 @@ import Questions from './Profile/Questions'
 import Opinions from './Profile/Opinions'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
-import PersonalChat from "./Chat/PersonalChat";
 import HomeRight from "./Post-Card/HomeRight";
 import BrowseQuestions from "./SearchPage/BrowseQuestions";
 import Feedback from "./Feedback/Feedback";
@@ -39,5 +38,5 @@ import Setting from "./Setting/Setting";
 import UnderlineAnimate from "./UnderlineAnimate";
 import SkeletonImage from "./Loader/ImageSkeleton";
 
-export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
+export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
 

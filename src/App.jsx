@@ -1,5 +1,6 @@
 import "./App.css";
 import { toast } from "sonner"
+import { NavBar } from "./components";
 import profile from "./appwrite/profile";
 import authService from "./appwrite/auth";
 import { login } from "./store/authSlice";
@@ -10,7 +11,6 @@ import Overlay from "./components/Overlay/Overlay";
 import { AskProvider } from "./context/AskContext";
 import notification from "./appwrite/notification";
 import { Home, ViewPostPage, } from "./pages/pages";
-import { NavBar } from "./components";
 import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
 import {

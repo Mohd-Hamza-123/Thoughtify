@@ -5,14 +5,14 @@ import { UpperNavigationBar, LowerNavigationBar, SideBar } from "../";
 const NavBar = () => {
 
   return (
-    <>
-      <header className="z-5 relative flex flex-col gap-3 overflow-hidden">
+    <div className="overflow-y-scroll overflow-x-hidden">
+      <header className="z-5 relative flex flex-col gap-3">
         <UpperNavigationBar />
         <LowerNavigationBar />
       </header>
       <SideBar />
       <Outlet />
-    </>
+    </div>
   );
 };
 

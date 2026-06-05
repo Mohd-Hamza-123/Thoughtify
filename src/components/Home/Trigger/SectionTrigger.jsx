@@ -8,7 +8,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from '@/components/ui/button';
 import { Icons } from '@/components';
 
 const SectionTrigger = ({ className }) => {
@@ -19,26 +18,26 @@ const SectionTrigger = ({ className }) => {
             slug: "/",
         },
         {
-            NavName: "Responders Section",
-            slug: "/Responders-Section",
+            NavName: "Responders",
+            slug: "/responders-post",
         },
         {
             NavName: "Find People",
-            slug: "/Find-People",
+            slug: "/find-people",
         },
         {
             NavName: "Have a Query ?",
-            slug: `/AskQuestion`,
+            slug: `/ask-question`,
         },
         {
             NavName: "Browse Question",
-            slug: `/BrowseQuestion/${null}/${null}`,
+            slug: `/browse-question/${null}/${null}`,
         },
     ];
 
     return (
         <DropdownMenu className={`${className}`}>
-            <DropdownMenuTrigger className='md:hidden w-10 text-slate-600 border rounded-sm flex justify-center items-center'>
+            <DropdownMenuTrigger className='md:hidden w-10 text-slate-600 border rounded-sm flex justify-center items-center p-2'>
                 <Icons.dropdownleft className="text-lg" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="mr-4">
