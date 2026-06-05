@@ -176,6 +176,8 @@ const Comments = () => {
 
       {filteredComments.map((comment) => {
 
+        console.log(comment)
+
         let profilePicURL = ''
         try {
           const parsed = JSON.parse(comment.profile.profileImage)
@@ -199,7 +201,7 @@ const Comments = () => {
           <section>
             {/* Header */}
             <div className="flex justify-between items-start">
-              <Link to={`/profile/${comment?.authId}`} id={`Comment${comment?.$id}`}>
+              <Link to={`/profile/${comment?.profile?.$id}`} id={`Comment${comment?.$id}`}>
                 <div className="flex gap-3 items-center cursor-pointer">
                   <img
                     className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform"
