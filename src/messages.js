@@ -28,7 +28,7 @@ export const checkAppWriteError = (errMsg) => {
             return errorObject?.message
         }
     }).filter(Boolean)
-    console.log(error)
+    // console.log(error)
     return error?.length > 0 ? error[0] : "Something went wrong"
 }
 

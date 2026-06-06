@@ -144,6 +144,21 @@ export class Service {
         }
     }
 
+    async getTotalPosts(userId) {
+        try {
+            const result = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                [Query.equal("userId", [userId]),Query.limit(1)]
+            )
+            return result.total
+        } catch (error) {
+            console.error(error instanceof Error ? error.message : error)
+            throw error
+        }
+    }
+
+
     async getPostsWithQueries({
         To,
         From,
@@ -187,7 +202,6 @@ export class Service {
             QueryArr.push(Query.orderDesc("$createdAt"))
         }
 
-        console.log(Viewed === "MostViewed")
         if (Viewed === 'MostViewed') {
             QueryArr.push(Query.orderDesc("views"))
         }
@@ -224,14 +238,12 @@ export class Service {
         }
     }
 
-
     async getPostWithBookmark(postID) {
         try {
-            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID
-            )
+            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID)
         } catch (error) {
             console.log("Appwrite service :: getPosts :: error", error);
-            return false
+            throw error
         }
     }
 

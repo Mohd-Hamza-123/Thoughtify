@@ -1,11 +1,16 @@
 import "./MyProfile.css";
+import { toast } from "sonner"
 import { Button } from "../ui/button";
+import authService from "@/appwrite/auth";
+import { logout } from "@/store/authSlice";
 import profile from "../../appwrite/profile";
+import { useTotalPost } from "@/hooks/usePost";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { userProfile } from "@/store/profileSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { followUnfollow, blockUnblock } from "@/lib/profile";
 import {
   Opinions,
   Favourite,
@@ -15,7 +20,6 @@ import {
   ProfileSummary,
   Icons,
 } from "../index";
-import { followUnfollow, blockUnblock } from "@/lib/profile";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,17 +30,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { toast } from "sonner"
-import authService from "@/appwrite/auth";
-import { logout } from "@/store/authSlice";
+
 
 const MyProfile = () => {
 
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
   const myProfile = useSelector((state) => state?.profileSlice?.userProfile);
@@ -48,7 +48,11 @@ const MyProfile = () => {
   const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null);
 
-  const { data: profileData, isPending, isError, isSuccess , error } = useQuery({
+  
+  const {data : totalPost} = useTotalPost()
+
+
+  const { data: profileData, isPending, isError, isSuccess, error } = useQuery({
     queryKey: ['profiles', slug],
     queryFn: () => profile.listSingleProfile(slug),
     staleTime: Infinity,
@@ -138,7 +142,7 @@ const MyProfile = () => {
     { label: "Following", value: profileData?.following?.length },
     { label: "Verified", value: userData?.emailVerification ? "Yes" : "No" },
     { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
-    { label: "Posts", value: 0 }
+    { label: "Posts", value: totalPost }
   ]
 
   if (!isPending && isSuccess && profileData) {
@@ -147,95 +151,133 @@ const MyProfile = () => {
       <div className="bg-gray-100 dark:bg-black py-4 w-full min-h-screen">
         <div className="w-[95%] md:w-[85%] mx-auto">
 
-          <section id="MyProfile_Header" className="w-full flex">
+          <section
+            id="MyProfile_Header"
+            className="w-full rounded-2xl bg-white p-4 shadow-sm"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              {/* Left Profile Info */}
+              <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left lg:w-2/3">
+                <figure className="flex shrink-0 justify-center">
+                  <img
+                    src={profileImageURL?.replace("/preview", "/view")}
+                    alt="profileImage"
+                    className="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+                  />
+                </figure>
 
-            <div className="w-2/3 flex">
-              <figure
-                className="w-1/4 h-full flex justify-center items-center">
-                <img src={profileImageURL?.replace("/preview", "/view")} alt="profileImage" className="rounded-full h-[80%]" />
-              </figure>
+                <div className="flex w-full flex-col items-center gap-2 sm:items-start">
+                  <h6 className="flex items-center gap-1 text-xl font-bold text-gray-900">
+                    <span>{profileData?.name}</span>
+                    {profileData?.verified && <Icons.verified />}
+                  </h6>
 
-              <div
-                id="MyProfile_Name_Div"
-                className="w-3/4 h-full flex flex-col gap-1 justify-center items-start">
+                  <p className="max-w-xl text-sm leading-6 text-gray-500">
+                    {profileData?.bio ||
+                      "No bio added yet. Share something about yourself!"}
+                  </p>
 
-                <h6 className="text-lg font-bold text-gray-800 dark:text-white flex gap-1 items-center">
-                  <span>{profileData?.name}</span>
-                  {profileData?.verified && <Icons.verified />}
-                </h6>
-                <p className="text-gray-500 text-sm">{profileData?.bio || "No bio added yet. Share something about yourself!"}</p>
-                {realUser && (
-                  <div className="flex gap-1 items-center">
-                    <Button
-                      className="p-2 rounded-sm"
-                      variant="outline"
-                      onClick={() => navigate(`/edit-profile/${slug}`)}>
-                      Edit Profile
-                    </Button>
+                  {realUser && (
+                    <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
+                      <Button
+                        className="rounded-lg px-4 py-2"
+                        variant="outline"
+                        onClick={() => navigate(`/edit-profile/${slug}`)}
+                      >
+                        Edit Profile
+                      </Button>
 
-                    <AlertDialog>
-                      <AlertDialogTrigger>
-                        <Button variant="destructive">Account Delete</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you sure , you want to delete your account ? All your data will be deleted.
-                          </AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={deleteUserAccount}>
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" className="rounded-lg px-4 py-2">
+                            Account Delete
+                          </Button>
+                        </AlertDialogTrigger>
 
-                <div id="MyProfile_3Buttons" className="flex gap-3">
-                  {!realUser && <>
-                    
-                    <Button
-                      disabled={isDisable}
-                      className="p-2 rounded-sm"
-                      onClick={follow_Unfollow}
-                    >{`${isFollow ? 'Unfollow' : 'Follow'}`}</Button>
-                    <Button
-                      disabled={isDisable}
-                      className="p-2 rounded-sm"
-                      onClick={block_Unblock}
-                    >{isBlocked ? 'UnBlock' : 'Block'}</Button>
-                  </>}
-               
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure, you want to delete your account? All your data
+                              will be deleted.
+                            </AlertDialogTitle>
+                          </AlertDialogHeader>
+
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={deleteUserAccount}>
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  )}
+
+                  {!realUser && (
+                    <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
+                      <Button
+                        disabled={isDisable}
+                        className="rounded-lg px-4 py-2"
+                        onClick={follow_Unfollow}
+                      >
+                        {isFollow ? "Unfollow" : "Follow"}
+                      </Button>
+
+                      <Button
+                        disabled={isDisable}
+                        variant="outline"
+                        className="rounded-lg px-4 py-2"
+                        onClick={block_Unblock}
+                      >
+                        {isBlocked ? "UnBlock" : "Block"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
+              </div>
 
+              {/* Right User Stats */}
+              <div className="grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:grid-cols-3 lg:w-1/3 lg:grid-cols-1">
+
+                {userInfo.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-1 rounded-lg bg-white p-3 sm:flex-row sm:items-center sm:justify-between lg:bg-transparent lg:p-0"
+                  >
+                    <p className="text-sm font-semibold text-gray-900">
+                      {item.label} :
+                    </p>
+                    <span className="text-sm text-gray-700">{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div
-              id="MyProfile_Header_Right"
-              className="w-1/3 flex flex-col items-start justify-center gap-3 p-5">
-              {userInfo.map((userInfo, index) => (
-                <div key={index} className="flex w-full">
-                  <p className="w-1/2">{userInfo.label} :</p>
-                  <span>{userInfo.value}</span>
-                </div>
-              ))}
-            </div>
-
           </section>
 
-          <section id="MyProfile_Data_section" className="my-4">
-            <ul className="flex justify-between">
-              {navLinks.map((navLink, index) => (
-                <li key={navLink.name}
-                  className={`MyProfile_Data_items ${activeNav === navLink.name ? 'active' : null}`}
-                  onClick={() => setActiveNav(navLink.name)}>
-                  {navLink.name}
-                </li>
-              ))}
+          <section className="my-6">
+            <ul className="flex border-b">
+              {navLinks
+                .filter(link => link.visible)
+                .map(link => (
+                  <li
+                    key={link.name}
+                    onClick={() => setActiveNav(link.name)}
+                    className={`
+          px-8 py-4 cursor-pointer relative
+          font-medium transition-all
+          ${activeNav === link.name
+                        ? "text-slate-900"
+                        : "text-slate-500 hover:text-slate-800"
+                      }
+        `}
+                  >
+                    {link.name}
+
+                    {activeNav === link.name && (
+                      <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-500 rounded-full" />
+                    )}
+                  </li>
+                ))}
             </ul>
           </section>
 

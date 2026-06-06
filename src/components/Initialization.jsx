@@ -7,7 +7,7 @@ import { login, logout } from '@/store/authSlice';
 import { userProfile } from '@/store/profileSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { homePageLoading } from '@/store/loadingSlice';
-
+import { useTotalPost } from '@/hooks/usePost';
 
 const Initialization = ({ children }) => {
 
@@ -15,8 +15,9 @@ const Initialization = ({ children }) => {
     const { createProfile } = useProfile()
     const loading = useSelector((state) => state.loadingSlice.homePageLoading)
 
-    const getMyProfile = async (userData) => {
+    const {data : totalPost} = useTotalPost()
 
+    const getMyProfile = async (userData) => {
         try {
             let myProfile = await profile.listSingleProfile(userData.$id)
 

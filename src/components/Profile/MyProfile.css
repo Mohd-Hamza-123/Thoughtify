@@ -1,200 +1,36 @@
-
-@media only screen and (max-width: 500px) {
-
-    #MyProfile_Parent {
-        padding-bottom: 10px !important;
-    }
-
-    .Profile::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    body::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    .MyProfile_HorizontalLine {
-        margin-bottom: 7px !important;
-    }
-
-    #MyProfile {
-        width: 90% !important;
-        margin: 20px auto 0 auto !important;
-    }
-
-    #MyProfile_Header {
-        padding: 15px 5px 5px 5px;
-        flex-direction: column !important;
-        height: fit-content !important;
-    }
-
-    #MyProfile_Header>div {
-        width: 100% !important;
-        flex-direction: column !important;
-        align-items: center !important;
-    }
-
-    #MyProfile_Name_Div h6 {
-        text-align: center !important;
-        margin-top: 10px !important;
-    }
-
-    #MyProfile_3Buttons {
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-    }
-
-    #MyProfile_3Buttons Button:nth-child(odd) {
-        font-size: 13px !important;
-        padding: 7px 7px 7px 7px !important;
-    }
-
-    #MyProfile_3Buttons Button:nth-child(even) {
-        font-size: 13px !important;
-        padding: 7px 7px 7px 7px !important;
-    }
-
-    #MyProfile_Data_section ul {
-        flex-direction: column !important;
-        text-align: center;
-    }
-
-    #MyProfile_Data_section ul li {
-        border-bottom: 3px solid rgba(174, 174, 174, 0.507);
-    }
-
-    #MyProfile_Name_Div>section p {
-        text-align: center !important;
-    }
-}
-
-#MyProfile_Parent.darkMode {
-    background-color: #0D0D0D;
-}
-
-.MyProfile_HorizontalLine {
-    width: 100%;
-    height: 2px;
-    background-color: rgb(188 188 188 / 45%);
-    margin-bottom: 14px;
-    box-shadow: 0px 1px 2px rgb(188 188 188 / 45%);
-    overflow: hidden;
-}
-
-.MyProfile_HorizontalLine.darkMode {
-    background-color: transparent;
-}
-
-
-#MyProfile_Header {
-    height: 32vh;
-    background-color: white;
-    border-radius: 3px;
-}
-
-#MyProfile_Header.darkMode {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    color: white !important;
-}
-
-
-#MyProfile_Img_Div span {
-    position: absolute;
-    top: 5.8%;
-    left: 11.2%;
-    background-color: ghostwhite;
-    border-radius: 50%;
-    padding: 6px;
+.profile-nav {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-#MyProfile_Img_Div span:hover {
-    background-color: rgb(202, 202, 202);
-}
-
-#MyProfile_Img_Div span i {
-    font-size: 22px;
-    color: rgba(0, 0, 0, 0.771);
-}
-
-#MyProfile_Name_Div section h6 {
-    font-size: 23px;
-    font-weight: 600;
-}
-
-#MyProfile_Name_Div>section p {
-    font-size: 12px;
-    letter-spacing: 0.4px;
-}
-
-#MyProfile_Name_Div section div span {
-    font-size: 14px;
-    letter-spacing: 0.4px;
-}
-
-
-#MyProfile_VerticalLine p {
-    height: 80%;
-    width: 1px;
-    background-color: rgba(64, 64, 64, 0.145);
-}
-
-#MyProfile_Header_Right p {
-    font-weight: 600;
-}
-
-#MyProfile_Data {
-    width: 100%;
-}
-
-#MyProfile_Data_section {
-    width: 100%;
-}
-
-#MyProfile_Data_section ul {
-    background-color: white;
-}
-
-#MyProfile_Data_section.darkMode ul {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    color: white !important;
-}
-
-#MyProfile_Data_section ul li {
+.profile-nav-item {
     list-style: none;
     cursor: pointer;
-    font-size: 16px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 15px;
     font-weight: 500;
-    padding: 5px 10px;
+    color: rgb(0, 0, 0);
+    transition: all 0.25s ease;
 }
 
-#MyProfile_Data_section ul li:hover {
-    background-color: rgb(237, 237, 237);
-    border-bottom: 3px solid rgb(7, 225, 7);
+.profile-nav-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
 }
 
-#MyProfile_Data_section.darkMode ul li:hover {
-    background-color: rgb(0, 0, 0);
-    border-bottom: 3px solid rgb(102, 255, 102);
-}
+.profile-nav-item.active {
+    background: #16BEF6;
 
-#MyProfile_Data_section ul li.active {
-    border-bottom: 3px solid var(--secondryBlue);
-}
+    color: white;
+    font-weight: 600;
 
-#MyProfile_Data_section.darkMode ul li.active {
-    border-bottom: 3px solid red;
-}
-
-#MyProfile_Data_div {
-    width: 75%;
-    border: 2px solid red;
-}
-
-.MyProfile_Loader_Div {
-    margin-bottom: 80px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.25);
 }

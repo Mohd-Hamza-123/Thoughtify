@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
 import { Icons, Spinner } from "../";
 import { Button } from "../ui/button";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { categoryArr } from "../AskQue/Category";
 import appwriteService from "../../appwrite/config";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 const Questions = ({ visitedUserProfile }) => {
   const userID = visitedUserProfile?.$id;

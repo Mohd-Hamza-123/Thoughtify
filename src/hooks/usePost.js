@@ -1,11 +1,13 @@
 import { useCallback } from "react";
 import profile from "@/appwrite/profile";
 import appwriteService from "@/appwrite/config";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import authService from "@/appwrite/auth";
 
 export const usePost = () => {
 
     const getPosts = useCallback(async (object) => {
+
         const { pageParam: lastPostID } = object
         const posts = await appwriteService.getPosts({ lastPostID });
         let documents = posts?.documents
@@ -13,14 +15,10 @@ export const usePost = () => {
         let x = documents.map(async (post) => {
             const userId = post?.userId
             const profileInfo = await profile.listSingleProfile(userId)
-
             const verified = profileInfo?.verified
-
             const profileImage = profileInfo?.profileImage ? JSON.parse(profileInfo?.profileImage) : null
             const imageURL = profileImage ? profileImage?.profileImageURL : null
-            return {
-                ...post, profileImage: imageURL, verified
-            }
+            return { ...post, profileImage: imageURL, verified }
         })
 
         documents = await Promise.all(x)
@@ -43,4 +41,21 @@ export const usePost = () => {
         },
     })
 }
+
+
+export const useTotalPost = () => {
+  return useQuery({
+    queryKey: ["totalPost"],
+    queryFn: async () => {
+      const user = await authService.getCurrentUser();
+
+      if (!user?.$id) {
+        throw new Error("User not found");
+      }
+
+      return appwriteService.getTotalPosts(user.$id);
+    },
+    staleTime: 1000 * 5,
+  });
+};
 

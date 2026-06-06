@@ -2,7 +2,6 @@ import "./SideBar.css";
 import Icons from "../Icons";
 import { toast } from "sonner"
 import { useState } from "react";
-import conf from "../../conf/conf";
 import { ProfileImage } from "../Logo";
 import { Link } from "react-router-dom";
 import authService from "../../appwrite/auth";
@@ -14,10 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
 import { useBooleanContext } from "@/context/BooleanContext";
 
+
 const SideBar = () => {
 
   const SideBar = useRef();
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -30,6 +29,7 @@ const SideBar = () => {
   } = useAskContext();
 
   const { setIsOverlayVisible, isSidebarVisible, setIsSidebarVisible } = useBooleanContext();
+
 
   const userData = useSelector((state) => state.auth.userData);
 
@@ -77,7 +77,7 @@ const SideBar = () => {
     },
     {
       name: "About Creater",
-      slug: `/profile/${conf.myPrivateUserID}`,
+      slug: `/profile/6a1121831572c33323b2`,
       icon: <Icons.special />,
     },
   ];
