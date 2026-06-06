@@ -30,7 +30,7 @@ export class Service {
         }
     }
 
-    async updatePost({slug, payload}) {
+    async updatePost({ slug, payload }) {
         try {
             return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, payload)
         } catch (error) {
@@ -160,15 +160,17 @@ export class Service {
     }, lastPostID) {
 
 
+
         let QueryArr = [Query.limit(5)]
-        if (lastPostID) {
-            QueryArr.push(Query.cursorAfter(lastPostID))
-        }
+        if (lastPostID) QueryArr.push(Query.cursorAfter(lastPostID))
+
         if (Like_Dislike === 'Most Liked') {
             QueryArr.push(Query.orderDesc("like"))
         } else if (Like_Dislike === 'Most Disliked') {
             QueryArr.push(Query.orderDesc("dislike"))
         }
+
+
         if (Title) QueryArr.push(Query.startsWith("title", Title))
         if (category && category !== 'All Category') { QueryArr.push(Query.equal('category', [`${category}`])) }
 
@@ -178,12 +180,18 @@ export class Service {
             QueryArr.push(Query.greaterThanEqual('date', From))
             QueryArr.push(Query.lessThanEqual('date', To))
         }
-        if (PostAge === "Oldest") { QueryArr.push(Query.orderAsc("$createdAt")) } else if (PostAge === 'Recent') {
+
+        if (PostAge === "Oldest") {
+            QueryArr.push(Query.orderAsc("$createdAt"))
+        } else if (PostAge === 'Recent') {
             QueryArr.push(Query.orderDesc("$createdAt"))
         }
+
+        console.log(Viewed === "MostViewed")
         if (Viewed === 'MostViewed') {
             QueryArr.push(Query.orderDesc("views"))
         }
+
         else if (Viewed === 'lessViewed') {
             QueryArr.push(Query.orderAsc("views"))
         }
@@ -212,9 +220,11 @@ export class Service {
             )
         } catch (error) {
             console.log("Appwrite serive :: getPostsWithQueries :: error", error);
-            return null
+            throw error
         }
     }
+
+
     async getPostWithBookmark(postID) {
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID
@@ -250,7 +260,7 @@ export class Service {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
             console.log(error instanceof Error ? error.message : error)
-            return false 
+            return false
         }
     }
 

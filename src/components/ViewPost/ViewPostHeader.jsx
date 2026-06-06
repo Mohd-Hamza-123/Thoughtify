@@ -21,7 +21,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-
 const ViewPostHeader = ({ post }) => {
 
     const [open, setOpen] = useState(false);

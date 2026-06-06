@@ -1,343 +1,488 @@
-import { Icons, Spinner } from "../index";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Icons, Spinner } from "../index";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
 import { categoryArr } from "../AskQue/Category";
+import { Link, useParams } from "react-router-dom";
 import appwriteService from "../../appwrite/config";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
+const defaultFilters = {
+  Title: "",
+  Viewed: "",
+  PostAge: "",
+  Commented: "",
+  Like_Dislike: "",
+  PostFrom: "All",
+  category: "All Category",
+  AfterDate: "",
+  BeforeDate: "",
+};
 
 const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
 
-
   const { category, searchInput } = useParams();
-  const { register, handleSubmit, setValue, reset, getValues } = useForm({});
+  const [filters, setFilters] = useState(defaultFilters);
+  const loadMoreRef = useRef(null);
 
-  const filters = useRef({Like_Dislike: 'Most Liked'})
-  const spinnerRef = useRef();
-  const BrowseQuestionLeft = useRef();
-  const BrowseQuestionRight = useRef();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    watch,
+  } = useForm({
+    defaultValues: defaultFilters,
+  });
 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    isPending,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["filteredQuestions", filters],
+    queryFn: async ({ pageParam = null }) => {
+      const response = await appwriteService.getPostsWithQueries(
+        filters,
+        pageParam
+      );
 
-  const { data, refetch, hasNextPage, fetchNextPage, isFetching } = useInfiniteQuery({
-    queryKey: ["filteredQuestions"],
-    queryFn: async ({ pageParam }) => {
+      const documents = response?.documents || [];
 
-      const filteredQuestions = await appwriteService.getPostsWithQueries({
-        ...filters.current,
-      }, pageParam)
-
-      const documents = filteredQuestions.documents
-      const documentsLength = documents.length
       return {
         documents,
-        nextCursor: documentsLength ? documents[documentsLength - 1].$id : undefined
-      }
+        nextCursor: documents.length
+          ? documents[documents.length - 1].$id
+          : undefined,
+      };
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: true
-  })
+  });
 
   const posts = useMemo(() => {
-    return data?.pages?.flatMap((page) => page.documents)
-  }, [data])
+    return data?.pages?.flatMap((page) => page.documents) || [];
+  }, [data]);
 
+  const activeFilterCount = useMemo(() => {
+    return Object.entries(filters).filter(([key, value]) => {
+      if (!value) return false;
+      if (key === "PostAge" && value === "Recent") return false;
+      if (key === "Like_Dislike" && value === "Most Liked") return false;
+      if (key === "PostFrom" && value === "All") return false;
+      if (key === "category" && value === "All Category") return false;
+      return true;
+    }).length;
+  }, [filters]);
 
+  const submit = (formData) => {
+    setFilters(formData);
 
-  const submit = async (data) => {
-
-    filters.current = data
-    refetch()
-    if (
-      BrowseQuestionLeft.current &&
-      BrowseQuestionRight.current &&
-      window.innerWidth < 500
-    ) {
-      BrowseQuestionLeft.current.classList.toggle("none");
-      BrowseQuestionRight.current.classList.toggle("none");
+    if (window.innerWidth < 768 && setSwitchTrigger) {
+      setSwitchTrigger(false);
     }
   };
-
-  useEffect(() => {
-    const ref = spinnerRef.current;
-    if (ref) {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) fetchNextPage()
-        },
-        {
-          root: null,
-          rootMargin: "0px",
-          threshold: 0.1,
-        }
-      );
-
-      observer.observe(ref);
-      return () => ref && observer.unobserve(ref);
-    }
-  }, [hasNextPage, fetchNextPage]);
-
-  useEffect(() => {
-    if (category !== "null") {
-      setValue("category", category);
-      const data = getValues();
-
-      submit(data);
-    } else if (searchInput !== "null") {
-      setValue("Title", searchInput);
-      const data = getValues();
-
-      submit(data);
-    }
-  }, [searchInput]);
-
 
   const resetFilter = () => {
-    reset();
+    reset(defaultFilters);
+    setFilters(defaultFilters);
+    toast.success("Filters reset successfully");
   };
 
+  useEffect(() => {
+    if (category && category !== "null") {
+      setValue("category", category);
+      setFilters((prev) => ({
+        ...prev,
+        category,
+      }));
+    }
+
+    if (searchInput && searchInput !== "null") {
+      setValue("Title", searchInput);
+      setFilters((prev) => ({
+        ...prev,
+        Title: searchInput,
+      }));
+    }
+  }, [category, searchInput, setValue]);
+
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage &&
+          !isFetching
+        ) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "250px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, isFetching]);
+
+  const renderMetric = (value, Icon) => (
+    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+      <span>{value || 0}</span>
+      <Icon className="text-slate-500" />
+    </span>
+  );
 
   return (
-    <div className="flex md:flex-row flex-col gap-2 px-2 mt-2 h-[79dvh]">
-      {switchTrigger && <form
-        ref={BrowseQuestionLeft}
-        className="w-full md:w-[30%] flex flex-col gap-6 p-5 bg-white rounded-xl shadow-sm h-full overflow-y-auto"
-        onSubmit={handleSubmit(submit)}>
-        {/* Buttons */}
-        <div className="flex justify-between items-center gap-3">
-          <Button
-            variant="outline"
-            type="Submit"
-            className="px-4 py-2 rounded-lg border-gray-300 hover:bg-blue-50"
-          >
-            {isFetching ? "Searching..." : "Apply Filter"}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={resetFilter}
-            type="reset"
-            className="px-4 py-2 rounded-lg"
-          >
-            Reset Filter
-          </Button>
-        </div>
-
-        {/* Title */}
-        <div id="BrowseQuestions_PostTitle" className="space-y-2">
-          <p className="font-medium text-gray-700">Filter by Post Title :</p>
-          <div className="flex gap-3 items-center">
-            <label htmlFor="BrowseQuestions_PostTitle_Filter" className="text-sm text-gray-600">
-              Title:
-            </label>
-            <input
-              {...register("Title", { required: false })}
-              id="BrowseQuestions_PostTitle_Filter"
-              placeholder="Title"
-              className="w-full px-2 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2"
-            />
-          </div>
-        </div>
-
-        {/* Views */}
-        <div>
-          <p className="font-medium text-gray-700">Filter By Views :</p>
-          <div className="flex flex-col gap-2 mt-1">
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Viewed")} type="radio" value="MostViewed" className="accent-blue-500" />
-              <span>Most Viewed</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Viewed")} type="radio" value="lessViewed" className="accent-blue-500" />
-              <span>Less Viewed</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Post Age */}
-        <div>
-          <p className="font-medium text-gray-700">Filter By Post Age :</p>
-          <div className="flex flex-col gap-2 mt-1">
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("PostAge")} type="radio" value="Recent" className="accent-blue-500" />
-              <span>Recent</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("PostAge")} type="radio" value="Oldest" className="accent-blue-500" />
-              <span>Oldest</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Comments */}
-        <div>
-          <p className="font-medium text-gray-700">Filter By Comment :</p>
-          <div className="flex flex-col gap-2 mt-1">
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Commented")} type="radio" value="Most Commented" className="accent-blue-500" />
-              <span>Most Commented</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Commented")} type="radio" value="Least Commented" className="accent-blue-500" />
-              <span>Least Commented</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Likes/Dislikes */}
-        <div>
-          <p className="font-medium text-gray-700">Favourite :</p>
-          <div className="flex flex-col gap-2 mt-1">
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Like_Dislike")} type="radio" value="Most Liked" className="accent-green-500" />
-              <span>Most Liked</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("Like_Dislike")} type="radio" value="Most Disliked" className="accent-red-500" />
-              <span>Most Disliked</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Post By */}
-        <div>
-          <p className="font-medium text-gray-700">Post By :</p>
-          <div className="flex flex-col gap-2 mt-1">
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("PostFrom")} type="radio" value="All" defaultChecked className="accent-blue-500" />
-              <span>All</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("PostFrom")} type="radio" value="Responders" className="accent-blue-500" />
-              <span>Responders</span>
-            </label>
-            <label className="flex gap-2 items-center cursor-pointer">
-              <input {...register("PostFrom")} type="radio" value="Non Responders" className="accent-blue-500" />
-              <span>Non-Responders</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Category */}
-        <div>
-          <p className="font-medium text-gray-700">Filter By Category :</p>
-          <div className="flex items-center gap-2 mt-1">
-            <label className="text-sm text-gray-600">Category :</label>
-            <select
-              {...register("category")}
-              className="px-1 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+    <main className="h-[calc(100dvh-120px)] bg-slate-50 px-3 py-4">
+      <div className="mx-auto flex h-full max-w-7xl gap-4">
+        {switchTrigger && (
+          <aside className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white shadow-sm md:w-[320px]">
+            <form
+              onSubmit={handleSubmit(submit)}
+              className="flex h-full flex-col"
             >
-              <option value="All Category" defaultChecked>
-                All Category
-              </option>
-              {categoryArr?.map((category, index) => (
-                <option key={category.category + index}>{category.category}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+              <div className="sticky top-0 z-10 border-b border-slate-200 bg-white p-4 rounded-t-2xl">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Filters
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      {activeFilterCount} active filter
+                      {activeFilterCount !== 1 ? "s" : ""}
+                    </p>
+                  </div>
 
-        {/* Date */}
-        <div id="BrowseQuestions_FilterByDate">
-          <p className="font-medium text-gray-700">Filter By Date :</p>
-          <div className="flex flex-col gap-3 mt-1">
-            <div className="flex items-center gap-2">
-              <label htmlFor="AfterDate" className="text-sm text-gray-600">After Date :</label>
-              <input
-                {...register("AfterDate")}
-                type="date"
-                id="AfterDate"
-                className="px-3 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label htmlFor="BeforeDate" className="text-sm text-gray-600">Before Date :</label>
-              <input
-                {...register("BeforeDate")}
-                type="date"
-                id="BeforeDate"
-                className="px-3 py-1 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-      </form>
-      }
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetFilter}
+                    className="rounded-xl"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </div>
 
-      <div
-        ref={BrowseQuestionRight}
-        className={`${switchTrigger ? "hidden sm:block" : "block"} h-[80dvh] overflow-y-scroll px-4 w-full md:w-[73%]`}>
-        {posts?.length === 0 && <p className="text-center text-gray-500 mt-8"> No Posts Available</p>}
+              <div className="flex-1 space-y-6 overflow-y-auto p-4">
+                <section className="space-y-2">
+                  <label
+                    htmlFor="title"
+                    className="text-sm font-medium text-slate-700"
+                  >
+                    Search by title
+                  </label>
+                  <input
+                    id="title"
+                    {...register("Title")}
+                    placeholder="Example: JavaScript promise"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                  />
+                </section>
 
-        <div className="space-y-4">
-          {posts?.map((post) => {
-            return (
-              <div
-                key={post?.$id}
-                className="hover:shadow-md transition rounded-xl p-3 border border-slate-200">
-                {/* Author */}
-                <span className="text-md font-md">{post.name}</span>
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Sort by views
+                  </p>
 
-                {/* Post Title */}
-                <Link to={`/post/${post.$id}/${null}`}>
-                  <h4 className="text-lg font-semibold mt-1 mb-2 text-gray-800 transition">
-                    {post.title}
-                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input
+                        {...register("Viewed")}
+                        type="radio"
+                        value="MostViewed"
+                      />
+                      Most
+                    </label>
 
-                  {/* Meta info */}
-                  <div
-                    id="BrowseQuestions_created_category_views"
-                    className="flex flex-wrap gap-4 text-[12px] text-gray-600">
-                    {/* Date */}
-                    <span className="tag-style">
-                      {new Date(post.$createdAt).toDateString()}
-                    </span>
+                    <label className="filter-option">
+                      <input
+                        {...register("Viewed")}
+                        type="radio"
+                        value="lessViewed"
+                      />
+                      Less
+                    </label>
+                  </div>
+                </section>
 
-                    {/* Category */}
-                    <span className="tag-style">
-                      {post.category}
-                    </span>
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Post age
+                  </p>
 
-                    {/* Views */}
-                    <div className="tag-style flex items-center gap-1">
-                      <span>{post.views}</span>
-                      <Icons.views className="" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input
+                        {...register("PostAge")}
+                        type="radio"
+                        value="Recent"
+                      />
+                      Recent
+                    </label>
+
+                    <label className="filter-option">
+                      <input
+                        {...register("PostAge")}
+                        type="radio"
+                        value="Oldest"
+                      />
+                      Oldest
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Comments
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input
+                        {...register("Commented")}
+                        type="radio"
+                        value="Most Commented"
+                      />
+                      Most
+                    </label>
+
+                    <label className="filter-option">
+                      <input
+                        {...register("Commented")}
+                        type="radio"
+                        value="Least Commented"
+                      />
+                      Least
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Favourite
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input
+                        {...register("Like_Dislike")}
+                        type="radio"
+                        value="Most Liked"
+                      />
+                      Liked
+                    </label>
+
+                    <label className="filter-option">
+                      <input
+                        {...register("Like_Dislike")}
+                        type="radio"
+                        value="Most Disliked"
+                      />
+                      Disliked
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Posted by
+                  </p>
+
+                  <div className="space-y-2">
+                    {["All", "Responders", "Non Responders"].map((item) => (
+                      <label key={item} className="filter-option justify-start">
+                        <input
+                          {...register("PostFrom")}
+                          type="radio"
+                          value={item}
+                        />
+                        {item}
+                      </label>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Category
+                  </label>
+
+                  <select
+                    {...register("category")}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                  >
+                    <option value="All Category">All Category</option>
+                    {categoryArr?.map((item, index) => (
+                      <option
+                        key={`${item.category}-${index}`}
+                        value={item.category}
+                      >
+                        {item.category}
+                      </option>
+                    ))}
+                  </select>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Date range
+                  </p>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label
+                        htmlFor="afterDate"
+                        className="mb-1 block text-xs text-slate-500"
+                      >
+                        After date
+                      </label>
+                      <input
+                        {...register("AfterDate")}
+                        type="date"
+                        id="afterDate"
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                      />
                     </div>
 
-                    {/* Comments */}
-                    <div className="tag-style flex items-center gap-1">
-                      <span>{post.commentCount}</span>
-                      <Icons.comment className="" />
-                    </div>
-
-                    {/* Likes */}
-                    <div className="tag-style flex items-center gap-1">
-                      <span>{post?.like}</span>
-                      <Icons.like className="" />
-                    </div>
-
-                    {/* Dislikes */}
-                    <div className="tag-style flex items-center gap-1">
-                      <span>{post?.dislike}</span>
-                      <Icons.dislike className="" />
+                    <div>
+                      <label
+                        htmlFor="beforeDate"
+                        className="mb-1 block text-xs text-slate-500"
+                      >
+                        Before date
+                      </label>
+                      <input
+                        {...register("BeforeDate")}
+                        type="date"
+                        id="beforeDate"
+                        className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                      />
                     </div>
                   </div>
-                </Link>
+                </section>
               </div>
-            );
-          })}
-        </div>
 
-        {hasNextPage && (
-          <section ref={spinnerRef} className="flex justify-center py-4">
-            <Spinner />
-          </section>
+              <div className="border-t border-slate-200 bg-white p-4 rounded-b-2xl">
+                <Button
+                  type="submit"
+                  disabled={isFetching}
+                  className="w-full rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+                >
+                  {isFetching ? "Applying..." : "Apply Filters"}
+                </Button>
+              </div>
+            </form>
+          </aside>
         )}
-      </div>
 
-    </div>
+        <section
+          className={`h-full flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ${
+            switchTrigger ? "hidden md:block" : "block"
+          }`}
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+                   
+              <p className="text-sm text-slate-500">
+                {posts.length} question{posts.length !== 1 ? "s" : ""} found
+              </p>
+            
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl md:hidden"
+              onClick={() => setSwitchTrigger?.(true)}
+            >
+              Filters
+            </Button>
+          </div>
+
+          {isPending ? (
+            <div className="flex h-[70%] items-center justify-center">
+              <Spinner />
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="flex h-[70%] flex-col items-center justify-center text-center">
+              <p className="text-lg font-semibold text-slate-800">
+                No questions found
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Try changing or resetting your filters.
+              </p>
+              <Button
+                type="button"
+                onClick={resetFilter}
+                className="mt-4 rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {posts.map((post) => (
+                <article
+                  key={post?.$id}
+                  className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md"
+                >
+                  <Link to={`/post/${post.$id}/${null}`} className="block">
+                    <div className="mb-2 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">
+                          {post?.name || "Unknown user"}
+                        </p>
+
+                        <h2 className="mt-1 text-lg font-semibold text-slate-900 transition group-hover:text-cyan-600">
+                          {post?.title}
+                        </h2>
+                      </div>
+
+                      <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-700">
+                        {post?.category || "General"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                        {post?.$createdAt
+                          ? new Date(post.$createdAt).toDateString()
+                          : "No date"}
+                      </span>
+
+                      {renderMetric(post?.views, Icons.views)}
+                      {renderMetric(post?.commentCount, Icons.comment)}
+                      {renderMetric(post?.like, Icons.like)}
+                      {renderMetric(post?.dislike, Icons.dislike)}
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <div ref={loadMoreRef} className="flex justify-center py-6">
+            {isFetchingNextPage && <Spinner />}
+            {!hasNextPage && posts.length > 0 && (
+              <p className="text-sm text-slate-400">No more questions</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
   );
 };
 

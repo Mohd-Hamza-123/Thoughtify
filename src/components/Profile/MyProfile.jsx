@@ -26,9 +26,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner"
 import authService from "@/appwrite/auth";
 import { logout } from "@/store/authSlice";
-import { toast } from "sonner"
 
 const MyProfile = () => {
 
@@ -112,7 +112,7 @@ const MyProfile = () => {
         break;
       case 'Questions': setActiveNavRender(<Questions visitedUserProfile={profileData} />)
         break;
-      case 'ProfileChats': setActiveNavRender(<ChatInProfile profileData={profileData || {}} />)
+      case 'Followers': setActiveNavRender(<ChatInProfile profileData={profileData || {}} />)
         break;
       default: setActiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
@@ -130,7 +130,7 @@ const MyProfile = () => {
     { name: 'Questions', visible: true },
     { name: 'Opinions', visible: true },
     { name: 'bookmark', visible: userData?.$id === slug },
-    { name: 'ProfileChats', visible: true },
+    { name: 'Followers', visible: true },
   ]
 
   const userInfo = [

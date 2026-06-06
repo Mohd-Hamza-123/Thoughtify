@@ -1,273 +1,394 @@
-import { Icons, Spinner } from '../'
-import { Input } from '../ui/input'
-import { Button } from '../ui/button'
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { categoryArr } from '../AskQue/Category'
-import appwriteService from '../../appwrite/config'
-import { useDispatch, useSelector } from 'react-redux'
-import { useInfiniteQuery } from '@tanstack/react-query'
-import React, { useRef, useState, useEffect, useMemo } from 'react'
-import {toast} from "sonner"
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { Icons, Spinner } from "../";
+import { Button } from "../ui/button";
+import { categoryArr } from "../AskQue/Category";
+import appwriteService from "../../appwrite/config";
 
 const Questions = ({ visitedUserProfile }) => {
+  const userID = visitedUserProfile?.$id;
+  const spinnerRef = useRef(null);
 
-  const userID = visitedUserProfile?.$id
-  const dispatch = useDispatch()
-  const spinnerRef = useRef(null)
+  const defaultFilters = {
+    userID,
+    Title: "",
+    Viewed: "",
+    PostAge: "",
+    Commented: "",
+    Like_Dislike: "",
+    category: "All Category",
+    AfterDate: "",
+    BeforeDate: "",
+  };
 
-  const [toggle, setToggle] = useState(false)
+  const [filters, setFilters] = useState(defaultFilters);
+  const [showFilters, setShowFilters] = useState(true);
 
-  const userData = useSelector((state) => state.auth.userData);
-  const [filters, setFilters] = useState({userID})
-  const { register, handleSubmit, reset } = useForm()
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: defaultFilters,
+  });
 
-  const { data: queries = [], isLoading, fetchNextPage, hasNextPage, refetch } = useInfiniteQuery({
-    queryKey: ['questions', visitedUserProfile?.userIdAuth, filters],
-    queryFn: async ({ queryKey, pageParam }) => {
-      const filteredQuestions = await appwriteService.getPostsWithQueries({ ...filters }, pageParam)
-      const documents = filteredQuestions.documents
-      const documentsLength = documents.length;
+  const {
+    data,
+    isPending,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["profileQuestions", userID, filters],
+    queryFn: async ({ pageParam = null }) => {
+      const response = await appwriteService.getPostsWithQueries(
+        filters,
+        pageParam
+      );
+
+      const documents = response?.documents || [];
+
       return {
         documents,
-        nextCursor: documentsLength ? documents[documentsLength - 1].$id : undefined
-      }
+        nextCursor: documents.length
+          ? documents[documents.length - 1].$id
+          : undefined,
+      };
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: true,
-  })
+    enabled: Boolean(userID),
+  });
 
-  
-  let queriesArr = useMemo(() => queries.pages?.flatMap((page) => page.documents), [queries])
+  const questions = useMemo(() => {
+    return data?.pages?.flatMap((page) => page.documents) || [];
+  }, [data]);
 
- 
-  const submit = async (data) => {
-    data.userID = userID
-    setFilters(data)
-    refetch()
-  }
+  const activeFilterCount = useMemo(() => {
+    return Object.entries(filters).filter(([key, value]) => {
+      if (key === "userID") return false;
+      if (!value) return false;
+      if (key === "PostAge" && value === "Recent") return false;
+      if (key === "Like_Dislike" && value === "Most Liked") return false;
+      if (key === "category" && value === "All Category") return false;
+      return true;
+    }).length;
+  }, [filters]);
+
+  const submit = (data) => {
+    setFilters({
+      ...data,
+      userID,
+    });
+
+    if (window.innerWidth < 1024) {
+      setShowFilters(false);
+    }
+  };
+
+  const resetFilter = () => {
+    reset(defaultFilters);
+    setFilters(defaultFilters);
+    toast.success("Filters reset successfully");
+  };
 
   useEffect(() => {
-    const ref = spinnerRef.current;
-    if (ref) {
-      const observer = new IntersectionObserver(([entry]) => { 
-        if (entry.isIntersecting) fetchNextPage()
-      }, {
+    if (!userID) return;
+
+    setFilters((prev) => ({
+      ...prev,
+      userID,
+    }));
+  }, [userID]);
+
+  useEffect(() => {
+    const element = spinnerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage &&
+          !isFetching
+        ) {
+          fetchNextPage();
+        }
+      },
+      {
         root: null,
-        rootMargin: '0px',
-        threshold: 0
-      })
-      observer.observe(ref)
-      return () => ref && observer.unobserve(ref)
-    }
-  }, [queries])
+        rootMargin: "250px",
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, isFetching]);
+
+  const Metric = ({ value, Icon }) => (
+    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+      <span>{value || 0}</span>
+      <Icon className="text-slate-500" />
+    </span>
+  );
 
   return (
-    <div
-      className="flex flex-col lg:flex-row gap-3 w-full p-2 sm:p-6 lg:p-5 bg-gray-50 rounded-2xl shadow-md"
-    >
-      {/* Toggle Button */}
-      <Button
-        onClick={() => setToggle((prev) => !prev)}
-        variant="outline"
-        className="lg:hidden justify-center items-center w-fit self-end lg:self-start mb-4 lg:mb-0 hover:bg-gray-100 transition flex"
-      >
-        <Icons.switch />
-      </Button>
-
-      {/* Filter Form */}
-      <form
-        id="Profile_Filter_Questions_Form"
-        className={`w-full lg:w-1/3 xl:w-1/4 flex flex-col gap-6 p-3 rounded-xl bg-white shadow border border-gray-200 transition-all duration-300 ${toggle ? 'hidden' : 'block'
-          }`}
-        onSubmit={handleSubmit(submit)}
-      >
-
-        <div className="flex flex-col gap-3 mt-4">
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-            {isLoading ? 'Searching...' : 'Apply Filter'}
-          </Button>
-          <Input
-            type="reset"
-            onClick={() => {
-              reset()
-              setNotification({ message: 'Filter Cleared', type: 'success' })
-            }}
-            value={'Reset Filter'}
-            className="w-full border border-gray-300 rounded-md py-2 text-sm hover:bg-gray-100 cursor-pointer"
-          />
-        </div>
-        {/* Title */}
-        <div id="Profile_Questions_Title" className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter by Post Title :</p>
-          <div className="flex gap-2 items-center">
-            <label htmlFor="Profile_Questions_Title_Filter" className="text-sm text-gray-600">
-              Title:
-            </label>
-            <Input
-              {...register('Title', { required: false })}
-              id="Profile_Questions_Title_Filter"
-              placeholder="Enter title..."
-              className="flex-1 border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
-
-        {/* Views */}
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter By Views :</p>
-          <div className="flex flex-col gap-1 text-sm">
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('Viewed')} type="radio" value={'MostViewed'} />
-              Most Viewed
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('Viewed')} type="radio" value={'lessViewed'} />
-              Less Viewed
-            </label>
-          </div>
-        </div>
-
-        {/* Post Age */}
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter By Post Age :</p>
-          <div className="flex flex-col gap-1 text-sm">
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('PostAge')} type="radio" value={'Recent'} />
-              Recent
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('PostAge')} type="radio" value={'Oldest'} />
-              Oldest
-            </label>
-          </div>
-        </div>
-
-        {/* Comments */}
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter By Comment :</p>
-          <div className="flex flex-col gap-1 text-sm">
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('Commented')} type="radio" value={'Most Commented'} />
-              Most Commented
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input {...register('Commented')} type="radio" value={'Least Commented'} />
-              Least Commented
-            </label>
-          </div>
-        </div>
-
-        {/* Favourite */}
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">Favourite :</p>
-          <div className="flex flex-col gap-1 text-sm">
-            <label className="flex gap-2 cursor-pointer">
-              <input type="radio" {...register('Like_Dislike')} value={'Most Liked'} />
-              Most liked
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input type="radio" {...register('Like_Dislike')} value={'Most Disliked'} />
-              Most disliked
-            </label>
-          </div>
-        </div>
-
-        {/* Category */}
-        <div className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter By Category :</p>
-          <div className="flex gap-2 items-center">
-            <label className="text-sm text-gray-600">Category:</label>
-            <select
-              {...register('category')}
-              className="flex-1 border border-gray-300 rounded-md px-2 py-1 outline-none text-sm"
-            >
-              <option value={'All Category'}>All Category</option>
-              {categoryArr?.map((category, index) => (
-                <option key={category.category + index}>{category.category}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Date */}
-        <div id="Profile_Questions_FilterByDate" className="space-y-2">
-          <p className="font-semibold text-gray-800">Filter By Date :</p>
-          <div className="flex flex-col gap-3 text-sm">
-            <label className="flex gap-2 items-center">
-              After:
-              <input type="date" {...register('AfterDate')} className="border rounded-md px-2 py-1" />
-            </label>
-            <label className="flex gap-2 items-center">
-              Before:
-              <input type="date" {...register('BeforeDate')} className="border rounded-md px-2 py-1" />
-            </label>
-          </div>
-        </div>
-
-      </form>
-
-      {/* Filtered Results */}
-      <div
-        id="Profile_Questions_Filtered_Questions"
-        className={`w-full flex-1 rounded-xl bg-white shadow p-5 border border-gray-200 ${toggle ? 'block' : 'hidden lg:block'
-          }`}
-      >
-        {true && <p className="text-center text-gray-500 italic">No Posts Available</p>}
-
-        <div className="space-y-4 mt-4">
-          {queriesArr?.map((querie, index) => {
-            return (
-              <div
-                key={querie?.$id}
-                className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition">
-                <span className="font-semibold text-gray-800">{querie?.name}</span>
-                <Link to={`/post/${querie?.$id}/${null}`} className="block mt-2">
-                  <p className="text-lg font-medium text-blue-600 hover:underline">{querie?.title}</p>
-                  <div
-                    id="BrowseQuestions_created_category_views"
-                    className="flex gap-3 flex-wrap text-sm text-gray-600 mt-2"
-                  >
-                    <span>
-                      {new Date(querie?.$createdAt).toLocaleDateString('en-US', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    </span>
-                    <span className="bg-gray-100 px-2 py-0.5 rounded-md border">{querie?.category}</span>
-                    <div className="flex items-center gap-1">
-                      <span>{querie?.views}</span>
-                      <Icons.views/>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>{querie.commentCount}</span>
-                      <Icons.comment/>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>{querie?.like}</span>
-                      <Icons.like/>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span>{querie?.dislike}</span>
-                      <Icons.dislike/>
-                    </div>
+    <main className="h-[calc(100dvh-130px)] rounded-2xl bg-slate-50 p-3">
+      <div className="mx-auto flex h-full max-w-7xl gap-4">
+        {showFilters && (
+          <aside className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white shadow-sm lg:w-[320px]">
+            <form onSubmit={handleSubmit(submit)} className="flex h-full flex-col">
+              <div className="sticky top-0 z-10 rounded-t-2xl border-b border-slate-200 bg-white p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Filters
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      {activeFilterCount} active filter
+                      {activeFilterCount !== 1 ? "s" : ""}
+                    </p>
                   </div>
-                </Link>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetFilter}
+                    className="rounded-xl"
+                  >
+                    Reset
+                  </Button>
+                </div>
               </div>
-            )
-          })}
-        </div>
 
-        {hasNextPage && (
-          <section ref={spinnerRef} className="flex justify-center mt-6">
-            <Spinner />
-          </section>
+              <div className="flex-1 space-y-6 overflow-y-auto p-4">
+                <section className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Search by title
+                  </label>
+                  <input
+                    {...register("Title")}
+                    placeholder="Example: JavaScript promise"
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                  />
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Sort by views
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input {...register("Viewed")} type="radio" value="MostViewed" />
+                      Most
+                    </label>
+                    <label className="filter-option">
+                      <input {...register("Viewed")} type="radio" value="lessViewed" />
+                      Less
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">Post age</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input {...register("PostAge")} type="radio" value="Recent" />
+                      Recent
+                    </label>
+                    <label className="filter-option">
+                      <input {...register("PostAge")} type="radio" value="Oldest" />
+                      Oldest
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">Comments</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input {...register("Commented")} type="radio" value="Most Commented" />
+                      Most
+                    </label>
+                    <label className="filter-option">
+                      <input {...register("Commented")} type="radio" value="Least Commented" />
+                      Least
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">Favourite</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input {...register("Like_Dislike")} type="radio" value="Most Liked" />
+                      Liked
+                    </label>
+                    <label className="filter-option">
+                      <input {...register("Like_Dislike")} type="radio" value="Most Disliked" />
+                      Disliked
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Category
+                  </label>
+                  <select
+                    {...register("category")}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                  >
+                    <option value="All Category">All Category</option>
+                    {categoryArr?.map((item, index) => (
+                      <option key={`${item.category}-${index}`} value={item.category}>
+                        {item.category}
+                      </option>
+                    ))}
+                  </select>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">Date range</p>
+
+                  <div>
+                    <label className="mb-1 block text-xs text-slate-500">
+                      After date
+                    </label>
+                    <input
+                      {...register("AfterDate")}
+                      type="date"
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-xs text-slate-500">
+                      Before date
+                    </label>
+                    <input
+                      {...register("BeforeDate")}
+                      type="date"
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                    />
+                  </div>
+                </section>
+              </div>
+
+              <div className="rounded-b-2xl border-t border-slate-200 bg-white p-4">
+                <Button
+                  type="submit"
+                  disabled={isFetching}
+                  className="w-full rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+                >
+                  {isFetching ? "Applying..." : "Apply Filters"}
+                </Button>
+              </div>
+            </form>
+          </aside>
         )}
-      </div>
-    </div>
-  )
-}
 
-export default Questions
+        <section
+          className={`h-full flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ${
+            showFilters ? "hidden lg:block" : "block"
+          }`}
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl font-semibold text-slate-900">
+                Profile Questions
+              </h1>
+              <p className="text-sm text-slate-500">
+                {questions.length} question{questions.length !== 1 ? "s" : ""} found
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl lg:hidden"
+              onClick={() => setShowFilters(true)}
+            >
+              Filters
+            </Button>
+          </div>
+
+          {isPending ? (
+            <div className="flex h-[70%] items-center justify-center">
+              <Spinner />
+            </div>
+          ) : questions.length === 0 ? (
+            <div className="flex h-[70%] flex-col items-center justify-center text-center">
+              <p className="text-lg font-semibold text-slate-800">
+                No questions found
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Try changing or resetting your filters.
+              </p>
+              <Button
+                type="button"
+                onClick={resetFilter}
+                className="mt-4 rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {questions.map((question) => (
+                <article
+                  key={question?.$id}
+                  className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md"
+                >
+                  <Link to={`/post/${question?.$id}/${null}`} className="block">
+                    <div className="mb-2 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">
+                          {question?.name || "Unknown user"}
+                        </p>
+
+                        <h2 className="mt-1 text-lg font-semibold text-slate-900 transition group-hover:text-cyan-600">
+                          {question?.title}
+                        </h2>
+                      </div>
+
+                      <span className="rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-700">
+                        {question?.category || "General"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                        {question?.$createdAt
+                          ? new Date(question.$createdAt).toDateString()
+                          : "No date"}
+                      </span>
+
+                      <Metric value={question?.views} Icon={Icons.views} />
+                      <Metric value={question?.commentCount} Icon={Icons.comment} />
+                      <Metric value={question?.like} Icon={Icons.like} />
+                      <Metric value={question?.dislike} Icon={Icons.dislike} />
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <div ref={spinnerRef} className="flex justify-center py-6">
+            {isFetchingNextPage && <Spinner />}
+            {!hasNextPage && questions.length > 0 && (
+              <p className="text-sm text-slate-400">No more questions</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default Questions;

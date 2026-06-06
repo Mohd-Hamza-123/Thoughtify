@@ -75,6 +75,30 @@ body::-webkit-scrollbar {
     font-family: 'Poppins', sans-serif !important;
 }
 
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+  border-color: #22d3ee;
+  background-color: #ecfeff;
+}
+
+.filter-option input {
+  accent-color: #06b6d4;
+}
+
 @layer base {
     :root {
         --background: 0 0% 100%;

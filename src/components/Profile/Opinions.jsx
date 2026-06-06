@@ -1,218 +1,350 @@
-import { Spinner } from '../'
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import parse from "html-react-parser";
-import { Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { Button } from '../ui/button.jsx'
-import { useSelector } from 'react-redux'
-import realTime from '../../appwrite/realTime.js'
-import { categoryArr } from '../AskQue/Category'
-import React, { useRef, useMemo, useEffect, useState } from 'react'
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { Spinner } from "../";
+import { Button } from "../ui/button.jsx";
+import { categoryArr } from "../AskQue/Category";
+import realTime from "../../appwrite/realTime.js";
 
 const Opinions = ({ visitedProfileUserID }) => {
+  const spinnerRef = useRef(null);
 
-  const spinnerRef = useRef()
-  const opinionsLeft = useRef()
-  const opinionsRight = useRef()
-  const { register, handleSubmit, reset } = useForm()
-  const userData = useSelector((state) => state.auth.userData);
-  const [filters, setFilters] = useState({ userID: visitedProfileUserID })
+  const defaultFilters = {
+    userID: visitedProfileUserID,
+    PostAge: "Recent",
+    category: "All Category",
+    AfterDate: "",
+    BeforeDate: "",
+  };
 
-  const { data = [], hasNextPage, fetchNextPage, isLoading, refetch } = useInfiniteQuery({
-    queryKey: ['opinions', visitedProfileUserID, filters],
-    queryFn: async ({ queryKey, pageParam }) => {
-    
-      const filteredOpinions = await realTime.getCommentsWithQueries({ ...filters, lastPostID: pageParam })
-      
-      const documents = filteredOpinions.documents
-      const documentsLength = documents.length;
+  const [filters, setFilters] = useState(defaultFilters);
+  const [showFilters, setShowFilters] = useState(true);
+
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: defaultFilters,
+  });
+
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isPending,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["profileOpinions", visitedProfileUserID, filters],
+    queryFn: async ({ pageParam = null }) => {
+      const response = await realTime.getCommentsWithQueries({
+        ...filters,
+        lastPostID: pageParam,
+      });
+
+      const documents = response?.documents || [];
+
       return {
         documents,
-        nextCursor: documentsLength ? documents[documentsLength - 1].$id : undefined
-      }
+        nextCursor: documents.length
+          ? documents[documents.length - 1].$id
+          : undefined,
+      };
     },
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-  })
+    enabled: Boolean(visitedProfileUserID),
+  });
 
-  const comments = useMemo(() => data.pages?.flatMap((page) => page.documents), [data])
+  const comments = useMemo(() => {
+    return data?.pages?.flatMap((page) => page.documents) || [];
+  }, [data]);
 
-  const submit = async (data) => {
-    data.userID = visitedProfileUserID
-    setFilters(data)
-    refetch()
-  }
+  const activeFilterCount = useMemo(() => {
+    return Object.entries(filters).filter(([key, value]) => {
+      if (key === "userID") return false;
+      if (!value) return false;
+      if (key === "PostAge" && value === "Recent") return false;
+      if (key === "category" && value === "All Category") return false;
+      return true;
+    }).length;
+  }, [filters]);
+
+  const submit = (data) => {
+    setFilters({
+      ...data,
+      userID: visitedProfileUserID,
+    });
+
+    if (window.innerWidth < 1024) {
+      setShowFilters(false);
+    }
+  };
+
+  const resetFilter = () => {
+    reset(defaultFilters);
+    setFilters(defaultFilters);
+    toast.success("Filters reset successfully");
+  };
 
   useEffect(() => {
-    const ref = spinnerRef.current;
-    if (ref) {
-      const observer = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) fetchNextPage()
-      }, {
+    if (!visitedProfileUserID) return;
+
+    setFilters((prev) => ({
+      ...prev,
+      userID: visitedProfileUserID,
+    }));
+  }, [visitedProfileUserID]);
+
+  useEffect(() => {
+    const element = spinnerRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          hasNextPage &&
+          !isFetchingNextPage &&
+          !isFetching
+        ) {
+          fetchNextPage();
+        }
+      },
+      {
         root: null,
-        rootMargin: '0px',
-        threshold: 0.5
-      })
+        rootMargin: "250px",
+        threshold: 0.1,
+      }
+    );
 
-      observer.observe(ref)
-      return () => ref && observer.unobserve(ref)
-    }
+    observer.observe(element);
 
-  }, [hasNextPage, fetchNextPage, data])
+    return () => observer.disconnect();
+  }, [hasNextPage, fetchNextPage, isFetchingNextPage, isFetching]);
 
   return (
-    <div className="max-w-7xl mx-auto w-full">
-      <div
-        onClick={() => {
-          if (opinionsLeft.current && opinionsRight.current) {
-            opinionsLeft.current.classList.toggle("none");
-          }
-        }}
-        className="Home_RIGHT_LEFT_Grid_div mb-4 flex justify-end lg:hidden"
-      >
-        <button
-          className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium shadow-sm transition hover:shadow-md active:scale-[0.98] dark:bg-gray-900 dark:border-gray-800"
-        >
-          <i className='bx bxs-grid-alt text-lg' />
-          <span className="hidden sm:inline">Toggle Filters</span>
-        </button>
-      </div>
-
-      <section className="flex flex-col lg:flex-row gap-3">
-        {/* Left: Filters */}
-        <form
-          ref={opinionsLeft}
-          id='Profile_Filter_Opinions_Form'
-          className="w-full lg:w-[30%] flex flex-col gap-6 rounded-md border border-gray-200 bg-white p-4 sm:p-3 shadow-sm dark:bg-gray-900 dark:border-gray-800"
-          onSubmit={handleSubmit(submit)}
-        >
-          <div className="mt-2 flex items-center gap-3">
-            <Button
-              type='Submit'
-              className={`Profile_Opinions_ApplyFilter inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 active:scale-[0.98]`}>
-              {`${isLoading ? 'Searching' : 'Apply Filter'}`}
-            </Button>
-
-            <input
-              type='reset'
-              onClick={() => { reset() }}
-              value={'Reset Filter'}
-              className="Profile_Opinions_ResentFilter cursor-pointer rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 active:scale-[0.98] dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
-            />
-          </div>
-          <div className="border-b border-gray-200 pb-2 dark:border-gray-800">
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Filter By Post Age :</p>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor='Profile_Opinions_PostAge_Recent' className="inline-flex items-center gap-2 cursor-pointer">
-              <input {...register("PostAge")} id="Profile_Opinions_PostAge_Recent" type="radio" name="PostAge" value={'Recent'}
-                className="h-4 w-4 accent-blue-600" />
-              <span className="text-sm text-gray-700 dark:text-gray-200">Recent</span>
-            </label>
-
-            <label htmlFor='Profile_Opinions_PostAge_Oldest' className="inline-flex items-center gap-2 cursor-pointer">
-              <input {...register("PostAge")} id="Profile_Opinions_PostAge_Oldest" type="radio" name="PostAge" value={'Oldest'}
-                className="h-4 w-4 accent-blue-600" />
-              <span className="text-sm text-gray-700 dark:text-gray-200">Oldest</span>
-            </label>
-          </div>
-
-          <div className="border-t border-gray-200 pt-4 dark:border-gray-800">
-            <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">Filter By Category :</p>
-            <div id='Profile_Opinions_Category' className='flex items-center gap-3'>
-              <label className="text-sm text-gray-600 dark:text-gray-300">Category</label>
-              <select
-                name="category" {...register("category")}
-                className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200'
-              >
-                <option defaultChecked value={'All Category'}>All Category</option>
-                {categoryArr?.map((category, index) => (
-                  <option key={category.category + index}>{category.category}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div id='Profile_Opinions_FilterByDate' className="border-t border-gray-200 pt-4 dark:border-gray-800">
-            <p className="mb-2 text-sm font-semibold text-gray-700 dark:text-gray-200">Filter By Date :</p>
-
-            <div className='flex flex-col gap-3'>
-              <div className='flex items-center gap-3'>
-                <label htmlFor="AfterDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>After Date</label>
-                <input
-                  {...register("AfterDate", { required: false })}
-                  type="date" name="AfterDate" id="AfterDate"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
-                />
-              </div>
-
-              <div className='flex items-center gap-3'>
-                <label htmlFor="BeforeDate" className='w-28 text-sm text-gray-600 dark:text-gray-300'>Before Date</label>
-                <input
-                  type="date" name="BeforeDate" id="BeforeDate" {...register("BeforeDate")}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:bg-gray-950 dark:border-gray-800 dark:text-gray-200"
-                />
-              </div>
-            </div>
-          </div>
-
-
-        </form>
-
-        {/* Right: Results */}
-        <div
-          ref={opinionsRight}
-          className="flex-1 rounded-2xl border border-dashed border-gray-200 p-4 sm:p-6 min-h-[320px] bg-gray-50 dark:bg-gray-950 dark:border-gray-800"
-        >
-          {comments?.length === 0 && (
-            <p className="text-center text-sm font-semibold text-gray-600 dark:text-gray-300">
-              No Posts Available
-            </p>
-          )}
-
-          {comments?.map((comment, index) => {
-            return (
-              <div
-                className={`Profile_Opinions_Comments group mt-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:bg-gray-900 dark:border-gray-800`}
-                onClick={() => increaseViews(comment?.postid)}
-                key={comment?.$id}
-              >
-                <span className={`block text-sm font-semibold`}>
-                  {comment?.name}
-                </span>
-
-                <Link to={`/post/${comment?.postid}/${comment?.$id}`} className="block">
-                  <article className="prose prose-sm max-w-none text-gray-800 dark:prose-invert dark:text-gray-100">
-                    {parse(comment?.commentContent)}
-                  </article>
-
-                  <div id='BrowseQuestions_created_category_views' className='mt-3 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-300'>
-                    <span className="rounded-full bg-gray-100 px-3 py-1 dark:bg-gray-800">
-                      {new Date(comment?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </span>
-                    <span className="rounded-full bg-gray-100 px-3 py-1 dark:bg-gray-800">
-                      {comment?.category}
-                    </span>
-                    <div className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 dark:bg-gray-800">
-                      <i className="fa-solid fa-comments" />
-                      <span>{comment?.subComment?.length}</span>
-                    </div>
+    <main className="h-[calc(100dvh-130px)] rounded-2xl bg-slate-50 p-3">
+      <div className="mx-auto flex h-full max-w-7xl gap-4">
+        {showFilters && (
+          <aside className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white shadow-sm lg:w-[320px]">
+            <form onSubmit={handleSubmit(submit)} className="flex h-full flex-col">
+              <div className="sticky top-0 z-10 rounded-t-2xl border-b border-slate-200 bg-white p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      Filters
+                    </h2>
+                    <p className="text-sm text-slate-500">
+                      {activeFilterCount} active filter
+                      {activeFilterCount !== 1 ? "s" : ""}
+                    </p>
                   </div>
-                </Link>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={resetFilter}
+                    className="rounded-xl"
+                  >
+                    Reset
+                  </Button>
+                </div>
               </div>
-            )
-          })}
 
-          {hasNextPage && (
-            <section ref={spinnerRef} className='mt-6 flex justify-center'>
+              <div className="flex-1 space-y-6 overflow-y-auto p-4">
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Opinion age
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="filter-option">
+                      <input
+                        {...register("PostAge")}
+                        type="radio"
+                        value="Recent"
+                      />
+                      Recent
+                    </label>
+
+                    <label className="filter-option">
+                      <input
+                        {...register("PostAge")}
+                        type="radio"
+                        value="Oldest"
+                      />
+                      Oldest
+                    </label>
+                  </div>
+                </section>
+
+                <section className="space-y-2">
+                  <label className="text-sm font-medium text-slate-700">
+                    Category
+                  </label>
+
+                  <select
+                    {...register("category")}
+                    className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                  >
+                    <option value="All Category">All Category</option>
+
+                    {categoryArr?.map((item, index) => (
+                      <option
+                        key={`${item.category}-${index}`}
+                        value={item.category}
+                      >
+                        {item.category}
+                      </option>
+                    ))}
+                  </select>
+                </section>
+
+                <section className="space-y-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    Date range
+                  </p>
+
+                  <div>
+                    <label className="mb-1 block text-xs text-slate-500">
+                      After date
+                    </label>
+                    <input
+                      {...register("AfterDate")}
+                      type="date"
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-xs text-slate-500">
+                      Before date
+                    </label>
+                    <input
+                      {...register("BeforeDate")}
+                      type="date"
+                      className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                    />
+                  </div>
+                </section>
+              </div>
+
+              <div className="rounded-b-2xl border-t border-slate-200 bg-white p-4">
+                <Button
+                  type="submit"
+                  disabled={isFetching}
+                  className="w-full rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+                >
+                  {isFetching ? "Applying..." : "Apply Filters"}
+                </Button>
+              </div>
+            </form>
+          </aside>
+        )}
+
+        <section
+          className={`h-full flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ${
+            showFilters ? "hidden lg:block" : "block"
+          }`}
+        >
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl font-semibold text-slate-900">
+                Profile Opinions
+              </h1>
+              <p className="text-sm text-slate-500">
+                {comments.length} opinion{comments.length !== 1 ? "s" : ""} found
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-xl lg:hidden"
+              onClick={() => setShowFilters(true)}
+            >
+              Filters
+            </Button>
+          </div>
+
+          {isPending ? (
+            <div className="flex h-[70%] items-center justify-center">
               <Spinner />
-            </section>
-          )}
-        </div>
-      </section>
-    </div>
-  )
-}
+            </div>
+          ) : comments.length === 0 ? (
+            <div className="flex h-[70%] flex-col items-center justify-center text-center">
+              <p className="text-lg font-semibold text-slate-800">
+                No opinions found
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Try changing or resetting your filters.
+              </p>
 
-export default Opinions
+              <Button
+                type="button"
+                onClick={resetFilter}
+                className="mt-4 rounded-xl bg-cyan-500 text-white hover:bg-cyan-600"
+              >
+                Reset Filters
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {comments.map((comment) => (
+                <article
+                  key={comment?.$id}
+                  className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md"
+                >
+                  <Link
+                    to={`/post/${comment?.postid}/${comment?.$id}`}
+                    className="block"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium text-slate-500">
+                          {comment?.name || "Unknown user"}
+                        </p>
+
+                        <div className="mt-2 line-clamp-3 text-sm leading-6 text-slate-800">
+                          {parse(comment?.commentContent || "")}
+                        </div>
+                      </div>
+
+                      <span className="shrink-0 rounded-full bg-cyan-50 px-3 py-1 text-xs font-medium text-cyan-700">
+                        {comment?.category || "General"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                        {comment?.$createdAt
+                          ? new Date(comment.$createdAt).toDateString()
+                          : "No date"}
+                      </span>
+
+                      <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-600">
+                        <i className="fa-solid fa-comments" />
+                        <span>{comment?.subComment?.length || 0}</span>
+                      </span>
+                    </div>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          )}
+
+          <div ref={spinnerRef} className="flex justify-center py-6">
+            {isFetchingNextPage && <Spinner />}
+            {!hasNextPage && comments.length > 0 && (
+              <p className="text-sm text-slate-400">No more opinions</p>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+};
+
+export default Opinions;
