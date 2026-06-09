@@ -1,7 +1,7 @@
 
 # Thoughtify - Q&A Web App
 
-Thoughtify is a modern Question and Answer web application built using Vite.js and React.js. It provides a platform for users to post questions, share knowledge, interact with others, and more. Below are the key features of Thoughtify:
+Thoughtify is a modern Question and Answer web application built using Vite.js and React.js. It provides a platform for users to post questions, share knowledge, and more. Below are the key features of Thoughtify:
 
 ## Features
 
@@ -31,26 +31,20 @@ Thoughtify is a modern Question and Answer web application built using Vite.js a
 8. **Follow/Unfollow and Block**
    - Ability to follow or unfollow other users and block unwanted interactions.
 
-9. **Real-Time Chat**
-   - Real-time chat feature for instant communication between users.
-
-10. **Feedback and Settings**
+9. **Feedback and Settings**
     - Options for providing feedback and customizing user settings.
 
-11. **Authentication**
+10. **Authentication**
     - User authentication system including signup, login, logout, and forgot password functionality.
     - Login with Google and email verification for enhanced security.
 
-12. **Night Mode/Dark Mode**
-    - Toggleable dark mode for improved readability in low-light environments.
-
-13. **Profile Post Filtering**
+11. **Profile Post Filtering**
     - Filter your own posts within your profile for easy management.
 
-14. **Notifications**
+12. **Notifications**
     - Notification system to keep users updated on interactions and activities.
 
-15. **Download App (PWA)**
+13. **Download App (PWA)**
     - Progressive Web App (PWA) support for easy installation and usage across devices.
 
 ## Getting Started
