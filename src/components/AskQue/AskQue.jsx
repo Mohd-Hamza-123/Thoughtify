@@ -18,6 +18,9 @@ const AskQue = ({ post }) => {
 
   const optionsRef = useRef();
   const userStatus = useSelector((state) => state.auth.status);
+  const userData = useSelector((state)=>state.auth.userData)
+
+  // console.log(userData)
 
   const { handleSubmit, register, control, getValues } =
     useForm({
@@ -136,8 +139,12 @@ const AskQue = ({ post }) => {
 
     setIsLoading(true)
 
+    data.trustedResponderPost = userData.labels.includes("admin")
     data.queImage = queImage
     data.pollOptions = pollOptions.map((obj) => JSON.stringify(obj)) || []
+
+    // console.log(data)
+    // return
 
     if (post) {
 

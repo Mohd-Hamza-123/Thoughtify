@@ -1,9 +1,9 @@
 import { toast } from "sonner"
+import conf from "@/conf/conf";
+import { useNavigate } from "react-router-dom";
 import appwriteService from "@/appwrite/config";
 import { useQueryClient } from "@tanstack/react-query";
 import convertToWebPFile from "@/helpers/convert-image-into-webp";
-import { useNavigate } from "react-router-dom";
-import conf from "@/conf/conf";
 
 const useUpdatePost = () => {
 
@@ -52,7 +52,7 @@ const useUpdatePost = () => {
             } else if (imageURL && imageID) {
 
                 dbPost = await appwriteService.updatePost({ slug: postId, payload: data });
-                console.log("imageURL and ImageID")
+                // console.log("imageURL and ImageID")
             } else {
 
                 if (imageID) await appwriteService.deleteThumbnail(imageID)
@@ -75,17 +75,19 @@ const useUpdatePost = () => {
 
             }
 
-            console.log(dbPost)
+            // console.log(dbPost)
 
             queryClient.setQueryData(["posts"], (oldData) => {
+
                 if (!oldData) return oldData;
+                // console.log(oldData)
 
                 return {
                     ...oldData,
                     pages: oldData.pages.map((page) => ({
                         ...page,
                         documents: page.documents.map((existingPost) => {
-                            if (postId === dbPost.$id) {
+                            if (existingPost.$id === dbPost.$id) {
                                 return dbPost;
                             }
                             return existingPost;

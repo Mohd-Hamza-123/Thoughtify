@@ -14,28 +14,27 @@ import { Home, ViewPostPage, } from "./pages/pages";
 import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
 import {
-  AskQuestion,
+  Profile,
   NotFound,
   LoginPage,
   SignupPage,
+  SearchPage,
+  AskQuestion,
+  FindFriends,
   ResetPassword,
   ForgotPassword,
+  EditProfilePage,
   EditAskQuestion,
-  FindFriends,
-  SearchPage,
   RespondersSectionPage,
-  Profile,
-  EditProfilePage
 } from "@/pages/pages"
 
 function App() {
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const authStatus = useSelector((state) => state.auth.status);
-
   const urlParams = new URLSearchParams(window.location.search);
-  const secret = urlParams.get("secret");
   const userId = urlParams.get("userId");
+  const secret = urlParams.get("secret");
 
   const verifyEmail = async () => {
     try {
@@ -87,7 +86,6 @@ function App() {
       });
     }
   };
-
   const installApp = (e) => {
     e.preventDefault();
     setAppInstallPrompt(e);
@@ -102,7 +100,6 @@ function App() {
       setisAppInstalled(false);
     }
   };
-
 
   useEffect(() => {
 
@@ -132,11 +129,12 @@ function App() {
 
       </Route>
 
+      <Route path="*" Component={NotFound} />
       <Route path="login" Component={LoginPage} />
       <Route path="signup" Component={SignupPage} />
-      <Route path="forgotPassword" Component={ForgotPassword} />
       <Route path="reset-password" Component={ResetPassword} />
-      <Route path="*" Component={NotFound} />
+      <Route path="forgotPassword" Component={ForgotPassword} />
+
     </Routes>
   </AskProvider>
 }

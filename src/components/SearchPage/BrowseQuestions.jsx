@@ -156,7 +156,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
               onSubmit={handleSubmit(submit)}
               className="flex h-full flex-col"
             >
-              <div className="sticky top-0 z-10 border-b border-slate-200 bg-white p-4 rounded-t-2xl">
+              <div className="sticky top-0 z-5 border-b border-slate-200 bg-white p-4 rounded-t-2xl">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">

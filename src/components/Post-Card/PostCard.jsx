@@ -26,6 +26,7 @@ const PostCard = ({
   trustedResponderPost,
 }) => {
 
+ 
   profileImage = profileImage ? profileImage.replace("/preview", "/view") : null;
   const { imageURL, imageID } = JSON.parse(queImage || "{}");
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL;
@@ -55,6 +56,7 @@ const PostCard = ({
                 className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-white dark:ring-slate-900 shadow-sm"
                 alt={name}
               />
+
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1">
                   <span>{name}</span>
