@@ -25,7 +25,7 @@ const ViewPostHeader = ({ post }) => {
 
     const [open, setOpen] = useState(false);
     const userData = useSelector((state) => state?.auth?.userData);
-    const isAuthor = post && userData ? post.userId === userData.$id : false;
+    const isAuthor = post && userData ? post?.userId === userData?.$id : false;
     // console.log(isAuthor)
 
     const navigate = useNavigate();

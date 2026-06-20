@@ -12,14 +12,13 @@ const ViewPostMain = ({ post: dbPost }) => {
 
 
   const { profileImage } = post
-  console.log(profileImage)
+
   const isPollOpinionVisible = true;
   const queryClient = useQueryClient()
   const [selectedChoice, setSelectedChoice] = useState(null);
   const userData = useSelector((state) => state?.auth?.userData);
 
   const update = async (choice) => {
-
     const updatedPost = await updatePoll({ post, userData, choice });
     setPost(updatedPost)
     queryClient.setQueryData(["posts"], (oldData) => {
