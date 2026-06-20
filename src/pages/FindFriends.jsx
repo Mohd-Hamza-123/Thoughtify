@@ -114,7 +114,7 @@ const FindFriends = () => {
               </div>
             ) : Array.isArray(allUsers) && allUsers.length > 0 ? (
               allUsers.map((user) => {
-                console.log(user)
+                // console.log(user)
                 const profileImageURL = user?.profileImage?.profileImageURL;
 
                 return (

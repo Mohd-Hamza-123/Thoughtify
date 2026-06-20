@@ -17,8 +17,8 @@ import React, { useEffect, useState, memo, useRef } from "react";
 const AskQue = ({ post }) => {
 
   const optionsRef = useRef();
+  const userData = useSelector((state) => state.auth.userData)
   const userStatus = useSelector((state) => state.auth.status);
-  const userData = useSelector((state)=>state.auth.userData)
 
   // console.log(userData)
 
@@ -36,6 +36,8 @@ const AskQue = ({ post }) => {
 
   const [queImage, setQueImage] = useState(post?.queImage || {})
   const [pollOptions, setPollOptions] = useState(post?.pollOptions || [])
+
+  // console.log(pollOptions)
 
   const [file, setFile] = useState(null)
   const [fileView, setFileView] = useState('')
@@ -99,6 +101,7 @@ const AskQue = ({ post }) => {
       return;
     }
 
+    // console.log(pollOptions.length)
     if (pollOptions.length >= 4) {
       toast("Maximum 4 options allowed");
       optionsRef.current.value = ""
@@ -107,6 +110,9 @@ const AskQue = ({ post }) => {
 
     const option = optionsRef.current.value.trim();
     if (!option) return
+
+    // console.log(pollOptions)
+    // return 
 
     setPollOptions([...pollOptions, { option, vote: 0 }]);
     optionsRef.current.value = ""
@@ -337,12 +343,14 @@ const AskQue = ({ post }) => {
                 </Button>
               </div>
 
-              {pollOptions.map((options, index) => {
-                return <div className="w-full flex justify-start items-center" key={options}>
-                  <span className={`w-3/4`} >{`${index + 1} ) ${options}`}</span>
-                  {!post && <span onClick={() => deletePollOptions(index)}><Icons.trashcan /></span>}
-                </div>
-              })}
+              {pollOptions.map((options, index) => (<div
+                className="w-full flex justify-start items-center"
+                key={options.option + index}
+              >
+                <span className="w-3/4" >{`${index + 1} ) ${options.option}`}</span>
+                {!post && <span onClick={() => deletePollOptions(index)}><Icons.trashcan /></span>}
+              </div>
+              ))}
 
               <span className={`text-gray-500 ${pollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
               {!(pollOptions.length >= 2) && <span className={`text-gray-500`}>Add Minimum 2 Options</span>}

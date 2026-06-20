@@ -36,6 +36,7 @@ const ViewPost = () => {
       toast.error("No Posts Found")
       return
     }
+    
     setPost(data)
   }
 
@@ -52,7 +53,6 @@ const ViewPost = () => {
       <ViewPostMainContent post={post} />
       <ViewPostLikeDislikeBookmark post={post} />
     </section>
-
       
   </div> : <div className="w-full flex justify-center items-center h-[80dvh]">
     <Spinner />

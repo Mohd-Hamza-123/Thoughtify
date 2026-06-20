@@ -1,7 +1,6 @@
 import { memo } from "react";
-import ViewPostHeader from "./ViewPostHeader";
 import ViewPostMain from "./ViewPostMain";
-
+import ViewPostHeader from "./ViewPostHeader";
 
 const ViewPostMainContent = ({ post }) => {
 

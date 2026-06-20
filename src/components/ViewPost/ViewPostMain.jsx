@@ -4,17 +4,39 @@ import { Link } from "react-router-dom";
 import { updatePoll } from "@/lib/posts";
 import { useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-const ViewPostMain = ({ post }) => {
+const ViewPostMain = ({ post: dbPost }) => {
+
+  const [post, setPost] = useState(dbPost)
+
 
   const { profileImage } = post
-
   const isPollOpinionVisible = true;
+  const queryClient = useQueryClient()
   const [selectedChoice, setSelectedChoice] = useState(null);
   const userData = useSelector((state) => state?.auth?.userData);
 
   const update = async (choice) => {
-    await updatePoll({ post, userData, choice });
+
+    const updatedPost = await updatePoll({ post, userData, choice });
+    setPost(updatedPost)
+    queryClient.setQueryData(["posts"], (oldData) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        pages: oldData.pages.map((page) => ({
+          ...page,
+          documents: page.documents.map((document) => {
+            if (document.$id === post.$id) {
+              return updatedPost
+            }
+            return document
+          }),
+        })),
+      }
+
+    })
   };
 
   useEffect(() => {
@@ -31,7 +53,7 @@ const ViewPostMain = ({ post }) => {
             <div className="flex gap-3 items-center cursor-pointer">
               <img
                 src={profileImage || '/NoProfile.jpg'}
-                className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
+                className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white shadow-sm"
                 alt="avatar"
               />
               <div className="flex flex-col">
@@ -52,7 +74,7 @@ const ViewPostMain = ({ post }) => {
             </div>
           </Link>
 
-          <h2 className="text-2xl md:text-3xl font-extrabold mt-4 tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl font-extrabold mt-4 tracking-tight text-slate-900">
             {post?.title}
           </h2>
 
@@ -73,51 +95,54 @@ const ViewPostMain = ({ post }) => {
 
               <ul className="my-4 flex flex-col gap-3">
                 {post?.pollOptions?.map((option, index) => {
-                  const { option: choice, vote } = JSON.parse(option);
-                  const totalVotes = post?.pollVotersID?.length;
-                  let percentage = (vote / totalVotes) * 100;
-                  percentage = percentage.toFixed(0);
-                  if (isNaN(percentage)) percentage = 0;
-                  return (
-                    <li
-                      key={index}
-                      className="group"
-                      onClick={() => update(choice)}
-                    >
-                      <div
-                        className={`relative w-full border rounded-lg overflow-hidden transition-shadow duration-150 ${choice === selectedChoice
-                          ? "ring-2 ring-blue-400 shadow-md"
-                          : "border-slate-200 dark:border-slate-700 hover:shadow-sm"
-                          }`}
+                  try {
+                    const { option: choice, vote } = JSON.parse(option);
+                    const totalVotes = post?.pollVotersID?.length;
+                    let percentage = (vote / totalVotes) * 100;
+                    percentage = percentage.toFixed(0);
+                    if (isNaN(percentage)) percentage = 0;
+                    return (
+                      <li
+                        key={index}
+                        className="group cursor-pointer"
+                        onClick={() => update(choice)}
                       >
-                        <div className="relative z-10 flex justify-between items-center p-3 md:p-4 gap-4">
-                          <span className="text-base md:text-lg font-medium text-slate-900 dark:text-slate-100">
-                            {choice}
-                          </span>
-                          <span className="text-sm md:text-base text-slate-600 dark:text-slate-300">
-                            {percentage}%
-                          </span>
-                        </div>
-
-                        {/* Background bar */}
                         <div
-                          aria-hidden="true"
-                          className={`absolute left-0 top-0 h-full z-0 transition-all duration-500 ease-in-out`}
-                          style={{
-                            width: `${percentage}%`,
-                            // subtle gradient for selected vs unselected
-                          }}
+                          className={`relative w-full border rounded-lg overflow-hidden transition-shadow duration-150 ${choice === selectedChoice
+                            ? "ring-2 ring-blue-400 shadow-md"
+                            : "border-slate-200 dark:border-slate-700 hover:shadow-sm"
+                            }`}
                         >
+                          <div className="relative z-10 flex justify-between items-center p-3 md:p-4 gap-4">
+                            <span className="text-base md:text-lg font-medium text-slate-900 dark:text-slate-100">
+                              {choice}
+                            </span>
+                            <span className="text-sm md:text-base text-slate-600 dark:text-slate-300">
+                              {percentage}%
+                            </span>
+                          </div>
+
+                          {/* Background bar */}
                           <div
-                            className={`h-full ${choice === selectedChoice
-                              ? "bg-gradient-to-r from-blue-400 to-blue-500"
-                              : "bg-slate-200/70 dark:bg-slate-700/60"
-                              }`}
-                          />
+                            aria-hidden="true"
+                            className="absolute left-0 top-0 h-full z-0 transition-all duration-500 ease-in-out"
+                            style={{
+                              width: `${percentage}%`,
+                              // subtle gradient for selected vs unselected
+                            }}
+                          >
+                            <div
+                              className={`h-full ${choice === selectedChoice
+                                ? "bg-gradient-to-r from-blue-400 to-blue-500"
+                                : "bg-slate-200/70 dark:bg-slate-700/60"
+                                }`}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </li>
-                  );
+                      </li>
+                    );
+                  } catch (error) {
+                  }
                 })}
               </ul>
 
@@ -129,7 +154,7 @@ const ViewPostMain = ({ post }) => {
               )}
 
               <div className="flex items-center justify-between gap-3 mt-4 px-2">
-                <div className="text-sm text-slate-600 dark:text-slate-300">
+                <div className="text-sm text-slate-600">
                   Total Votes :
                 </div>
                 <div className="text-sm font-semibold text-slate-800 dark:text-slate-100">

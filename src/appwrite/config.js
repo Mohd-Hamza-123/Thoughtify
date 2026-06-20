@@ -32,7 +32,13 @@ export class Service {
 
     async updatePost({ slug, payload }) {
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, payload)
+            // console.log(slug, payload)
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug,
+                payload
+            )
         } catch (error) {
             const message = error instanceof Error ? error.message : error
             console.error(message)
@@ -149,7 +155,7 @@ export class Service {
             const result = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
-                [Query.equal("userId", [userId]),Query.limit(1)]
+                [Query.equal("userId", [userId]), Query.limit(1)]
             )
             return result.total
         } catch (error) {
