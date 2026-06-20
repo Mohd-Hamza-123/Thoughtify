@@ -16,7 +16,7 @@ const SubComment = ({ subComment = [], deleteSubComment, commentId }) => {
                 // console.log(parsedComment)
                 const { username, userId, comment } = parsedComment;
 
-                console.log(userId === myId)
+                // console.log(userId === myId)
                 return (
                     <div
                         key={`${comment}-${userId}-${index}`}

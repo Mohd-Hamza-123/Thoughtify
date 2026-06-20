@@ -447,7 +447,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                         </p>
 
                         <h2 className="mt-1 text-lg font-semibold text-slate-900 transition group-hover:text-cyan-600">
-                          {post?.title}
+                          {post?.title || post?.pollQuestion}
                         </h2>
                       </div>
 

@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
 import React, { useState } from "react";
 import profile from "../../appwrite/profile";
 import "react-image-crop/dist/ReactCrop.css";
@@ -12,25 +13,16 @@ import { userProfile } from "@/store/profileSlice";
 import { useSelector, useDispatch } from "react-redux";
 import EditProfileOccupation from "./EditProfileOccupation";
 import EditProfileEducationLvl from "./EditProfileEducationLvl";
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 const EditProfile = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch()
+  const queryClient = useQueryClient()
   const userData = useSelector((state) => state.auth.userData);
   const profileData = useSelector((state) => state.profileSlice.userProfile);
-  
-  const {
-    $id: profileId,
-    bio,
-    interestedIn,
-    profileImage,
-    educationLvl,
-    occupation,
-    links,
-  } = profileData
-
-  const { profileImageURL, profileImageID } = JSON.parse(profileImage)
+  // console.log(profileData)
 
   const [isUpdating, setIsUpdating] = useState(false)
   const [profileObject, setProfileObject] = useState({
@@ -42,6 +34,20 @@ const EditProfile = () => {
     occupation: '',
   })
 
+  // const profileData = queryClient.getQueryData(['profiles', userData.$id])
+
+  console.log(profileData)
+
+  const {
+    bio,
+    links,
+    occupation,
+    interestedIn,
+    educationLvl,
+    profileImage,
+    $id: profileId,
+  } = profileData
+  const { profileImageURL, profileImageID } = JSON.parse(profileImage)
 
 
   const submit = async (e) => {
@@ -102,10 +108,13 @@ const EditProfile = () => {
           profileImage: profileImageObject
         }
       );
+
+  
       dispatch(userProfile({ userProfile: profileData }))
-      toast.success("Profile Updated")
+      queryClient.invalidateQueries(['profiles', userData?.$id]) // It marks cache as stale and usually triggers a refetch.
       navigate(`/profile/${userData?.$id}`);
       setIsUpdating(false)
+
     } catch (error) {
       toast.error("Profile not updated")
       console.log(error)
@@ -113,6 +122,7 @@ const EditProfile = () => {
     }
 
   }
+
 
 
   return (
@@ -155,13 +165,11 @@ const EditProfile = () => {
       </div>
 
       <div className="fixed bottom-4 left-0 z-20 flex w-full justify-center px-4">
-        <Button
+        {isUpdating ? <Spinner /> : <Button
           type="submit"
-          className="flex items-center justify-center gap-2 rounded-md bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-sky-600 disabled:opacity-70"
-        >
-          {`${isUpdating ? "Updating..." : "Update Profile"}`}
-          <i className="fa-solid fa-file-arrow-up"></i>
-        </Button>
+          className="flex items-center justify-center gap-2 rounded-md bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:bg-sky-600 disabled:opacity-70">
+          Update Profile
+        </Button>}
       </div>
     </form>
   );

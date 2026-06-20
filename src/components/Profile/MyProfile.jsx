@@ -1,5 +1,5 @@
 import "./MyProfile.css";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import authService from "@/appwrite/auth";
 import { logout } from "@/store/authSlice";
@@ -39,7 +39,8 @@ const MyProfile = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
-  const myProfile = useSelector((state) => state?.profileSlice?.userProfile);
+  const myProfile = useSelector((state) => state.profileSlice.userProfile);
+  // console.log(myProfile)
   const isFollow = myProfile?.following?.find((follow) => JSON.parse(follow)?.profileID === slug)
   const isBlocked = myProfile?.blockedUsers?.includes(slug)
   const realUser = userData ? slug === userData.$id : false;

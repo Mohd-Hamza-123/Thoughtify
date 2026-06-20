@@ -176,7 +176,7 @@ const Comments = () => {
 
       {filteredComments.map((comment) => {
 
-        console.log(comment)
+        // console.log(comment)
 
         let profilePicURL = ''
         try {

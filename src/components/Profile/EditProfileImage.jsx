@@ -9,7 +9,7 @@ const MINIMUM_DIMENSION = 50;
 
 const EditProfileImage = ({ profileImageURL, setProfileObject }) => {
 
-    console.log(profileImageURL)
+    // console.log(profileImageURL)
     const imgRef = useRef(null)
     const canvasRef = useRef(null)
 
