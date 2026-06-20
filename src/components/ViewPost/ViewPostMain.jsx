@@ -12,6 +12,7 @@ const ViewPostMain = ({ post: dbPost }) => {
 
 
   const { profileImage } = post
+  console.log(profileImage)
   const isPollOpinionVisible = true;
   const queryClient = useQueryClient()
   const [selectedChoice, setSelectedChoice] = useState(null);
@@ -52,7 +53,7 @@ const ViewPostMain = ({ post: dbPost }) => {
           <Link to={`/profile/${post?.userId}`}>
             <div className="flex gap-3 items-center cursor-pointer">
               <img
-                src={profileImage || '/NoProfile.jpg'}
+                src={profileImage.replace("/preview", "/view") || '/NoProfile.jpg'}
                 className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white shadow-sm"
                 alt="avatar"
               />

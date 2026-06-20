@@ -205,7 +205,7 @@ const Comments = () => {
                 <div className="flex gap-3 items-center cursor-pointer">
                   <img
                     className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform"
-                    src={profilePicURL}
+                    src={profilePicURL.replace("/preview", "/view")}
                     alt="profilePic"
                   />
                   <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
