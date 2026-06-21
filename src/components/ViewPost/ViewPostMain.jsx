@@ -28,7 +28,7 @@ const ViewPostMain = ({ post: dbPost }) => {
         pages: oldData.pages.map((page) => ({
           ...page,
           documents: page.documents.map((document) => {
-            if (document.$id === post.$id) {
+            if (document?.$id === post?.$id) {
               return updatedPost
             }
             return document

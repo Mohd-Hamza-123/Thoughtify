@@ -136,7 +136,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
   }
 
   function updatePost(newPost) {
-    queryClient.setQueryData(['post', post.$id], (oldData) => {
+    queryClient.setQueryData(['post', post?.$id], (oldData) => {
       return newPost
     })
   }

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const SubComment = ({ subComment = [], deleteSubComment, commentId }) => {
 
     const userData = useSelector((state) => state.auth.userData)
-    const myId = userData.$id
+    const myId = userData?.$id
     // console.log(myId)
 
     return (

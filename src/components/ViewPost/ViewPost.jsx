@@ -20,7 +20,7 @@ const ViewPost = () => {
 
     let data = null
     const query = queryClient.getQueryData(["posts"]);
-    const pages = query?.pages
+    const pages = query?.pages || []
 
     if (!Array.isArray(pages) || pages.length === 0) {
       navigate("/")
@@ -50,7 +50,7 @@ const ViewPost = () => {
     className="w-full relative flex">
 
     <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-x-hidden">
-      <ViewPostMainContent post={post} />
+       <ViewPostMainContent post={post} />
       <ViewPostLikeDislikeBookmark post={post} />
     </section>
       
