@@ -1,4 +1,5 @@
 import Prism from "../Prism";
+import { toast } from "sonner"
 import parse from "html-react-parser";
 import { Link } from "react-router-dom";
 import { updatePoll } from "@/lib/posts";
@@ -6,19 +7,24 @@ import { useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
+
 const ViewPostMain = ({ post: dbPost }) => {
 
   const [post, setPost] = useState(dbPost)
-
-
-  const { profileImage } = post
+  
+  const profileImage = post?.profileImage
 
   const isPollOpinionVisible = true;
   const queryClient = useQueryClient()
   const [selectedChoice, setSelectedChoice] = useState(null);
   const userData = useSelector((state) => state?.auth?.userData);
+  const userStatus = useSelector((state) => state?.auth?.status);
 
   const update = async (choice) => {
+    if (!userStatus) {
+      toast.error("Please login")
+      return
+    }
     const updatedPost = await updatePoll({ post, userData, choice });
     setPost(updatedPost)
     queryClient.setQueryData(["posts"], (oldData) => {
@@ -52,7 +58,7 @@ const ViewPostMain = ({ post: dbPost }) => {
           <Link to={`/profile/${post?.userId}`}>
             <div className="flex gap-3 items-center cursor-pointer">
               <img
-                src={profileImage.replace("/preview", "/view") || '/NoProfile.jpg'}
+                src={profileImage?.replace("/preview", "/view") || '/NoProfile.jpg'}
                 className="rounded-full h-7 md:h-10 md:w-10 object-cover ring-2 ring-white shadow-sm"
                 alt="avatar"
               />
@@ -79,7 +85,7 @@ const ViewPostMain = ({ post: dbPost }) => {
           </h2>
 
           <div className="prose prose-sm dark:prose-invert max-w-none mt-1 md:mt-3 px-1 py-2 text-slate-700 dark:text-slate-300">
-            {parse(post?.content)}
+            {parse(post?.content || "")}
           </div>
 
           <div className="mt-4">

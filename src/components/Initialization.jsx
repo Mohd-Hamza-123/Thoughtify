@@ -1,13 +1,14 @@
 import { Loader } from '@/components';
+// import * as Sentry from "@/sentry/react"
 import profile from '@/appwrite/profile';
 import React, { useEffect } from 'react';
 import authService from '@/appwrite/auth';
 import useProfile from '@/hooks/useProfile';
+import { useTotalPost } from '@/hooks/usePost';
 import { login, logout } from '@/store/authSlice';
 import { userProfile } from '@/store/profileSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { homePageLoading } from '@/store/loadingSlice';
-import { useTotalPost } from '@/hooks/usePost';
 
 const Initialization = ({ children }) => {
 
@@ -15,7 +16,7 @@ const Initialization = ({ children }) => {
     const { createProfile } = useProfile()
     const loading = useSelector((state) => state.loadingSlice.homePageLoading)
 
-    const {data : totalPost} = useTotalPost()
+    // const { data: totalPost } = useTotalPost()
 
     const getMyProfile = async (userData) => {
         try {
@@ -29,7 +30,7 @@ const Initialization = ({ children }) => {
             dispatch(userProfile({ userProfile: myProfile }))
         } catch (error) {
             console.error("getMyProfile failed", error);
-            throw error; 
+            throw error;
         }
 
     }
@@ -45,7 +46,18 @@ const Initialization = ({ children }) => {
             dispatch(login({ userData }));
             await getMyProfile(userData)
         } catch (error) {
-            console.error("Initialization.jsx : Error in loggedIn ", error)
+            if (import.meta.env.DEV) {
+                console.error("Initialization.jsx : ", error);
+            }
+            // Sentry.captureException(error, {
+            //     tags: {
+            //         file: "Initialization.jsx",
+            //         function: "getMyProfile",
+            //     },
+            //     extra: {
+            //         userId: userData?.$id,
+            //     },
+            // });
             dispatch(logout())
         } finally {
             dispatch(homePageLoading({ homePageLoading: false }))

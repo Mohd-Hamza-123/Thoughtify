@@ -32,11 +32,6 @@
         justify-content: center !important;
     }
 
-    body.darkMode #Signup>div {
-        background-color: transparent !important;
-        box-shadow: none !important;
-    }
-
     .signup_insideForm_div>div:nth-child(1) {
         width: 100% !important;
     }
@@ -67,17 +62,6 @@
     animation: rotate 1s normal;
 }
 
-body.darkMode #Signup>div {
-    background-color: black;
-    box-shadow: none;
-    color: white;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
-
-
-body.darkMode #Signup img {
-    filter: brightness(200%) invert(100%);
-}
 
 @keyframes rotate {
     100% {
@@ -203,10 +187,5 @@ body.darkMode .signup_insideForm_div .inputTransition input:valid {
 
 .login_signIn_Btn {
     background-color: #16BEF6;
-    color: white;
-}
-
-body.darkMode .login_signIn_Btn {
-    background-color: rgb(255, 0, 0);
     color: white;
 }

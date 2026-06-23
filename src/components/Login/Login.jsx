@@ -1,18 +1,19 @@
 import './Login.css'
+import { toast } from "sonner"
 import { GoBackHome } from '..';
 import { Input } from '../ui/input';
 import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
 import { ThoughtifyLogo } from '../Logo';
+import profile from '@/appwrite/profile';
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import authService from "../../appwrite/auth";
 import { checkAppWriteError } from '@/messages';
+import { userProfile } from '@/store/profileSlice';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as authLogin } from "../../store/authSlice";
-import profile from '@/appwrite/profile';
-import { toast } from "sonner"
-import { userProfile } from '@/store/profileSlice';
 import { homePageLoading } from '@/store/loadingSlice';
 
 const Login = () => {
@@ -114,14 +115,14 @@ const Login = () => {
           </div>
 
 
-          <p>
-            <Link to={`/forgotPassword`} className="hover:underline text-sm">
-              Forget Your Password ?
-            </Link>
-          </p>
+
+          <Link to={`/forgotPassword`} className="hover:underline text-sm">
+            Forget Your Password ?
+          </Link>
+
 
           <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
-            {`${isWaiting ? 'wait...' : 'Login'}`}
+            {isWaiting ? <Spinner /> : 'Login'}
           </Button>
 
         </form>

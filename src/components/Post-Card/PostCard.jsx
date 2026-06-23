@@ -72,7 +72,7 @@ const PostCard = ({
           </div>
 
           <Link to={`/post/${$id}/${null}`}>
-            <h2 className="poppins text-md sm:text-xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight inline-block">
+            <h2 className="poppins text-md sm:text-xl font-extrabold text-slate-900  leading-tight inline-block">
               <UnderlineAnimate className="bg-gray-700">
                 {title ? title : pollQuestion}
               </UnderlineAnimate>
@@ -84,7 +84,7 @@ const PostCard = ({
               {date}
             </span>
 
-            <span className="px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 text-[12px] border border-indigo-100 dark:border-indigo-800">
+            <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[12px] border border-indigo-100">
               {category}
             </span>
 

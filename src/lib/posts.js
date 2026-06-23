@@ -169,7 +169,7 @@ export const updatePoll = async ({ post, userData, choice }) => {
     try {
         
         const { $id: postId, pollVotersID, pollOptions } = post
-        const { $id: userId } = userData
+        const { $id: userId } = userData || {}
 
         const parsedPollOptions = pollOptions.map((obj) => JSON.parse(obj))
         let voters = pollVotersID.map((obj) => JSON.parse(obj));
@@ -256,7 +256,6 @@ export const updatePoll = async ({ post, userData, choice }) => {
         return response
     } catch (error) {
         console.error(error instanceof Error ? error.message : error)
-
     }
 
 }

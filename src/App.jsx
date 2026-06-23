@@ -1,5 +1,5 @@
 import "./App.css";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { NavBar } from "./components";
 import profile from "./appwrite/profile";
 import authService from "./appwrite/auth";
@@ -113,8 +113,11 @@ function App() {
 
 
   return <AskProvider value={{ isAppInstalled, onInstallApp }}>
-    <Initialization />
+
+
+    {/* <Initialization /> */}
     <Overlay />
+
     <Routes>
       <Route path="/" element={<NavBar />}>
         <Route index Component={Home} />
@@ -126,7 +129,6 @@ function App() {
         <Route path="responders-post" Component={RespondersSectionPage} />
         <Route path="profile/:slug" Component={Profile} />
         <Route path="edit-profile/:slug" Component={EditProfilePage} />
-
       </Route>
 
       <Route path="*" Component={NotFound} />

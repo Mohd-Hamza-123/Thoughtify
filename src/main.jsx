@@ -1,3 +1,4 @@
+import "./lib/sentry"
 import "./index.css";
 import React from "react";
 import App from "./App.jsx";
@@ -9,7 +10,6 @@ import { BrowserRouter } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundry";
 import QueryProvider from "./Providers/QueryProvider.jsx";
 import BooleanProvider from "./Providers/BooleanProvider.jsx";
-
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

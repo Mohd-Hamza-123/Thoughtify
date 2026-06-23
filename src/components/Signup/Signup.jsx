@@ -1,5 +1,7 @@
 import "./Signup.css";
 import React from "react";
+import { toast } from "sonner"
+import { Spinner } from "../ui/spinner";
 import { GoBackHome } from "..";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -13,7 +15,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { login, logout } from "../../store/authSlice";
 import { homePageLoading } from "@/store/loadingSlice";
-import {toast} from "sonner"
 
 const Signup = () => {
 
@@ -47,7 +48,7 @@ const Signup = () => {
 
         <ThoughtifyLogo className="mx-auto" />
 
-        <h2 className="font-bold text-2xl mt-2 text-center"> Sign-In</h2>
+        <h2 className="font-bold text-2xl mt-2 text-center"> Sign Up</h2>
 
         <p className="text-center">
           Already have an Account ?&nbsp;
@@ -105,8 +106,12 @@ const Signup = () => {
             </div>
           </div>
 
-          <Button type="submit" className="rounded-sm w-20 block px-4 mt-3 py-1 login_signIn_Btn">
-            {`${isPending ? 'wait...' : 'SignIn'}`}
+          <Button 
+          type="submit" 
+          className="rounded-sm block px-4 mt-3 py-1 login_signIn_Btn"
+          disabled={isPending}
+          >
+            {isPending ? <Spinner /> : 'Sign Up'}
           </Button>
         </form>
 
@@ -114,7 +119,7 @@ const Signup = () => {
           variant="destructive"
           onClick={() => authService.googleAuth()}
           type="button" className="lg:w-1/5 mx-auto" >
-          Sign in with Google
+          Sign up with Google
         </Button>
       </div>
     </div>

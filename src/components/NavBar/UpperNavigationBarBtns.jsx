@@ -2,14 +2,11 @@ import React from "react";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useAskContext } from "@/context/AskContext";
 
 export default function UpperNavigationBarBtns() {
 
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
-
-  const { myUserProfile } = useAskContext();
   const navbarBtn = [
     {
       name: "Login",
@@ -17,7 +14,7 @@ export default function UpperNavigationBarBtns() {
       slug: "/login",
     },
     {
-      name: "Sign-In",
+      name: "Sign-up",
       active: !authStatus,
       slug: "/signup",
     },

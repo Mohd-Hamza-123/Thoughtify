@@ -373,7 +373,7 @@ const AskQue = ({ post }) => {
                 <Spinner />
               </Button>
               :
-              <Button type="submit" className="askque_btn">
+              <Button type="submit" className="askque_btn" disabled={isLoading}>
                 {post ? "Update Your Question" : "Post Question"}
               </Button>}
           </div>
