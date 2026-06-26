@@ -25,14 +25,16 @@ export class Service {
             )
         } catch (error) {
             const message = error instanceof Error ? error.message : error
-            console.error(message)
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
 
     async updatePost({ slug, payload }) {
         try {
-            // console.log(slug, payload)
+
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
@@ -41,7 +43,9 @@ export class Service {
             )
         } catch (error) {
             const message = error instanceof Error ? error.message : error
-            console.error(message)
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
@@ -53,7 +57,11 @@ export class Service {
                 commentCount
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -66,7 +74,11 @@ export class Service {
                 pollVotersID
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
     async updatePost_Like_DisLike({ postId, like, dislike }) {
@@ -79,7 +91,11 @@ export class Service {
                 dislike,
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -87,7 +103,13 @@ export class Service {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-            return false
+
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
+
         }
     }
 
@@ -101,8 +123,11 @@ export class Service {
             // console.log(data)
             return data
         } catch (error) {
-            console.log("Appwrite serive :: getPost :: error", error);
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.error(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -145,7 +170,10 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-            // console.log(error)
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw new Error(error)
         }
     }
@@ -159,7 +187,10 @@ export class Service {
             )
             return result.total
         } catch (error) {
-            console.error(error instanceof Error ? error.message : error)
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.error(message)
+            }
             throw error
         }
     }
@@ -180,28 +211,21 @@ export class Service {
         Like_Dislike,
     }, lastPostID) {
 
-
-
         let QueryArr = [Query.limit(5)]
         if (lastPostID) QueryArr.push(Query.cursorAfter(lastPostID))
-
         if (Like_Dislike === 'Most Liked') {
             QueryArr.push(Query.orderDesc("like"))
         } else if (Like_Dislike === 'Most Disliked') {
             QueryArr.push(Query.orderDesc("dislike"))
         }
-
-
         if (Title) QueryArr.push(Query.startsWith("title", Title))
         if (category && category !== 'All Category') { QueryArr.push(Query.equal('category', [`${category}`])) }
-
         if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
         if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
         if (From && To) {
             QueryArr.push(Query.greaterThanEqual('date', From))
             QueryArr.push(Query.lessThanEqual('date', To))
         }
-
         if (PostAge === "Oldest") {
             QueryArr.push(Query.orderAsc("$createdAt"))
         } else if (PostAge === 'Recent') {
@@ -239,7 +263,10 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPostsWithQueries :: error", error);
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
@@ -248,7 +275,10 @@ export class Service {
         try {
             return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID)
         } catch (error) {
-            console.log("Appwrite service :: getPosts :: error", error);
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
@@ -267,8 +297,11 @@ export class Service {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
         } catch (error) {
-
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -277,8 +310,10 @@ export class Service {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-            console.log(error instanceof Error ? error.message : error)
-            return false
+            if (import.meta.env.DEV) {
+                console.log(error instanceof Error ? error.message : error)
+            }
+            throw new Error(error)
         }
     }
 

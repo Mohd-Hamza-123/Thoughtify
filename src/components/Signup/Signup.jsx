@@ -1,129 +1,184 @@
-import "./Signup.css";
 import React from "react";
-import { toast } from "sonner"
-import { Spinner } from "../ui/spinner";
-import { GoBackHome } from "..";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { ThoughtifyLogo } from "../Logo";
+import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import useProfile from "@/hooks/useProfile";
-import authService from "../../appwrite/auth";
-import { checkAppWriteError } from "@/messages";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
-import { login, logout } from "../../store/authSlice";
+import { FcGoogle } from "react-icons/fc";
+
+import { GoBackHome } from "..";
+import { ThoughtifyLogo } from "../Logo";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
+
+import useProfile from "@/hooks/useProfile";
+import authService from "@/appwrite/auth";
+import { login } from "@/store/authSlice";
 import { homePageLoading } from "@/store/loadingSlice";
+import { checkAppWriteError } from "@/messages";
 
 const Signup = () => {
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { createProfile } = useProfile()
-  const { register, handleSubmit } = useForm();
+  const { createProfile } = useProfile();
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (data) => await authService.createAccount({ ...data }),
-    onSuccess: async (data, variables, context) => {
-      const userData = await authService.getCurrentUser()
-      await createProfile({ userId: userData?.$id, name: userData?.name })
-      dispatch(login({ userData }));
-      dispatch(homePageLoading({ homePageLoading: false }))
-      navigate('/')
-    },
-    onError: (error, variables, context) => {
-      toast.error(checkAppWriteError(error?.message))
-    },
-  })
+    mutationFn: (data) => authService.createAccount(data),
 
-  const create = (data) => mutate({ ...data })
+    onSuccess: async () => {
+      const userData = await authService.getCurrentUser();
+
+      await createProfile({
+        userId: userData?.$id,
+        name: userData?.name,
+      });
+
+      dispatch(login({ userData }));
+      dispatch(homePageLoading({ homePageLoading: false }));
+
+      navigate("/");
+    },
+
+    onError: (error) => {
+      toast.error(checkAppWriteError(error?.message));
+    },
+  });
+
+  const create = (data) => mutate(data);
 
   return (
+    <main className="relative h-screen overflow-hidden bg-background">
+      <div className="absolute left-4 top-4">
+        <GoBackHome />
+      </div>
 
-    <div id="Signup_container">
-      <GoBackHome />
-      <div className="flex items-center justify-center flex-col mx-auto rounded-lg h-[90%] gap-2 w-full">
+      <section className="flex h-full items-center justify-center px-4">
+        <div className="flex w-full max-w-sm flex-col items-center">
+          <ThoughtifyLogo />
 
-        <ThoughtifyLogo className="mx-auto" />
+          <h1 className="mt-3 text-center text-3xl font-bold">
+            Create Your Account
+          </h1>
 
-        <h2 className="font-bold text-2xl mt-2 text-center"> Sign Up</h2>
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="font-semibold text-primary hover:underline"
+            >
+              Log in
+            </Link>
+          </p>
 
-        <p className="text-center">
-          Already have an Account ?&nbsp;
-          <Link
-            className="text-primary hover:underline font-bold"
-            to={"/login"}>
-            Login
-          </Link>
-        </p>
+          <form
+            onSubmit={handleSubmit(create)}
+            className="mt-6 flex w-full flex-col gap-4"
+          >
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="name" className="text-sm font-medium">
+                Name
+              </label>
 
-        <form
-          className="max-w-full flex flex-col justify-center items-center mb-2"
-          onSubmit={handleSubmit(create)}>
-
-          <div className="signup_insideForm_div w-full flex flex-col justify-center items-center mt-5 gap-8">
-            <div className='relative inputTransition flex flex-col'>
               <Input
-                required
-                type="text"
-                placeholder=""
-                className="w-80 border-none"
+                id="name"
+                placeholder="Enter your name"
+                className="h-10"
                 {...register("name", {
-                  required: true,
+                  required: "Name is required",
                 })}
               />
-              <span>Name</span>
-              <i className="w-full"></i>
+
+              {errors.name && (
+                <p className="text-xs text-red-500">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
-            <div className='relative inputTransition flex flex-col'>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+
               <Input
-                required
+                id="email"
                 type="email"
-                placeholder=''
-                className="Input w-80 border-none"
+                placeholder="Enter your email"
+                className="h-10"
                 {...register("email", {
-                  required: true,
+                  required: "Email is required",
                 })}
               />
-              <span>Email</span>
-              <i className="w-full"></i>
+
+              {errors.email && (
+                <p className="text-xs text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
-            <div className='relative inputTransition flex flex-col'>
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+
               <Input
-                minLength={8}
+                id="password"
                 type="password"
-                required
-                placeholder=''
-                className="w-80 bg-transparent border-none"
+                placeholder="Create a password"
+                className="h-10"
                 {...register("password", {
-                  required: true,
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
                 })}
               />
-              <span>Password</span>
-              <i className="w-full"></i>
+
+              {errors.password && (
+                <p className="text-xs text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
+
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="mt-2 h-10 w-full"
+            >
+              {isPending ? <Spinner /> : "Create Account"}
+            </Button>
+          </form>
+
+          <div className="my-4 flex w-full items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-muted-foreground">
+              OR
+            </span>
+            <div className="h-px flex-1 bg-border" />
           </div>
 
-          <Button 
-          type="submit" 
-          className="rounded-sm block px-4 mt-3 py-1 login_signIn_Btn"
-          disabled={isPending}
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => authService.googleAuth()}
+            className="h-10 w-full gap-2"
           >
-            {isPending ? <Spinner /> : 'Sign Up'}
+            <FcGoogle size={20} />
+            Continue with Google
           </Button>
-        </form>
-
-        <Button
-          variant="destructive"
-          onClick={() => authService.googleAuth()}
-          type="button" className="lg:w-1/5 mx-auto" >
-          Sign up with Google
-        </Button>
-      </div>
-    </div>
-
+        </div>
+      </section>
+    </main>
   );
 };
 

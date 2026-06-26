@@ -47,24 +47,31 @@ export class Profile {
     }) {
 
         let updateObj = {}
-        if (following) updateObj.following = following
-        if (blockedUsers) updateObj.blockedUsers = blockedUsers
-        if (followers) updateObj.followers = followers
-        if (othersCanFilterYourOpinions || othersCanFilterYourOpinions === false) updateObj.othersCanFilterYourOpinions = othersCanFilterYourOpinions
-        if (othersCanFilterYourPosts || othersCanFilterYourPosts === false) updateObj.othersCanFilterYourPosts = othersCanFilterYourPosts
-        if (othersSeeYourFollowers_Following) updateObj.othersSeeYourFollowers_Following = othersSeeYourFollowers_Following
-        if (bookmarks) updateObj.bookmarks = bookmarks
-      
+        const profile = {
+            ...(following && { following }),
+            ...(blockedUsers && { blockedUsers }),
+            ...(followers && { followers }),
+            ...(othersCanFilterYourOpinions && { othersCanFilterYourOpinions }),
+            ...(othersCanFilterYourPosts && { othersCanFilterYourPosts }),
+            ...(othersSeeYourFollowers_Following && { othersSeeYourFollowers_Following }),
+            ...(bookmarks && { bookmarks })
+        }
+
+
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
                 profileID,
-                updateObj
+                profile
             )
         } catch (error) {
+
             const message = error instanceof Error ? error.message : error
-            console.error(message)
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+
             throw error
         }
     }
@@ -78,13 +85,14 @@ export class Profile {
         profileImage,
     }) {
 
-        let payload = {}
-        if (bio) payload.bio = bio
-        if (links) payload.links = links
-        if (occupation) payload.occupation = occupation
-        if (educationLvl) payload.educationLvl = educationLvl
-        if (profileImage) payload.profileImage = profileImage
-        if (interestedIn) payload.interestedIn = interestedIn
+        let payload = {
+            ...(bio && { bio }),
+            ...(links && { links }),
+            ...(occupation && { occupation }),
+            ...(educationLvl && { educationLvl }),
+            ...(profileImage && { profileImage }),
+            ...(interestedIn && { interestedIn })
+        }
 
         try {
             return await this.databases.updateDocument(
@@ -94,7 +102,11 @@ export class Profile {
                 payload
             )
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -108,12 +120,18 @@ export class Profile {
         if (dislikedQuestions) obj.dislikedQuestions = dislikedQuestions
         if (bookmarks) obj.bookmarks = bookmarks
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteProfileCollectionId, profileID,
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteProfileCollectionId,
+                profileID,
                 obj
             )
         } catch (error) {
-            console.log(error)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -132,8 +150,11 @@ export class Profile {
             )
             return res
         } catch (error) {
-            console.error("profile.js : Error in listProfile : ", error)
-            throw error
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -143,11 +164,16 @@ export class Profile {
                 [Query.equal("userIdAuth", [senderSlug, receiverSlug])]
             )
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
     async listProfilesWithQueries({ listResponders }) {
+
         let QueryArr = []
         if (listResponders === true) QueryArr.push(Query.equal("trustedResponder", true))
 
@@ -158,8 +184,11 @@ export class Profile {
                 QueryArr
             )
         } catch (error) {
-            console.log(error)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -178,7 +207,9 @@ export class Profile {
         } catch (error) {
 
             const errMessage = error instanceof Error ? error.message : error
-            console.error("profile.js : ", errMessage)
+            if (import.meta.env.DEV) {
+                console.log(errMessage)
+            }
 
             throw new Error("Profile not found", {
                 cause: error
@@ -196,8 +227,10 @@ export class Profile {
             )
         } catch (error) {
             const errMessage = error instanceof Error ? error.message : error
-            console.error("profile.js : ", errMessage)
-
+            if (import.meta.env.DEV) {
+                console.log(errMessage)
+            }
+            throw new Error(errMessage)
         }
     }
 
@@ -207,8 +240,11 @@ export class Profile {
         try {
             return await this.storage.createFile(conf.appwriteBucketId, ID.unique(), file)
         } catch (error) {
-            console.log(error)
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -216,8 +252,11 @@ export class Profile {
         try {
             return await this.storage.updateFile(conf.appwriteBucketId, fileid, file)
         } catch (error) {
-
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -225,14 +264,16 @@ export class Profile {
         try {
             return await this.storage.deleteFile(conf.appwriteBucketId, fileid)
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
     async getStoragePreview(fileid) {
-        if (fileid) {
-            return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
-        }
+        return this.storage.getFilePreview(conf.appwriteBucketId, fileid)
     }
 
 }

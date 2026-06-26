@@ -1,7 +1,8 @@
 import conf from '../conf/conf'
-import { Client, Account, ID, Functions} from 'appwrite'
+import { Client, Account, ID, Functions } from 'appwrite'
 
 export class AuthService {
+
     client = new Client();
     account
 
@@ -13,70 +14,91 @@ export class AuthService {
         this.functions = new Functions(this.client)
     }
 
-  
-    async createAccount({ email, password, name }) {
+async createAccount({ email, password, name }) {
 
         try {
-            const userAccount = await this.account.create(
+
+            await this.account.create(
                 ID.unique(),
                 email,
                 password,
                 name
             );
-            if (userAccount) {
-                const login = await this.login({
-                    email,
-                    password
-                })
-                // console.log(login)
-                return login
-            } else { return undefined }
+
+            return await this.login({
+                email,
+                password
+            })
+
         } catch (error) {
-            console.log(error?.message)
-            throw new Error(error?.message)
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.error(message)
+            }
+            throw new Error("Account not created")
         }
     }
 
     async login({ email, password }) {
         try {
+
             const session = await this.account.createEmailSession(email, password);
             return { success: true, session }
+
         } catch (error) {
-            return { success: false, error: error.message }
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            return { success: false, error: message }
         }
     }
 
     googleAuth() {
         try {
+
             return this.account.createOAuth2Session(
                 'google',
                 'https://thoughtify.vercel.app/',
                 'https://thoughtify.vercel.app/login'
             )
+
         } catch (error) {
-            return null
+
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+
         }
     }
 
     async emailVerification() {
+
         try {
+
             const env = process.env.NODE_ENV
             const path = env === "production" ? conf.viteThoughtifyDomain : 'http://localhost:5173/'
-            console.log(path)
             return await this.account.createVerification(path);
 
         } catch (error) {
-            console.log(error)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
     async verifyWithUserId_secret(id, secret) {
         try {
             return await this.account.updateVerification(id, secret)
-
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -88,17 +110,24 @@ export class AuthService {
             const promise = this.account.createRecovery(email, path);
             return promise
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
     async resetPassword(userID, secret, password, RepeatPassword) {
         try {
             const promise = this.account.updateRecovery(userID, secret, password, RepeatPassword)
-
             return promise
         } catch (error) {
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -106,8 +135,11 @@ export class AuthService {
         try {
             return await this.account.get()
         } catch (error) {
-            console.error(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -116,8 +148,11 @@ export class AuthService {
             const logout = await this.account.deleteSessions();
             return logout ? true : false
         } catch (error) {
-            console.log(error)
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -125,15 +160,19 @@ export class AuthService {
         try {
             return await this.account.listIdentities()
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
     async deleteAccount(userId) {
         try {
-            // console.log(userId)
+
             const { jwt } = await this.account.createJWT()
-            // console.log(jwt)
+
             this.client.setJWT(jwt)
             const payload = { jwt, userId }
             const exec = await this.functions.createExecution(
@@ -145,7 +184,10 @@ export class AuthService {
             // console.log(exec)
             return exec
         } catch (error) {
-            console.log(error?.message)
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             return {
                 success: false,
                 error: process.env.NODE_ENV === "development" ? error?.message : "Something went wrong"

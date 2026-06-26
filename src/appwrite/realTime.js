@@ -22,7 +22,9 @@ export class RealTime {
             )
         } catch (error) {
             const message = error instanceof Error ? error.message : error
-            console.log(message)
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
@@ -41,8 +43,11 @@ export class RealTime {
                 payload
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -50,7 +55,11 @@ export class RealTime {
         try {
             return await this.database.deleteDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -58,7 +67,11 @@ export class RealTime {
         try {
             return await this.database.getDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -94,7 +107,9 @@ export class RealTime {
             )
         } catch (error) {
             const message = error instanceof Error ? error.message : error
-            console.log(message)
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw error
         }
     }
@@ -107,7 +122,11 @@ export class RealTime {
                 queryArr
             )
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -143,8 +162,11 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 

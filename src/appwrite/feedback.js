@@ -21,8 +21,13 @@ export class FeedbackService {
                 email,
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
+
     }
 
 }
