@@ -13,16 +13,16 @@ import { checkAppWriteError } from '@/messages';
 import { userProfile } from '@/store/profileSlice';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login as authLogin } from "../../store/authSlice";
 import { homePageLoading } from '@/store/loadingSlice';
+import { login as authLogin } from "../../store/authSlice";
 
 const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
   const [isWaiting, setIsWaiting] = useState(false);
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
 
   const login = async (data) => {
@@ -34,11 +34,14 @@ const Login = () => {
         const userData = await authService.getCurrentUser();
         if (userData) {
           dispatch(authLogin({ userData }));
-          const profileData = await profile.listSingleProfile(userData?.$id)
-          dispatch(userProfile({ userProfile: profileData }))
-          dispatch(homePageLoading({ homePageLoading: false }))
+
+          const profileData = await profile.listSingleProfile(userData.$id);
+
+          dispatch(userProfile({ userProfile: profileData }));
+          dispatch(homePageLoading({ homePageLoading: false }));
+
+          toast.success(`Welcome back, ${userData.name}!`);
           navigate("/");
-          toast.success('You are Logged In')
         }
       } else {
         await authService.logout()
@@ -46,8 +49,10 @@ const Login = () => {
       }
       setIsWaiting(false)
     } catch (error) {
-      console.log(error instanceof Error ? error.message : error)
-      toast.error(error?.message || "something went wrong.")
+      if(import.meta.env.DEV){
+        console.log(error instanceof Error ? error.message : error)
+      }
+      toast.error("Oops! something went wrong.")
       setIsWaiting(false)
     }
   };
@@ -60,11 +65,12 @@ const Login = () => {
 
   return (
     <div id="Login_Container" className="flex items-center justify-center w-full flex-col">
+      
       <GoBackHome />
 
       <div className="flex flex-col items-center justify-center w-full gap-2">
         <ThoughtifyLogo className='mx-auto' />
-        <h2 className="font-bold text-2xl mt-3 text-center dark:text-white text-black">
+        <h2 className="font-bold text-2xl mt-3 text-center text-black">
           Login
         </h2>
 
@@ -114,19 +120,16 @@ const Login = () => {
             <i className="w-full"></i>
           </div>
 
-
-
           <Link to={`/forgotPassword`} className="hover:underline text-sm">
             Forget Your Password ?
           </Link>
 
 
-          <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+          <Button type="submit" className="mt-3 rounded-sm block px-2 py-1 login_signIn_Btn" disabled={isWaiting}>
             {isWaiting ? <Spinner /> : 'Login'}
           </Button>
 
         </form>
-
 
         <Button
           variant="destructive"

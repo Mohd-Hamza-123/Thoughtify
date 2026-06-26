@@ -8,7 +8,7 @@ const UpperNavigationBarSearch = () => {
   const { register, handleSubmit, setValue } = useForm();
 
   const submit = (data) => {
-    navigate(`/BrowseQuestion/${null}/${data?.searchQuestion}`);
+    navigate(`/browse-question/${null}/${data?.searchQuestion}`);
     setValue("searchQuestion", "");
   };
   

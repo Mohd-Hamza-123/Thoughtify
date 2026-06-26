@@ -115,7 +115,7 @@ function App() {
   return <AskProvider value={{ isAppInstalled, onInstallApp }}>
 
 
-    {/* <Initialization /> */}
+    <Initialization /> 
     <Overlay />
 
     <Routes>

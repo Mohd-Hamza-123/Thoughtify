@@ -1,18 +1,18 @@
+import React from "react";
 import { toast } from "sonner";
 import { Icons } from "@/components";
 import { Link } from "react-router-dom";
-import React from "react";
 import profile from "@/appwrite/profile";
 import { getAvatar } from "@/lib/avatar";
+import { useSelector } from "react-redux";
 import avatarService from "@/appwrite/avatar";
 import { getUserByName } from "@/lib/profile";
-import { useSelector } from "react-redux";
+import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
 
 const normalizeUsers = (users = []) => {
   return users.map((user) => {
@@ -116,6 +116,8 @@ const FindFriends = () => {
               allUsers.map((user) => {
                 // console.log(user)
                 const profileImageURL = user?.profileImage?.profileImageURL;
+                console.log(user.profileImage)
+                console.log(profileImageURL)
 
                 return (
                   <Link
@@ -125,7 +127,7 @@ const FindFriends = () => {
                   >
                     <div className="flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-slate-800/60 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition">
                       <img
-                        src={profileImageURL || getAvatar(user?.name)}
+                        src={profileImageURL?.replace("/preview","/view") || getAvatar(user?.name)}
                         alt={user?.name}
                         className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
                       />
