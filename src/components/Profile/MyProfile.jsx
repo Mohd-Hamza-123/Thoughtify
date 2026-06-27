@@ -1,10 +1,11 @@
 import "./MyProfile.css";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Spinner as SP } from "../ui/spinner"
 import authService from "@/appwrite/auth";
+import appwriteService from "@/appwrite/config";
 import { logout } from "@/store/authSlice";
 import profile from "../../appwrite/profile";
-import { useTotalPost } from "@/hooks/usePost";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { userProfile } from "@/store/profileSlice";
@@ -40,7 +41,7 @@ const MyProfile = () => {
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
   const myProfile = useSelector((state) => state.profileSlice.userProfile);
-  // console.log(myProfile)
+
   const isFollow = myProfile?.following?.find((follow) => JSON.parse(follow)?.profileID === slug)
   const isBlocked = myProfile?.blockedUsers?.includes(slug)
   const realUser = userData ? slug === userData.$id : false;
@@ -49,8 +50,6 @@ const MyProfile = () => {
   const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null);
 
-  
-  const {data : totalPost} = useTotalPost()
 
 
   const { data: profileData, isPending, isError, isSuccess, error } = useQuery({
@@ -59,6 +58,15 @@ const MyProfile = () => {
     staleTime: Infinity,
   })
 
+
+  const { data: totalPost } = useQuery({
+    queryFn: () => appwriteService.getTotalPosts(profileData?.$id),
+    queryKey: ["totalPost", profileData?.$id],
+    enabled: !!profileData?.$id,
+    staleTime: 1000 * 5,
+  });
+
+  console.log(totalPost)
 
   const follow_Unfollow = async () => {
     setIsDisable(true)
@@ -104,6 +112,7 @@ const MyProfile = () => {
 
   }
 
+
   useEffect(() => {
     setActiveNav('Profile Summary')
     setActiveNavRender(<ProfileSummary profileData={profileData} />)
@@ -143,13 +152,13 @@ const MyProfile = () => {
     { label: "Following", value: profileData?.following?.length },
     { label: "Verified", value: userData?.emailVerification ? "Yes" : "No" },
     { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
-    { label: "Posts", value: totalPost }
+    { label: "Posts", value: totalPost || totalPost === 0 ? totalPost : <SP /> }
   ]
 
   if (!isPending && isSuccess && profileData) {
     const { profileImageURL } = JSON.parse(profileData?.profileImage)
     return (
-      <div className="bg-gray-100 dark:bg-black py-4 w-full min-h-screen">
+      <div className="bg-gray-100 py-4 w-full min-h-screen">
         <div className="w-[95%] md:w-[85%] mx-auto">
 
           <section
@@ -216,11 +225,11 @@ const MyProfile = () => {
 
                   {!realUser && (
                     <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
+
                       <Button
                         disabled={isDisable}
                         className="rounded-lg px-4 py-2"
-                        onClick={follow_Unfollow}
-                      >
+                        onClick={follow_Unfollow}>
                         {isFollow ? "Unfollow" : "Follow"}
                       </Button>
 
@@ -228,10 +237,10 @@ const MyProfile = () => {
                         disabled={isDisable}
                         variant="outline"
                         className="rounded-lg px-4 py-2"
-                        onClick={block_Unblock}
-                      >
+                        onClick={block_Unblock}>
                         {isBlocked ? "UnBlock" : "Block"}
                       </Button>
+
                     </div>
                   )}
                 </div>
@@ -256,24 +265,15 @@ const MyProfile = () => {
           </section>
 
           <section className="my-6">
-            <ul className="flex border-b">
+            <ul className="flex border-b flex-wrap justify-between">
               {navLinks
                 .filter(link => link.visible)
                 .map(link => (
                   <li
                     key={link.name}
                     onClick={() => setActiveNav(link.name)}
-                    className={`
-          px-8 py-4 cursor-pointer relative
-          font-medium transition-all
-          ${activeNav === link.name
-                        ? "text-slate-900"
-                        : "text-slate-500 hover:text-slate-800"
-                      }
-        `}
-                  >
+                    className={`px-8 py-4 cursor-pointer relative font-medium transition-all ${activeNav === link.name ? "text-slate-900" : "text-slate-500 hover:text-slate-800"}`}>
                     {link.name}
-
                     {activeNav === link.name && (
                       <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-500 rounded-full" />
                     )}

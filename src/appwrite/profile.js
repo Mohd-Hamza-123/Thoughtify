@@ -223,9 +223,13 @@ export class Profile {
                 conf.appwriteDatabaseId,
                 conf.appwriteProfileCollectionId,
                 slug,
-
             )
         } catch (error) {
+
+            if (error?.code === 404) {
+                return null
+            }
+
             const errMessage = error instanceof Error ? error.message : error
             if (import.meta.env.DEV) {
                 console.log(errMessage)

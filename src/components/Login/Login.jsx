@@ -1,15 +1,15 @@
-import React, { useState } from "react";
 import { toast } from "sonner";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
+import { Link, useNavigate } from "react-router-dom";
 
 import { GoBackHome } from "..";
-import { ThoughtifyLogo } from "../Logo";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
+import { ThoughtifyLogo } from "../Logo";
 
 import profile from "@/appwrite/profile";
 import authService from "@/appwrite/auth";
@@ -19,50 +19,45 @@ import { homePageLoading } from "@/store/loadingSlice";
 import { login as authLogin } from "@/store/authSlice";
 
 const Login = () => {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isWaiting, setIsWaiting] = useState(false);
-
   const {
+    
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors , isSubmitting },
   } = useForm();
 
   const login = async (data) => {
+
     try {
-      setIsWaiting(true);
 
       const session = await authService.login(data);
 
       if (session?.success) {
+
         const userData = await authService.getCurrentUser();
+        const profileData = await profile.listSingleProfile(userData.$id);
+        dispatch(authLogin({ userData }));
+        dispatch(userProfile({ userProfile: profileData }));
+        dispatch(homePageLoading({ homePageLoading: false }));
+        toast.success(`Welcome back, ${userData.name}!`);
+        navigate("/");
 
-        if (userData) {
-          dispatch(authLogin({ userData }));
-
-          const profileData = await profile.listSingleProfile(userData.$id);
-
-          dispatch(userProfile({ userProfile: profileData }));
-          dispatch(homePageLoading({ homePageLoading: false }));
-
-          toast.success(`Welcome back, ${userData.name}!`);
-          navigate("/");
-        }
       } else {
         await authService.logout();
         toast.error(checkAppWriteError(session?.error));
       }
+      
     } catch (error) {
       if (import.meta.env.DEV) {
         console.log(error instanceof Error ? error.message : error);
       }
 
       toast.error("Oops! something went wrong.");
-    } finally {
-      setIsWaiting(false);
-    }
+    } 
   };
 
   return (
@@ -89,10 +84,8 @@ const Login = () => {
             </Link>
           </p>
 
-          <form
-            onSubmit={handleSubmit(login)}
-            className="mt-6 flex w-full flex-col gap-4"
-          >
+          <form onSubmit={handleSubmit(login)} className="mt-6 flex w-full flex-col gap-4">
+
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -116,6 +109,7 @@ const Login = () => {
             </div>
 
             <div className="flex flex-col gap-1.5">
+
               <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
@@ -152,11 +146,11 @@ const Login = () => {
 
             <Button
               type="submit"
-              disabled={isWaiting}
-              className="mt-1 h-10 w-full"
-            >
-              {isWaiting ? <Spinner /> : "Log in"}
+              disabled={isSubmitting}
+              className="mt-1 h-10 w-full">
+              {isSubmitting ? <Spinner /> : "Log in"}
             </Button>
+            
           </form>
 
           <div className="my-4 flex w-full items-center gap-3">

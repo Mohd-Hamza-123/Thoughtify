@@ -137,7 +137,7 @@ async createAccount({ email, password, name }) {
         } catch (error) {
             const message = error instanceof Error ? error.message : error
             if (import.meta.env.DEV) {
-                console.log(message)
+                console.error(message)
             }
             throw new Error(message)
         }
@@ -145,8 +145,7 @@ async createAccount({ email, password, name }) {
 
     async logout() {
         try {
-            const logout = await this.account.deleteSessions();
-            return logout ? true : false
+            return await this.account.deleteSessions();
         } catch (error) {
             const message = error instanceof Error ? error.message : error
             if (import.meta.env.DEV) {

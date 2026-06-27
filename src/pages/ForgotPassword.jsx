@@ -1,33 +1,41 @@
+import React from 'react'
 import { toast } from "sonner"
-import React, { useState } from 'react'
 import authService from '../appwrite/auth'
+import { useForm } from "react-hook-form";
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { GoBackHome } from "@/components/index"
+import { Spinner } from "@/components/ui/spinner"
+import { ThoughtifyLogo } from '@/components/Logo'
 import { Link, useNavigate } from 'react-router-dom'
 
 const ForgetPassword = () => {
 
   const navigate = useNavigate()
-  const [waiting, setWaiting] = useState(false)
 
-  const submit = async (e) => {
-    e.preventDefault()
-    setWaiting(true)
-    const formData = new FormData(e.target)
-    const email = formData.get('email')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  const submit = async (data) => {
+
     try {
+
+      const { email } = data
       const res = await authService.forgetPassword(email)
-      console.log(res)
+      // console.log(res)
       if (res) {
         toast('Check your email for reset link')
         navigate('/')
       } else {
         toast.error('Something went wrong')
       }
-      setWaiting(false)
+      
     } catch (err) {
       console.error(err instanceof Error ? err.message : err)
-      setWaiting(false)
+      
       toast.error("Something went wrong.")
     }
   }
@@ -38,21 +46,11 @@ const ForgetPassword = () => {
       className="relative min-h-screen w-full
         grid place-items-center
         overflow-hidden
-        bg-gradient-to-b from-gray-50 via-gray-50 to-gray-100
-        dark:from-neutral-950 dark:via-neutral-950 dark:to-neutral-900">
+        bg-gradient-to-b from-gray-50 via-gray-50 to-gray-100">
 
-      <Button
-        onClick={() => navigate('/')}
-        className="absolute left-6 top-6
-          rounded-full px-4 py-2 text-sm
-          bg-white dark:bg-neutral-900
-          border border-gray-200 dark:border-neutral-800
-          shadow hover:bg-gray-50 dark:hover:bg-neutral-800
-          text-gray-700 dark:text-gray-200"
-        variant="ghost"
-      >
-        ← Back to Home
-      </Button>
+      <div className="absolute left-4 top-4">
+        <GoBackHome />
+      </div>
 
 
       <div
@@ -60,11 +58,7 @@ const ForgetPassword = () => {
         <div className="p-6 sm:p-10">
 
           <div className="flex justify-center">
-            <img
-              src="Thoughtify.webp"
-              alt="Logo"
-              className="h-14 rounded-full"
-            />
+            <ThoughtifyLogo />
           </div>
 
 
@@ -80,22 +74,28 @@ const ForgetPassword = () => {
           {/* Form */}
           <form
             className="max-w-full flex flex-col justify-center items-center gap-6"
-            onSubmit={submit}>
+            onSubmit={handleSubmit(submit)}>
 
-            <div className="relative flex flex-col">
-              <Input
-                required
-                name="email"
-                type="email"
-                placeholder=""
-                className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
-              />
-              <span>Email</span>
-              <i className="w-full"></i>
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              {...register("email", {
+                required: "Email is required",
+              })}
+            />
 
-            <Button type="submit" className="mt-2 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
-              {`${waiting ? 'wait...' : 'Reset'}`}
+            {errors.email && (
+              <p className="text-xs text-red-500">
+                {errors.email.message}
+              </p>
+            )}
+
+            <Button
+              disabled={isSubmitting}
+              type="submit"
+              className="mt-2 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
+              {`${waiting ? <Spinner /> : 'Reset'}`}
             </Button>
 
           </form>

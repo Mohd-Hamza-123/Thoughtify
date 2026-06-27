@@ -30,7 +30,6 @@ const SideBar = () => {
 
   const { setIsOverlayVisible, isSidebarVisible, setIsSidebarVisible } = useBooleanContext();
 
-
   const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
@@ -50,17 +49,16 @@ const SideBar = () => {
 
   const logoutHandle = async () => {
     try {
-      const res = await authService.logout();
-      console.log(res);
-      if (res) {
-        dispatch(logout());
-        dispatch(userProfile({ userProfile: null }))
-        closeSideBarAndOverlay();
-        navigate("/");
-      }
+      await authService.logout();
+      dispatch(logout());
+      dispatch(userProfile({ userProfile: null }))
+      closeSideBarAndOverlay();
+      navigate("/");
+      toast.success("You have successfully logged out");
     } catch (err) {
-      // show message popup
-      toast.error("logout failed")
+      const message = err instanceof Error ? err.message : err;
+      if (import.meta.env.DEV) console.log(message)
+      toast.error("Unable to log out");
     }
   };
 
@@ -85,11 +83,11 @@ const SideBar = () => {
   return (
     <div className="SideBar poppins" ref={SideBar}>
       <div className="flex justify-between items-center px-1">
+
         <Link to={`/profile/${userData?.$id}`}>
           <div
             onClick={closeSideBarAndOverlay}
-            className="SideBarCross flex gap-3 justify-start items-center"
-          >
+            className="SideBarCross flex gap-3 justify-start items-center">
             <ProfileImage />
             <p className="poppins">{name}</p>
           </div>
@@ -99,17 +97,18 @@ const SideBar = () => {
           className="mr-3 cursor-pointer hover:scale-110 transition-all duration-75"
           onClick={closeSideBarAndOverlay}
         />
+
       </div>
 
       <div className="SideBarContent">
-        {sideBarLinks?.map((option) => (
-          <Link to={option?.slug} key={option?.name}>
+
+        {sideBarLinks.map((option) => (
+          <Link to={option.slug} key={option.name}>
             <div
               className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center"
-              onClick={closeSideBarAndOverlay}
-            >
-              {option?.icon}
-              <p>{option?.name}</p>
+              onClick={closeSideBarAndOverlay}>
+              {option.icon}
+              <p>{option.name}</p>
             </div>
           </Link>
         ))}
@@ -120,8 +119,7 @@ const SideBar = () => {
             onClick={(e) => {
               closeSideBarAndOverlay();
               onInstallApp();
-            }}
-          >
+            }}>
             <Icons.download />
             <p>Download App</p>
           </div>
@@ -131,17 +129,12 @@ const SideBar = () => {
 
         {isSidebarVisible && (
           <div
-            className="SideBarItems flex gap-5 py-2 rounded-md px-6  justify-start items-center cursor-pointer"
-            onClick={() => {
-              logoutHandle();
-              closeSideBarAndOverlay();
-            }}
-          >
+            className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center cursor-pointer"
+            onClick={logoutHandle}>
             <Icons.logout />
             <p>LogOut</p>
           </div>
         )}
-      
 
       </div>
     </div>
