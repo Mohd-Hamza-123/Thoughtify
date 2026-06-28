@@ -18,6 +18,7 @@ body {
     min-height: 100dvh;
     width: 100dvw;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #root {
@@ -25,9 +26,6 @@ body {
     height: 100%;
 }
 
-body::-webkit-scrollbar {
-    display: none;
-}
 
 .lightdark {
     top: -80vh;

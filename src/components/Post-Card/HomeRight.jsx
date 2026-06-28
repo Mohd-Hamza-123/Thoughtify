@@ -45,15 +45,6 @@ const HomeRight = ({ switchTrigger }) => {
     }
     const feedbackPopUp = () => dispatch(feedbackToggle())
 
-    const settingPopUp = () => {
-        if (!userStatus) {
-            toast.error("You are not login")
-            return
-        }
-        setIsSettingOpen((prev) => !prev)
-        setIsOverlayVisible((prev) => !prev)
-    }
-
     return (
         <section className={`h-fit w-full md:w-[35%] sticky top-0 ${switchTrigger === false ? "block" : "hidden"} md:block`}>
             <div className={`HomeRight_Category my-4`}>
@@ -73,7 +64,6 @@ const HomeRight = ({ switchTrigger }) => {
             <hr />
             <div className='flex flex-wrap gap-x-3 gap-y-2 HomeRight_Privacy'>
                 {userStatus && <span className="cursor-pointer" onClick={feedbackPopUp}>Feedback</span>}
-                <span onClick={settingPopUp} className='cursor-pointer'>Setting</span>
                 {(!isEmailVerified && userStatus) && <span onClick={verifyEmail} className="cursor-pointer">Verify Your Email</span>}
             </div>
         </section>

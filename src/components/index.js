@@ -34,9 +34,8 @@ import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark"
 import HomeLeft from "./Home/HomeLeft";
 import GoBackHome from "./GoBackHome";
 import Trigger from "./Home/Trigger/Trigger";
-import Setting from "./Setting/Setting";
 import UnderlineAnimate from "./UnderlineAnimate";
 import SkeletonImage from "./Loader/ImageSkeleton";
 
-export { Setting, UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
 

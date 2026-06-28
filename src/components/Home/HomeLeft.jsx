@@ -110,7 +110,7 @@ const HomeLeft = ({ switchTrigger, isTrustedResponder }) => {
     return (
       <div
         ref={homeLeft}
-        className={`w-full md:w-[65%] flex flex-col gap-4 px-3 md:px-0 ${switchTrigger === true ? "flex" : "hidden"
+        className={`w-full md:w-[65%] flex flex-col gap-4 md:px-0 ${switchTrigger === true ? "flex" : "hidden"
           }`}
       >
         {filteredPosts?.map(renderPostCard)}
