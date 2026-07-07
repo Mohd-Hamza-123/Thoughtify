@@ -180,16 +180,53 @@ npm run dev
 
 ---
 
-## Screenshots
+## 📸 Screenshots
 
-Add screenshots or GIFs showcasing:
+### 🏠 Home Page
 
-* Home Feed
-* Post Details
-* Authentication
-* User Profile
-* Notifications
+<p align="center">
+  <img src="./screenshots/home.png" alt="Home Page" width="900">
+</p>
 
+---
+
+### 🔐 Login
+
+<p align="center">
+  <img src="./screenshots/login.png" alt="Login" width="700">
+</p>
+
+---
+
+### 📝 Sign Up
+
+<p align="center">
+  <img src="./screenshots/sign-up.png" alt="Sign Up" width="700">
+</p>
+
+---
+
+### 👤 User Profile
+
+<p align="center">
+  <img src="./screenshots/profile.png" alt="Profile" width="900">
+</p>
+
+---
+
+### 🔍 Search Users
+
+<p align="center">
+  <img src="./screenshots/search.png" alt="Search Users" width="900">
+</p>
+
+---
+
+### 🤝 Connections
+
+<p align="center">
+  <img src="./screenshots/connection.png" alt="Connections" width="900">
+</p>
 ---
 
 ## Author
