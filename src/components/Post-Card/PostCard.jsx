@@ -28,6 +28,8 @@ const PostCard = ({
 
  
   profileImage = profileImage ? profileImage.replace("/preview", "/view") : null;
+  profileImage = `https://images.weserv.nl/?url=${encodeURIComponent(profileImage)}&w=70&h=70&output=webp&q=80`;
+
   const { imageURL, imageID } = JSON.parse(queImage || "{}");
   const imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL;
   const date = new Date($createdAt).toDateString();
