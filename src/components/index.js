@@ -18,16 +18,12 @@ import Questions from './Profile/Questions'
 import Opinions from './Profile/Opinions'
 import EditProfile from "./Profile/EditProfile";
 import Overlay from "./Overlay/Overlay";
-import PersonalChat from "./Chat/PersonalChat";
 import HomeRight from "./Post-Card/HomeRight";
 import BrowseQuestions from "./SearchPage/BrowseQuestions";
 import Feedback from "./Feedback/Feedback";
 import Spinner from "./Spinner/Spinner";
 import ChatInProfile from "./Profile/ChatInProfile";
 import Loader from "./Loader/Loader";
-import NotificationPop from "./Notification/NotificationPop";
-import SecondLoader from "./Loader/SecondLoader";
-import DarkModeToggle from "./DarkModeToggle";
 import Logo from "./Logo";
 import Icons from "./Icons";
 import UpperNavigationBarNotification from "./NavBar/UpperNavigationBarNotification";
@@ -38,7 +34,8 @@ import ViewPostLikeDislikeBookmark from "./ViewPost/ViewPostLikeDislikeBookmark"
 import HomeLeft from "./Home/HomeLeft";
 import GoBackHome from "./GoBackHome";
 import Trigger from "./Home/Trigger/Trigger";
+import UnderlineAnimate from "./UnderlineAnimate";
+import SkeletonImage from "./Loader/ImageSkeleton";
 
-
-export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, PersonalChat, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, NotificationPop, SecondLoader, DarkModeToggle, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger }
+export { UpperNavigationBar, LowerNavigationBar, NavBar, AskQue, SideBar, Signup, Login, AuthLayout, RTE, PostCard, ViewPost, Comments, ChatRTE, MyProfile, ProfileSummary, Favourite, Questions, Opinions, EditProfile, Overlay, HomeRight, BrowseQuestions, Feedback, Spinner, ChatInProfile, Loader, Logo, Icons, UpperNavigationBarNotification, UpperNavigationBarSearch, UpperNavigationBarBtns, HomeLeft, ViewPostMainContent, ViewPostLikeDislikeBookmark, GoBackHome, Trigger, UnderlineAnimate, SkeletonImage }
 

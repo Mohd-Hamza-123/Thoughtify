@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { Spinner } from ".";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import SecondLoader from "./Loader/SecondLoader";
+import React, { useEffect, useState } from "react";
+
 const AuthLayout = ({ children, authentication = true }) => {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
@@ -15,7 +16,7 @@ const AuthLayout = ({ children, authentication = true }) => {
     }
     setLoader(false);
   }, [authStatus, navigate, authentication]);
-  return loader ? <div className="w-full h-full justify-center items-center"><SecondLoader /></div> : <>{children}</>;
+  return loader ? <div className="w-full h-full justify-center items-center"><Spinner /></div> : children
 
 }
 

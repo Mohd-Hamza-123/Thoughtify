@@ -1,23 +1,26 @@
 import "./MyProfile.css";
-import conf from "../../conf/conf";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { Spinner as SP } from "../ui/spinner"
+import authService from "@/appwrite/auth";
+import appwriteService from "@/appwrite/config";
+import { logout } from "@/store/authSlice";
 import profile from "../../appwrite/profile";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import { userProfile } from "@/store/profileSlice";
 import { useSelector, useDispatch } from "react-redux";
-import notification from "../../appwrite/notification";
 import { useNavigate, useParams } from "react-router-dom";
-import { useNotificationContext } from "@/context/NotificationContext";
+import { followUnfollow, blockUnblock } from "@/lib/profile";
 import {
   Opinions,
   Favourite,
   Questions,
-  SecondLoader,
+  Spinner,
   ChatInProfile,
   ProfileSummary,
+  Icons,
 } from "../index";
-import { followUnfollow, blockUnblock } from "@/lib/profile";
-import { userProfile } from "@/store/profileSlice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +31,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import authService from "@/appwrite/auth";
 
 
 const MyProfile = () => {
@@ -36,11 +38,10 @@ const MyProfile = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { setNotification } = useNotificationContext();
-
   const userData = useSelector((state) => state?.auth?.userData);
   const authStatus = useSelector((state) => state?.auth?.status);
-  const myProfile = useSelector((state) => state?.profileSlice?.userProfile)
+  const myProfile = useSelector((state) => state.profileSlice.userProfile);
+
   const isFollow = myProfile?.following?.find((follow) => JSON.parse(follow)?.profileID === slug)
   const isBlocked = myProfile?.blockedUsers?.includes(slug)
   const realUser = userData ? slug === userData.$id : false;
@@ -49,16 +50,28 @@ const MyProfile = () => {
   const [activeNav, setActiveNav] = useState('Profile Summary');
   const [activeNavRender, setActiveNavRender] = useState(null);
 
-  const { data: profileData, isPending } = useQuery({
+
+
+  const { data: profileData, isPending, isError, isSuccess, error } = useQuery({
     queryKey: ['profiles', slug],
-    queryFn: async () => profile.listSingleProfile(slug),
+    queryFn: () => profile.listSingleProfile(slug),
     staleTime: Infinity,
   })
+
+
+  const { data: totalPost } = useQuery({
+    queryFn: () => appwriteService.getTotalPosts(profileData?.$id),
+    queryKey: ["totalPost", profileData?.$id],
+    enabled: !!profileData?.$id,
+    staleTime: 1000 * 5,
+  });
+
+  console.log(totalPost)
 
   const follow_Unfollow = async () => {
     setIsDisable(true)
     if (!authStatus) {
-      setNotification({ message: "You are not Login", type: "error" })
+      toast.error("You are not Login")
       return
     }
     const newProfile = await followUnfollow({ isFollow, slug, myProfile })
@@ -66,46 +79,39 @@ const MyProfile = () => {
     else setNotification({ message: newProfile?.error, type: "error" })
     setIsDisable(false)
   }
-
   const block_Unblock = async () => {
     setIsDisable(true)
     if (!authStatus) {
-      setNotification({ message: "You are not Login", type: "error" })
+      toast.error("You are not Login")
       return
     }
     const newProfile = await blockUnblock({ isBlocked, slug, myProfile })
     if (newProfile?.success) dispatch(userProfile({ userProfile: newProfile?.payload }))
     else setNotification({ message: newProfile?.error, type: "error" })
     setIsDisable(false)
-
   }
-
-  const promote_Demote = async () => {
-    profile.updateEveryProfileAttribute({ trustedResponder: !profileData?.trustedResponder, profileID: profileData?.$id })
-      .then((res) => {
-        // setProfileData((prev) => res)
-      })
-  }
-
   const deleteUserAccount = async () => {
 
     if (slug === userData.$id) {
       authService.deleteAccount(userData.$id)
         .then((res) => {
-          console.log(res)
+          console.log(JSON.parse(res.responseBody))
           if (res) {
-            setNotification({ message: "Account Deleted", type: "success" })
+            toast.success("Account Deleted")
+            dispatch(logout())
             navigate(`/`)
           } else {
-            setNotification({ message: res.error, type: "error" })
+            toast.error(res?.error)
           }
         })
         .catch((err) => {
-          setNotification({ message: err.message, type: "error" })
+          console.log(err instanceof Error ? err.message : err)
+          toast.error(err.message)
         })
     }
 
   }
+
 
   useEffect(() => {
     setActiveNav('Profile Summary')
@@ -113,201 +119,183 @@ const MyProfile = () => {
   }, [slug, profileData]);
 
   useEffect(() => {
-
     switch (activeNav) {
       case 'Opinions': setActiveNavRender(<Opinions visitedProfileUserID={slug} />)
         break;
-      case 'Favourites': setActiveNavRender(<Favourite visitedUserProfile={profileData} />)
+      case 'bookmark': setActiveNavRender(<Favourite visitedUserProfile={profileData} />)
         break;
       case 'Questions': setActiveNavRender(<Questions visitedUserProfile={profileData} />)
         break;
-      case 'ProfileChats': setActiveNavRender(<ChatInProfile profileData={profileData || {}} />)
+      case 'Followers': setActiveNavRender(<ChatInProfile profileData={profileData || {}} />)
         break;
       default: setActiveNavRender(<ProfileSummary profileData={profileData || {}} />)
     }
   }, [activeNav])
 
-  if (!isPending) {
+  useEffect(() => {
+    if (isError) {
+      navigate('/')
+      toast.error("Profile Not found")
+    }
+  }, [error, isError])
+
+  const navLinks = [
+    { name: 'Profile Summary', visible: true },
+    { name: 'Questions', visible: true },
+    { name: 'Opinions', visible: true },
+    { name: 'bookmark', visible: userData?.$id === slug },
+    { name: 'Followers', visible: true },
+  ]
+
+  const userInfo = [
+    { label: "Followers", value: profileData?.followers?.length },
+    { label: "Following", value: profileData?.following?.length },
+    { label: "Verified", value: userData?.emailVerification ? "Yes" : "No" },
+    { label: "Joined", value: new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) },
+    { label: "Posts", value: totalPost || totalPost === 0 ? totalPost : <SP /> }
+  ]
+
+  if (!isPending && isSuccess && profileData) {
     const { profileImageURL } = JSON.parse(profileData?.profileImage)
-    return (<div id="MyProfile_Parent">
-      <div className="MyProfile_HorizontalLine"></div>
-      <div id="MyProfile" className="">
-        <div id="MyProfile_Header" className={`w-full flex`}>
-          <div className="w-2/3 flex">
-            <div
-              id="MyProfile_Img_Div"
-              className="w-1/4 h-full flex justify-center items-center">
-              <img src={profileImageURL?.replace("/preview", "/view")} alt="profileImage" />
-            </div>
-            <div
-              id="MyProfile_Name_Div"
-              className="w-3/4 h-full flex flex-col justify-center gap-3">
-              <section className="flex flex-col items-left">
-                <h6>{profileData?.name}</h6>
-              </section>
-              <div id="MyProfile_3Buttons" className="flex gap-3">
-                {!realUser && (
-                  <Button onClick={() => {
-                    if (!authStatus) {
-                      setNotification({ message: "You are not Login", type: "error" })
-                      return
-                    }
+    return (
+      <div className="bg-gray-100 py-4 w-full min-h-screen">
+        <div className="w-[95%] md:w-[85%] mx-auto">
 
-                    if (profileData.whoCanMsgYou === "None") {
-                      setNotification({ message: "You can't Message", type: "error" })
-                      return
-                    } else if (profileData.whoCanMsgYou === "My Following") {
-                      const parsingFollowingArr = profileData?.following.map((obj) => JSON.parse(obj));
+          <section
+            id="MyProfile_Header"
+            className="w-full rounded-2xl bg-white p-4 shadow-sm"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              {/* Left Profile Info */}
+              <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left lg:w-2/3">
+                <figure className="flex shrink-0 justify-center">
+                  <img
+                    src={profileImageURL?.replace("/preview", "/view")}
+                    alt="profileImage"
+                    className="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+                  />
+                </figure>
 
-                      const isHeFollowsYou = parsingFollowingArr?.find((follows) => follows?.profileID === userData?.$id);
+                <div className="flex w-full flex-col items-center gap-2 sm:items-start">
+                  <h6 className="flex items-center gap-1 text-xl font-bold text-gray-900">
+                    <span>{profileData?.name}</span>
+                    {profileData?.verified && <Icons.verified />}
+                  </h6>
 
-                      if (!isHeFollowsYou) {
-                        setNotification({ message: "You can't Message", type: "error" })
-                        return
-                      }
-                    }
+                  <p className="max-w-xl text-sm leading-6 text-gray-500">
+                    {profileData?.bio ||
+                      "No bio added yet. Share something about yourself!"}
+                  </p>
 
-                    if (profileData?.blockedUsers?.includes(userData?.$id)) {
-                      setNotification({ message: "You are Blocked", type: "error" })
-                      return
-                    }
+                  {realUser && (
+                    <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
+                      <Button
+                        className="rounded-lg px-4 py-2"
+                        variant="outline"
+                        onClick={() => navigate(`/edit-profile/${slug}`)}
+                      >
+                        Edit Profile
+                      </Button>
 
-                    navigate(`/ChatRoom/${userData?.$id}/${slug}`)
-                  }} className={`p-2 rounded-sm ${isBlocked ? 'hidden' : ''}`}>Message</Button>
-                )}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" className="rounded-lg px-4 py-2">
+                            Account Delete
+                          </Button>
+                        </AlertDialogTrigger>
 
-                {!realUser && (
-                  <Button
-                    disabled={isDisable}
-                    className="p-2 rounded-sm"
-                    onClick={follow_Unfollow}
-                  >{`${isFollow ? 'Unfollow' : 'Follow'}`}</Button>
-                )}
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure, you want to delete your account? All your data
+                              will be deleted.
+                            </AlertDialogTitle>
+                          </AlertDialogHeader>
 
-                {!realUser && <Button
-                  disabled={isDisable}
-                  className="p-2 rounded-sm"
-                  onClick={block_Unblock}
-                >{isBlocked ? 'UnBlock' : 'Block'}</Button>}
-                {realUser && (
-                  <Button
-                    className="p-2 rounded-sm"
-                    onClick={() => {
-                      navigate(`/EditProfile/${slug}`)
-                    }}>
-                    Edit Profile
-                  </Button>
-                )}
-                {(userData?.$id === conf.myPrivateUserID) && (
-                  <Button
-                    className="p-2 rounded-sm"
-                    onClick={() => promote_Demote()}
-                  >
-                    {`${profileData?.trustedResponder ? "Demote" : "Promote"}`}
-                  </Button>
-                )}
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={deleteUserAccount}>
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  )}
 
-                {slug === userData?.$id && <AlertDialog>
-                  <AlertDialogTrigger className="px-2 py-1 rounded-sm">
-                    Account Delete
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you sure , you want to delete your account ? All your data will be deleted.
-                      </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={deleteUserAccount}>
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>}
+                  {!realUser && (
+                    <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
+
+                      <Button
+                        disabled={isDisable}
+                        className="rounded-lg px-4 py-2"
+                        onClick={follow_Unfollow}>
+                        {isFollow ? "Unfollow" : "Follow"}
+                      </Button>
+
+                      <Button
+                        disabled={isDisable}
+                        variant="outline"
+                        className="rounded-lg px-4 py-2"
+                        onClick={block_Unblock}>
+                        {isBlocked ? "UnBlock" : "Block"}
+                      </Button>
+
+                    </div>
+                  )}
+                </div>
               </div>
 
+              {/* Right User Stats */}
+              <div className="grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:grid-cols-3 lg:w-1/3 lg:grid-cols-1">
+
+                {userInfo.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-1 rounded-lg bg-white p-3 sm:flex-row sm:items-center sm:justify-between lg:bg-transparent lg:p-0"
+                  >
+                    <p className="text-sm font-semibold text-gray-900">
+                      {item.label} :
+                    </p>
+                    <span className="text-sm text-gray-700">{item.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div id="MyProfile_VerticalLine" className="h-full flex items-center">
-            <p></p>
-          </div>
-
-          <div
-            id="MyProfile_Header_Right"
-            className="w-1/3 flex flex-col items-start justify-center gap-3 p-5"
-          >
-
-            <div className="flex w-full">
-              <p className="w-1/2">Followers :</p>
-              <span>{profileData?.followers?.length}</span>
-            </div>
-            <div className="flex w-full">
-              <p className="w-1/2">Following :</p>
-              <span>{profileData?.following?.length}</span>
-            </div>
-            <div className="flex w-full">
-              <p className="w-1/2">Joined :</p>
-              <span>{new Date(profileData?.$createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-            </div>
-            {(profileData?.userIdAuth === userData?.$id) && <div className="flex w-full">
-              <p className="w-1/2">Verified : </p>
-              <span>{userData?.emailVerification ? "Yes" : "No"}</span>
-            </div>}
-
-          </div>
-        </div>
-        <div className="MyProfile_HorizontalLine"></div>
-
-
-        <div id="MyProfile_Data" className="flex mt-3">
-          <section id="MyProfile_Data_section">
-            <ul className="flex justify-between">
-              <li
-                onClick={() => setActiveNav('Profile Summary')}
-                className={`MyProfile_Data_items ${activeNav === 'Profile Summary' ? `active` : null}`}>
-                Profile Summary
-              </li>
-
-              <li
-                onClick={() => setActiveNav('Questions')}
-                className={`MyProfile_Data_items ${activeNav === 'Questions' ? `active` : null}`}>
-                My Posts
-              </li>
-
-              <li
-                onClick={() => setActiveNav('Opinions')} className={`MyProfile_Data_items ${activeNav === 'Opinions' ? `active` : null}`}>
-                Opinions
-              </li>
-              <li
-                onClick={() => setActiveNav('Favourites')}
-                className={`MyProfile_Data_items ${activeNav === 'Favourites' ? `active` : null} ${profileData?.userIdAuth !== userData?.$id ? 'none' : 'last-of-type:'}`}>
-                Bookmarks
-              </li>
-
-              <li onClick={() => setActiveNav('ProfileChats')} className={`MyProfile_Data_items ${activeNav === 'ProfileChats' ? `active` : null}`}>
-                Chats
-              </li>
+          <section className="my-6">
+            <ul className="flex border-b flex-wrap justify-between">
+              {navLinks
+                .filter(link => link.visible)
+                .map(link => (
+                  <li
+                    key={link.name}
+                    onClick={() => setActiveNav(link.name)}
+                    className={`px-8 py-4 cursor-pointer relative font-medium transition-all ${activeNav === link.name ? "text-slate-900" : "text-slate-500 hover:text-slate-800"}`}>
+                    {link.name}
+                    {activeNav === link.name && (
+                      <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-500 rounded-full" />
+                    )}
+                  </li>
+                ))}
             </ul>
           </section>
-        </div>
 
-        <div className="MyProfile_HorizontalLine"></div>
-
-        <div className="w-full">
-          {activeNavRender}
+          <section className="w-full">{activeNavRender}</section>
         </div>
-      </div>
-    </div>)
-  } else {
-    return <div className="w-screen h-screen flex justify-center items-center">
-      <div className="MyProfile_Loader_Div">
-        <SecondLoader />
-      </div>
-    </div>
+      </div>)
   }
 
-};
+  if (isPending)
+    return <div className="w-screen h-screen flex justify-center items-center">
+      <div className="MyProfile_Loader_Div">
+        <Spinner />
+      </div>
+    </div>
+
+}
+
+
 
 export default MyProfile;

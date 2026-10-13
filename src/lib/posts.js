@@ -1,7 +1,5 @@
 import profile from "@/appwrite/profile";
 import appwriteService from "@/appwrite/config";
-import convertToWebPFile from "@/helpers/convert-image-into-webp";
-import conf from "@/conf/conf";
 
 export const updateLikeCount = async (post, myUserProfile) => {
 
@@ -160,74 +158,21 @@ export const updateDislikeCount = async (post, myUserProfile) => {
 
     }
 }
-export const uploadQuestionWithImage = async (
-    data,
-    userData,
-    initialPostData,
-    uploaderProfile,
-) => {
-    let imageId = null
-    const isAdmin = userData?.labels?.includes("admin") ? true : false
-    console.log(isAdmin)
-    try {
-
-        const {
-            categoryValue,
-            thumbnailFile,
-            pollQuestion,
-            pollOptions,
-        } = initialPostData
-
-        const webpFile = await convertToWebPFile(thumbnailFile);
-        const queCreatedImage = await appwriteService.createThumbnail({ file: webpFile })
-        imageId = queCreatedImage?.$id
-
-        const imageURL = await appwriteService.getThumbnailPreview(queCreatedImage?.$id)
-        const queImage = JSON.stringify({ imageURL: imageURL, imageID: queCreatedImage?.$id })
-
-
-        const dbPost = await appwriteService.createPost({
-            ...data,
-            queImage,
-            userId: userData?.$id,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)) || [],
-            name: userData?.name,
-            trustedResponderPost: isAdmin,
-        }, categoryValue);
-
-        if (dbPost) {
-            return dbPost
-        } else {
-            if (imageId) await appwriteService.deleteThumbnail(imageId)
-            return null
-        }
-
-    } catch (error) {
-        throw new Error(error)
-    }
-}
 export const deleteQuestion = async (post) => {
     const post_id = post?.$id
-    try {
-        const { imageID } = JSON.parse(post?.queImage)
-        if (imageID) await appwriteService.deleteThumbnail(imageID)
-        await appwriteService.deletePost(post_id)
-        return true
-    } catch (error) {
-        console.log(error?.message)
-        return false
-    }
+    const { imageID } = JSON.parse(post?.queImage)
+    if (imageID) await appwriteService.deleteThumbnail(imageID)
+    await appwriteService.deletePost(post_id)
 }
 export const updatePoll = async ({ post, userData, choice }) => {
 
     try {
-
+        
         const { $id: postId, pollVotersID, pollOptions } = post
-        const { $id: userId } = userData
-        console.log("My ID : ", userId)
-        // console.log(pollVotersID)
-        let voters = pollVotersID?.map((obj) => JSON.parse(obj));
+        const { $id: userId } = userData || {}
+
+        const parsedPollOptions = pollOptions.map((obj) => JSON.parse(obj))
+        let voters = pollVotersID.map((obj) => JSON.parse(obj));
 
         const uniqueVotersMap = new Map();
         voters.forEach((voter) => {
@@ -235,32 +180,36 @@ export const updatePoll = async ({ post, userData, choice }) => {
         });
         voters = [...uniqueVotersMap.values()];
 
-        console.log(voters)
-        const parsedPollOptions = pollOptions.map((obj) => JSON.parse(obj))
-
         let myVote = voters?.find((obj) => obj?.userId === userId)
-        console.log(myVote)
+
+        // console.log("voters : ", voters)
+        // console.log(choice)
+        // console.log(pollVotersID)
+        // console.log("parsed Poll Options : ", parsedPollOptions)
 
         const previous_choice = myVote?.choice
+        // console.log("myvote : ", myVote)
+        // console.log(previous_choice)
 
         let voters_array = [];
         let updated_pollOptions = [];
 
         // console.log(myVote)
         if (!myVote) {
-            console.log("I not voted")
+            // console.log("I not voted")
             // console.log(voters_array)
             voters_array = [...voters, { userId, choice }].map((obj) => JSON.stringify(obj))
-            console.log(voters_array)
+            // console.log(voters_array)
+
             updated_pollOptions = parsedPollOptions.map((obj) =>
                 obj.option === choice ? { ...obj, vote: obj.vote + 1 } : obj)
         } else {
-            console.log("I have already voted")
+            // console.log("I have already voted")
             if (previous_choice === choice) {
 
                 voters_array = voters.filter((obj) => obj.userId !== userId)
                 voters_array = voters_array.map((obj) => JSON.stringify(obj))
-                console.log(voters_array)
+                // console.log(voters_array)
 
                 updated_pollOptions = parsedPollOptions?.map((obj) => {
                     if (obj.option === choice) {
@@ -278,7 +227,7 @@ export const updatePoll = async ({ post, userData, choice }) => {
                     return JSON.stringify(obj)
                 })
 
-                console.log(voters_array)
+                // console.log(voters_array)
                 updated_pollOptions = parsedPollOptions?.map((obj) => {
                     if (obj.option === previous_choice) {
                         let vote = obj.vote - 1
@@ -295,91 +244,46 @@ export const updatePoll = async ({ post, userData, choice }) => {
         }
 
         updated_pollOptions = updated_pollOptions?.map((obj) => JSON.stringify(obj))
+        // console.log(updated_pollOptions)
 
-        const response = await appwriteService.updatePost(postId, {
+        const payload = {
             pollVotersID: voters_array,
             pollOptions: updated_pollOptions
-        })
-
-        return response
-    } catch (error) {
-        throw new Error(error)
-    }
-
-}
-export const uploadPostWithUnsplashAPI = async (initialPostData, data, userData, uploaderProfile) => {
-
-    try {
-        const isAdmin = userData?.labels?.includes("admin") ? true : false
-
-        const {
-            categoryValue,
-            pollOptions,
-            pollQuestion,
-        } = initialPostData
-
-
-        const response = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-        if (response.ok) {
-            const UnsplashRes = await response.json();
-            const ImgArrUnsplash = UnsplashRes.results
-
-            const randomIndex = Math.floor(Math.random() * 10);
-            console.log(ImgArrUnsplash[randomIndex]?.urls?.regular)
-            const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
-            const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null })
-
-            const dbPost = await appwriteService.createPost({
-                ...data,
-                userId: userData.$id,
-                queImage,
-                pollQuestion,
-                pollOptions: pollOptions.map((obj) => JSON.stringify(obj)),
-                name: userData?.name,
-                trustedResponderPost: isAdmin,
-            }, categoryValue);
-            return dbPost
         }
 
-        return null
+        const response = await appwriteService.updatePost({ slug: postId, payload })
+       
+        return response
     } catch (error) {
-        console.log(error)
-        return null
+        console.error(error instanceof Error ? error.message : error)
     }
 
 }
 export const bookMarkPost = async (postId, myUserProfile, isBookmarked) => {
     try {
+
+        console.log(postId)
+        console.log(myUserProfile)
         if (!postId || !myUserProfile) throw new Error("Post or MyUserProfile is not defined")
         if (isBookmarked) {
             let bookmarks = myUserProfile?.bookmarks
-
             bookmarks = bookmarks?.filter((bookmark) => bookmark !== postId)
             const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
-            if (updateProfile) return {
-                success: true,
-                payload: updateProfile
-            }
+            return updateProfile
         } else {
             let bookmarks = myUserProfile?.bookmarks
 
-            bookmarks = [...bookmarks,postId]
+            bookmarks = [...bookmarks, postId]
             const updateProfile = await profile.updateEveryProfileAttribute({ profileID: myUserProfile.$id, bookmarks })
-            if (updateProfile) return {
-                success: true,
-                payload: updateProfile
-            }
+            return updateProfile
         }
     } catch (error) {
-        console.log(error?.message)
-        return {
-            success: false,
-            error: process.env.NODE_ENV === "development" ? error?.message : "Something went wrong"
-        }
+        let message = error instanceof Error ? error.message : error
+        console.log(message)
+
     }
 
 }
-
 export const increaseViews = async (PostId) => {
     try {
         const previesViews = await appwriteService.getPost(PostId);

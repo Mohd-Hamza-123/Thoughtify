@@ -1,14 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Gabarito&family=Noto+Serif&family=Nunito&family=Petrona:ital,wght@1,300&family=Poppins&family=Roboto+Slab&family=Varela+Round&display=swap');
-
-
 
 @media only screen and (max-width: 500px) {
-
-
-
-    #Que_Title {
-        font-size: 15px !important;
-    }
 
     #AskQue_Thumbnail {
         height: 250px;
@@ -18,22 +9,6 @@
 
 }
 
-
-
-#Que_Title {
-    outline: none;
-    background-color: rgba(232, 232, 232, 0.613);
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    color: black;
-    resize: vertical;
-    font-size: 18px;
-}
-
-#Que_Title::placeholder {
-    font-weight: 500;
-}
 
 .Description_div {
     overflow: hidden;
@@ -62,10 +37,6 @@
     border-radius: 2px;
     font-weight: 600;
     letter-spacing: 0.4px;
-}
-
-.askque_btn.darkMode {
-    background-color: #FF3500;
 }
 
 #AskQue_Thumbnail {
@@ -105,10 +76,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-#AskQue_PostType.darkMode {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
 
 #AskQue_PostType p {
     font-weight: bold;
@@ -131,11 +98,6 @@
     padding: 10px;
     max-width: 100%;
 
-}
-
-#AskQue_SelectCategory.darkMode {
-    background-color: black;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 #AskQue_SelectCategory p {
@@ -167,12 +129,6 @@
     overflow-y: scroll;
 }
 
-.AskQue-dropdown-list.darkMode {
-    background: black;
-    color: white;
-    border: 1px dashed #ffffffa4;
-    border-top: none;
-}
 
 .dropdown-item {
     padding: 4px 4px 4px 11px;
@@ -182,22 +138,6 @@
     font-size: 15px;
     transition: background-color 0.3 ease;
 }
-
-.dropdown-item:hover {
-    background-color: #aaaaaa5a;
-    transition: background-color 0.3 ease;
-}
-
-body.darkMode .dropdown-item:hover {
-    background-color: #ffffff;
-    transition: background-color 0.3 ease;
-    color: black;
-}
-
-.dropdown-header:hover+.dropdown-list {
-    display: block;
-}
-
 
 #AskQue_Pole {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

@@ -22,6 +22,7 @@ const conf = {
     firebaseMsgSenderID: String(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
     firebaseAppId: String(import.meta.env.VITE_FIREBASE_APPID),
     viteThoughtifyDomain: String(import.meta.env.VITE_THOUGHTIFY_DOMAIN),
+    VITE_SENTRY_DSN : String(import.meta.env.VITE_SENTRY_DSN),
 }
 // console.log(conf)
 export default conf;

@@ -1,323 +1,168 @@
 import "./AskQue.css";
-import conf from "../../conf/conf";
+import { toast } from "sonner"
+import { Icons, RTE } from "../";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Textarea as TextArea } from "../ui/textarea";
+import { Spinner } from "../ui/spinner";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { categoriesArr } from "./Category";
-import { Icons, RTE } from "../";
+import { categoryArr } from "./Category";
 import { MAX_IMAGE_SIZE } from "@/constant";
-import profile from "../../appwrite/profile";
-import { useNavigate } from "react-router-dom";
+import useCreatePost from "@/hooks/useCreatePost";
+import useUpdatePost from "@/hooks/useUpdatePost";
 import appwriteService from "../../appwrite/config";
-import { useSelector, useDispatch } from "react-redux";
-import React, { useEffect, useState, memo } from "react";
-import convertToWebPFile from "@/helpers/convert-image-into-webp";
-import { useNotificationContext } from "@/context/NotificationContext";
-import { uploadQuestionWithImage, uploadPostWithUnsplashAPI } from "@/lib/posts";
-
+import { Textarea as TextArea } from "../ui/textarea";
+import React, { useEffect, useState, memo, useRef } from "react";
 
 const AskQue = ({ post }) => {
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const userData = useSelector((state) => state.auth.userData);
-  const UserAuthStatus = useSelector((state) => state.auth.status);
-  const isAdmin = userData?.labels?.includes("admin") ? true : false;
+  const optionsRef = useRef();
+  const userData = useSelector((state) => state.auth.userData)
+  const userStatus = useSelector((state) => state.auth.status);
+
+  // console.log(userData)
 
   const { handleSubmit, register, control, getValues } =
     useForm({
       defaultValues: {
         title: post?.title || "",
         content: post?.content || "",
-        pollAnswer: post?.pollAnswer || '',
-        opinionsFrom: post?.opinionsFrom || '',
+        pollAnswer: post?.pollAnswer || "",
+        opinionsFrom: post?.opinionsFrom || "",
+        category: post?.category || "General",
+        pollQuestion: post?.pollQuestion || "",
       },
     });
 
-  const [initialPostData, setInitialPostData] = useState({
-    options: '',
-    thumbnailURL: '',
-    pollQuestion: '',
-    isUploading: false,
-    categoryValue: '',
-    thumbnailFile: null,
-    pollOptions: [],
-    pollTextAreaEmpty: true,
-    categoryFlag: false,
-  })
+  const [queImage, setQueImage] = useState(post?.queImage || {})
+  const [pollOptions, setPollOptions] = useState(post?.pollOptions || [])
 
+  // console.log(pollOptions)
 
-  const {
-    options,
-    isUploading,
-    pollOptions,
-    thumbnailURL,
-    pollQuestion,
-    categoryFlag,
-    thumbnailFile,
-    categoryValue,
-    pollTextAreaEmpty
-  } = initialPostData
+  const [file, setFile] = useState(null)
+  const [fileView, setFileView] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { setNotification } = useNotificationContext()
+  const { createPost } = useCreatePost()
+  const { updatePost } = useUpdatePost()
 
   const selectThumbnail = async (e) => {
 
     const file = e.currentTarget.files[0]
 
     if (file.size > MAX_IMAGE_SIZE) {
-      setNotification({ message: "Image Must be Less then and Equal to 512kb", type: "error" })
+      toast.error("Image Must be Less then and Equal to 512kb")
       e.currentTarget.value = ''
       return
     }
 
-    setInitialPostData((prev) => ({ ...prev, thumbnailFile: file }))
+    setFile(file)
+
     const reader = new FileReader()
     reader.onload = () => {
-      setInitialPostData((prev) => ({ ...prev, thumbnailURL: reader.result }))
+      setFileView(reader.result)
     }
+
     reader.readAsDataURL(file)
   }
 
   useEffect(() => {
-    if (post) {
-      const { imageURL } = JSON.parse(post?.queImage)
 
-      setInitialPostData((prev) => ({
-        ...prev,
-        categoryValue: post.category,
-        thumbnailURL: imageURL?.replace("preview", "view"),
-      }))
+    if (post && post?.queImage) {
 
-      if (post?.pollQuestion && post?.pollQuestion) {
-        const pollOptionsArray = post.pollOptions.map((option) => JSON.parse(option))
-        setInitialPostData((prev) => ({
-          ...prev,
-          pollQuestion: post.pollQuestion,
-          pollOptions: pollOptionsArray,
-          pollTextAreaEmpty: false
-        }))
-      }
+      // console.log(post.queImage)
+
+      const { imageURL } = JSON.parse(post?.queImage || {})
+
+      setFileView(imageURL?.replace("preview", "view"))
+
     }
 
   }, [])
 
   const deleteThumbnail = async () => {
-    setInitialPostData((prev) => ({ ...prev, thumbnailURL: '', thumbnailFile: null }))
     try {
-      await appwriteService.deleteThumbnail(post?.queImageID)
+      // console.log(post.queImage)
+      const { imageID } = JSON.parse(post?.queImage)
+      const response = await appwriteService.deleteThumbnail(imageID)
+      await appwriteService.updatePost({ slug: post?.$id, payload: { queImage: null } })
     } catch (error) {
-      console.log("AskQue delete Img error.")
+      const message = error instanceof Error ? error.message : error
+      console.error(message)
     }
+    setFile(null)
+    setFileView('')
   }
 
-  const categoryDropdownTrigger = () => setInitialPostData((prev) => ({ ...prev, categoryFlag: !prev.categoryFlag }))
-
-  const selectPostCategory = (category) => {
-    categoryDropdownTrigger()
-    setInitialPostData((prev) => ({ ...prev, categoryValue: category }))
-  }
-
-  const poolQuestionChange = (e) => {
-    if (e.target?.value !== '') {
-      setInitialPostData((prev) => ({
-        ...prev,
-        pollQuestion: e.target?.value,
-        pollTextAreaEmpty: false
-      }))
-    } else {
-      setInitialPostData((prev) => ({
-        ...prev,
-        pollQuestion: "",
-        pollTextAreaEmpty: true,
-        pollOptions: []
-      }))
-    }
-  }
-  const addPollOptions = (e) => {
+  const addPollOptions = () => {
 
     if (post) {
-      setNotification({ message: "You cannot edit Poll", type: "error" })
-      setInitialPostData((prev) => ({ ...prev, options: "" }))
-      return
+      toast.error("You cannot edit Poll");
+      return;
     }
 
-    for (let i = 0; i < pollOptions.length; i++) {
-      if (pollOptions[i].option === options) {
-        setInitialPostData((prev) => ({ ...prev, options: "" }))
-        return
-      }
+    // console.log(pollOptions.length)
+    if (pollOptions.length >= 4) {
+      toast("Maximum 4 options allowed");
+      optionsRef.current.value = ""
+      return;
     }
 
-    if (pollOptions.length <= 3 && pollTextAreaEmpty === false && options !== '') {
-      setInitialPostData((prev) => {
-        let arr = [...prev.pollOptions, { option: options, vote: 0 }]
-        return { ...prev, pollOptions: arr }
-      })
-    } else {
-      if (!pollQuestion) {
-        setNotification({ message: "Write a Poll", type: "error" })
-        setInitialPostData((prev) => ({ ...prev, options: "" }))
-        return
-      }
-      setNotification({ message: "Maximum 4 Options Allowed", type: "error" })
-    }
-    setInitialPostData((prev) => ({ ...prev, options: "" }))
-  }
+    const option = optionsRef.current.value.trim();
+    if (!option) return
+
+    // console.log(pollOptions)
+    // return 
+
+    setPollOptions([...pollOptions, { option, vote: 0 }]);
+    optionsRef.current.value = ""
+
+  };
+
+  const deletePollOptions = (index) => setPollOptions(pollOptions.filter((_, i) => i !== index));
+
   const submit = async (data) => {
 
-    if (!UserAuthStatus) {
-      setNotification({ message: "You are not logged In", type: "error" })
+    if (!userStatus) {
+      toast.error("You are not logged In")
       return
     }
 
-    if (pollQuestion && pollOptions.length <= 1) {
-      setNotification({ message: "There must be 2 Poll options", type: "error" })
+    if (!data.title && !data.pollQuestion) {
+      toast.error("Title or Poll Question is required")
       return
     }
 
-    if (!initialPostData?.categoryValue) {
-      setNotification({ message: "Select a Category. Choose General If not Specific", type: "error" })
+    if (pollOptions.length > 0 && !data.pollQuestion) {
+      toast.error("Poll Question is required")
       return
     }
 
-    if (!data.title && !pollQuestion) {
-      setNotification({ message: "Title is Empty", type: "error" })
-      return
+    if (data.pollQuestion && pollOptions.length < 2) {
+      toast.error("There must be 2 Poll options");
+      return;
     }
 
-    setInitialPostData((prev) => ({ ...prev, isUploading: true }))
+    setIsLoading(true)
+
+    data.trustedResponderPost = userData.labels.includes("admin")
+    data.queImage = queImage
+    data.pollOptions = pollOptions.map((obj) => JSON.stringify(obj)) || []
+
+    // console.log(data)
+    // return
 
     if (post) {
 
-      const { imageURL, imageID } = JSON.parse(post?.queImage)
+      const oldPost = await appwriteService.getPost(post?.$id)
+      await updatePost({ data, file, oldPost })
 
-      if (thumbnailFile) {
-
-        try {
-          if (imageID) await appwriteService.deleteThumbnail(imageID)
-          const webpFile = await convertToWebPFile(thumbnailFile);
-          const dbThumbnail = await appwriteService.createThumbnail({ file: webpFile });
-          const imageURL = await appwriteService.getThumbnailPreview(dbThumbnail?.$id)
-
-          const dbPost = await appwriteService.updatePost(post.$id, {
-            ...data,
-            queImage: JSON.stringify({ imageURL, imageID: dbThumbnail.$id }),
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          console.log(error)
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-
-      } else if (thumbnailURL && !imageID) {
-        try {
-
-          console.log(thumbnailURL)
-          console.log(imageID)
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            queImage: JSON.stringify({ imageURL: thumbnailURL, imageID: null }),
-            pollQuestion: pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-          
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-      } else if (thumbnailURL && imageID) {
-        console.log(thumbnailURL)
-        console.log(imageID)
-        try {
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-          setNotification({ message: "Post Updated", type: "success" })
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-        }
-
-      } else {
-
-        console.log(thumbnailURL)
-        console.log(imageID)
-
-        try {
-          if (imageID) await appwriteService.deleteThumbnail(imageID)
-          const unsplashImg = await fetch(`https://api.unsplash.com/search/photos?query=${categoryValue}&per_page=10&client_id=${conf.unsplashApiKey}`)
-          const UnsplashRes = await unsplashImg.json();
-          const ImgArrUnsplash = UnsplashRes.results
-          const randomIndex = Math.floor(Math.random() * 10);
-
-
-          const ImgURL = ImgArrUnsplash[randomIndex]?.urls?.regular || ImgArrUnsplash[randomIndex]?.urls?.small
-
-          const queImage = JSON.stringify({ imageURL: ImgURL, imageID: null });
-
-          const dbPost = await appwriteService.updatePost(post?.$id, {
-            ...data,
-            queImage,
-            pollQuestion,
-            pollOptions: pollOptions?.map((obj) => JSON.stringify(obj)),
-            trustedResponderPost: isAdmin
-          }, categoryValue);
-
-         
-          setNotification({ message: "Post Updated", type: "success" })
-
-        } catch (error) {
-          setNotification({ message: "Post is Not Updated", type: "error" })
-          return
-        }
-      }
-      navigate("/");
     } else {
-
-      const uploaderProfile = await profile.listProfile({ slug: userData?.$id });
-
-      if (uploaderProfile?.total === 0) {
-        setNotification({ message: "Your Profile is not Verified", type: "error" })
-        return
-      }
-
-      if (initialPostData?.thumbnailFile) {
-        try {
-          const dbPost = await uploadQuestionWithImage(
-            data,
-            userData,
-            initialPostData,
-            uploaderProfile,
-          )
-          setNotification({ message: "Post Created", type: "success" })
-          navigate(`/post/${dbPost?.$id}/null`)
-        } catch (error) {
-          console.log(error)
-          setNotification({ message: "Post is not Created", type: "error" })
-        }
-
-      } else {
-        const dbPost = await uploadPostWithUnsplashAPI(initialPostData, data, userData, uploaderProfile)
-        if (dbPost) {
-          setNotification({ message: "Post Created", type: "success" })
-          navigate(`/post/${dbPost?.$id}/null`)
-          return
-        } else {
-          setNotification({ message: "Post is not Created", type: "error" })
-        }
-      }
+      await createPost({ data, file })
     }
-    setInitialPostData((prev) => ({ ...prev, isUploading: false }))
+
+    setIsLoading(false)
+
   }
 
 
@@ -331,13 +176,13 @@ const AskQue = ({ post }) => {
         onSubmit={handleSubmit(submit)}
         className="flex flex-col lg:flex-row gap-3 mt-4">
 
-        <section className="flex flex-col gap-6 w-full md:w-[70%]">
+        <section className="flex flex-col gap-6 w-full">
           {/* title */}
           <div className="flex flex-col gap-3">
             <label htmlFor="Que_Title" className="font-bold">Title</label>
             <TextArea
               maxLength="250"
-              id="Que_Title"
+              className="h-[100px]"
               placeholder="A Catchy , Title will get more attention. Max 250 Characters are Allowed."
               {...register("title", {
                 required: false,
@@ -390,25 +235,30 @@ const AskQue = ({ post }) => {
 
         </section>
 
-        <section className="flex flex-col w-full md:w-[30%]">
+        <section className="flex flex-col w-full lg:w-[40%]">
           {/* thumbnail */}
           <div className="flex flex-col justify-center items-center">
             <div id="AskQue_Thumbnail">
-              {!thumbnailURL && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
+              {!fileView && <p className="text-center">Add thumbnail for Your Question or thumbnail will be set according to category
               </p>}
-              {thumbnailURL && <img src={thumbnailURL} alt="thumbnail" />}
+              {fileView && <img src={fileView} alt="thumbnail" />}
             </div>
 
             <div id="AskQue_Thumbnail_label" className="flex justify-around items-center gap-5">
-              <label className={`AskQue_BrowseThumbnail`} htmlFor="BrowseThumbnail">{thumbnailURL ? `Change Image` : 'Browse Image'}</label>
 
-              <Input className="hidden" type="file"
+              <label className="AskQue_BrowseThumbnail" htmlFor="BrowseThumbnail">
+                {fileView ? `Change Image` : 'Browse Image'}
+              </label>
+
+              <input className="hidden"
+                type="file"
                 name="thumbnailImage"
                 accept="image/*"
                 id="BrowseThumbnail"
-                onChange={selectThumbnail} />
+                onChange={selectThumbnail}
+              />
 
-              {thumbnailURL && <span onClick={deleteThumbnail}>Remove Image</span>}
+              {fileView && <span onClick={deleteThumbnail}>Remove Image</span>}
             </div>
           </div>
           {/* post type */}
@@ -447,19 +297,19 @@ const AskQue = ({ post }) => {
           <div id="AskQue_SelectCategory">
             <p className={`mb-3`}>Select Category : </p>
             <div className="dropdown">
-              <div className="dropdown-header flex items-center justify-between"
-                onClick={categoryDropdownTrigger}>
-                <span>{initialPostData?.categoryValue ? initialPostData?.categoryValue : `Select Item`}</span>
-                <Icons.dropdown />
-              </div>
-
-              {categoryFlag && <ul className={`AskQue-dropdown-list flex flex-col`}>
-                {categoriesArr?.map((object, index) => (
-                  <li key={object.category + index} className="dropdown-item" onClick={() => selectPostCategory(object.category)}>{object.category}</li>
+              <select {...register("category", {
+                required: true
+              })}>
+                {categoryArr.map((object) => (
+                  <option
+                    key={object.category}
+                    value={object.category}>
+                    {object.category}
+                  </option>
                 ))}
-              </ul>}
-            </div>
+              </select>
 
+            </div>
           </div>
           {/* pole */}
           {<div id="AskQue_Pole" className={`mt-6 ${post && post.pollQuestion === '' ? 'invisible' : ""}`}>
@@ -469,19 +319,21 @@ const AskQue = ({ post }) => {
               maxLength={100}
               placeholder='Ask Pole'
               className={`AskQue_Pole_TextArea`}
-              value={`${post ? post?.pollQuestion : pollQuestion}`}
-              onChange={poolQuestionChange}>
+              {...register("pollQuestion", {
+                required: false
+              })}
+            >
             </TextArea>
 
             <div className="w-full flex flex-col gap-1 mt-1">
 
               <div className="flex gap-3 h-8">
                 <input
+                  ref={optionsRef}
                   type="text"
                   className="border outline-none px-2 text-sm w-3/5"
-                  value={options}
                   placeholder="options"
-                  onChange={(e) => setInitialPostData((prev) => ({ ...prev, options: e.target?.value }))} />
+                />
                 <Button
                   type="button"
                   variant="outline"
@@ -491,24 +343,17 @@ const AskQue = ({ post }) => {
                 </Button>
               </div>
 
-              {pollOptions?.map((options, index) => {
+              {pollOptions.map((options, index) => (<div
+                className="w-full flex justify-start items-center"
+                key={options.option + index}
+              >
+                <span className="w-3/4" >{`${index + 1} ) ${options.option}`}</span>
+                {!post && <span onClick={() => deletePollOptions(index)}><Icons.trashcan /></span>}
+              </div>
+              ))}
 
-                return <div className="w-full flex justify-start items-center" key={options.option}>
-
-                  <span className={`w-3/4`} >{`${index + 1} ) ${options.option}`}</span>
-
-                  <span className={`${post ? 'hidden' : ''}`}><i className={`fa-regular fa-trash-can cursor-pointer`} onClick={
-                    () => {
-                      setpollOptions((prev) => {
-                        let arr = [...prev]
-                        arr.splice(index, 1)
-                        return [...arr]
-                      })
-                    }}></i></span>
-                </div>
-              })}
               <span className={`text-gray-500 ${pollOptions.length >= 2 ? null : 'hidden'} ${`${post ? 'hidden' : ''}`}`}>Maximum 4 Options Allowed</span>
-              {!(pollOptions.length >= 2) && <span className={`text - gray - 500 ${pollOptions.length < 2 && !pollTextAreaEmpty ? null : 'invisible'} `}>Add Minimum 2 Options</span>}
+              {!(pollOptions.length >= 2) && <span className={`text-gray-500`}>Add Minimum 2 Options</span>}
             </div>
 
             <div className="flex gap-3 h-8 mt-3 items-center">
@@ -523,12 +368,12 @@ const AskQue = ({ post }) => {
           </div>}
           {/* buttons */}
           <div>
-            {isUploading ?
+            {isLoading ?
               <Button type="submit" className="askque_btn">
-                {post ? "Updating..." : "Uploading..."}
+                <Spinner />
               </Button>
               :
-              <Button type="submit" className="askque_btn">
+              <Button type="submit" className="askque_btn" disabled={isLoading}>
                 {post ? "Update Your Question" : "Post Question"}
               </Button>}
           </div>

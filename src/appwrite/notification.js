@@ -14,27 +14,46 @@ export class Notification {
         this.storage = new Storage(this.client)
     }
 
-    async createNotification({ userID = null, slug = null, content = null, name = null, isRead = false, postID = null, userIDofReceiver = null, userProfilePic = null }) {
-        let obj = {}
+    async createNotification({
+        name = null,
+        slug = null,
+        userID = null,
+        postID = null,
+        content = null,
+        isRead = false,
+        userProfilePic = null,
+        userIDofReceiver = null,
+    }) {
 
-        if (userID) obj.userID = userID
-        if (slug) obj.slug = slug
-        if (content) obj.content = content
-        if (name) obj.name = name
-        if (postID) obj.postID = postID
-        if (isRead) obj.isRead = false
-        if (userIDofReceiver) obj.userIDofReceiver = userIDofReceiver
-        if (userProfilePic) obj.userProfilePic = userProfilePic
+        const notification = {
+            isRead,
+            ...(userID && { userID }),
+            ...(slug && { slug }),
+            ...(content && { content }),
+            ...(name && { name }),
+            ...(postID && { postID }),
+            ...(userProfilePic && { userProfilePic }),
+            ...(userIDofReceiver && { userIDofReceiver }),
+        }
 
         try {
-            return this.databases.createDocument(conf.appwriteDatabaseId, conf.appwrite_Notification_CollectionID, ID.unique(),
-                obj
+            return this.databases.createDocument(
+                conf.appwriteDatabaseId,
+                conf.appwrite_Notification_CollectionID,
+                ID.unique(),
+                notification,
             )
         } catch (error) {
-           return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
+
     async getNotification({ userID, limit = null }) {
+
         let arr = [Query.orderDesc("$createdAt")];
 
         if (userID) {
@@ -55,29 +74,36 @@ export class Notification {
             )
             return notifications
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
+
     async deleteNotication({ notificationID }) {
 
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwrite_Notification_CollectionID, notificationID)
         } catch (error) {
-           return null
+            return null
         }
     }
     async updateNotification({ notificationID, isRead }) {
-        let obj = {}
-        if (isRead) {
-            obj.isRead = isRead
-        }
+
         try {
             return this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwrite_Notification_CollectionID, notificationID,
-                obj
+                {
+                    isRead
+                }
             )
         } catch (error) {
-           return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 }

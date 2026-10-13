@@ -17,39 +17,46 @@ const EditProfileEducationLvl = ({
 
 
   return (
-    <div className="EditProfile_Edu_Lvl_div">
-      <p htmlFor="" className="mb-2 block">
-        Highest Level of Education
-      </p>
-      <div className="flex justify-start gap-3">
-        <div className="w-1/2">
-          <select
-            name='educationLvl'
-            value={EducationLevel}
-            onChange={(e) => setEducationLevel(e.currentTarget.value)}
-          >
-            <option hidden>Your Qualification</option>
-            {EDUCTION_OPTIONS?.map((education) => (
-              <option key={education} value={education}>
-                {education}
-              </option>
-            ))}
-          </select>
-        </div>
+  <div className="w-full max-w-[700px]">
+  <p className="text-[16px] font-semibold mb-3">
+    Highest Level of Education
+  </p>
 
-        {(EducationLevel === "Other" || !EDUCTION_OPTIONS.includes(EducationLevel)) && <div className="w-1/2">
-          <input
-            value={EducationLevel}
-            type="text"
-            placeholder="Enter Your Qualification"
-            className="outline-none"
-            maxLength={50}
-            onChange={(e) => setEducationLevel(e?.target?.value)}
-          />
-        </div>}
+  <div className="flex flex-col sm:flex-row gap-4">
+    <div className="w-full sm:w-1/2">
+      <select
+        name="educationLvl"
+        value={EducationLevel}
+        onChange={(e) => setEducationLevel(e.currentTarget.value)}
+        className="w-full h-[45px] px-3 border border-gray-300 rounded-md outline-none text-sm bg-white"
+      >
+        <option hidden>
+          Your Qualification
+        </option>
 
-      </div>
+        {EDUCTION_OPTIONS?.map((education) => (
+          <option key={education} value={education}>
+            {education}
+          </option>
+        ))}
+      </select>
     </div>
+
+    {(EducationLevel === "Other" ||
+      !EDUCTION_OPTIONS.includes(EducationLevel)) && (
+      <div className="w-full sm:w-1/2">
+        <input
+          value={EducationLevel}
+          type="text"
+          placeholder="Enter Your Qualification"
+          maxLength={50}
+          onChange={(e) => setEducationLevel(e?.target?.value)}
+          className="w-full h-[45px] px-3 border border-gray-300 rounded-md outline-none text-sm"
+        />
+      </div>
+    )}
+  </div>
+</div>
   )
 }
 

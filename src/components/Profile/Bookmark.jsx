@@ -7,9 +7,12 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 const PAGE_SIZE = 5;
 
 const Bookmark = ({ visitedUserProfile }) => {
-  const userID = visitedUserProfile?.$id;
-  const bookmarksIDs = visitedUserProfile?.bookmarks ?? []; // array of post ids
+  
   const spinnerRef = useRef(null);
+  const userID = visitedUserProfile?.$id;
+  const bookmarksIDs = visitedUserProfile?.bookmarks ?? [];
+  console.log(bookmarksIDs)
+
   const stableIds = useMemo(() => bookmarksIDs.slice(), [bookmarksIDs]);
 
   const {
@@ -30,7 +33,6 @@ const Bookmark = ({ visitedUserProfile }) => {
       const end = Math.min(start + PAGE_SIZE, stableIds.length);
       const slice = stableIds.slice(start, end);
 
-      
       const posts = await Promise.all(
         slice.map((id) =>
           appwriteService
@@ -71,9 +73,10 @@ const Bookmark = ({ visitedUserProfile }) => {
     return () => io.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+
   if (!stableIds.length) {
     return (
-      <div className="p-8 text-sm text-gray-600 dark:text-gray-300">
+      <div className="text-center p-8 text-xl text-gray-600 dark:text-gray-300">
         No bookmarks yet.
       </div>
     );
@@ -90,12 +93,10 @@ const Bookmark = ({ visitedUserProfile }) => {
   return (
     <div
       id="Profile_Bookmark_Filter"
-      className="flex w-full justify-center"
-    >
+      className="flex w-full justify-center">
       <div
         id="Profile_Bookmark_Filtered_Bookmark"
-        className="w-full max-w-3xl px-3 sm:px-4 md:px-0"
-      >
+        className="w-full max-w-3xl px-3 sm:px-4 md:px-0">
        
         {status === "pending" && (
           <div className="flex justify-center my-8">
@@ -106,12 +107,10 @@ const Bookmark = ({ visitedUserProfile }) => {
         {bookMarkPosts.map((bookmark) => (
           <div
             className="BookMark_Posts group mb-4 rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
-            key={bookmark?.$id}
-          >
+            key={bookmark?.$id}>
             <Link
               to={`/post/${bookmark?.$id}/${null}`}
-              className="block p-4 sm:p-5"
-            >
+              className="block p-4 sm:p-5">
               <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 leading-snug group-hover:underline truncate">
                 {bookmark?.title}
               </p>

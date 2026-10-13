@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '../ui/button';
+import Icons from '@/components/Icons';
 
 const EditProfileTags = ({ interestedIn, setProfileObject }) => {
 
@@ -52,19 +53,27 @@ const EditProfileTags = ({ interestedIn, setProfileObject }) => {
 
 
   return (
-    <div className="EditProfile_Interested_div">
-      <p className="mb-2 mt-2 block">Interested In </p>
-      <div className="EditProfile_Interested_Tag">
-        <p className="">
+    <div className="w-full max-w-[700px]">
+      <p className="text-[16px] font-semibold mb-3">
+        Interested In
+      </p>
+
+      <div>
+        <p className="text-[13px] text-gray-700 mb-3">
           Enter tag name or you can type like this PYTHON,JAVA,C#
         </p>
-        <div className={`EditProfile_tag_box p-2 mb-2`}>
-          <ul className="flex flex-wrap gap-3">
+
+        <div className="w-full min-h-[50px] border border-gray-300 rounded-md bg-white p-3">
+          <ul className="flex flex-wrap items-center gap-2">
             {interestedTagArr?.map((Tag, index) => (
-              <li key={Tag} className="flex items-center gap-2">
+              <li
+                key={Tag}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-100 text-sky-600 text-sm font-medium"
+              >
                 <span>{Tag}</span>
+
                 <span
-                  className={`cursor-pointer`}
+                  className="cursor-pointer text-[11px]"
                   onClick={(e) => {
                     setInterestedTagArr((prev) => {
                       let newArray = [...prev];
@@ -73,44 +82,49 @@ const EditProfileTags = ({ interestedIn, setProfileObject }) => {
                     });
                   }}
                 >
-                  <i className="fa-solid fa-x"></i>
+                  <Icons.cross />
                 </span>
               </li>
             ))}
 
             <input
               type="text"
-              name=""
-              id=""
-              className="outline-none"
               placeholder="Coding,Java,Python"
               onInput={addTag}
               value={interestedTag}
+              className="flex-1 min-w-[140px] outline-none border-none text-sm py-1"
             />
           </ul>
         </div>
-        <div className="flex justify-between items-center EditProfile_Interested_remaining mt-5 flex-wrap">
-          <p>
-            <span> {10 - interestedTagArr.length} </span>tags are
-            remaining
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-5">
+          <p className="text-sm font-medium">
+            <span className="font-bold">
+              {10 - interestedTagArr.length}
+            </span>{" "}
+            tags are remaining
           </p>
-          <div className="flex gap-3">
+
+          <div className="flex flex-wrap gap-3 w-full sm:w-auto">
             <Button
               type="button"
-              className="secondaryBlue font_bold_500 text-white"
-              onClick={addTags}>
+              className="secondaryBlue font_bold_500 text-white flex-1 sm:flex-none"
+              onClick={addTags}
+            >
               Add Tag
             </Button>
+
             <Button
-              type='button'
-              className="secondaryBlue font_bold_500 text-white"
-              onClick={() => setInterestedTagArr([])}>
+              type="button"
+              className="secondaryBlue font_bold_500 text-white flex-1 sm:flex-none"
+              onClick={() => setInterestedTagArr([])}
+            >
               Remove all
             </Button>
           </div>
         </div>
       </div>
-    </div >
+    </div>
   )
 }
 

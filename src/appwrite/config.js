@@ -14,25 +14,9 @@ export class Service {
         this.storage = new Storage(this.client)
     }
 
-    async createPost({ title, content, userId, queImage, name, opinionsFrom, status, pollQuestion, pollOptions, pollAnswer, profileImgID, trustedResponderPost }, category) {
+    async createPost(payload) {
         try {
-            const payload = {
-                name,
-                title,
-                status,
-                userId,
-                content,
-                queImage,
-                category,
-                pollAnswer,
-                pollOptions,
-                opinionsFrom,
-                pollQuestion,
-                profileImgID,
-                trustedResponderPost,
-            }
             // console.log(payload)
-
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteCollectionId,
@@ -40,18 +24,29 @@ export class Service {
                 payload
             )
         } catch (error) {
-            console.log("Appwrite serive :: createPost :: error", error);
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
-    async updatePost(slug, postObject) {
-
+    async updatePost({ slug, payload }) {
         try {
-            return await this.databases.updateDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug, postObject)
+
+            return await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                slug,
+                payload
+            )
         } catch (error) {
-            console.log(error)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -62,7 +57,11 @@ export class Service {
                 commentCount
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -75,7 +74,11 @@ export class Service {
                 pollVotersID
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
     async updatePost_Like_DisLike({ postId, like, dislike }) {
@@ -88,7 +91,11 @@ export class Service {
                 dislike,
             })
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -96,7 +103,13 @@ export class Service {
         try {
             await this.databases.deleteDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, slug)
         } catch (error) {
-            return false
+
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
+
         }
     }
 
@@ -110,8 +123,11 @@ export class Service {
             // console.log(data)
             return data
         } catch (error) {
-            console.log("Appwrite serive :: getPost :: error", error);
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.error(message)
+            }
+            throw new Error(message)
         }
     }
 
@@ -154,10 +170,31 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-            // console.log(error)
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
             throw new Error(error)
         }
     }
+
+    async getTotalPosts(userId) {
+        try {
+            const result = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteCollectionId,
+                [Query.equal("userId", [userId]), Query.limit(1)]
+            )
+            return result.total
+        } catch (error) {
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.error(message)
+            }
+            throw error
+        }
+    }
+
 
     async getPostsWithQueries({
         To,
@@ -174,11 +211,8 @@ export class Service {
         Like_Dislike,
     }, lastPostID) {
 
-
         let QueryArr = [Query.limit(5)]
-        if (lastPostID) {
-            QueryArr.push(Query.cursorAfter(lastPostID))
-        }
+        if (lastPostID) QueryArr.push(Query.cursorAfter(lastPostID))
         if (Like_Dislike === 'Most Liked') {
             QueryArr.push(Query.orderDesc("like"))
         } else if (Like_Dislike === 'Most Disliked') {
@@ -186,19 +220,22 @@ export class Service {
         }
         if (Title) QueryArr.push(Query.startsWith("title", Title))
         if (category && category !== 'All Category') { QueryArr.push(Query.equal('category', [`${category}`])) }
-
         if (BeforeDate) QueryArr.push(Query.lessThanEqual('date', BeforeDate))
         if (AfterDate) QueryArr.push(Query.greaterThanEqual('date', AfterDate))
         if (From && To) {
             QueryArr.push(Query.greaterThanEqual('date', From))
             QueryArr.push(Query.lessThanEqual('date', To))
         }
-        if (PostAge === "Oldest") { QueryArr.push(Query.orderAsc("$createdAt")) } else if (PostAge === 'Recent') {
+        if (PostAge === "Oldest") {
+            QueryArr.push(Query.orderAsc("$createdAt"))
+        } else if (PostAge === 'Recent') {
             QueryArr.push(Query.orderDesc("$createdAt"))
         }
+
         if (Viewed === 'MostViewed') {
             QueryArr.push(Query.orderDesc("views"))
         }
+
         else if (Viewed === 'lessViewed') {
             QueryArr.push(Query.orderAsc("views"))
         }
@@ -226,41 +263,57 @@ export class Service {
                 QueryArr
             )
         } catch (error) {
-            console.log("Appwrite serive :: getPostsWithQueries :: error", error);
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
+
     async getPostWithBookmark(postID) {
         try {
-            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID
-            )
+            return await this.databases.getDocument(conf.appwriteDatabaseId, conf.appwriteCollectionId, postID)
         } catch (error) {
-            console.log("Appwrite service :: getPosts :: error", error);
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
+
     async createThumbnail({ file }) {
         try {
             return await this.storage.createFile(conf.appwriteBucketIdThumbnail, ID.unique(), file)
         } catch (error) {
-            console.log("Appwrite service :: createThumbnail :: error", error);
-            return false
+            const message = error instanceof Error ? error.message : error
+            console.error(message)
+            throw error
         }
     }
+
     async updateThumbnail(fileID, file) {
         try {
             return await this.storage.updateFile(conf.appwriteBucketIdThumbnail, fileID, 'HElloWorld')
         } catch (error) {
-
-            return false
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw new Error(message)
         }
     }
+
     async deleteThumbnail(fileid) {
 
         try {
             return await this.storage.deleteFile(conf.appwriteBucketIdThumbnail, fileid)
         } catch (error) {
-            return false
+            if (import.meta.env.DEV) {
+                console.log(error instanceof Error ? error.message : error)
+            }
+            throw new Error(error)
         }
     }
 

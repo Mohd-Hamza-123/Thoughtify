@@ -12,30 +12,20 @@ export class RealTime {
         this.database = new Databases(this.client)
     }
 
-    async createComment({
-        postId,
-        commentContent,
-        authId,
-        name,
-        category
-    }) {
+    async createComment(payload) {
         try {
             return await this.database.createDocument(
                 conf.appwriteDatabaseId,
                 conf.appwriteNewCollectionId,
                 ID.unique(),
-                {
-                    name,
-                    postId,
-                    authId,
-                    category,
-                    commentContent,
-                    subComment: [],
-                }
+                payload
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -53,8 +43,11 @@ export class RealTime {
                 payload
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -62,7 +55,11 @@ export class RealTime {
         try {
             return await this.database.deleteDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -70,18 +67,27 @@ export class RealTime {
         try {
             return await this.database.getDocument(conf.appwriteDatabaseId, conf.appwriteNewCollectionId, documentid)
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
     async listComment(postId, lastId) {
 
-        console.log(lastId)
-        
         let QueryArr = [
             Query.limit(4),
             Query.equal("postId", [`${postId}`]),
-            Query.orderDesc("$createdAt")
+            Query.orderDesc("$createdAt"),
+            Query.select([
+                "$id",
+                "name",
+                "commentContent",
+                "subComment",
+                "profile.profileImage"
+            ])
         ]
 
         if (lastId) {
@@ -100,8 +106,11 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -113,7 +122,11 @@ export class RealTime {
                 queryArr
             )
         } catch (error) {
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 
@@ -149,8 +162,11 @@ export class RealTime {
                 QueryArr
             )
         } catch (error) {
-            console.log(error?.message)
-            return null
+            const message = error instanceof Error ? error.message : error
+            if (import.meta.env.DEV) {
+                console.log(message)
+            }
+            throw error
         }
     }
 

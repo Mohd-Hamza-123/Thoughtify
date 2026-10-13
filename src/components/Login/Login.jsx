@@ -1,150 +1,178 @@
-import './Login.css'
-import { GoBackHome } from '..';
-import { Input } from '../ui/input';
-import { Button } from "../ui/button";
-import { ThoughtifyLogo } from '../Logo';
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import React from "react";
 import { useDispatch } from "react-redux";
-import authService from "../../appwrite/auth";
-import { checkAppWriteError } from '@/messages';
-import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
-import { login as authLogin } from "../../store/authSlice";
-import { useNotificationContext } from "@/context/NotificationContext";
-import profile from '@/appwrite/profile';
-import { userProfile } from '@/store/profileSlice';
-import { homePageLoading } from '@/store/loadingSlice';
+
+import { GoBackHome } from "..";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Spinner } from "../ui/spinner";
+import { ThoughtifyLogo } from "../Logo";
+
+import profile from "@/appwrite/profile";
+import authService from "@/appwrite/auth";
+import { checkAppWriteError } from "@/messages";
+import { userProfile } from "@/store/profileSlice";
+import { homePageLoading } from "@/store/loadingSlice";
+import { login as authLogin } from "@/store/authSlice";
 
 const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const [isWaiting, setIsWaiting] = useState(false);
-  const { setNotification } = useNotificationContext()
+  const {
+    
+    register,
+    handleSubmit,
+    formState: { errors , isSubmitting },
+  } = useForm();
 
   const login = async (data) => {
+
     try {
-      setIsWaiting(true)
-      const session = await authService.login({ ...data });
+
+      const session = await authService.login(data);
+
       if (session?.success) {
+
         const userData = await authService.getCurrentUser();
-        if (userData) {
-          dispatch(authLogin({ userData }));
-          const profileData = await profile.listSingleProfile(userData?.$id)
-          dispatch(userProfile({ userProfile: profileData }))
-          dispatch(homePageLoading({ homePageLoading: false }))
-          navigate("/");
-          setNotification({
-            message: 'You are Logged In',
-            type: 'success'
-          })
-        }
+        const profileData = await profile.listSingleProfile(userData.$id);
+        dispatch(authLogin({ userData }));
+        dispatch(userProfile({ userProfile: profileData }));
+        dispatch(homePageLoading({ homePageLoading: false }));
+        toast.success(`Welcome back, ${userData.name}!`);
+        navigate("/");
+
       } else {
-        setNotification({
-          message: checkAppWriteError(session?.error),
-          type: 'error'
-        })
+        await authService.logout();
+        toast.error(checkAppWriteError(session?.error));
       }
-      setIsWaiting(false)
+      
     } catch (error) {
-      setNotification({
-        message: error?.message || "something went wrong.",
-        type: 'error'
-      })
-      setIsWaiting(false)
-    }
+      if (import.meta.env.DEV) {
+        console.log(error instanceof Error ? error.message : error);
+      }
+
+      toast.error("Oops! something went wrong.");
+    } 
   };
 
-  useEffect(() => {
-    if (errors?.password) {
-      setNotification({
-        message: errors.password?.message,
-        type: 'error'
-      })
-    }
-  }, [errors])
-
   return (
-    <div id="Login_Container" className="flex items-center justify-center w-full flex-col">
-      <GoBackHome />
+    <main className="relative h-screen overflow-hidden bg-background text-foreground">
+      <div className="absolute left-4 top-4">
+        <GoBackHome />
+      </div>
 
-      <div className="flex flex-col items-center justify-center w-full gap-2">
-        <ThoughtifyLogo className='mx-auto' />
-        <h2 className="font-bold text-2xl mt-3 text-center dark:text-white text-black">
-          Login
-        </h2>
+      <section className="flex h-full items-center justify-center px-4">
+        <div className="flex w-full max-w-sm flex-col items-center">
+          <ThoughtifyLogo />
 
-        <p className='text-center'>
-          Don't have an Account ?&nbsp;
-          <Link
-            className="font-bold text-primary  hover:underline"
-            to={"/signup"}
-          >
-            Signup
-          </Link>
-        </p>
+          <h1 className="mt-3 text-center text-3xl font-bold">
+            Welcome Back
+          </h1>
 
-        <form
-          className="max-w-full flex flex-col justify-center items-center gap-6"
-          onSubmit={handleSubmit(login)}>
-            
-          <div className="relative flex flex-col">
-            <Input
-              required
-              type="email"
-              placeholder=""
-              className="w-80 rounded px-2 p-1 text-lg bg-gray-300 border-none"
-              {...register("email", {
-                required: true,
-              })}
-            />
-            <span>Email</span>
-            <i className="w-full"></i>
-          </div>
-          <div className="relative flex flex-col">
-            <Input
-              required
-              minLength={8}
-              type="password"
-              placeholder=""
-              className="border-none rounded px-2 p-1 bg-gray-300 text-lg w-80"
-              {...register("password", {
-                required: true,
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters long"
-                }
-              })}
-            />
-            <span>Password</span>
-            <i className="w-full"></i>
-          </div>
-
-
-          <p>
-            <Link to={`/forgotPassword`} className="hover:underline text-sm">
-              Forget Your Password ?
+          <p className="mt-2 text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-semibold text-primary hover:underline"
+            >
+              Sign up
             </Link>
           </p>
 
-          <Button type="submit" className="mt-3 rounded-sm w-20 block px-2 py-1 login_signIn_Btn">
-            {`${isWaiting ? 'wait...' : 'Login'}`}
+          <form onSubmit={handleSubmit(login)} className="mt-6 flex w-full flex-col gap-4">
+
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email
+              </label>
+
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                className="h-10"
+                {...register("email", {
+                  required: "Email is required",
+                })}
+              />
+
+              {errors.email && (
+                <p className="text-xs text-red-500">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
+
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                className="h-10"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
+              />
+
+              {errors.password && (
+                <p className="text-xs text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-end">
+              <Link
+                to="/forgotPassword"
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="mt-1 h-10 w-full">
+              {isSubmitting ? <Spinner /> : "Log in"}
+            </Button>
+            
+          </form>
+
+          <div className="my-4 flex w-full items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-medium text-muted-foreground">
+              OR
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => authService.googleAuth()}
+            className="h-10 w-full gap-2"
+          >
+            <FcGoogle size={20} />
+            Continue with Google
           </Button>
-
-        </form>
-
-
-        <Button
-          variant="destructive"
-          onClick={() => authService.googleAuth()}
-          type="button"
-          className="lg:w-1/5 mx-auto px-2" >
-          Sign in with Google
-        </Button>
-      </div>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 };
 

@@ -1,144 +1,187 @@
-import "./FindFriends.css";
 import React from "react";
+import { toast } from "sonner";
 import { Icons } from "@/components";
-import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import profile from "@/appwrite/profile";
+import { getAvatar } from "@/lib/avatar";
+import { useSelector } from "react-redux";
+import avatarService from "@/appwrite/avatar";
 import { getUserByName } from "@/lib/profile";
-import { useNavigate } from "react-router-dom";
 import SectionTrigger from "@/components/Home/Trigger/SectionTrigger";
-import { useNotificationContext } from "@/context/NotificationContext";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+const normalizeUsers = (users = []) => {
+  return users.map((user) => {
+    let profileImage = user.profileImage;
+
+    if (profileImage) {
+      try {
+        profileImage =
+          typeof profileImage === "string"
+            ? JSON.parse(profileImage)
+            : profileImage;
+      } catch {
+        profileImage = null;
+      }
+    }
+
+    return {
+      ...user,
+      profileImage: profileImage || {
+        profileImageURL: avatarService.createAvatar({ name: user.name }),
+      },
+    };
+  });
+};
+
+const removeDuplicateUsers = (users = []) => {
+  return users.filter(
+    (user, index, self) =>
+      index === self.findIndex((u) => u.$id === user.$id)
+  );
+};
 
 const FindFriends = () => {
+  const queryClient = useQueryClient();
+  const userData = useSelector((state) => state.auth.userData);
 
-  const navigate = useNavigate();
-  const queryClient = useQueryClient()
-  const { setNotification } = useNotificationContext()
-  const { handleSubmit, reset, register } = useForm();
+  const currentUserName = userData?.name;
+
+  const { data: allUsers = [], isLoading } = useQuery({
+    queryKey: ["users", currentUserName],
+    queryFn: async () => {
+      const users = await getUserByName(currentUserName);
+      return normalizeUsers(users || []);
+    },
+    enabled: Boolean(currentUserName),
+  });
 
   const mutation = useMutation({
     mutationFn: (username) => getUserByName(username),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData(['users'], (old = []) => {
-     
-        const newUsers = Array.isArray(data) ? data : [data];
-        const merged = [...old, ...newUsers];
 
-        // remove duplicates by $id
-        const unique = merged.filter(
-          (user, index, self) =>
-            index === self.findIndex((u) => u.$id === user.$id)
-        );
+    onSuccess: (data) => {
+      const searchedUsers = normalizeUsers(data || []);
 
-        return unique;
+      queryClient.setQueryData(["users", currentUserName], (old = []) => {
+        return removeDuplicateUsers([...searchedUsers, ...old]);
       });
     },
+
     onError: (err) => {
-      console.log(err);
-      setNotification({ message: "Something went wrong", type: "error" });
+      console.log(err instanceof Error ? err.message : err);
+      toast.error("Something went wrong");
     },
   });
 
-  const searchedUser = mutation.data
+  const submit = async (e) => {
+    e.preventDefault();
 
-  const allUsers = queryClient.getQueryData(['users']);
-  
-  const submit = async (data) => {
-    mutation.mutate(data.searchValue)
-    reset();
+    const formData = new FormData(e.target);
+    const searchValue = formData.get("searchValue")?.trim();
 
+    if (!searchValue) return;
+
+    mutation.mutate(searchValue);
+    e.target.reset();
   };
-  const nav = (slug) => navigate(slug)
 
   return (
-    <main className="relative">
-      <div className="w-full flex justify-end px-3"><SectionTrigger /></div>
-      <h3 className="text-center md:text-lg mt-4">Explore New Connections</h3>
-      <div className="FindFriendsPage_Main">
-        <section className="px-3">
-          <p>Searched</p>
-          <div>
-            {allUsers?.map((profile) => (
-              <div
-                key={profile?.$id}
-                onClick={() => navigate(`/profile/${profile?.userIdAuth}`)}
-                className="FindFriendsPage_ListFriends cursor-pointer"
-              >
-                <div>
-                  <img src={profile?.profileImgURL} />
-                </div>
-                <p>
-                  {profile?.name}
-                </p>
+    <main className="relative min-h-[83dvh] bg-slate-50 dark:bg-slate-900/60 p-4">
+      <div className="w-full flex justify-end px-3">
+        <div className="inline-block">
+          <SectionTrigger />
+        </div>
+      </div>
+
+      <h3 className="text-center md:text-left md:text-xl mt-4 text-slate-800 font-semibold">
+        Explore New Connections
+      </h3>
+
+      <div className="max-w-6xl mx-auto mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="md:col-span-2 space-y-4">
+          <span className="text-sm text-slate-500 dark:text-slate-300">
+            Searched
+          </span>
+
+          <div className="space-y-3">
+            {isLoading ? (
+              <div className="flex items-center justify-center p-6 rounded-xl bg-white/60 dark:bg-slate-800/50 border border-dashed border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-300">
+                Loading users...
               </div>
-            ))}
-            {allUsers?.length === 0 && (
-              <div className="FindFriendsPage_ListFriends">
-                <p >
-                  No Users are here
-                </p>
+            ) : Array.isArray(allUsers) && allUsers.length > 0 ? (
+              allUsers.map((user) => {
+                // console.log(user)
+                const profileImageURL = user?.profileImage?.profileImageURL;
+                console.log(user.profileImage)
+                console.log(profileImageURL)
+
+                return (
+                  <Link
+                    key={user?.$id}
+                    to={`/profile/${user?.$id}`}
+                    className="block"
+                  >
+                    <div className="flex items-center gap-4 p-3 rounded-2xl bg-white dark:bg-slate-800/60 border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition">
+                      <img
+                        src={profileImageURL?.replace("/preview","/view") || getAvatar(user?.name)}
+                        alt={user?.name}
+                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm"
+                      />
+
+                      <div className="flex-1 min-w-0">
+                        <h6 className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                          {user?.name}
+                        </h6>
+
+                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {user?.bio || "No bio added yet"}
+                        </p>
+                      </div>
+
+                      <div className="text-xs text-slate-400">View</div>
+                    </div>
+                  </Link>
+                );
+              })
+            ) : (
+              <div className="flex items-center justify-center p-6 rounded-xl bg-white/60 dark:bg-slate-800/50 border border-dashed border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-300">
+                No users are here
               </div>
             )}
           </div>
         </section>
-        <section className="p-2">
-          <div className="Find_Friends_wrapper">
-            <form
-              className="Find_Friends_wrapper_searchBar"
-              onSubmit={handleSubmit(submit)}
-            >
-              <input
-                {...register("searchValue", {
-                  required: true,
-                })}
-                className="searchQueryInput"
-                type="text"
-                placeholder="Enter Full Name"
-              />
-              <button className="searchQuerySubmit" type="submit">
-                <Icons.search />
-              </button>
-            </form>
+
+        <section className="md:col-span-1 space-y-4">
+          <div className="sticky top-6">
+            <div className="bg-white dark:bg-slate-800/60 p-3 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm">
+              <form className="flex items-center gap-2" onSubmit={submit}>
+                <input
+                  placeholder="Enter Full Name"
+                  className="flex-1 px-3 py-2 rounded-lg outline-none text-sm placeholder:text-gray-400 bg-transparent text-slate-800 dark:text-slate-100"
+                  name="searchValue"
+                  required
+                  type="text"
+                />
+
+                <button
+                  className="inline-flex items-center justify-center p-2 rounded-lg text-white hover:bg-gray-200 active:scale-95 transition"
+                  type="submit"
+                >
+                  <Icons.search />
+                </button>
+              </form>
+            </div>
           </div>
 
-          <div>
-            {mutation.isPending && <div className="flex justify-center">searching...</div>}
-
-            {searchedUser?.map((persons, index) => (
-              <div
-                key={persons?.$id}
-                className="cursor-pointer FindFriends_Profile_Details"
-                onClick={() => nav(`/profile/${persons?.$id}`)}>
-
-                <div className="FindFriendsPage_ListFriends_Searched_Person">
-
-                  <div className="flex gap-3 items-center">
-                    <img src={persons?.profileImgURL || "NoProfile.png"}
-                      alt="NoProfile" />
-                    <p>{persons?.name}</p>
-                  </div>
-
-                  <div>{persons?.bio}</div>
-
-                  <div>
-                    <b>Occupation :</b> {persons?.occupation}
-                  </div>
-
-                  <div className="my-1 flex">
-                    <b>EducationLvl : </b> {persons?.educationLvl}
-                  </div>
-
-                  {persons?.interestedIn > 0 && <div className="flex gap-1 flex-wrap">
-                    <b>Interested In : </b>
-                    <div className="flex gap-3">
-                      {persons?.interestedIn?.map((interest) => (
-                        <span key={interest}>{interest}</span>
-                      ))}
-                    </div>
-                  </div>}
-                </div>
-              </div>
-            ))}
-          </div>
+          {mutation.isPending && (
+            <div className="flex justify-center text-sm text-slate-500 dark:text-slate-300">
+              searching...
+            </div>
+          )}
         </section>
       </div>
     </main>

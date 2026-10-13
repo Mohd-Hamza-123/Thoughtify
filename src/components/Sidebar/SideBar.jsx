@@ -1,23 +1,22 @@
 import "./SideBar.css";
-import { useState } from "react";
 import Icons from "../Icons";
-import conf from "../../conf/conf";
+import { toast } from "sonner"
+import { useState } from "react";
+import { ProfileImage } from "../Logo";
 import { Link } from "react-router-dom";
 import authService from "../../appwrite/auth";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/authSlice";
 import React, { useRef, useEffect } from "react";
-import { DarkModeToggle } from "../";
+import { userProfile } from "@/store/profileSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useAskContext } from "../../context/AskContext";
-import { ProfileImage } from "../Logo";
 import { useBooleanContext } from "@/context/BooleanContext";
-import { userProfile } from "@/store/profileSlice";
+
 
 const SideBar = () => {
 
   const SideBar = useRef();
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -50,16 +49,16 @@ const SideBar = () => {
 
   const logoutHandle = async () => {
     try {
-      const res = await authService.logout();
-      console.log(res);
-      if (res) {
-        dispatch(logout());
-        dispatch(userProfile({ userProfile: null }))
-        closeSideBarAndOverlay();
-        navigate("/");
-      }
+      await authService.logout();
+      dispatch(logout());
+      dispatch(userProfile({ userProfile: null }))
+      closeSideBarAndOverlay();
+      navigate("/");
+      toast.success("You have successfully logged out");
     } catch (err) {
-      // show message popup
+      const message = err instanceof Error ? err.message : err;
+      if (import.meta.env.DEV) console.log(message)
+      toast.error("Unable to log out");
     }
   };
 
@@ -71,35 +70,24 @@ const SideBar = () => {
     },
     {
       name: "Edit Profile",
-      slug: `/EditProfile/${userData?.$id}`,
+      slug: `/edit-profile/${userData?.$id}`,
       icon: <Icons.edit />,
     },
     {
-      name: "Chat",
-      slug: `/chat/${userData?.$id}`,
-      icon: <Icons.chats />
-
-    },
-    {
       name: "About Creater",
-      slug: `/profile/${conf.myPrivateUserID}`,
+      slug: `/profile/6a1121831572c33323b2`,
       icon: <Icons.special />,
-    },
-    {
-      name: "Trusted Responders",
-      slug: `/trustedResponders`,
-      icon: <Icons.trusted />,
     },
   ];
 
   return (
     <div className="SideBar poppins" ref={SideBar}>
       <div className="flex justify-between items-center px-1">
+
         <Link to={`/profile/${userData?.$id}`}>
           <div
             onClick={closeSideBarAndOverlay}
-            className="SideBarCross flex gap-3 justify-start items-center"
-          >
+            className="SideBarCross flex gap-3 justify-start items-center">
             <ProfileImage />
             <p className="poppins">{name}</p>
           </div>
@@ -109,17 +97,18 @@ const SideBar = () => {
           className="mr-3 cursor-pointer hover:scale-110 transition-all duration-75"
           onClick={closeSideBarAndOverlay}
         />
+
       </div>
 
       <div className="SideBarContent">
-        {sideBarLinks?.map((option) => (
-          <Link to={option?.slug} key={option?.name}>
+
+        {sideBarLinks.map((option) => (
+          <Link to={option.slug} key={option.name}>
             <div
               className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center"
-              onClick={closeSideBarAndOverlay}
-            >
-              {option?.icon}
-              <p>{option?.name}</p>
+              onClick={closeSideBarAndOverlay}>
+              {option.icon}
+              <p>{option.name}</p>
             </div>
           </Link>
         ))}
@@ -130,8 +119,7 @@ const SideBar = () => {
             onClick={(e) => {
               closeSideBarAndOverlay();
               onInstallApp();
-            }}
-          >
+            }}>
             <Icons.download />
             <p>Download App</p>
           </div>
@@ -141,18 +129,12 @@ const SideBar = () => {
 
         {isSidebarVisible && (
           <div
-            className="SideBarItems flex gap-5 py-2 rounded-md px-6  justify-start items-center cursor-pointer"
-            onClick={() => {
-              logoutHandle();
-              closeSideBarAndOverlay();
-            }}
-          >
+            className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center cursor-pointer"
+            onClick={logoutHandle}>
             <Icons.logout />
             <p>LogOut</p>
           </div>
         )}
-        <hr />
-        <DarkModeToggle />
 
       </div>
     </div>

@@ -1,6 +1,15 @@
-import React from "react";
+import { Icons } from "..";
+import { toast } from "sonner"
 import conf from "@/conf/conf";
+import { Spinner } from "../ui/spinner";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { FaComment } from "react-icons/fa";
+import { IoEyeSharp } from "react-icons/io5";
+import { deleteQuestion } from "@/lib/posts";
 import { useNavigate } from "react-router-dom";
+import { dateFormatFunc } from "@/helpers/format-dates";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -11,44 +20,47 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Icons } from "..";
-import { useSelector } from "react-redux";
-import { FaComment } from "react-icons/fa";
-import { IoEyeSharp } from "react-icons/io5";
-import { deleteQuestion } from "@/lib/posts";
-import { dateFormatFunc } from "@/helpers/format-dates";
-import { useNotificationContext } from "@/context/NotificationContext";
-import { useQueryClient } from "@tanstack/react-query";
 
 const ViewPostHeader = ({ post }) => {
 
+    const [open, setOpen] = useState(false);
     const userData = useSelector((state) => state?.auth?.userData);
-    const isAuthor = post && userData ? post.userId === userData.$id : false;
-    console.log(isAuthor)
-    console.log(post.userId , userData.$id)
-    const { setNotification } = useNotificationContext();
+    const isAuthor = post && userData ? post?.userId === userData?.$id : false;
+    // console.log(isAuthor)
+
     const navigate = useNavigate();
     const queryClient = useQueryClient()
 
-    const removePost = async () => {
-        const flag = await deleteQuestion(post);
-        queryClient.setQueryData(['posts'], (oldData) => {
-            return {
-                ...oldData,
-                pages: oldData.pages.map((page) => ({
-                    ...page,
-                    documents: page.documents.filter((previous) => previous?.$id !== post?.$id),
-                })),
-            }
-        })
-        // let flag = false
-        if (flag) {
-            setNotification({ message: "Post deleted", type: "success" });
+
+    const deleteMutation = useMutation({
+        mutationFn: () => deleteQuestion(post),
+
+        onSuccess: () => {
+            queryClient.setQueryData(["posts"], (oldData) => {
+                if (!oldData) return oldData;
+
+                return {
+                    ...oldData,
+                    pages: oldData.pages.map((page) => ({
+                        ...page,
+                        documents: page.documents.filter(
+                            (previous) => previous?.$id !== post?.$id
+                        ),
+                    })),
+                };
+            });
+
+            toast.success("Post deleted");
+            setOpen(false);
             navigate("/");
-        } else {
-            setNotification({ message: "Post is not deleted", type: "error" })
-        }
-    };
+        },
+
+        onError: (error) => {
+            const message = error instanceof Error ? error.message : error;
+            console.error(message);
+            toast.error(message);
+        },
+    });
 
     return (
         <div className="flex justify-between items-center mx-1 md:mx-3 mt-2 relative">
@@ -74,9 +86,9 @@ const ViewPostHeader = ({ post }) => {
             </div>
 
             {/* Right: actions for author */}
-            {(isAuthor || userData?.$id === conf?.myPrivateUserID) && (
+            {(isAuthor || userData?.email === conf.myPrivateUserID) && (
                 <ul className="flex gap-3 items-center">
-                    <AlertDialog>
+                    <AlertDialog open={open} onOpenChange={setOpen}>
                         <AlertDialogTrigger>
                             <li className="cursor-pointer rounded-full p-2 hover:bg-red-50 text-red-600 transition-colors">
                                 <Icons.trashcan />
@@ -89,9 +101,19 @@ const ViewPostHeader = ({ post }) => {
                                 </AlertDialogTitle>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={removePost}>
-                                    Continue
+                                <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    disabled={deleteMutation.isPending}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        if (isAuthor || userData?.email === conf.myPrivateUserID) deleteMutation.mutate();
+                                    }}
+                                >
+                                    {deleteMutation.isPending ? (
+                                        <Spinner className="size-4" />
+                                    ) : (
+                                        "Continue"
+                                    )}
                                 </AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
@@ -99,9 +121,8 @@ const ViewPostHeader = ({ post }) => {
 
                     <li
                         className="cursor-pointer rounded-full p-2 hover:bg-slate-100 transition"
-                        onClick={() => navigate(`/EditQuestion/${post?.$id}`)}
-                        title="Edit post"
-                    >
+                        onClick={() => navigate(`/edit-question/${post?.$id}`)}
+                        title="Edit post">
                         <Icons.edit className="text-base" />
                     </li>
                 </ul>

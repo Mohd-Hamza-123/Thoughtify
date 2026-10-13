@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import appwriteService from "../appwrite/config";
-import {
-  AskQue,
-  LowerNavigationBar,
-  NavBar,
-  SecondLoader,
-  UpperNavigationBar,
-} from "../components/index";
+import React, { useEffect, useState } from "react";
+import { AskQue, Spinner, } from "../components/index";
 
 const EditAskQuestion = () => {
+  
   const [post, setPost] = useState(null);
   const { slug } = useParams();
 
@@ -22,13 +17,11 @@ const EditAskQuestion = () => {
     getPost();
   }, []);
 
-  return post ? (
-    <>
-      <AskQue post={post} />
-    </>
+  return post ? (<AskQue post={post} />
+
   ) : (
     <div className="w-screen h-screen flex justify-center items-center">
-      <SecondLoader />
+      <Spinner />
     </div>
   );
 };

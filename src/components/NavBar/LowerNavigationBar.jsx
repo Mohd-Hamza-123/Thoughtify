@@ -14,20 +14,20 @@ const LowerNavigationBar = () => {
       slug: "/",
     },
     {
-      NavName: "Responders Section",
-      slug: "/Responders-Section",
+      NavName: "Responders",
+      slug: "/responders-post",
     },
     {
       NavName: "Find People",
-      slug: "/Find-People",
+      slug: "/find-people",
     },
     {
       NavName: "Have a Query ?",
-      slug: `/AskQuestion`,
+      slug: `/ask-question`,
     },
     {
       NavName: "Browse Question",
-      slug: `/BrowseQuestion/${null}/${null}`,
+      slug: `/browse-question/${null}/${null}`,
     },
   ];
 
@@ -36,16 +36,17 @@ const LowerNavigationBar = () => {
     <nav
       ref={lowerNavBarRef}
       id="LowerNavigationBar"
-      className={`${isOpen ? "lightdark" : ""}`}>
-      {arr?.map((nav) => (
+      className={`hidden md:flex bg-bluePrimary ${isOpen ? "lightdark" : ""}`}>
+      {arr.map((nav) => (
         <NavLink
           onClick={() => {
             if (lowerNavBarRef.current) lowerNavBarRef.current.classList.remove("active");
           }}
-          key={nav.NavName}
           to={nav.slug}
-          className={({ isActive }) => `${isActive ? "active" : ""}`}>
-          <li>{nav.NavName}</li>
+          key={nav.NavName}
+          className={({ isActive }) => `${isActive ? "active" : ""} relative`}>
+          <li className="list-none">{nav.NavName}</li>
+          <div className="bg-white rounded-lg h-[2px] mx-auto absolute bottom-[2px] left-0 right-0"></div>
         </NavLink>
       ))}
     </nav>

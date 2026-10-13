@@ -1,31 +1,31 @@
-import React, { memo, useState } from 'react';
+import { toast } from "sonner"
 import { Button } from '../ui/button';
 import { FaThumbsUp } from "react-icons/fa6";
 import { FaThumbsDown } from "react-icons/fa";
-import { bookMarkPost, updateDislikeCount, updateLikeCount } from '@/lib/posts';
+import React, { memo, useState } from 'react';
 import { FaRegBookmark } from "react-icons/fa6";
 import { userProfile } from '@/store/profileSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNotificationContext } from '@/context/NotificationContext';
+import { bookMarkPost, updateDislikeCount, updateLikeCount } from '@/lib/posts';
 
 const ViewPostLikeDislikeBookmark = ({ post }) => {
 
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
-  const { setNotification } = useNotificationContext()
   const authStatus = useSelector((state) => state.auth.status)
   const myUserProfile = useSelector((state) => state?.profileSlice?.userProfile)
-
+  
   const [likeState, setLikeState] = useState({
     like: post?.like,
     isLiked: myUserProfile?.likedQuestions?.includes(post?.$id)
   })
+
   const [disLikeState, setDisLikeState] = useState({
     dislike: post?.dislike,
     isDisliked: myUserProfile?.dislikedQuestions?.includes(post?.$id)
   })
-  
+
   const isBookmarked = myUserProfile?.bookmarks?.includes(post?.$id)
 
   const { mutate, isPending: isLikePending } = useMutation({
@@ -94,50 +94,49 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
     },
   })
 
-  const { mutate: bookMarkMutate , isPending : isBookMarkPending} = useMutation({
+  const { mutate: bookMarkMutate, isPending: isBookmarkPending } = useMutation({
     mutationFn: async (data) => {
       const { postId, myUserProfile } = data
-      return await bookMarkPost(postId, myUserProfile,isBookmarked)
-    },
-    onMutate: (variables) => {
-      
+      return await bookMarkPost(postId, myUserProfile, isBookmarked)
     },
     onError: (error, variables, context) => {
-      console.log(error?.message)
+      console.error(error?.message)
+      toast.error(error.message || "Something went wrong")
     },
-    onSettled: (data, error, variables, context) => {
-      // updatePost(data?.post)
-      if(data.success) dispatch(userProfile({ userProfile: data?.payload }))
-    },
+    onSuccess: (data, variables, context) => {
+      console.log(data)
+      dispatch(userProfile({ userProfile: data }))
+    }
   })
 
 
   const like_func = async () => {
     if (!authStatus) {
-      setNotification({ message: "Please Login", type: "error" });
+
+      toast.error("Please login")
       return
     }
     mutate({ post, myUserProfile })
   }
   const dislike_func = () => {
     if (!authStatus) {
-      setNotification({ message: "Please Login", type: "error" });
+      toast.error("Please login")
       return;
     }
     dislikeMutate({ post, myUserProfile })
   }
 
   const bookMark_func = () => {
-    if(isBookMarkPending) return 
+    if (isBookmarkPending) return
     if (!authStatus) {
-      setNotification({ message: "Please Login", type: "error" });
+      toast.error("Please login")
       return;
     }
     bookMarkMutate({ postId: post?.$id, myUserProfile })
   }
 
   function updatePost(newPost) {
-    queryClient.setQueryData(['post', post.$id], (oldData) => {
+    queryClient.setQueryData(['post', post?.$id], (oldData) => {
       return newPost
     })
   }
@@ -167,6 +166,7 @@ const ViewPostLikeDislikeBookmark = ({ post }) => {
       <Button
         className="flex-1"
         variant='outline'
+        disabled={isBookmarkPending}
         onClick={bookMark_func}>
         <FaRegBookmark className={`${isBookmarked ? "text-blue-500" : "font-normal"}`} />
       </Button>

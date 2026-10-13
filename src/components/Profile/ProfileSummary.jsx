@@ -18,22 +18,9 @@ const ProfileSummary = ({ profileData = {} }) => {
       {/* Left Section */}
       <div
         id="ProfileSummary"
-        className={`w-full ${userIdAuth === userData?.$id ? "lg:w-2/3" : "w-full"} bg-white rounded-xl shadow-md p-4 sm:p-6 lg:p-8 border border-gray-100`}
-      >
+        className={`w-full ${userIdAuth === userData?.$id ? "lg:w-2/3" : "w-full"}`}>
         {/* Bio */}
-        <div id="ProfileSummary_Bio_Div" className="mb-6">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2">
-            <i className="fa-solid fa-user text-blue-600"></i> Bio
-          </h2>
-          <p
-            id="ProfileSummayPre"
-            className="mt-2 text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-200 text-sm sm:text-base"
-          >
-            {bio && bio.trim() !== ""
-              ? bio
-              : "No bio added yet. Share something about yourself!"}
-          </p>
-        </div>
+       
 
         {/* Links */}
         <div className="ProfileSummary_Links mb-6">

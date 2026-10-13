@@ -2,14 +2,11 @@ import React from "react";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useAskContext } from "@/context/AskContext";
 
 export default function UpperNavigationBarBtns() {
 
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
-
-  const { myUserProfile } = useAskContext();
   const navbarBtn = [
     {
       name: "Login",
@@ -17,7 +14,7 @@ export default function UpperNavigationBarBtns() {
       slug: "/login",
     },
     {
-      name: "Sign-In",
+      name: "Sign-up",
       active: !authStatus,
       slug: "/signup",
     },
@@ -26,17 +23,15 @@ export default function UpperNavigationBarBtns() {
 
   return (
     <ul className={`${authStatus ? "hidden" : ""} flex items-center gap-2`}>
-      {navbarBtn.map((Item) =>
-        Item.active ? (
-          <li key={Item?.name}>
-            <button
-              className="md:px-5 px-3 py-1 md:py-2 duration-200 rounded-full md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm text-white"
-              onClick={() => navigate(Item?.slug)}>
-              {Item?.name}
-            </button>
-          </li>
-        ) : null
-      )}
+      {navbarBtn.map((item) =>  <li key={item.name} className={`${!item.active ? "hidden" : "block"}`}>
+          <Button
+            className="md:px-5 px-3 py-1 md:py-2 duration-200 rounded-full md:rounded-full bg-[#16BEF6] hover:bg-[#17A3E8] text-sm text-white"
+            onClick={() => navigate(item.slug)}>
+            {item.name}
+          </Button>
+        </li>
+      )
+      }
     </ul>
   )
 }
