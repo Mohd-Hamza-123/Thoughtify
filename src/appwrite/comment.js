@@ -1,7 +1,8 @@
 import conf from "../conf/conf";
 import { Client, ID, Databases, Query } from 'appwrite';
 
-export class RealTime {
+export class Comment {
+
     client = new Client();
     database;
 
@@ -169,8 +170,9 @@ export class RealTime {
             throw error
         }
     }
-
 }
 
-const realTime = new RealTime()
-export default realTime;
+const commentService = new Comment()
+export default commentService;
+
+export const COMMENT_PAGE_SIZE = 4;

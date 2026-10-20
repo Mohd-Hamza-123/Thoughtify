@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
@@ -24,6 +27,7 @@
     "appwrite": "^13.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dompurify": "^3.4.17",
     "firebase": "^10.11.1",
     "html-react-parser": "^5.0.6",
     "lucide-react": "^0.487.0",

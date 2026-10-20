@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 import { Button } from '../ui/button';
 import { useSelector } from 'react-redux';
 import { useForm } from "react-hook-form";
-import realTime from '@/appwrite/realTime';
+import realTime from '@/appwrite/comment';
 import appwriteService from '@/appwrite/config';
 import { useQueryClient } from "@tanstack/react-query";
 

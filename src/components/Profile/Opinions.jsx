@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Spinner } from "../";
 import { Button } from "../ui/button.jsx";
 import { categoryArr } from "../AskQue/Category";
-import realTime from "../../appwrite/realTime.js";
+import realTime from "../../appwrite/comment.js";
 
 const Opinions = ({ visitedProfileUserID }) => {
   const spinnerRef = useRef(null);
