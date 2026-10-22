@@ -1,63 +1,55 @@
 import "./SideBar.css";
 import Icons from "../Icons";
-import { toast } from "sonner"
-import { useState } from "react";
+import { toast } from "sonner";
 import { ProfileImage } from "../Logo";
-import { Link } from "react-router-dom";
 import authService from "../../appwrite/auth";
-import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/authSlice";
-import React, { useRef, useEffect } from "react";
 import { userProfile } from "@/store/profileSlice";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useAskContext } from "../../context/AskContext";
-import { useBooleanContext } from "@/context/BooleanContext";
+import { setIsOverlayVisible, setIsSidebarVisible } from "@/store/booleanSlice";
 
-
-const SideBar = () => {
-
-  const SideBar = useRef();
+const SideBar = ({ onInstallApp }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [name, setName] = useState("Name");
+  const [name, setName] = useState("");
   const status = useSelector((state) => state.auth.status);
-
-  const {
-    onInstallApp,
-    isAppInstalled,
-  } = useAskContext();
-
-  const { setIsOverlayVisible, isSidebarVisible, setIsSidebarVisible } = useBooleanContext();
-
   const userData = useSelector((state) => state.auth.userData);
+  const isAppInstalled = useSelector((state) => state.booleanSlice.isAppInstalled);
+  const isSidebarVisible = useSelector((state) => state.booleanSlice.isSidebarVisible);
 
   useEffect(() => {
-    if (status) setName(userData?.name)
-    else setName("")
-  }, [status]);
-
-  useEffect(() => {
-    if (isSidebarVisible) SideBar.current.classList.add("Active")
-    else SideBar.current.classList.remove("Active")
-  }, [isSidebarVisible,]);
+    setName(status ? userData?.name || "" : "");
+  }, [status, userData]);
 
   const closeSideBarAndOverlay = () => {
-    setIsSidebarVisible(false)
-    setIsOverlayVisible(false);
+    dispatch(setIsOverlayVisible(false));
+    dispatch(setIsSidebarVisible(false));
   };
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isSidebarVisible) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeSideBarAndOverlay();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isSidebarVisible]);
 
   const logoutHandle = async () => {
     try {
       await authService.logout();
       dispatch(logout());
-      dispatch(userProfile({ userProfile: null }))
+      dispatch(userProfile({ userProfile: null }));
       closeSideBarAndOverlay();
       navigate("/");
       toast.success("You have successfully logged out");
     } catch (err) {
       const message = err instanceof Error ? err.message : err;
-      if (import.meta.env.DEV) console.log(message)
+      if (import.meta.env.DEV) console.log(message);
       toast.error("Unable to log out");
     }
   };
@@ -81,32 +73,27 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="SideBar poppins" ref={SideBar}>
-      <div className="flex justify-between items-center px-1">
-
-        <Link to={`/profile/${userData?.$id}`}>
-          <div
-            onClick={closeSideBarAndOverlay}
-            className="SideBarCross flex gap-3 justify-start items-center">
-            <ProfileImage />
-            <p className="poppins">{name}</p>
-          </div>
+    <aside
+      className={`SideBar poppins ${isSidebarVisible ? "Active" : ""}`}
+      aria-hidden={!isSidebarVisible}
+    >
+      <div className="SideBarHeader">
+        <Link
+          to={`/profile/${userData?.$id}`}
+          onClick={closeSideBarAndOverlay}
+          className="SideBarCross"
+        >
+          <ProfileImage />
+          <p className="SideBarName poppins">{name}</p>
         </Link>
 
-        <Icons.cross
-          className="mr-3 cursor-pointer hover:scale-110 transition-all duration-75"
-          onClick={closeSideBarAndOverlay}
-        />
-
+        <Icons.cross className="SideBarClose" onClick={closeSideBarAndOverlay} />
       </div>
 
-      <div className="SideBarContent">
-
+      <nav className="SideBarContent">
         {sideBarLinks.map((option) => (
-          <Link to={option.slug} key={option.name}>
-            <div
-              className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center"
-              onClick={closeSideBarAndOverlay}>
+          <Link to={option.slug} key={option.name} onClick={closeSideBarAndOverlay}>
+            <div className="SideBarItems">
               {option.icon}
               <p>{option.name}</p>
             </div>
@@ -115,29 +102,26 @@ const SideBar = () => {
 
         {isAppInstalled && (
           <div
-            className="SideBarItems cursor-pointer flex gap-5 py-2 rounded-md px-6 justify-start items-center"
-            onClick={(e) => {
+            className="SideBarItems"
+            onClick={() => {
               closeSideBarAndOverlay();
-              onInstallApp();
-            }}>
+              onInstallApp?.();
+            }}
+          >
             <Icons.download />
             <p>Download App</p>
           </div>
         )}
 
-        <hr />
-
-        {isSidebarVisible && (
-          <div
-            className="SideBarItems flex gap-5 py-2 rounded-md px-6 justify-start items-center cursor-pointer"
-            onClick={logoutHandle}>
+        <div className="SideBarLogout">
+          <hr />
+          <div className="SideBarItems" onClick={logoutHandle}>
             <Icons.logout />
             <p>LogOut</p>
           </div>
-        )}
-
-      </div>
-    </div>
+        </div>
+      </nav>
+    </aside>
   );
 };
 

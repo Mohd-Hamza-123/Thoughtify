@@ -1,72 +1,115 @@
 .SideBar {
-    padding: 15px 10px;
     position: fixed;
     top: 0;
     right: 0;
-    transform: translateX(100%);
-    width: 23%;
-    height: 100%;
+    z-index: 11;
+    display: flex;
+    flex-direction: column;
+    width: clamp(280px, 23vw, 360px);
+    height: 100vh;
+    height: 100dvh;
+    padding: 15px 10px;
+    padding-bottom: max(15px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overflow-x: hidden;
     color: rgb(0, 0, 0);
     background-color: var(--secondaryWhite);
-    transition: transform 200ms ease-in-out, right 200ms ease;
-    z-index: 11;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 200ms ease-in-out, visibility 0s linear 200ms;
+    scrollbar-width: none;
 }
-
-.SideBar.Active {
-    right: 23%;
-}
-
-@media only screen and (max-width: 500px) {
-
-    .SideBar {
-        width: 80% !important;
-        padding: 17px 1px 0px 12px !important;
-    }
-
-    .SideBar.Active {
-        right: 80% !important;
-    }
-
-    .SideBar_Profile_Name p {
-        font-size: 18px;
-        cursor: pointer;
-    }
-
-    .SideBarContent {
-        margin-top: 15px !important;
-        height: 72% !important;
-    }
-
-    .SideBarContent p {
-        font-size: 16px !important;
-        font-weight: 500 !important;
-    }
-}
-
 
 .SideBar::-webkit-scrollbar {
     display: none;
 }
 
-.SideBar hr {
-    height: 1px;
-    background-color: rgba(0, 0, 0, 0.268);
-    border: none;
+.SideBar.Active {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 200ms ease-in-out, visibility 0s;
 }
 
+/* Header (profile + close) */
+.SideBarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.SideBarCross {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.SideBarCross img {
+    flex-shrink: 0;
+}
+
+.SideBarName {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.SideBarClose {
+    flex-shrink: 0;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: transform 75ms;
+}
+
+.SideBarClose:hover {
+    transform: scale(1.1);
+}
+
+/* Content */
 .SideBarContent {
     display: flex;
-    margin-top: 10px;
     flex-direction: column;
-    justify-content: space-around;
-    height: 80%;
+    gap: 6px;
+    flex: 1;
+    margin-top: 16px;
 }
 
-.SideBarContent svg {
+.SideBarContent a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.SideBarItems {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.SideBarItems p {
+    margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 15px;
+}
+
+.SideBarItems svg {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
     fill: black;
 }
 
-body.darkMode .SideBarContent svg {
+body.darkMode .SideBarItems svg {
     fill: white;
 }
 
@@ -74,34 +117,62 @@ body.darkMode .SideBarContent svg {
     background-color: rgba(165, 165, 165, 0.267);
 }
 
-.SideBar_Day_Night_Mode {
-
-    width: 100%;
-    display: flex;
+.SideBar hr {
+    height: 1px;
+    margin: 10px 0;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.268);
 }
 
-.SideBar_Day_Night_Mode i img {
-    width: 82px;
-    height: 85px;
+/* Push logout to bottom */
+.SideBarLogout {
+    margin-top: auto;
 }
 
-.SideBar_NightDayIcon_Div {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* Tablet */
+@media (max-width: 1024px) {
+    .SideBar {
+        width: 320px;
+    }
 }
 
-.SideBar_NightDayIcon_Div>div:nth-child(1) {
-    color: rgb(0, 0, 0);
+/* Mobile */
+@media (max-width: 500px) {
+    .SideBar {
+        width: 80%;
+        max-width: 320px;
+        padding: 17px 8px 15px 12px;
+    }
+
+    .SideBarContent {
+        margin-top: 12px;
+    }
+
+    .SideBarItems {
+        padding: 12px 14px;
+        gap: 12px;
+    }
+
+    .SideBarItems p {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .SideBarName {
+        font-size: 18px;
+    }
 }
 
-.SideBar_NightDayIcon_Div i {
-    font-size: 25px;
+/* Very small phones */
+@media (max-width: 340px) {
+    .SideBar {
+        width: 88%;
+    }
+}
+
+/* Short landscape screens */
+@media (max-height: 480px) {
+    .SideBarItems {
+        padding: 8px 14px;
+    }
 }

@@ -1,23 +1,17 @@
 import "./Overlay.css";
 import React from "react";
-import { useBooleanContext } from "@/context/BooleanContext";
-
+import { useSelector, useDispatch } from 'react-redux'
+import { setIsOverlayVisible, setIsSidebarVisible } from "@/store/booleanSlice";
 
 const Overlay = () => {
 
-  const {
-    isOverlayVisible,
-    setIsOverlayVisible,
-    setIsSidebarVisible
-  } = useBooleanContext();
+  const dispatch = useDispatch()
+  const isOverlayVisible = useSelector((state) => state.booleanSlice.isOverlayVisible)
 
   const closeOverlay = () => {
-    setIsSidebarVisible(false);
-    setIsOverlayVisible(false)
-    // SetSettingPopUp(false)
+    dispatch(setIsOverlayVisible(false))
+    dispatch(setIsSidebarVisible(false))
   };
-
-  // console.log(isOverlayVisible)
 
   return (
     <div

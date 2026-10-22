@@ -7,9 +7,8 @@ import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
 import { Toaster } from "@/components/ui/sonner"
 import { BrowserRouter } from "react-router-dom";
-import ErrorBoundary from "./components/ErrorBoundry";
+import ErrorBoundary from "./components/ErrorBoundary";
 import QueryProvider from "./Providers/QueryProvider.jsx";
-import BooleanProvider from "./Providers/BooleanProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -17,10 +16,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <QueryProvider>
         <BrowserRouter>
           <Provider store={store}>
-            <BooleanProvider>
-              <Toaster />
-              <App />
-            </BooleanProvider>
+            <Toaster />
+            <App />
           </Provider>
         </BrowserRouter>
       </QueryProvider>

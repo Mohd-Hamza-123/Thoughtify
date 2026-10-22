@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { userProfile } from "./store/profileSlice";
 import Overlay from "./components/Overlay/Overlay";
-import { AskProvider } from "./context/AskContext";
 import notification from "./appwrite/notification";
 import { Home, ViewPostPage, } from "./pages/pages";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,7 +69,7 @@ function App() {
   }
 
   const [appInstallPrompt, setAppInstallPrompt] = useState(null);
-  const [isAppInstalled, setisAppInstalled] = useState(true);
+  const [isAppInstalled, setIsAppInstalled] = useState(true);
 
   const onInstallApp = async () => {
     if (appInstallPrompt) {
@@ -78,10 +77,10 @@ function App() {
       appInstallPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === "accepted") {
           // User accepted the install prompt
-          setisAppInstalled(true);
+          setIsAppInstalled(true);
         } else {
           // User dismissed the install prompt
-          setisAppInstalled(false);
+          setIsAppInstalled(false);
         }
       });
     }
@@ -112,12 +111,9 @@ function App() {
   }, []);
 
 
-  return <AskProvider value={{ isAppInstalled, onInstallApp }}>
-
-
-    <Initialization /> 
+  return <>
+   <Initialization />
     <Overlay />
-
     <Routes>
       <Route path="/" element={<NavBar />}>
         <Route index Component={Home} />
@@ -138,7 +134,7 @@ function App() {
       <Route path="forgotPassword" Component={ForgotPassword} />
 
     </Routes>
-  </AskProvider>
+  </>
 }
 
 export default App;

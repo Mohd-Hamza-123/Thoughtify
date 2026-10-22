@@ -6,7 +6,6 @@ import { categoryArr } from '../AskQue/Category'
 import React, { useState, useEffect } from 'react'
 import { feedbackToggle } from '@/store/booleanSlice'
 import { useSelector, useDispatch } from 'react-redux'
-import { useBooleanContext } from '@/context/BooleanContext'
 
 const HomeRight = ({ switchTrigger }) => {
 
@@ -16,8 +15,6 @@ const HomeRight = ({ switchTrigger }) => {
     const userData = useSelector((state) => state.auth.userData)
 
     const [isEmailVerified, setIsEmailVerified] = useState(userData?.emailVerification || false);
-
-    const { setIsSettingOpen, setIsOverlayVisible } = useBooleanContext()
 
     useEffect(() => {
         if (userData) setIsEmailVerified(userData?.emailVerification || false)

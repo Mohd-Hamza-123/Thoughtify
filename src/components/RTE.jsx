@@ -2,11 +2,9 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Controller } from "react-hook-form";
 import "./RTE.css";
 import conf from "../conf/conf";
-import { useAskContext } from "../context/AskContext";
 
 const RTE = ({ name, control, defaultValue = "" }) => {
-  const { setnotificationPopMsg, setNotificationPopMsgNature } =
-    useAskContext();
+  
 
   return (
     <div className="w-full">

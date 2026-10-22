@@ -1,9 +1,8 @@
 import "../../index.css";
 import "./UpperNavigationBar.css";
 import { getAvatar } from "@/lib/avatar";
-import { useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { useBooleanContext } from "@/context/BooleanContext";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Logo,
   UpperNavigationBarBtns,
@@ -11,22 +10,23 @@ import {
   UpperNavigationBarNotification,
 } from "..";
 
+import { setIsSidebarVisible, setIsOverlayVisible } from '@/store/booleanSlice'
+
 const NavigationBar = () => {
 
+  const dispatch = useDispatch()
   const [image, setImage] = useState("");
   const authStatus = useSelector((state) => state.auth.status);
   const userdata = useSelector((state) => state.auth.userData);
   const myProfile = useSelector((state) => state.profileSlice.userProfile);
-  const { setIsOverlayVisible, setIsSidebarVisible } = useBooleanContext();
-
 
   const toggleSideBar = () => {
-    setIsOverlayVisible(true);
-    setIsSidebarVisible(true);
+    dispatch(setIsSidebarVisible(true))
+    dispatch(setIsOverlayVisible(true))
   };
 
   useEffect(() => {
-    
+
     const profileImage = myProfile?.profileImage ? JSON.parse(myProfile?.profileImage) : undefined;
 
     let img = profileImage?.profileImageURL;

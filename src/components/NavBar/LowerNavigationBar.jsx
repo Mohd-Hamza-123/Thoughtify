@@ -1,12 +1,12 @@
 import "./LowerNavigationBar.css";
 import React, { useRef } from "react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { useAskContext } from "../../context/AskContext";
 
 const LowerNavigationBar = () => {
 
   const lowerNavBarRef = useRef();
-  const { isOpen } = useAskContext();
+  const isOpen = useSelector((state) => state.booleanSlice.isSidebarVisible)
 
   const arr = [
     {
