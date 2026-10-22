@@ -1,11 +1,10 @@
-import { Editor } from "@tinymce/tinymce-react";
-import { Controller } from "react-hook-form";
 import "./RTE.css";
 import conf from "../conf/conf";
+import { Controller } from "react-hook-form";
+import { Editor } from "@tinymce/tinymce-react";
 
 const RTE = ({ name, control, defaultValue = "" }) => {
   
-
   return (
     <div className="w-full">
       <Controller

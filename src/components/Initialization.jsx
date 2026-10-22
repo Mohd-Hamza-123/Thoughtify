@@ -2,7 +2,6 @@ import { Loader } from '@/components';
 import profile from '@/appwrite/profile';
 import React, { useEffect } from 'react';
 import authService from '@/appwrite/auth';
-// import * as Sentry from "@/sentry/react"
 import useProfile from '@/hooks/useProfile';
 import { login, logout } from '@/store/authSlice';
 import { userProfile } from '@/store/profileSlice';

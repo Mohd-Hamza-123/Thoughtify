@@ -4,28 +4,46 @@ import { NavBar } from "./components";
 import profile from "./appwrite/profile";
 import authService from "./appwrite/auth";
 import { login } from "./store/authSlice";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { userProfile } from "./store/profileSlice";
 import Overlay from "./components/Overlay/Overlay";
+import FullPageSpinner from "./components/FullPageSpinner";
 import notification from "./appwrite/notification";
-import { Home, ViewPostPage, } from "./pages/pages";
 import { useDispatch, useSelector } from "react-redux";
 import Initialization from "./components/Initialization";
-import {
-  Profile,
-  NotFound,
-  LoginPage,
-  SignupPage,
-  SearchPage,
-  AskQuestion,
-  FindFriends,
-  ResetPassword,
-  ForgotPassword,
-  EditProfilePage,
-  EditAskQuestion,
-  RespondersSectionPage,
-} from "@/pages/pages"
+// import {
+//   Profile,
+//   NotFound,
+//   LoginPage,
+//   SignupPage,
+//   SearchPage,
+//   AskQuestion,
+//   FindFriends,
+//   ResetPassword,
+//   ForgotPassword,
+//   EditProfilePage,
+//   EditAskQuestion,
+//   RespondersSectionPage,
+//   Home,
+//   ViewPostPage
+// } from "@/pages/pages"
+
+const Profile = lazy(() => import("./pages/Profile"));
+const Home = lazy(() => import("./pages/Home"));
+const ViewPostPage = lazy(() => import("./pages/ViewPostPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignupPage = lazy(() => import("./pages/SignupPage"));
+const SearchPage = lazy(() => import("./pages/SearchPage"));
+const AskQuestion = lazy(() => import("./pages/AskQuestion"));
+const FindFriends = lazy(() => import("./pages/FindFriends"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const EditProfilePage = lazy(() => import("./pages/EditProfilePage"));
+const EditAskQuestion = lazy(() => import("./pages/EditAskQuestion"));
+const RespondersSectionPage = lazy(() => import("./pages/RespondersSectionPage"));
+
 
 function App() {
 
@@ -38,7 +56,7 @@ function App() {
   const verifyEmail = async () => {
     try {
       if (userId && secret) {
-        const res = authService.verifyWithUserId_secret(userId, secret);
+        const res = await authService.verifyWithUserId_secret(userId, secret);
         if (res) {
           toast.success("Email Verified")
           const user = await authService.getCurrentUser();
@@ -110,30 +128,30 @@ function App() {
 
   }, []);
 
-
   return <>
-   <Initialization />
+    <Initialization />
     <Overlay />
-    <Routes>
-      <Route path="/" element={<NavBar />}>
-        <Route index Component={Home} />
-        <Route path="post/:slug/:filterCommentID" Component={ViewPostPage} />
-        <Route path="ask-question" Component={AskQuestion} />
-        <Route path="edit-question/:slug" Component={EditAskQuestion} />
-        <Route path="find-people" Component={FindFriends} />
-        <Route path="browse-question/:category/:searchInput" Component={SearchPage} />
-        <Route path="responders-post" Component={RespondersSectionPage} />
-        <Route path="profile/:slug" Component={Profile} />
-        <Route path="edit-profile/:slug" Component={EditProfilePage} />
-      </Route>
+    <Suspense fallback={<FullPageSpinner />}>
+      <Routes>
+        <Route path="/" element={<NavBar />}>
+          <Route index Component={Home} />
+          <Route path="post/:slug/:filterCommentID?" Component={ViewPostPage} />
+          <Route path="ask-question" Component={AskQuestion} />
+          <Route path="edit-question/:slug" Component={EditAskQuestion} />
+          <Route path="find-people" Component={FindFriends} />
+          <Route path="browse-question/:category/:searchInput" Component={SearchPage} />
+          <Route path="responders-post" Component={RespondersSectionPage} />
+          <Route path="profile/:slug" Component={Profile} />
+          <Route path="edit-profile/:slug" Component={EditProfilePage} />
+        </Route>
 
-      <Route path="*" Component={NotFound} />
-      <Route path="login" Component={LoginPage} />
-      <Route path="signup" Component={SignupPage} />
-      <Route path="reset-password" Component={ResetPassword} />
-      <Route path="forgotPassword" Component={ForgotPassword} />
-
-    </Routes>
+        <Route path="login" Component={LoginPage} />
+        <Route path="signup" Component={SignupPage} />
+        <Route path="reset-password" Component={ResetPassword} />
+        <Route path="forgotPassword" Component={ForgotPassword} />
+        <Route path="*" Component={NotFound} />
+      </Routes>
+    </Suspense>
   </>
 }
 
