@@ -70,6 +70,8 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
     return data?.pages?.flatMap((page) => page.documents) || [];
   }, [data]);
 
+  console.log(posts)
+
   const activeFilterCount = useMemo(() => {
     return Object.entries(filters).filter(([key, value]) => {
       if (!value) return false;
@@ -439,7 +441,7 @@ const BrowseQuestions = ({ switchTrigger, setSwitchTrigger }) => {
                   key={post?.$id}
                   className="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-md"
                 >
-                  <Link to={`/post/${post.$id}/${null}`} className="block">
+                  <Link to={`/post/${post?.$id}/${null}`} className="block">
                     <div className="mb-2 flex items-start justify-between gap-3">
                       <div>
                         <p className="text-sm font-medium text-slate-500">

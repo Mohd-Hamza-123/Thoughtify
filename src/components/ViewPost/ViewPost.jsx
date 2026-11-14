@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams } from "react-router-dom";
 import { makeCodeBlock } from "../../helpers/code-block-formatting";
 import { ViewPostLikeDislikeBookmark, ViewPostMainContent } from "..";
+import appwriteService from "@/appwrite/config"
 
 const ViewPost = () => {
 
@@ -17,27 +18,30 @@ const ViewPost = () => {
   const { slug, filterCommentID } = useParams();
 
   const getPost = async () => {
+    try {
 
-    let data = null
-    const query = queryClient.getQueryData(["posts"]);
-    const pages = query?.pages || []
+      const query = queryClient.getQueryData(["posts"]);
+      const pages = query?.pages || []
 
-    if (!Array.isArray(pages) || pages.length === 0) {
-      navigate("/")
-      toast.error("No Posts Found")
-      return
+      const posts = pages.flatMap(page => page?.documents || [])
+      const data = posts.find(post => post?.$id === slug)
+
+      if (data) return setPost(data)
+
+      const res = await appwriteService.getPost(slug)
+      if (!res) {
+        navigate("/")
+        toast.error("No Posts Found")
+        return
+      }
+      setPost(res)
+    } catch (error) {
+      const message = error?.message || "Something went wrong"
+      toast.error("something went wrong")
+
     }
 
-    const posts = pages.flatMap(page => page?.documents || [])
-    data = posts.find(post => post?.$id === slug)
 
-    if (!data) {
-      navigate("/")
-      toast.error("No Posts Found")
-      return
-    }
-    
-    setPost(data)
   }
 
   useEffect(() => {
@@ -50,10 +54,10 @@ const ViewPost = () => {
     className="w-full relative flex">
 
     <section ref={viewPostLeft} className="p-3 w-full md:w-[70%] overflow-x-hidden">
-       <ViewPostMainContent post={post} />
+      <ViewPostMainContent post={post} />
       <ViewPostLikeDislikeBookmark post={post} />
     </section>
-      
+
   </div> : <div className="w-full flex justify-center items-center h-[80dvh]">
     <Spinner />
   </div>

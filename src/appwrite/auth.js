@@ -14,7 +14,7 @@ export class AuthService {
         this.functions = new Functions(this.client)
     }
 
-async createAccount({ email, password, name }) {
+    async createAccount({ email, password, name }) {
 
         try {
 
@@ -55,13 +55,18 @@ async createAccount({ email, password, name }) {
     }
 
     googleAuth() {
-        try {
 
-            return this.account.createOAuth2Session(
+        try {
+            const origin = window.location.origin
+            console.log(origin)
+            const session = this.account.createOAuth2Session(
                 'google',
-                'https://thoughtify.vercel.app/',
-                'https://thoughtify.vercel.app/login'
+                `${origin}/`,
+                `${origin}/login`
             )
+
+            console.log(session)
+            return session
 
         } catch (error) {
 

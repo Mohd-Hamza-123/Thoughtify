@@ -34,10 +34,6 @@ const EditProfile = () => {
     occupation: '',
   })
 
-  // const profileData = queryClient.getQueryData(['profiles', userData.$id])
-
-  console.log(profileData)
-
   const {
     bio,
     links,
@@ -66,20 +62,8 @@ const EditProfile = () => {
     } = profileObject
 
 
-    // console.log(profileObject)
-
     setIsUpdating(true)
 
-    // if (!prevFileURL && !file) {
-    //   setSeePreviewBefore('Make sure to see preview before uploading image')
-    //   setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
-    //   return
-    // }
-    // if (seePreviewBefore !== '') {
-    //   setSeePreviewBefore('Make sure to see preview before uploading image')
-    //   setNotification({ message: "Make sure to see preview before uploading image", type: "error" })
-    //   return
-    // }
 
     try {
 
@@ -87,15 +71,13 @@ const EditProfile = () => {
       let profileImageObject = null;
       if (profileImage) {
         let uploadedPic = await profile.createBucket({ file: profileImage });
-        // console.log(uploadedPic)
+
         const profileImgURL = await profile.getStoragePreview(uploadedPic?.$id);
         profileImageObject = JSON.stringify({
           profileImageID: uploadedPic?.$id,
           profileImageURL: profileImgURL?.href
         })
       }
-
-      // console.log(profileImageObject)
 
       let profileData = await profile.updateProfile(
         profileId,
@@ -117,7 +99,7 @@ const EditProfile = () => {
 
     } catch (error) {
       toast.error("Profile not updated")
-      console.log(error)
+      // console.log(error)
       setIsUpdating(false)
     }
 

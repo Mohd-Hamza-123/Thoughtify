@@ -7,6 +7,7 @@ import { FaComment } from "react-icons/fa";
 import { increaseViews } from "@/lib/posts";
 import { IoEyeSharp } from "react-icons/io5";
 import UnderlineAnimate from "../UnderlineAnimate";
+import toOptimizedImage from "@/helpers/optimizeImage";
 
 const PostCard = ({
   $id,
@@ -26,13 +27,12 @@ const PostCard = ({
   trustedResponderPost,
 }) => {
 
+  // console.log(profileImage)
 
-  profileImage = profileImage ? profileImage.replace("/preview", "/view") : null;
-  profileImage = `https://images.weserv.nl/?url=${encodeURIComponent(profileImage)}&w=70&h=70&output=webp&q=80`;
 
+  const profileImageUrl = toOptimizedImage(profileImage, { w: 70, h: 70, q: 80 });
   const { imageURL, imageID } = JSON.parse(queImage || "{}");
-  let imageView = imageURL ? imageURL.replace("/preview", "/view") : imageURL;
-  imageView = `https://images.weserv.nl/?url=${encodeURIComponent(imageView)}&w=400&h=300&output=webp&q=75`;
+  const imageView = toOptimizedImage(imageURL, { w: 400, h: 300, q: 75 });
   const date = new Date($createdAt).toDateString();
 
   return (
@@ -50,11 +50,15 @@ const PostCard = ({
         </figure>
 
         {/* PostCard Content */}
+
         <div className="order-2 lg:order-1 w-full lg:w-2/3 p-4 sm:p-6 md:p-6 lg:p-6 flex flex-col justify-between gap-3">
           <div className="flex items-center gap-3">
+
             <Link to={`/profile/${userId}`} className="flex items-center gap-3">
+
               <img
-                src={profileImage ? profileImage : getAvatar(name)}
+                src={profileImageUrl}
+                onError={(e) => e.target.src = getAvatar(name)}
                 id="PostCard-profile-pic"
                 className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover ring-2 ring-white dark:ring-slate-900 shadow-sm"
                 alt={name}

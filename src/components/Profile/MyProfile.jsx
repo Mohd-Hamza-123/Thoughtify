@@ -66,7 +66,7 @@ const MyProfile = () => {
     staleTime: 1000 * 5,
   });
 
-  console.log(totalPost)
+  
 
   const follow_Unfollow = async () => {
     setIsDisable(true)
